@@ -9,7 +9,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 const handler = NextAuth({
   pages: {
     // 페이지도 이후 따로 지정
-    // signIn: '/auth/signin',
+    signIn: '/login',
     // signOut: '/auth/signout',
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // (used for check email message)
