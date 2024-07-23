@@ -27,7 +27,7 @@ const handler = NextAuth({
       // eslint-disable-next-line consistent-return
       async authorize(credentials, req) {
         try {
-          const res = await api.post("/api/user/login", {
+          const res = await api.post("/user/auth/login", {
             email: credentials?.username,
             password: credentials?.password
           });
@@ -67,7 +67,8 @@ const handler = NextAuth({
       }
 
       try {
-        const res = await api.post("api/user/refresh-token/", {
+        // 토큰 재발급
+        const res = await api.post("user/auth/token-refresh", {
           refresh: token.refreshToken
         });
         return {
@@ -112,7 +113,7 @@ const handler = NextAuth({
   events: {
     async signOut(message) {
       try {
-      await api.post("/api/users/logout", {
+      await api.post("/user/logout", {
         refresh: message.token.refreshToken,
       });
     } catch (error) {
