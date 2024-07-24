@@ -8,9 +8,9 @@ export default function Providers({children}: { children: React.ReactNode }) {
   return (
     <SessionProvider>
     <NextUIProvider>
-      <NextThemesProvider attribute="class" defaultTheme="light">
+      {/*<NextThemesProvider attribute="class" defaultTheme="light">*/}
         {children}
-      </NextThemesProvider>
+      {/*</NextThemesProvider>*/}
     </NextUIProvider>
     </SessionProvider>
   )

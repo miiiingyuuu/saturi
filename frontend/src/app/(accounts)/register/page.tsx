@@ -28,23 +28,27 @@ export default function App() {
    * 회원가입 정보 보내는 함수
    */
   function handleRegister(e: FormEvent) {
-    // TODO: then이후에 step단계 리디렉션, 즉시 로그인 및 세션, 회원정보수정으로 인식하게끔 설정
     e.preventDefault()
+    // TODO: then이후에 step단계 리디렉션, 즉시 로그인 및 세션, 회원정보수정으로 인식하게끔 설정
     if (nicknameValidation&&authEmail) {
     api.post("/user/auth", {
       email,
       password,
-      nickname
+      nickname,
+      locationId: 0,
+      gender: 0,
+      ageRange: 0
     })
       .then (response => {
         console.log(response)
       })
+      .catch(error => console.log(error))
+    } else {
+      alert("닉네임 체크, 이메일 체크 확인")
     }
   }
 
   /**
-   *
-   * @param e
    *
    * 닉네임 중복확인 함수
    * 그냥 주소 기본으로 받아서 만들긴 했는데, 나중에 axios 만든거랑 합쳐야함
@@ -53,26 +57,23 @@ export default function App() {
   function handleNicknameCheck() {
     // TODO: 닉네임 중복확인 받아오기
     // 입력창에서도 중복 확인 한 후 새로 못적도록 고정시키기(50%완성)
-    axios({
-      method: "GET",
-      url: `${baseURL}/user/auth/nickname-dupcheck`,
-      params: {nickname}
+    axios.get(`${baseURL}/user/auth/nickname-dupcheck`, {params: {
+      nickname}
     })
       .then(response => {
         if (response) {
           if (window.confirm("이 닉네임을 사용하시겠습니까?")) {
           setNicknameValidation(true)
-          } else {
-            window.alert("중복된 닉네임 입니다.")
-            setNicknameValidation(false)
+            }
           }
-        }
       })
+      .catch(err => {alert("중복된 닉네임입니다.")})
   }
   // 인증 이후에도 닉네임을 수정 검증이 취소되도록 작업
   useEffect(() => {
     setNicknameValidation(false)
   },[nickname])
+
 
   function handleAuthEmail() {
     // TODO: 이메일 인증이랑 연결하고, 기능 만들기

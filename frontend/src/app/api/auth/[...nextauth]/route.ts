@@ -17,7 +17,6 @@ const handler = NextAuth({
   },
   providers: [
     CredentialsProvider({
-
       name: "Credentials",
       credentials: {
         username: { label: "Username", type: "text", placeholder: "Username" },
@@ -51,6 +50,14 @@ const handler = NextAuth({
   ],
 
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      console.log('Redirect URL:', url);
+      return baseUrl;
+    },
+    async signIn({ account, profile }) {
+      console.log('Account:', account); // 여기에서 code를 확인할 수 있습니다.
+      return true; // signIn에 성공하면 true를 반환합니다.
+    },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async jwt({ token, trigger, user, account, profile }) {
       if (account && user) {
@@ -104,7 +111,7 @@ const handler = NextAuth({
       session.accessTokenExpires = token.accessTokenExpires;
       session.refreshToken = token.refreshToken;
       return session;
-    }
+    },
   },
   session: {
     strategy: "jwt",

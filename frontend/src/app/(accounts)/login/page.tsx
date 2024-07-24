@@ -78,7 +78,7 @@ export default function Page() {
           onClick={() =>
             signIn("kakao", {
               redirect: true,
-              callbackUrl: "/",
+              callbackUrl: "/accounts/auth",
             })
           }
         >
@@ -90,7 +90,7 @@ export default function Page() {
           onClick={() =>
             signIn("naver", {
               redirect: true,
-              callbackUrl: "/",
+              callbackUrl: "/accounts/auth",
             })
           }
         >
