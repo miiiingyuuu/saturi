@@ -154,13 +154,17 @@ export default function EditProfilePage() {
           </Link>
           <div className="flex space-x-4"> {/* 여백 추가 */}
             {/* 수정 완료 버튼 */}
-            <Button auto flat color="primary" onClick={handleSave}>
-              수정 완료
-            </Button>
+            <Link href="/accounts/profile">
+              <Button auto flat color="primary" onClick={handleSave}>
+                수정 완료
+              </Button>
+            </Link>
             {/* 비밀번호 변경 버튼 */}
-            <Button auto flat color="secondary" onClick={() => alert('비밀번호 변경 페이지로 이동')}>
-              비밀번호 변경
-            </Button>
+            <Link href="/accounts/changepassword">
+              <Button auto flat color="secondary">
+                비밀번호 변경
+              </Button>
+            </Link> 
           </div>
         </CardFooter>
       </Card>

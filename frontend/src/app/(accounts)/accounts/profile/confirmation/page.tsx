@@ -1,36 +1,50 @@
+"use client"
+
 import React, { useState } from "react";
-import { Card, Input, Button, CardHeader, CardBody, CardFooter } from "@nextui-org/react";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/navigation";
+import { Card, CardHeader, CardBody, CardFooter, Button, Input } from "@nextui-org/react";
 
-export default function PasswordConfirmationPage() {
-  const [password, setPassword] = useState('');
+export default function Authenticate() {
   const router = useRouter();
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = () => {
-    // Here you should handle the password verification logic
-    // After verification, navigate to the EditProfilePage
-    router.push('/edit-profile');
+  const handleAuthenticate = async () => {
+    // 비밀번호 인증 로직
+    const isAuthenticated = await fakePasswordCheck(password);
+
+    if (isAuthenticated) {
+      sessionStorage.setItem('isAuthenticated', 'true'); // 인증 성공 시 세션 스토리지에 플래그 저장
+      router.push('/accounts/profile/update');
+    } else {
+      setError('비밀번호가 일치하지 않습니다.');
+    }
+  };
+
+  // 가짜 비밀번호 체크 함수 (실제 API 호출로 대체)
+  const fakePasswordCheck = async (password) => {
+    return password === "correctpassword"; // 가짜 비밀번호 "correctpassword" 체크
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <Card style={{ width: '600px' }}>
+      <Card style={{ width: '400px' }}>
         <CardHeader>
-          <h3>비밀번호 확인</h3>
+          <h3>비밀번호 인증</h3>
         </CardHeader>
         <CardBody>
-          <Input.Password
-            clearable
-            underlined
-            label="비밀번호"
-            placeholder="비밀번호를 입력하세요"
+          <Input
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            placeholder="비밀번호를 입력하세요"
           />
+          {error && <p className="text-red-500">{error}</p>}
         </CardBody>
         <CardFooter>
-          <Button auto flat color="primary" onClick={handleSubmit}>
-            확인
+          <Button auto onClick={handleAuthenticate}>
+            인증
           </Button>
         </CardFooter>
       </Card>

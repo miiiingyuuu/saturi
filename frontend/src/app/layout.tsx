@@ -25,7 +25,7 @@ export default function RootLayout({
   const pathname = usePathname(); // 현재 경로 가져오기
 
   // 특정 경로에서 header를 숨기기
-  const hideHeader = pathname.startsWith("/accounts/profile");
+  const hideHeader = pathname.startsWith("/game/in-game");
 
   return (
     <html lang="en" className="light">
