@@ -2,11 +2,12 @@
 
 import axios from "axios";
 import api from "@/lib/axios"
+import { baseURL } from "@/app/constants";
 import { Button, Input } from "@nextui-org/react";
-import { FormEvent, useMemo, useState } from "react";
-import { EyeFilledIcon } from "@/components/icons/EyeFilledIcon";
-import { EyeSlashFilledIcon } from "@/components/icons/EyeSlashFilledIcon";
-
+import { EyeFilledIcon } from "@/assets/svg/EyeFilledIcon";
+import { toggleVisibility, validateEmail } from "@/utils/utils";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { EyeSlashFilledIcon } from "@/assets/svg/EyeSlashFilledIcon";
 
 export default function App() {
   const [ email, setEmail ] = useState("")
@@ -18,31 +19,16 @@ export default function App() {
   const [ isVisible, setIsVisible ] = useState(false)
   const [ isConfVisible, setIsConfVisible ] = useState(false)
   const [ nicknameValidation, setNicknameValidation ] = useState(false)
-  
-  function validateEmail (value: string){
-    if (!value) return true;
-    return value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i)
-  }
 
   const isInvalid = useMemo(() => !validateEmail(email), [email])
-
-  function toggleVisibility() {
-    setIsVisible((prev) => !prev)
-  }
-
-  function toggleConfVisibility() {
-    setIsConfVisible((prev) => !prev)
-  }
 
   /**
    * 
    * @param e 
    * 회원가입 정보 보내는 함수
-   * TODO)
-   * then 이후에 뭐든 해주고, step단계로 리디렉션 해줘야함
-   * 로그인 해서 세션도 받아가지고, 그 아이디의 회원 정보 수정으로 인식되게 해야함
    */
   function handleRegister(e: FormEvent) {
+    // TODO: then이후에 step단계 리디렉션, 즉시 로그인 및 세션, 회원정보수정으로 인식하게끔 설정
     e.preventDefault()
     if (nicknameValidation&&authEmail) {
     api.post("/user/auth", {
@@ -57,39 +43,48 @@ export default function App() {
   }
 
   /**
-   * 
-   * @param e 
-   * 
+   *
+   * @param e
+   *
    * 닉네임 중복확인 함수
    * 그냥 주소 기본으로 받아서 만들긴 했는데, 나중에 axios 만든거랑 합쳐야함
-   * 
+   *
    */
-  function handleNickNameCheck() {
+  function handleNicknameCheck() {
+    // TODO: 닉네임 중복확인 받아오기
+    // 입력창에서도 중복 확인 한 후 새로 못적도록 고정시키기(50%완성)
     axios({
       method: "GET",
-      url: `${process.env.API_URL}/user/auth/nickname-dupcheck`,
+      url: `${baseURL}/user/auth/nickname-dupcheck`,
       params: {nickname}
     })
-      // 닉네임 중복확인 대강 받아오기
-      // 입력창에서도 중복확인한 이후엔 새로 못적도록 고정시키기
       .then(response => {
         if (response) {
           if (window.confirm("이 닉네임을 사용하시겠습니까?")) {
           setNicknameValidation(true)
+          } else {
+            window.alert("중복된 닉네임 입니다.")
+            setNicknameValidation(false)
           }
         }
       })
   }
+  // 인증 이후에도 닉네임을 수정 검증이 취소되도록 작업
+  useEffect(() => {
+    setNicknameValidation(false)
+  },[nickname])
 
   function handleAuthEmail() {
-    if ("뭐 대충 인증이 되었다면") {
-      window.alert("인증되었습니다.")
+    // TODO: 이메일 인증이랑 연결하고, 기능 만들기
+    if (email==="true") {
+      alert("인증되었습니다.")
       setAuthEmail(true);
     } else {
-      window.alert("집중!")
+      alert("집중!")
     }
   }
 
+  
   return (
     <div>
       <form
@@ -132,7 +127,7 @@ export default function App() {
             <button
               className="focus:outline-none"
               type="button"
-              onClick={toggleVisibility}
+              onClick={() => toggleVisibility(setIsVisible)}
               aria-label="toggle password visibility">
               {isVisible ? (
                 <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -154,7 +149,7 @@ export default function App() {
             <button
               className="focus:outline-none"
               type="button"
-              onClick={toggleConfVisibility}
+              onClick={() => toggleVisibility(setIsConfVisible)}
               aria-label="toggle password visibility">
               {isConfVisible ? (
                 <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -177,7 +172,7 @@ export default function App() {
           
         />
         <Button
-          onPress={handleNickNameCheck}
+          onPress={handleNicknameCheck}
         >중복확인</Button>
 
         <Button

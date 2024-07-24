@@ -1,7 +1,8 @@
 import axios from "axios";
+import { baseURL } from "@/app/constants";
 
 const api = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL,
   timeout: 10000,
   // 기본으로 넣어줘야할 헤더
   // 여기서 토큰 넣어 보내도 되나?
