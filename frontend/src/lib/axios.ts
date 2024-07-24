@@ -1,29 +1,78 @@
 import axios from "axios";
 
 const api = axios.create({
-  // 포트 뭐 받는지 물어보기
-  baseURL: "https://localhost:8000/saturi-api/", // 기본 URL
-  timeout: 10000, // 요청 타임아웃 (밀리초 단위)
+  baseURL: process.env.API_URL,
+  timeout: 10000,
+  // 기본으로 넣어줘야할 헤더
+  // 여기서 토큰 넣어 보내도 되나?
   headers: {
     "Content-Type": "application/json",
-    // 기타 기본 헤더를 설정할 수 있습니다.
   },
 });
 
-// 요청 인터셉터 추가
+
+/*
+request
+1. onFullfilled (config) => 요청이 전달 되기 직전 작업을 수행한다.
+2. onRejected (error) => 요청에 오류가 있는경우 전달 전에 작업을 수행한다.
+구조:
+api.interceptors.request.use(
+  config => {
+    return config
+  },
+  error => Promise.reject(error)
+)
+ */
+
 api.interceptors.request.use(
   (config) => {
-    // 요청을 보내기 전에 수행할 작업 (예: 인증 토큰 추가)
+    // 토큰을 로컬 스토리지에서 가져오고,
     const token = localStorage.getItem("token");
+    // 헤더에 추가
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터 추가
+
+
+/*
+repsonse
+1. onFulfilled : 응답 데이터가 있는 경우
+2. onReject : 응답 오류가 있는 경우
+
+status에 따라 넘기는 페이지를 설정할 수 있다.
+api.interceptors.response.use(
+  response => {
+    if (response.status===404) {
+        router.push("/error")
+      }
+  return response
+  }
+  // 에러로 인해 중단된 요청을 토큰 갱신 후 재요청 하는 경우
+  async error => {
+    if (error.response?.status === 401) {
+      if (isTokenExpired() await tokenRefresh()) {
+        const accessToken = getToken()
+
+        error.config.headers = {
+          "content-Type: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        }
+
+        const response = await axios.request(error.config)
+        return response
+      }
+      return Promise.reject(error)
+    }
+  }
+)
+ */
+
 api.interceptors.response.use(
   (response) => response,
   (error) => Promise.reject(error)

@@ -67,7 +67,7 @@ export default function App() {
   function handleNickNameCheck() {
     axios({
       method: "GET",
-      url: `${API_URL}/saturi-api/user/auth/nickname-dupcheck`,
+      url: `${process.env.API_URL}/user/auth/nickname-dupcheck`,
       params: {nickname}
     })
       // 닉네임 중복확인 대강 받아오기
@@ -89,6 +89,7 @@ export default function App() {
       window.alert("집중!")
     }
   }
+
   return (
     <div>
       <form
