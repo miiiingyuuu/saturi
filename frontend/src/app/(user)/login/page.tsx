@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { handleLogin } from "@/utils/authutils";
 import { Button, Input } from "@nextui-org/react";
 import { EyeFilledIcon } from "@/assets/svg/EyeFilledIcon";
 import { toggleVisibility, validateEmail } from "@/utils/utils";
 import { EyeSlashFilledIcon } from "@/assets/svg/EyeSlashFilledIcon";
-import { kakaoRest, frontURL } from "@/app/constants";
+import { goKakaoLogin, goNaverLogin, handleLogin } from "@/utils/authutils";
 
 export default function Page() {
   const router = useRouter();
@@ -15,12 +14,6 @@ export default function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const isInvalid = useMemo(() => !validateEmail(email), [email]);
-
-  function goKakaoLogin() {
-    const kakaoKey = kakaoRest
-    const redirectUrl = `${frontURL}/user/auth/login/kakao`
-    window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoKey}&redirect_uri=${redirectUrl}&response_type=code`
-  }
 
   return (
     <div>
@@ -78,17 +71,18 @@ export default function Page() {
         </form>
       </div>
       <div className="m-width-full">
-        <Button
-          onPress={goKakaoLogin}
-        >
-          카카오톡으로 로그인
-        </Button>
+        <img
+          onClick={goKakaoLogin}
+          src="/kakao_login_medium_wide.png"
+          alt="kakaoLogin"
+        />
       </div>
-      <div>
-        <Button
-        >
-          네이버로 로그인
-        </Button>
+      <div className="m-width-full">
+        <img
+          onClick={goNaverLogin}
+          src="/naverBtn.png"
+          alt="naverLogin"
+        />
       </div>
     </div>
   );

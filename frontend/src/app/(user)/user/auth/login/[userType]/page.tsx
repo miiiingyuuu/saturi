@@ -2,29 +2,25 @@
 
 import axios from "axios"
 import { baseURL } from "@/app/constants";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // 여기로 오면 백으로 보내고 즉시 집으로 리디렉션 해주기
 export default function App() {
-  const code = useSearchParams().get('code')
+  const pathname = usePathname()
   const router = useRouter()
+  const code = useSearchParams().get('code')
+  // 들어오는 주소를 파싱 (naver/kakao)
+  const userType = pathname.substring(pathname.lastIndexOf('/')+1).toUpperCase()
 
   if (typeof window !== "undefined") {
-    // 클라이언트 사이드에서만 실행될 코드
-
   axios.post(`${baseURL}/user/auth/login`, {
-    email: "",
-    password: "",
     code,
-    userType: "KAKAO"
+    userType
   })
     .then((response) => {
-      console.log(response)
       sessionStorage.setItem("accessToken", response.data.accessToken)
       sessionStorage.setItem("refreshToken", response.data.refreshToken)
       router.push("/")
     })
-    .catch(e => console.log(e))
   }
-
 }

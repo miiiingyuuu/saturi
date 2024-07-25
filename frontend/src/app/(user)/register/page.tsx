@@ -59,6 +59,7 @@ export default function App() {
    */
   function handleNicknameCheck() {
     // TODO : 입력창에서도 중복 확인 한 후 새로 못적도록 고정시키기(50%완성)
+    // TODO : 일차적으로 닉네임 검증 하기 ( 빈 문자열 안됨, 등 )
     axios.get(`${baseURL}/user/auth/nickname-dupcheck`, {params: {
       nickname}
     })
@@ -78,6 +79,7 @@ export default function App() {
 
 
   function handleAuthEmail() {
+    // TODO : 이메일 유효성 먼저 검사하고 넘어갈 것
     axios.get(`${baseURL}/user/auth/email-dupcheck`, {params:{
       email
       }})
@@ -86,7 +88,15 @@ export default function App() {
           axios.post(`${baseURL}/user/auth/email-valid`,{
             email
           })
+            .then((res) => {
+              if (res.status === 200) {
+                alert("이메일이 발송되었습니다.\n네트워크 상황에 따라 메일 수신까지 시간이 걸릴 수 있습니다.")
+              }
+            })
         }
+      })
+      .catch (() => {
+        alert("이미 존재하는 계정입니다.\n계정을 확인해 주세요.")
       })
   }
 
@@ -98,6 +108,7 @@ export default function App() {
       .then(response => {
         if (response.status===200) {
           setIsAuthEmail(true)
+          alert("인증되었습니다.")
         }
       })
       .catch(err =>
