@@ -8,7 +8,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function App() {
   const code = useSearchParams().get('code')
   const router = useRouter()
-  console.log(code)
+
+  if (typeof window !== "undefined") {
+    // 클라이언트 사이드에서만 실행될 코드
 
   axios.post(`${baseURL}/user/auth/login`, {
     email: "",
@@ -19,10 +21,10 @@ export default function App() {
     .then((response) => {
       console.log(response)
       sessionStorage.setItem("accessToken", response.data.accessToken)
-      localStorage.setItme("accessToken", response.data.accessToken)
-      localStorage.setItem("refreshToken", response.data.refreshToken)
+      sessionStorage.setItem("refreshToken", response.data.refreshToken)
       router.push("/")
     })
     .catch(e => console.log(e))
+  }
 
 }

@@ -3,6 +3,7 @@
 import axios from "axios";
 import api from "@/lib/axios"
 import { baseURL } from "@/app/constants";
+import { useRouter } from "next/navigation";
 import { Button, Input } from "@nextui-org/react";
 import { EyeFilledIcon } from "@/assets/svg/EyeFilledIcon";
 import { toggleVisibility, validateEmail } from "@/utils/utils";
@@ -10,12 +11,13 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { EyeSlashFilledIcon } from "@/assets/svg/EyeSlashFilledIcon";
 
 export default function App() {
+  const router = useRouter()
   const [ email, setEmail ] = useState("")
   const [ nickname, setNickname ] = useState("")
   const [ password, setPassword ] = useState("")
-  const [ authNumber, setAuthNumber ] = useState("")
-  const [ authEmail, setAuthEmail ] = useState(false)
+  const [ isAuthEmail, setIsAuthEmail ] = useState(false)
   const [ passwordConf, setPasswordConf ] = useState("")
+  const [ authNum, setAuthNum ] = useState("")
   const [ isVisible, setIsVisible ] = useState(false)
   const [ isConfVisible, setIsConfVisible ] = useState(false)
   const [ nicknameValidation, setNicknameValidation ] = useState(false)
@@ -29,18 +31,19 @@ export default function App() {
    */
   function handleRegister(e: FormEvent) {
     e.preventDefault()
-    // TODO: then이후에 step단계 리디렉션, 즉시 로그인 및 세션, 회원정보수정으로 인식하게끔 설정
-    if (nicknameValidation&&authEmail) {
+    // TODO: 비밀번호 확인 제대로 체크 안했음
+    if (nicknameValidation&&isAuthEmail) {
     api.post("/user/auth", {
       email,
       password,
       nickname,
-      locationId: 0,
+      locationId: 1,
       gender: 0,
       ageRange: 0
     })
       .then (response => {
-        console.log(response)
+        alert("회원가입이 완료되었습니다.")
+        router.push("/register/step")
       })
       .catch(error => console.log(error))
     } else {
@@ -55,8 +58,7 @@ export default function App() {
    *
    */
   function handleNicknameCheck() {
-    // TODO: 닉네임 중복확인 받아오기
-    // 입력창에서도 중복 확인 한 후 새로 못적도록 고정시키기(50%완성)
+    // TODO : 입력창에서도 중복 확인 한 후 새로 못적도록 고정시키기(50%완성)
     axios.get(`${baseURL}/user/auth/nickname-dupcheck`, {params: {
       nickname}
     })
@@ -76,15 +78,32 @@ export default function App() {
 
 
   function handleAuthEmail() {
-    // TODO: 이메일 인증이랑 연결하고, 기능 만들기
-    if (email==="true") {
-      alert("인증되었습니다.")
-      setAuthEmail(true);
-    } else {
-      alert("집중!")
-    }
+    axios.get(`${baseURL}/user/auth/email-dupcheck`, {params:{
+      email
+      }})
+      .then((response) => {
+        if (response.status===200) {
+          axios.post(`${baseURL}/user/auth/email-valid`,{
+            email
+          })
+        }
+      })
   }
 
+  function handleAuthEmailNumber() {
+    axios.post(`${baseURL}/user/auth/email-valid-code`, {
+      email,
+      authNum
+    })
+      .then(response => {
+        if (response.status===200) {
+          setIsAuthEmail(true)
+        }
+      })
+      .catch(err =>
+      alert("인증번호가 틀립니다.")
+      )
+  }
   
   return (
     <div>
@@ -102,7 +121,9 @@ export default function App() {
           isInvalid={isInvalid}
           className="max-w-xs"
         />
-        <Button>
+        <Button
+          onPress={handleAuthEmail}
+        >
           인증번호 받기
         </Button>
 
@@ -110,12 +131,12 @@ export default function App() {
           type="text"
           label="인증번호 확인"
           className="max-w-xs"
-          value={authNumber}
-          onValueChange={setAuthNumber}
+          value={authNum}
+          onValueChange={setAuthNum}
           variant="bordered"
         />
         <Button
-          onPress={handleAuthEmail}
+          onPress={handleAuthEmailNumber}
         >
           인증하기
         </Button>

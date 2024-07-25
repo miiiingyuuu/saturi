@@ -43,9 +43,9 @@ public class UserController {
      * 이메일 중복확인
      */
     @GetMapping("/auth/email-dupcheck")
-    public ResponseEntity<UserMsgResponseDTO> userEmailDuplicateCheck(@RequestBody @Valid EmailRequestDTO request) {
-        log.info("Received email duplicate check request for {}", request.getEmail());
-        userService.validateDuplicateUserEmail(request.getEmail());
+    public ResponseEntity<UserMsgResponseDTO> userEmailDuplicateCheck(@RequestParam("email") String email) {
+        log.info("Received email duplicate check request for {}", email);
+        userService.validateDuplicateUserEmail(email);
         return ResponseEntity.ok().body(new UserMsgResponseDTO("ok"));
     }
 
@@ -53,9 +53,9 @@ public class UserController {
      * 닉네임 중복확인
      */
     @GetMapping("/auth/nickname-dupcheck")
-    public ResponseEntity<UserMsgResponseDTO> userNicknameDuplicateCheck(@RequestBody @Valid UserNicknameRequestDTO request) {
-        log.info("Received nickname duplicate check request for {}", request.getNickname());
-        userService.validateDuplicateUserNickname(request.getNickname());
+    public ResponseEntity<UserMsgResponseDTO> userNicknameDuplicateCheck(@RequestParam("nickname") String nickname) {
+        log.info("Received nickname duplicate check request for {}", nickname);
+        userService.validateDuplicateUserNickname(nickname);
         return ResponseEntity.ok().body(new UserMsgResponseDTO("ok"));
     }
 

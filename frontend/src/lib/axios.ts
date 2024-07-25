@@ -5,7 +5,6 @@ const api = axios.create({
   baseURL,
   timeout: 10000,
   // 기본으로 넣어줘야할 헤더
-  // 여기서 토큰 넣어 보내도 되나?
   headers: {
     "Content-Type": "application/json",
   },
@@ -27,13 +26,12 @@ api.interceptors.request.use(
 
 api.interceptors.request.use(
   (config) => {
-    // 토큰을 로컬 스토리지에서 가져오고,
-    const token = localStorage.getItem("token");
+    // 엑세스토큰을 세션 스토리지에서 가져오고,
+    const token = sessionStorage.getItem("accessToken");
     // 헤더에 추가
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error) => Promise.reject(error)

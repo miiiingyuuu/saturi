@@ -16,6 +16,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLoginResponseDTO {
-    private String accssToken;
+    private String accessToken;
     private String refreshToken;
 }

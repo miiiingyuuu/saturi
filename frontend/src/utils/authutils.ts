@@ -20,7 +20,8 @@ export function handleLogin({userType, event, email, password, code, router }: I
     userType,
   })
     .then((response) => {
-      console.log(response)
+      sessionStorage.setItem("accessToken", response.data.accessToken);
+      sessionStorage.setItem("refreshToken", response.data.refreshToken);
       router.push("/")
     })
     .catch((error) => {
