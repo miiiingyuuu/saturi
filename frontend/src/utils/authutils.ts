@@ -3,21 +3,40 @@ import api from "@/lib/axios";
 import { FormEvent } from "react";
 
 interface IHandleLogin {
+  userType: string
   event: FormEvent
   email: string
   password: string
+  code: string
   router: any
 }
 
-export async function handleLogin({ event, email, password, router }: IHandleLogin) {
+export function handleLogin({userType, event, email, password, code, router }: IHandleLogin) {
   event.preventDefault();
 
   api.post("/user/auth/login", {
     email,
     password,
-    userType: "NORMAL",
+    userType,
   })
     .then((response) => {
+      console.log(response)
+      router.push("/")
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+export function handleSocialLogin({userType, event, email, password, code, router}: IHandleLogin) {
+  event.preventDefault()
+
+  api.post("user/auth/login", {
+    code,
+    userType
+  })
+    .then((response) => {
+      // 여기서 토큰 삽입
       console.log(response)
       router.push("/")
     })
