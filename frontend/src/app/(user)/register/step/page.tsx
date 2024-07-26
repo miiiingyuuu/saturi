@@ -21,7 +21,7 @@ export default function Step() {
     {step === 1 && (
       <RadioGroup label="성별이 어떻게 되시나요?" defaultValue="null">
         <div className="box">
-          <Radio value="male" className="content">남자</Radio>
+          <Radio value="male" className="content">남자</Radio>``
           <Radio value="female" className="content">여자</Radio>
           <Radio value="null" className="content">알려주고 싶지 않아요...</Radio>
         </div>
