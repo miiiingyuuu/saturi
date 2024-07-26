@@ -41,7 +41,7 @@ export default function EditProfilePage() {
             <div style={{ height: '200px', display: 'flex', alignItems: 'center' }}>
               <Image
                 alt="profile image"
-                height={200}
+                height={230}
                 radius="sm"
                 src="https://via.placeholder.com/150"
                 width={150}
@@ -145,20 +145,20 @@ export default function EditProfilePage() {
         <CardFooter className="flex justify-between items-center">
           {/* 뒤로가기 버튼 */}
           <Link href="/accounts/profile">
-            <Button color="default">
+            <Button auto flat color="default">
               뒤로가기
             </Button>
           </Link>
           <div className="flex space-x-4"> {/* 여백 추가 */}
             {/* 수정 완료 버튼 */}
             <Link href="/accounts/profile">
-              <Button color="primary" onClick={handleSave}>
+              <Button auto flat color="primary" onClick={handleSave}>
                 수정 완료
               </Button>
             </Link>
             {/* 비밀번호 변경 버튼 */}
             <Link href="/accounts/changepassword">
-              <Button color="secondary">
+              <Button auto flat color="secondary">
                 비밀번호 변경
               </Button>
             </Link> 
