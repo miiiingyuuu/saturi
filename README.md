@@ -38,5 +38,5 @@
 
 ### 프로젝트 관리
 - 일정
-
+<img src="./img/milestone.png">
 
