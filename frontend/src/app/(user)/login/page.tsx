@@ -19,8 +19,10 @@ export default function Page() {
     <div>
       <div>
         <form
-          onSubmit={(event) =>
-            handleLogin({ userType: "NORMAL", event, email, password, code: "", router })
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleLogin({ email, password, router, goTo:"" })
+          }
           }
           className="flex flex-col justify-center items-center"
         >

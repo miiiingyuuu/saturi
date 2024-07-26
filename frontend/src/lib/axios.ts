@@ -26,7 +26,7 @@ api.interceptors.request.use(
 
 api.interceptors.request.use(
   (config) => {
-    // 엑세스토큰을 세션 스토리지에서 가져오고,
+    // 엑세스 토큰을 세션 스토리지에서 가져오고,
     const token = sessionStorage.getItem("accessToken");
     // 헤더에 추가
     if (token) {

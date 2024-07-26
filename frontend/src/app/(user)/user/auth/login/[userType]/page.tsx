@@ -23,4 +23,10 @@ export default function App() {
       router.push("/")
     })
   }
+  // TODO: 여기서 머무르는 시간이 있기 때문에 스피너 달아주기 
+  return (
+    <div>
+      
+    </div>
+  )
 }

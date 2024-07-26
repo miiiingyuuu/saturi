@@ -4,11 +4,17 @@ import axios from "axios";
 import api from "@/lib/axios"
 import { baseURL } from "@/app/constants";
 import { useRouter } from "next/navigation";
+import { handleLogin } from "@/utils/authutils";
 import { Button, Input } from "@nextui-org/react";
 import { EyeFilledIcon } from "@/assets/svg/EyeFilledIcon";
-import { toggleVisibility, validateEmail } from "@/utils/utils";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { EyeSlashFilledIcon } from "@/assets/svg/EyeSlashFilledIcon";
+import {
+  passwordConfirm,
+  toggleVisibility,
+  validateEmail,
+  validatePassword } from "@/utils/utils";
+
 
 export default function App() {
   const router = useRouter()
@@ -21,44 +27,57 @@ export default function App() {
   const [ isVisible, setIsVisible ] = useState(false)
   const [ isConfVisible, setIsConfVisible ] = useState(false)
   const [ nicknameValidation, setNicknameValidation ] = useState(false)
+  //
+  const isEmailValid = useMemo(() => validateEmail(email), [email])
+  const isPasswordConfirmed = useMemo(() => passwordConfirm({password, passwordConf}), [passwordConf])
+  const isPasswordValid = useMemo(() => validatePassword(password), [password])
 
-  const isInvalid = useMemo(() => !validateEmail(email), [email])
+
+  // 회원가입 카운터 필요함
+  function handleCounter() {
+    setInterval(() => {}, 1000)
+  }
+
 
   /**
-   * 
-   * @param e 
+   *
+   * @param e
    * 회원가입 정보 보내는 함수
+   * 얘는 여기서 쓰는 변수가 너무 많아서 여기다 두는게 현명할 것 같음.
+   * 다른 데서 쓰지도 않으니까
    */
   function handleRegister(e: FormEvent) {
     e.preventDefault()
-    // TODO: 비밀번호 확인 제대로 체크 안했음
-    if (nicknameValidation&&isAuthEmail) {
-    api.post("/user/auth", {
-      email,
-      password,
-      nickname,
-      locationId: 1,
-      gender: 0,
-      ageRange: 0
-    })
-      .then (response => {
-        alert("회원가입이 완료되었습니다.")
-        router.push("/register/step")
+    // TODO: 비밀번호 유효성 확인
+    // TODO: 회원가입 -> 이메일,패스워드 기반으로 로그인 요청 -> 스텝 리디렉션 -> 회원 추가정보 삽입
+    if (passwordConfirm({password,passwordConf})) {
+      if (nicknameValidation&&isAuthEmail) {
+      api.post("/user/auth", {
+        email,
+        password,
+        nickname,
+        locationId: 1,
+        gender: 0,
+        ageRange: 0
       })
-      .catch(error => console.log(error))
-    } else {
-      alert("닉네임 체크, 이메일 체크 확인")
+        .then (response => {
+          alert("회원가입이 완료되었습니다.")
+          handleLogin({email,password,router,goTo: "/register/stpep"})
+        })
+        .catch(error => console.log(error))
+      } else {
+        alert("인증이 완료되지 않았습니다.")
+      }
+    } else{
+      alert("비밀번호가 일치하지 않습니다.")
     }
   }
 
   /**
-   *
    * 닉네임 중복확인 함수
-   * 그냥 주소 기본으로 받아서 만들긴 했는데, 나중에 axios 만든거랑 합쳐야함
-   *
    */
   function handleNicknameCheck() {
-    // TODO : 입력창에서도 중복 확인 한 후 새로 못적도록 고정시키기(50%완성)
+    // TODO : 입력창에서도 중복 확인 한 후 새로 못적도록 고정 > 중복 확인 완료 시 버튼을 비활성화 하기
     // TODO : 일차적으로 닉네임 검증 하기 ( 빈 문자열 안됨, 등 )
     axios.get(`${baseURL}/user/auth/nickname-dupcheck`, {params: {
       nickname}
@@ -79,28 +98,33 @@ export default function App() {
 
 
   function handleAuthEmail() {
-    // TODO : 이메일 유효성 먼저 검사하고 넘어갈 것
-    axios.get(`${baseURL}/user/auth/email-dupcheck`, {params:{
-      email
-      }})
-      .then((response) => {
-        if (response.status===200) {
-          axios.post(`${baseURL}/user/auth/email-valid`,{
-            email
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                alert("이메일이 발송되었습니다.\n네트워크 상황에 따라 메일 수신까지 시간이 걸릴 수 있습니다.")
-              }
+    // TODO : 버튼 광클 못하게 하기
+    if (email && isEmailValid) {
+      axios.get(`${baseURL}/user/auth/email-dupcheck`, {params:{
+        email
+        }})
+        .then((response) => {
+          if (response.status===200) {
+            axios.post(`${baseURL}/user/auth/email-valid`,{
+              email
             })
-        }
-      })
-      .catch (() => {
-        alert("이미 존재하는 계정입니다.\n계정을 확인해 주세요.")
-      })
+              .then((res) => {
+                if (res.status === 200) {
+                  alert("이메일이 발송되었습니다.\n네트워크 상황에 따라 메일 수신까지 시간이 걸릴 수 있습니다.")
+                }
+              })
+          }
+        })
+        .catch (() => {
+          alert("이미 존재하는 계정입니다.\n계정을 확인해 주세요.")
+        })
+    } else{
+      alert("이메일을 확인해주세요.")
+    }
   }
 
   function handleAuthEmailNumber() {
+    // TODO : 인증하고 나면 폼 고정하기
     axios.post(`${baseURL}/user/auth/email-valid-code`, {
       email,
       authNum
@@ -127,9 +151,9 @@ export default function App() {
           type="email"
           label="이메일"
           variant="bordered"
-          color={isInvalid ? "danger" : "default"}
+          color={isEmailValid ? "default": "danger" }
           errorMessage="올바른 이메일 형식이 아닙니다."
-          isInvalid={isInvalid}
+          isInvalid={!isEmailValid}
           className="max-w-xs"
         />
         <Button
@@ -145,6 +169,7 @@ export default function App() {
           value={authNum}
           onValueChange={setAuthNum}
           variant="bordered"
+          endContent={"시계 넣어야함"}
         />
         <Button
           onPress={handleAuthEmailNumber}
@@ -156,6 +181,9 @@ export default function App() {
           variant="bordered"
           value={password}
           onValueChange={setPassword}
+          color={isPasswordValid ? "default": "danger" }
+          errorMessage={isPasswordValid? "사용하실 수 있습니다.": "부적절한 비밀번호입니다." }
+          isInvalid={!isPasswordValid}
           endContent={
             <button
               className="focus:outline-none"
@@ -178,6 +206,9 @@ export default function App() {
           variant="bordered"
           value={passwordConf}
           onValueChange={setPasswordConf}
+          color={isPasswordConfirmed ? "default": "danger" }
+          errorMessage={isPasswordConfirmed? "비밀번호가 일치합니다.": "비밀번호가 일치하지 않습니다." }
+          isInvalid={!isPasswordConfirmed}
           endContent={
             <button
               className="focus:outline-none"
