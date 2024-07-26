@@ -28,7 +28,7 @@ export default function ChangePasswordPage() {
 
   // 가짜 비밀번호 변경 함수 (실제 API 호출로 대체)
   const fakePasswordChange = async (currentPassword, newPassword) => {
-    return currentPassword === "correctpassword"; // 가짜 비밀번호 "correctpassword" 체크
+    return currentPassword === "correctpasswo`rd"; // 가짜 비밀번호 "correctpassword" 체크
   };
 
   return (
@@ -63,11 +63,11 @@ export default function ChangePasswordPage() {
         </CardBody>
         <CardFooter className="flex justify-between">
           <Link href="/accounts/profile/update">
-            <Button auto flat color="default">
+            <Button color="default">
               뒤로가기
             </Button>
           </Link>
-          <Button auto flat color="primary" onClick={handleChangePassword}>
+          <Button color="primary" onClick={handleChangePassword}>
             비밀번호 변경
           </Button>
         </CardFooter>

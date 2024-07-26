@@ -42,8 +42,8 @@ export default function Authenticate() {
           />
           {error && <p className="text-red-500">{error}</p>}
         </CardBody>
-        <CardFooter>
-          <Button auto onClick={handleAuthenticate}>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleAuthenticate}>
             인증
           </Button>
         </CardFooter>

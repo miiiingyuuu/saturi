@@ -1,14 +1,11 @@
 "use client"
 
 import React, { useState, useMemo } from "react";
-import { Card, CardHeader, CardBody, CardFooter, Divider, Image, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Link } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+import { Card, CardHeader, CardBody, CardFooter, Divider, Image, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Link, Input } from "@nextui-org/react";
 
 export default function EditProfilePage() {
-  const router = useRouter();
-
   // 상태 변수 선언 -> DB연결 필요
-  const [nickname, setNickname] = useState('응애에요');
+  const [nickname, setNickname] = useState('');
   const [email] = useState('email@gmail.com');
   const [dialectKeys, setDialectKeys] = useState(new Set(["경상도"]));
   const [genderKeys, setGenderKeys] = useState(new Set(["남성"]));
@@ -44,7 +41,7 @@ export default function EditProfilePage() {
             <div style={{ height: '200px', display: 'flex', alignItems: 'center' }}>
               <Image
                 alt="profile image"
-                height={200}
+                height={230}
                 radius="sm"
                 src="https://via.placeholder.com/150"
                 width={150}
@@ -55,7 +52,7 @@ export default function EditProfilePage() {
           <div className="flex-1">
             <CardBody className="flex flex-col mb-6">
               <p className="text-md font-semibold">닉네임</p>
-              <input 
+              <Input 
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
@@ -90,7 +87,7 @@ export default function EditProfilePage() {
                   <DropdownItem value="chungchung" key="충청도">충청도</DropdownItem>
                   <DropdownItem value="kangwon" key="강원도">강원도</DropdownItem>
                   <DropdownItem value="jeju" key="제주도">제주도</DropdownItem>
-                  <DropdownItem value="null" key="n알려주고 싶지 않아요ull">알려주고 싶지 않아요</DropdownItem>
+                  <DropdownItem value="null" key="알려주고 싶지 않아요">알려주고 싶지 않아요</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </CardBody>
@@ -113,7 +110,7 @@ export default function EditProfilePage() {
                 >
                   <DropdownItem value="male" key="남성">남성</DropdownItem>
                   <DropdownItem value="female" key="여성">여성</DropdownItem>
-                  <DropdownItem value="null" key="알려주고 싶지 않아요...">알려주고 싶지 않아요...</DropdownItem>
+                  <DropdownItem value="null" key="알려주고 싶지 않아요">알려주고 싶지 않아요</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </CardBody>
@@ -138,7 +135,7 @@ export default function EditProfilePage() {
                   <DropdownItem value="thri-four" key="30대-40대">30대-40대</DropdownItem>
                   <DropdownItem value="fif-six" key="50대-60대">50대-60대</DropdownItem>
                   <DropdownItem value="over-seven" key="70대 이상">70대 이상</DropdownItem>
-                  <DropdownItem value="null" key="알려주고 싶지 않아요...">알려주고 싶지 않아요...</DropdownItem>
+                  <DropdownItem value="null" key="알려주고 싶지 않아요">알려주고 싶지 않아요</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </CardBody>
