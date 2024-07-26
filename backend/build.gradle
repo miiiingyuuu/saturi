@@ -32,8 +32,8 @@ dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
-
-
+	implementation 'com.google.cloud:google-cloud-speech:4.41.0'
+	implementation 'com.google.cloud:google-cloud-storage:2.1.12'
 	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
