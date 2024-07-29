@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Button, Accordion, AccordionItem } from "@nextui-org/react";
+import { AccordionItem } from "@nextui-org/react";
+import Button from "@mui/material/Button"
+import Accordion from "@mui/material/Accordion"
 import "./styles.css";
 
 export default function Start() {

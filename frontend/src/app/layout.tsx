@@ -5,8 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 // import type { Metadata } from "next"
 import { Inter } from "next/font/google";
-import { Button } from "@nextui-org/react";
-import Providers from "./providers";
+import Button from "@mui/material/Button";
 import { usePathname } from "next/navigation";
 
 
@@ -30,7 +29,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <body className={inter.className}>
-        <Providers>
           {!hideHeader && (
             <header className="header">
             <Link href="/main">
@@ -55,7 +53,6 @@ export default function RootLayout({
               <p>&copy; 2024 My Next.js App. All rights reserved.</p>
             </div>
           </footer>
-        </Providers>
       </body>
     </html>
   );
