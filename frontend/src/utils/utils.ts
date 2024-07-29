@@ -1,4 +1,5 @@
 import { IPasswordProps } from "@/utils/props";
+import { ChangeEvent } from "react";
 
 export function toggleVisibility(setIsVisible: (value: (prev: boolean) => boolean) => void) {
   setIsVisible((prev: boolean) => !prev);
@@ -21,4 +22,8 @@ export function validatePassword(value: string): boolean {
 
 export function passwordConfirm({password, passwordConf}: IPasswordProps) {
   return password===passwordConf
+}
+
+export function handleValueChange(event: ChangeEvent, f: (value: string) => void) {
+  f(event.target.value)
 }

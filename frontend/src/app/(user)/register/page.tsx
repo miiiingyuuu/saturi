@@ -9,6 +9,7 @@ import {
   passwordConfirm,
   validatePassword,
   validateNickname,
+  handleValueChange,
 } from "@/utils/utils";
 import {
   Box,
@@ -92,9 +93,7 @@ export default function App() {
     }
   }
 
-  function handleValueChange(event: ChangeEvent, f: (value: string) => void) {
-    f(event.target.value)
-  }
+
 
   function handleAuthEmailNumber(event: MouseEvent) {
     // TODO : 인증하고 나면 폼 고정하기
@@ -274,14 +273,6 @@ export default function App() {
             >
               Sign Up
             </Button>
-
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/login" variant="body2">
-                  이미 계정이 있으신가요?
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Container>
