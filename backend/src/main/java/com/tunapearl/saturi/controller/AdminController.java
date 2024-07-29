@@ -2,8 +2,8 @@ package com.tunapearl.saturi.controller;
 
 import com.tunapearl.saturi.dto.admin.UserBanRequestDTO;
 import com.tunapearl.saturi.dto.user.UserMsgResponseDTO;
-import com.tunapearl.saturi.service.AdminService;
-import com.tunapearl.saturi.service.UserService;
+import com.tunapearl.saturi.service.user.AdminService;
+import com.tunapearl.saturi.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

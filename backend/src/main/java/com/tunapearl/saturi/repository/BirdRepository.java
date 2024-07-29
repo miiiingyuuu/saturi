@@ -1,25 +1,24 @@
 package com.tunapearl.saturi.repository;
 
 import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.user.BirdEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.stream.Location;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class LocationRepository {
+public class BirdRepository {
 
     private final EntityManager em;
 
-    public Long save(LocationEntity location) {
-        em.persist(location);
-        return location.getLocationId();
+    public void save(BirdEntity bird) {
+        em.persist(bird);
     }
 
-    public Optional<LocationEntity> findById(Long locationId) {
-        return Optional.ofNullable(em.find(LocationEntity.class, locationId));
+    public Optional<BirdEntity> findById(Long birdId) {
+        return Optional.ofNullable(em.find(BirdEntity.class, birdId));
     }
 }
