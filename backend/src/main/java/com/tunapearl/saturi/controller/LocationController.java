@@ -8,18 +8,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/location")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class LocationController {
-    /**
-     * 유저에 지역 추가 후 유저 테스트 하기위한 임시 컨트롤러
-     */
 
     private final LocationRepository locationRepository;
 
+    /**
+     * 지역 등록
+     */
     @PostMapping
     @Transactional
     public ResponseEntity<String> registerLocation(@RequestParam("location-name") String locationName) {
@@ -28,5 +30,14 @@ public class LocationController {
         location.setName(locationName);
         locationRepository.save(location);
         return ResponseEntity.ok().body("ok");
+    }
+
+    /**
+     * 모든 지역 조회
+     */
+    @GetMapping
+    public ResponseEntity<List<LocationEntity>> getAllLocations() {
+        log.info("received request to get all locations");
+        return ResponseEntity.of(locationRepository.findAll());
     }
 }

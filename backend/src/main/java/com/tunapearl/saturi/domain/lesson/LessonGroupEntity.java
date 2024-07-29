@@ -23,4 +23,6 @@ public class LessonGroupEntity {
     private LessonCategoryEntity lessonCategory;
     
     private String name; // 소제목
+    
+    // TODO 레슨 일대다 조회 추가
 }

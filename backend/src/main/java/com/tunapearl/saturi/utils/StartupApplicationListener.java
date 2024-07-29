@@ -1,10 +1,11 @@
 package com.tunapearl.saturi.utils;
 
 import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.user.AgeRange;
-import com.tunapearl.saturi.domain.user.BirdEntity;
 import com.tunapearl.saturi.domain.user.Gender;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
+import com.tunapearl.saturi.service.lesson.AdminLessonService;
 import com.tunapearl.saturi.service.user.BirdService;
 import com.tunapearl.saturi.service.user.LocationService;
 import com.tunapearl.saturi.service.user.UserService;
@@ -14,9 +15,6 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 실행 시 샘플 데이터 추가를 위한 class
@@ -40,6 +38,7 @@ public class StartupApplicationListener {
     private final LocationService locationService;
     private final BirdService birdService;
     private final UserService userService;
+    private final AdminLessonService adminLessonService;
 
     @EventListener
     @Transactional
@@ -47,6 +46,7 @@ public class StartupApplicationListener {
         createLocation();
         createBird();
         createUser();
+        createLessonCategory();
     }
 
     private void createLocation() {
@@ -65,5 +65,12 @@ public class StartupApplicationListener {
                 "test@email.com", "password1!", "testnickname",
                 1L, Gender.DEFAULT, AgeRange.DEFAULT);
         userService.registerUser(userInfo);
+    }
+
+    private void createLessonCategory() {
+        for (int i = 0; i < LESSON_CATEGORIES.length; i++) {
+            LessonCategoryEntity lessonCategory = adminLessonService.createLessonCategory(LESSON_CATEGORIES[i]);
+            log.info("create lessonCategory sample {}", lessonCategory);
+        }
     }
 }
