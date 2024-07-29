@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -45,5 +46,17 @@ public class AdminLessonService {
         lesson.setScript(script);
         lesson.setLastUpdateDt(LocalDateTime.now());
         return adminLessonRepository.saveLesson(lesson);
+    }
+
+    public List<LessonEntity> findAll() {
+        return adminLessonRepository.findAll().orElse(null);
+    }
+
+    public List<LessonEntity> findByLocationAndLessonCategory(Long locationId, Long lessonCategoryId) {
+        return adminLessonRepository.findByLocationAndLessonCategory(locationId, lessonCategoryId).orElse(null);
+    }
+
+    public LessonEntity findById(Long lessonId) {
+        return adminLessonRepository.findById(lessonId).orElse(null);
     }
 }

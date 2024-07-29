@@ -1,6 +1,7 @@
 package com.tunapearl.saturi.repository.lesson;
 
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
+import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,13 @@ public class LessonRepository {
 
     private final EntityManager em;
 
+    public Optional<LessonEntity> findById(Long lessonId) {
+        return Optional.ofNullable(em.find(LessonEntity.class, lessonId));
+    }
+
     public Optional<LessonCategoryEntity> findByIdLessonCategory(Long lessonCategoryId) {
         return Optional.ofNullable(em.find(LessonCategoryEntity.class, lessonCategoryId));
     }
-
 
     public Optional<List<LessonCategoryEntity>> findAllLessonCategory() {
         return Optional.ofNullable(em.createQuery("select c from LessonCategoryEntity c", LessonCategoryEntity.class)
@@ -33,5 +37,9 @@ public class LessonRepository {
     public Optional<List<LessonGroupEntity>> findAllLessonGroup() {
         return Optional.ofNullable(em.createQuery("select g from LessonGroupEntity g", LessonGroupEntity.class)
                 .getResultList());
+    }
+
+    public void deleteById(Long lessonId) {
+
     }
 }

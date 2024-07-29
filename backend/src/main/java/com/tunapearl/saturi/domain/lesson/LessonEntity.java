@@ -24,4 +24,14 @@ public class LessonEntity {
     private String script;
 
     private LocalDateTime lastUpdateDt;
+
+    private Boolean isDeleted = false;
+
+    /**
+     * 비즈니스 로직
+     */
+    public void setLessonGroup(LessonGroupEntity lessonGroup) {
+        this.lessonGroup = lessonGroup;
+        lessonGroup.getLessons().add(this);
+    }
 }

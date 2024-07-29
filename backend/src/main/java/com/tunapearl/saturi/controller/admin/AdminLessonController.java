@@ -2,11 +2,10 @@ package com.tunapearl.saturi.controller.admin;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
+import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.AdminMsgResponseDTO;
-import com.tunapearl.saturi.dto.admin.LessonGroupRegisterRequestDTO;
-import com.tunapearl.saturi.dto.admin.LessonGroupResponseDTO;
-import com.tunapearl.saturi.dto.admin.LessonRegisterRequestDTO;
+import com.tunapearl.saturi.dto.admin.lesson.*;
 import com.tunapearl.saturi.service.lesson.AdminLessonService;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.service.user.LocationService;
@@ -54,8 +53,8 @@ public class AdminLessonController {
         List<LessonGroupEntity> allLessonGroup = lessonService.findAllLessonGroup();
         List<LessonGroupResponseDTO> allLessonGroupDTO = new ArrayList<>();
 
-        allLessonGroup.forEach(lessonGroup -> allLessonGroupDTO.add(new LessonGroupResponseDTO(lessonGroup.getLessonGroupId(), lessonGroup.getLocation().getName(),
-                lessonGroup.getLessonCategory().getName(), lessonGroup.getName())));
+        allLessonGroup.forEach(lessonGroup -> allLessonGroupDTO.add(new LessonGroupResponseDTO(lessonGroup.getLessonGroupId(),
+                lessonGroup.getLocation().getName(), lessonGroup.getLessonCategory().getName(), lessonGroup.getName())));
 
         return ResponseEntity.ok(allLessonGroupDTO);
     }
@@ -72,6 +71,54 @@ public class AdminLessonController {
         return ResponseEntity.created(URI.create("/lesson")).body(new AdminMsgResponseDTO("ok"));
     }
 
+    /**
+     * 레슨 전체 조회
+     */
+    @GetMapping
+    public ResponseEntity<List<LessonResponseDTO>> getAllLesson(@RequestParam("locationId") Long locationId,
+                                                                @RequestParam("lessonCategoryId") Long lessonCategoryId) {
+        log.info("received request to find All lessons");
+        List<LessonEntity> lessons = adminLessonService.findByLocationAndLessonCategory(locationId, lessonCategoryId);
+        List<LessonResponseDTO> allLessonDTO = new ArrayList<>();
+        lessons.forEach((lesson) -> allLessonDTO.add(new LessonResponseDTO(
+                lesson.getLessonId(), lesson.getLessonGroup().getLessonGroupId(),
+                lesson.getLessonGroup().getName(), lesson.getSampleVoicePath(),
+                lesson.getScript(), lesson.getLastUpdateDt())));
+        return ResponseEntity.ok(allLessonDTO);
+    }
+
+    /**
+     * 레슨 개별 조회
+     */
+    @GetMapping("/{lessonId}")
+    public ResponseEntity<LessonResponseDTO> getLesson(@PathVariable Long lessonId) {
+        log.info("received request to find Lesson {}", lessonId);
+        LessonEntity findLesson = adminLessonService.findById(lessonId);
+        return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
+                findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
+                findLesson.getSampleVoicePath(), findLesson.getScript(), findLesson.getLastUpdateDt()));
+    }
+
+    /**
+     * 레슨 수정
+     */
+    @PutMapping("/{lessonId}")
+    public ResponseEntity<AdminMsgResponseDTO> updateLesson(@PathVariable Long lessonId,
+                                                            @RequestBody LessonUpdateRequestDTO request) {
+        log.info("received request to update lesson {}", lessonId);
+        lessonService.updateLesson(lessonId, request.getLessonGroupId(), request.getScript());
+        return ResponseEntity.ok(new AdminMsgResponseDTO("ok"));
+    }
+
+    /**
+     * 레슨 삭제
+     */
+    @DeleteMapping("/{lessonId}")
+    public ResponseEntity<AdminMsgResponseDTO> deleteLesson(@PathVariable Long lessonId) {
+        log.info("received request to delete lesson {}", lessonId);
+        lessonService.deleteLesson(lessonId);
+        return ResponseEntity.ok(new AdminMsgResponseDTO("ok"));
+    }
 }
 
 

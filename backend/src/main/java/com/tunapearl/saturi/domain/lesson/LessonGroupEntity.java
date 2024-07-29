@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter @Setter
 @Table(name = "lesson_group")
@@ -24,5 +27,10 @@ public class LessonGroupEntity {
     
     private String name; // 소제목
     
-    // TODO 레슨 일대다 조회 추가
+    @OneToMany(mappedBy = "lessonGroup")
+    private List<LessonEntity> lessons = new ArrayList<>();
+
+    /**
+     * 비즈니스 로직
+     */
 }

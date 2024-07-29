@@ -1,8 +1,7 @@
-package com.tunapearl.saturi.dto.admin;
+package com.tunapearl.saturi.dto.admin.lesson;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
