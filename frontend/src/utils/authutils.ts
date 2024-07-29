@@ -23,10 +23,14 @@ export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
 
 export function goKakaoLogin() {
   const redirectUrl = `${frontURL}/user/auth/login/kakao`
-  window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoKey}&redirect_uri=${redirectUrl}&response_type=code`
+  const url = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoKey}&redirect_uri=${redirectUrl}&response_type=code`;
+  console.log(url);
+  window.location.href = url
 }
 
 export function goNaverLogin() {
   const redirectUrl = `${frontURL}/user/auth/login/naver`
-  window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${naverKey}&client_secret=${naverSecret}&redirect_uri=${redirectUrl}&state=8697240`
+  const url = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${naverKey}&client_secret=${naverSecret}&redirect_uri=${redirectUrl}&state=8697240`
+  console.log(url)
+  window.location.href = url;
 }
