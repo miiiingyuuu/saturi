@@ -87,14 +87,16 @@
   transition: left 1s ease, right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
 }
 
+/* /////////////// */
 /* 학습 페이지 파트 */
+/* /////////////// */
 .button-grid {
   border: 2px solid black;
   border-radius: 10px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   grid-gap: 5px;
-  width: 550px;
+  width: 390px;
 }
 
 .button-grid img {
@@ -115,6 +117,18 @@
 .grid-button:hover {
   background-color: #aaa;
 }
+
+/* 게임 페이지 파트 */
+
+.profile-grid {
+  border: 2px solid black;
+  border-radius: 10px;    
+  width: 200px;
+  height: 300px;
+}
+
+
+
 
 /* 반짝이게 하기 */
 @keyframes blink-effect {

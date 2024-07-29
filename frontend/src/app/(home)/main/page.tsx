@@ -1,9 +1,7 @@
-"use client"
-
 "use client"; // 클라이언트 컴포넌트로 지정
 
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
+import { redirect } from 'next/navigation';
 // import { ReactComponent as KoreaMap } from './koreaMap.svg';
 import './style.css';
 import { Button, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';
@@ -14,53 +12,52 @@ import KoreaMap from './koreaMap';
 // 헤더 파트
 ///////////////////////
 
-function Header({ onProfileClick }) {
-  const [isPopoverOpen, setPopoverOpen] = useState(false);
+// function Header({ onProfileClick }) {
+//   const [isPopoverOpen, setPopoverOpen] = useState(false);
 
-  const handlePopoverOpen = () => {
-    setPopoverOpen(true);
-  };
+//   const handlePopoverOpen = () => {
+//     setPopoverOpen(true);
+//   };
 
-  const handlePopoverClose = () => {
-    setPopoverOpen(false);
-  };
+//   const handlePopoverClose = () => {
+//     setPopoverOpen(false);
+//   };
 
-
-  return (
-    <div>
-      <nav className="navbar">
-        <ul className="nav-list">
-          <li className="nav-item logo">
-            <a href="">
-              <img src="/MainPage/logo.png" alt="LOGO" width={250} />
-            </a>
-          </li>
-          <li className="nav-item profile">
-            <Popover isOpen={isPopoverOpen} onOpenChange={setPopoverOpen}>
-              <PopoverTrigger>
-                <Button href="#" onClick={handlePopoverOpen}>Profile</Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div style={{ padding: '10px' }}>
-                  <h2>Profile</h2>
-                  <p>This is the profile popover content.</p>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </li>          
-        </ul>          
-      </nav>
-      <hr />
-      {/* <hr style={{ borderWidth: '1.5px', borderColor: 'black', borderStyle: 'solid', zIndex:99 }} />             */}
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <nav className="navbar">
+//         <ul className="nav-list">
+//           <li className="nav-item logo">
+//             <a href="">
+//               <img src="/MainPage/logo.png" alt="LOGO" width={250} />
+//             </a>
+//           </li>
+//           <li className="nav-item profile">
+//             <Popover isOpen={isPopoverOpen} onOpenChange={setPopoverOpen}>
+//               <PopoverTrigger>
+//                 <Button href="#" onClick={handlePopoverOpen}>Profile</Button>
+//               </PopoverTrigger>
+//               <PopoverContent>
+//                 <div style={{ padding: '10px' }}>
+//                   <h2>Profile</h2>
+//                   <p>This is the profile popover content.</p>
+//                 </div>
+//               </PopoverContent>
+//             </Popover>
+//           </li>          
+//         </ul>          
+//       </nav>
+//       <hr />
+//       {/* <hr style={{ borderWidth: '1.5px', borderColor: 'black', borderStyle: 'solid', zIndex:99 }} />             */}
+//     </div>
+//   );
+// }
 
 ///////////////////////////////
 // Left, Middle, Right 파트
 ///////////////////////////////
 
-function LeftPart({ middlePosition, moveDirection }) {
+function LeftPart({ middlePosition, moveDirection, selectedRegion }) {
   useEffect(() => {
     if (middlePosition === 2) {
       // 사용 가능한 오디오 입력 장치 확인
@@ -87,37 +84,51 @@ function LeftPart({ middlePosition, moveDirection }) {
     }
   }, [middlePosition]);
 
+  function buttonLearn() {
+    let region = 0
+    if (selectedRegion === "경기도") {
+      region = 1;
+    }
+    console.log("hey2")
+    redirect(`/lesson/${region}/1`);
+  }
+
   return (
-    <div className="leftpart" style={{ 
-      zIndex: (() => {
-        if (middlePosition === 0) {
-          return 0;
-        } else if (middlePosition === 1) {
-          if (moveDirection == "left"){
-            console.log("left")
+    <div 
+      className="leftpart" 
+      style={{ 
+        zIndex: (() => {
+          if (middlePosition === 0) {
             return 0;
-          }else if (moveDirection == "right") {
-            console.log("right")
+          } 
+          else if (middlePosition === 1) {
+            if (moveDirection == "left"){
+              console.log("left")
+              return 0;
+            }
+            else if (moveDirection == "right") {
+              console.log("right")
+              return 2;
+            }            
+          } 
+          else if (middlePosition === 2) {
             return 2;
-          }
-          
-        } else if (middlePosition === 2) {
-          return 2;
-        } 
-      })()
-    }}>
-      <div style={{position:'absolute', margin: "50px", top:"25%", left: "70px"}}>
+          } 
+        })()
+      }}>
+      <div style={{position:'absolute', margin: "50px", top:"5%", left: "70px"}}>
         <div>
           <h1 style={{fontSize:30, fontWeight:"bold"}}>학습 페이지</h1>
         </div>
         <br />
         <div className="button-grid">
-          <img src="/MainPage/buttonFood.png" alt="" />
-          <img src="/MainPage/buttonFood.png" alt="" />
-          <img src="/MainPage/buttonFood.png" alt="" />
-          <img src="/MainPage/buttonFood.png" alt="" />
-          <img src="/MainPage/buttonFood.png" alt="" />
-          <img src="/MainPage/buttonFood.png" alt="" />
+          <img src="/MainPage/learnButton1.png" alt="" />
+          <img src="/MainPage/learnButton2.png" alt="" />
+          <img src="/MainPage/learnButton3.png" alt="" />
+          <img 
+            src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}             
+            alt="" 
+          />       
         </div>
       </div>
     </div>
@@ -125,7 +136,7 @@ function LeftPart({ middlePosition, moveDirection }) {
   );
 }
 
-function MiddlePart({ middlePosition, mainPageIndicator }) {
+function MiddlePart({ middlePosition, mainPageIndicator, selectedRegion }) {
   return (
     <div className="middlepart" style={{ 
       left: (() => {
@@ -145,24 +156,34 @@ function MiddlePart({ middlePosition, mainPageIndicator }) {
         left: '50%', 
         transform: 'translate(-50%, -50%)',
         fontSize: 25,
-      }}> {mainPageIndicator === 0 ? "지역을 선택하세요" : "버튼을 선택하세요"} </h1>
+      }}> { mainPageIndicator } </h1>   
     </div>
   );
 }
 
+
+
 function RightPart() {
+  function GameStartButton() {
+    console.log("hey");
+    redirect("/game");
+  }
+  
+
+
+
   return (
-    <div className="rightpart">
-      <div style={{position:'absolute', margin: "50px", top:"25%", right: "110px"}}>
-        <div>
-          <h1 style={{fontSize:30, fontWeight:"bold"}}>학습 페이지</h1>
+    <div className="rightpart" style={{ height: '100vh' }}>
+      <div style={{position:'absolute', margin: "50px", top:"10%", right: "220px", display:'flex'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ fontSize: 30, fontWeight: 'bold' }}>게임 페이지</h1>
+          </div>
+          <div className="profile-grid" style={{ margin: '20px 0' }}>
+            <img src="/MainPage/buttonFood.png" alt="" />
+          </div>
+          <Button onClick={GameStartButton} style={{ marginTop: '20px' }}>게임 시작</Button>
         </div>
-        <br />
-        <div className="button-grid">
-          <img src="/MainPage/buttonFood.png" alt="" />          
-        </div>
-        <h1>프로필</h1>
-        <Button>게임 시작</Button>
       </div>
     </div>
   );
@@ -186,16 +207,16 @@ function Footer () {
 ///////////////////////
 // 버튼과 맵 
 ///////////////////////
-function ButtonPart({ onLeftClick, onRightClick, middleToWhere }) {
+function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }) {
   return (
     <div>
-      {middleToWhere !== 2 && (
+      {selectedRegion !== "_" && middleToWhere !== 2 && (
         <a href="#" className='buttonLeft' onClick={onLeftClick}>
           <img src="/MainPage/buttonLeft.png" alt="button" width={50} />
         </a>
       )}
       
-      {middleToWhere !== 0 && (
+      {selectedRegion !== "_" && middleToWhere !== 0 && (
         <a href="#" className='buttonRight' onClick={onRightClick}>
           <img src="/MainPage/buttonRight.png" alt="button" width={50} />
         </a>
@@ -204,17 +225,12 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere }) {
   );
 }
 
-function MiddleMap({ left }) {
+function MiddleMap({ left, onRegionClick, selectedRegion }) {
   return (
-    <div className="middleMap" style={{ left: left === "null" ? null : left }}>
-      {/* <Image
-        src="/MainPage/map_of_korea.png"
-        alt="koreamap"
-        width={500}
-        height={500}
-      /> */}
+    <div className="middleMap" style={{ left: left === "null" ? null : left, top: "39%" }}>
+      <h1 style={{ textAlign: "center" }}> { selectedRegion }</h1>
       <div style={{ width: '50%', height: '50%' }}>
-        <KoreaMap />
+        <KoreaMap onRegionClick={onRegionClick} />
       </div>
     </div>
   );
@@ -225,15 +241,17 @@ export default function App() {
   const [mapLeft, setMapLeft] = useState('50%'); // 초기 left 값을 50%로 설정
   const [middleToWhere, setMiddleToWhere] = useState(1); // 0, 1, 2 이 세 가지 값을 사용
   let moveDirection = useRef("null");
-  const [mainPageIndicator, setMainPageIndicator] = useState(0);
+  const [isCapitalChoosed, setIsCapitalChoosed] = useState(false)
+  const [mainPageIndicator, setMainPageIndicator] = useState("지역을 선택하세요");
   const currentMainPageRef = useRef(1);
-  const [selectedRegion, setSelectedRegion] = useState("None");
+  const [selectedRegion, setSelectedRegion] = useState("_");
 
-  // 지역 선택
-  const handleRegionSelect = (region) => {
+  const handleRegionClick = (region) => {
     setSelectedRegion(region);
+    if (region !== "null"){
+      setMainPageIndicator("학습 또는 게임을 선택하세요")      
+    }
   };
-
 
   const handleProfileClick = (e) => {
     e.preventDefault();
@@ -277,12 +295,16 @@ export default function App() {
   return (
     <div>       
       <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
-        <Header onProfileClick={handleProfileClick} />        
-        <LeftPart middlePosition = {middleToWhere} moveDirection = {moveDirection.current} />
-        <MiddlePart middlePosition = {middleToWhere} mainPageIndicator = {mainPageIndicator} />
+        {/* <Header onProfileClick={handleProfileClick} />         */}
+        
+        <LeftPart 
+          middlePosition = {middleToWhere} 
+          moveDirection = {moveDirection.current} 
+          selectedRegion = {selectedRegion} />
+        <MiddlePart middlePosition = {middleToWhere} mainPageIndicator = {mainPageIndicator} selectedRegion = {selectedRegion} />
         <RightPart />
-        <ButtonPart onLeftClick={handleLeftClick} onRightClick={handleRightClick} middleToWhere = {middleToWhere} />
-        <MiddleMap left={mapLeft} onRegionSelect={handleRegionSelect}/>
+        <ButtonPart onLeftClick={handleLeftClick} onRightClick={handleRightClick} middleToWhere = {middleToWhere} selectedRegion = {selectedRegion} />
+        <MiddleMap left={mapLeft} onRegionClick={handleRegionClick} selectedRegion = {selectedRegion}/>
       </div>
     </div>
   );

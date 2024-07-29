@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './koreaMap.css';
 
-
-function Icon() {
+function Icon({ onRegionClick }) {
   const [selectedRegion, setSelectedRegion] = useState(null);
 
   useEffect(() => {
@@ -28,7 +27,11 @@ function Icon() {
   }, [selectedRegion]);
 
   const handleClick = (e) => {
-    setSelectedRegion(e.target.parentElement);
+    const region = e.target.parentElement;
+    setSelectedRegion(region);
+    if (region.className && typeof onRegionClick === 'function') {
+      onRegionClick(region.className.baseVal);
+    }
   };
 
   return (
@@ -36,6 +39,8 @@ function Icon() {
       xmlns="http://www.w3.org/2000/svg"
       width="973.451"
       height="390.966"
+      // width="200%"
+      // height="200%"
       x="0"
       y="30"
       version="1.1"
