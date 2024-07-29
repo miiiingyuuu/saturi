@@ -1,7 +1,6 @@
 "use client"
 
 import axios from "axios"
-import { baseURL } from "@/app/constants";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // 여기로 오면 백으로 보내고 즉시 집으로 리디렉션 해주기
@@ -13,7 +12,7 @@ export default function App() {
   const userType = pathname.substring(pathname.lastIndexOf('/')+1).toUpperCase()
 
   if (typeof window !== "undefined") {
-  axios.post(`${baseURL}/user/auth/login`, {
+  axios.post(`${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login`, {
     code,
     userType
   })

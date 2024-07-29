@@ -1,8 +1,7 @@
 import axios from "axios";
-import { baseURL } from "@/app/constants";
 
 const api = axios.create({
-  baseURL,
+  baseURL : process.env.NEXT_PUBLIC_BACKURL,
   timeout: 10000,
   // 기본으로 넣어줘야할 헤더
   headers: {

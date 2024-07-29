@@ -8,7 +8,7 @@ import { toggleVisibility, validateEmail } from "@/utils/utils";
 import { EyeSlashFilledIcon } from "@/assets/svg/EyeSlashFilledIcon";
 import { goKakaoLogin, goNaverLogin, handleLogin } from "@/utils/authutils";
 
-export default function Page() {
+export default function Notapage() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState("");

@@ -56,17 +56,3 @@ logging:
         SQL: debug
         type: trace
 
-social:
-  client:
-    kakao:
-      grant-type: authorization_code
-      grant-type-refresh: refresh_token
-      client-id: 1a4176309be5d6f78377259bbfc8c9e1
-      redirect-uri: http://localhost:5173/kakao-login
-      client-secret: ryz7WiPKOop8rO7qJP8ysHIAkbnvDJ2M
-    naver:
-      grant-type: authorization_code
-      grant-type-refresh: refresh_token
-      client_id: xN4ePUKnsbXheRGf6mFZ
-      redirect-uri: http://localhost:5173/naver-login
-      client_secret: yF7PURigAy

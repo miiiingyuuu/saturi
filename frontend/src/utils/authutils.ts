@@ -1,7 +1,6 @@
 // authUtils.ts
 import api from "@/lib/axios";
 import { IHandleLogin } from "@/utils/props";
-import { frontURL, kakaoKey, naverKey, naverSecret } from "@/app/constants";
 
 
 // 로그인
@@ -22,11 +21,11 @@ export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
 }
 
 export function goKakaoLogin() {
-  const redirectUrl = `${frontURL}/user/auth/login/kakao`
-  window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoKey}&redirect_uri=${redirectUrl}&response_type=code`
+  const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/kakao`
+  window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAOSECRET}&redirect_uri=${redirectUrl}&response_type=code`
 }
 
 export function goNaverLogin() {
-  const redirectUrl = `${frontURL}/user/auth/login/naver`
-  window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${naverKey}&client_secret=${naverSecret}&redirect_uri=${redirectUrl}&state=8697240`
+  const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/naver`
+  window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_NAVERKEY}&client_secret=${process.env.NEXT_PUBLIC_NAVERSECRET}&redirect_uri=${redirectUrl}&state=8697240`
 }
