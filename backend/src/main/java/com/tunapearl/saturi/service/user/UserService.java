@@ -1,11 +1,10 @@
-package com.tunapearl.saturi.service;
+package com.tunapearl.saturi.service.user;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.user.*;
 import com.tunapearl.saturi.dto.user.*;
-import com.tunapearl.saturi.exception.DuplicatedUserEmailException;
-import com.tunapearl.saturi.exception.DuplicatedUserNicknameException;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
+import com.tunapearl.saturi.repository.BirdRepository;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.utils.JWTUtil;
@@ -45,6 +44,7 @@ public class UserService {
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9]+@(.+)$";
     // 비밀번호 정규표현식(8자 이상, 숫자 1, 특수문자(!@#$%^&+=) 1 포함)
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,}$";
+    private final BirdRepository birdRepository;
 
     public List<UserEntity> findUsers() {
         return userRepository.findAll().get();
@@ -83,27 +83,30 @@ public class UserService {
     public void validateDuplicateUserEmail(String email) {
         Optional<List<UserEntity>> findUsers = userRepository.findByEmail(email);
         if (findUsers.isPresent()) {
-            throw new DuplicatedUserEmailException("이미 존재하는 회원입니다.");
+            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
     }
 
     public void validateDuplicateUserNickname(String nickname) {
         Optional<List<UserEntity>> findUsers = userRepository.findByNickname(nickname);
         if (findUsers.isPresent()) {
-            throw new DuplicatedUserNicknameException("이미 존재하는 닉네임입니다.");
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
     }
 
     private UserEntity createNewUser(UserRegisterRequestDTO request) {
+        log.info("request = {}", request);
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
         user.setPassword(PasswordEncoder.encrypt(request.getEmail(), request.getPassword()));
         user.setNickname(request.getNickname());
-        LocationEntity location = locationRepository.findById(request.getLocationId()).get();
+        LocationEntity location = locationRepository.findById(request.getLocationId()).orElse(null);
         user.setLocation(location);
         user.setGender(request.getGender());
         user.setAgeRange(request.getAgeRange());
         user.setRegDate(LocalDateTime.now());
+        BirdEntity bird = birdRepository.findById(1L).orElse(null);
+        user.setBird(bird);
         user.setExp(0L);
         user.setRole(Role.BASIC);
         return user;
@@ -132,14 +135,9 @@ public class UserService {
 
     private static void validateAuthenticateUser(List<UserEntity> findUsers) {
         if (findUsers.isEmpty()) {
-            throw new IllegalStateException("아이디 혹은 비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
         }
     }
-
-    // 탈퇴하면 이메일도 지우도록 했으므로 아래 메서드는 사용하지 않음
-//    private static void validateDeletedUser(UserEntity user) {
-//        if (user.getIsDeleted()) throw new IllegalStateException("탈퇴된 회원입니다.");
-//    }
 
     private static void validateBannedUser(UserEntity findUser) {
         if(findUser.getRole() == Role.BANNED) {
@@ -154,8 +152,7 @@ public class UserService {
      * 로그아웃
      */
     @Transactional
-    public UserMsgResponseDTO logoutUser(String token) throws UnAuthorizedException, Exception {
-
+    public UserMsgResponseDTO logoutUser(String token) throws UnAuthorizedException {
         tokenService.deleteRefreshToken(jwtUtil.getUserId(token));
         return new UserMsgResponseDTO("로그아웃 완료");
     }
@@ -193,13 +190,13 @@ public class UserService {
 
     private static void validateCorrectCurrentPassword(String currentPassword, UserEntity findUser) {
         if (!findUser.getPassword().equals(PasswordEncoder.encrypt(findUser.getEmail(), currentPassword))) {
-            throw new IllegalStateException("현재 비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
     }
 
     private static void validateCheckNewPassword(String newPassword, UserEntity findUser) {
         if (findUser.getPassword().equals(PasswordEncoder.encrypt(findUser.getEmail(), newPassword))) {
-            throw new IllegalStateException("현재 비밀번호와 일치합니다. 새로운 비밀번호로 변경해주세요.");
+            throw new IllegalArgumentException("현재 비밀번호와 일치합니다. 새로운 비밀번호로 변경해주세요.");
         }
     }
 
@@ -256,26 +253,22 @@ public class UserService {
 
     public void emailSend(String setFromEmail, String setToEmail, String title, String content, String authCode) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
-            helper.setFrom(setFromEmail);
-            helper.setTo(setToEmail);
-            helper.setSubject(title);
-            helper.setText(content, true);
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            log.error("email send error", e);
-        }
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
+        helper.setFrom(setFromEmail);
+        helper.setTo(setToEmail);
+        helper.setSubject(title);
+        helper.setText(content, true);
+        mailSender.send(message);
         redisUtil.setDataExpire(authCode, setToEmail, 60 * 5L); // redis에 인증번호 저장("1a2a3a" : "email@email")
-
     }
 
     /**
      * 회원 프로필 조회
      */
     public UserInfoResponseDTO getUserProfile(Long userId) {
-        UserEntity findUser = userRepository.findByUserId(userId).get();
-        return new UserInfoResponseDTO(findUser.getUserId(), findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(),
-                findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getQuokka());
+        UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
+        log.info("find User Profile {}", findUser);
+        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(),
+                findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getImagePath());
     }
 }

@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity
 @Getter @Setter
 @Table(name = "user")
+@ToString
 public class UserEntity {
 
     @Id @GeneratedValue
@@ -27,10 +29,6 @@ public class UserEntity {
     private String nickname;
 
     private String password;
-
-    private String jwtToken;
-
-    private String kToken;
 
     private LocalDateTime regDate;
 
@@ -50,8 +48,8 @@ public class UserEntity {
     private Boolean isDeleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quokka_id")
-    private QuokkaEntity quokka;
+    @JoinColumn(name = "bird_id")
+    private BirdEntity bird;
 
     private LocalDateTime returnDt;
 }
