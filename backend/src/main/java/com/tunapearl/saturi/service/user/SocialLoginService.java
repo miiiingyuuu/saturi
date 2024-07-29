@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.service;
+package com.tunapearl.saturi.service.user;
 
 import com.tunapearl.saturi.dto.user.social.SocialAuthResponse;
 import com.tunapearl.saturi.dto.user.social.SocialUserResponse;

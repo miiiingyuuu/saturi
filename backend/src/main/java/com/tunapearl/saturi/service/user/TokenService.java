@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.service;
+package com.tunapearl.saturi.service.user;
 
 import com.tunapearl.saturi.dto.user.UserLoginResponseDTO;
 import com.tunapearl.saturi.utils.JWTUtil;
@@ -18,7 +18,6 @@ public class TokenService {
     private final JWTUtil jwtUtil;
 
     public UserLoginResponseDTO saveRefreshToken(Long userId){
-
 
         String accessToken = jwtUtil.createAccessToken(userId);
         String refreshToken = jwtUtil.createRefreshToken(userId);

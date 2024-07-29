@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.service;
+package com.tunapearl.saturi.service.user;
 
 import com.tunapearl.saturi.domain.user.Role;
 import com.tunapearl.saturi.domain.user.UserEntity;
