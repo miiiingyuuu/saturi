@@ -1,18 +1,19 @@
 "use client"
 
-import axios from "axios"
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import api from "@/lib/axios"
+import { useState } from "react";
+import { usePathname, useRouter, useSearchParams} from "next/navigation";
+import { Backdrop, CircularProgress } from "@mui/material";
 
-// 여기로 오면 백으로 보내고 즉시 집으로 리디렉션 해주기
 export default function App() {
   const pathname = usePathname()
   const router = useRouter()
   const code = useSearchParams().get('code')
-  // 들어오는 주소를 파싱 (naver/kakao)
   const userType = pathname.substring(pathname.lastIndexOf('/')+1).toUpperCase()
+  const [isLoading] = useState(true)
 
   if (typeof window !== "undefined") {
-  axios.post(`${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login`, {
+  api.post(`${process.env.NEXT_PUBLIC_BACKURL}/user/auth/login`, {
     code,
     userType
   })
@@ -22,10 +23,10 @@ export default function App() {
       router.push("/")
     })
   }
-  // TODO: 여기서 머무르는 시간이 있기 때문에 스피너 달아주기 
+
   return (
-    <div>
-      
-    </div>
+    <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+      <CircularProgress color="inherit"/>
+    </Backdrop>
   )
 }

@@ -3,7 +3,7 @@
 import api from "@/lib/axios"
 import { useRouter } from "next/navigation"
 import { handleLogin } from "@/utils/authutils"
-import { FormEvent, useMemo, useState, ChangeEvent, MouseEvent } from "react"
+import { FormEvent, useMemo, useState, MouseEvent } from "react"
 import {
   validateEmail,
   passwordConfirm,
@@ -13,12 +13,13 @@ import {
 } from "@/utils/utils";
 import {
   Box,
-  Link,
   Grid,
   Button,
   Container,
   TextField,
   Typography,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 
 
@@ -33,6 +34,7 @@ export default function App() {
   const [ isAuthEmail, setIsAuthEmail ] = useState(false)
   const [ isEmailSend, setIsEmailSend ] = useState(false)
   const [ isNicknameChecked, setIsNicknameChecked] = useState(false)
+  const [ isLoading, setIsLoading ] = useState(false)
 
   const isEmailValid = useMemo(() => validateEmail(email), [email])
   const isPasswordValid = useMemo(() => validatePassword(password), [password])
@@ -69,6 +71,7 @@ export default function App() {
   function handleAuthEmail() {
     // TODO : 버튼 광클 못하게 하기
     if (email && isEmailValid) {
+      setIsLoading(true)
       api.get("/user/auth/email-dupcheck", {params: {
         email
         }})
@@ -79,16 +82,18 @@ export default function App() {
             })
               .then((res) => {
                 if (res.status === 200) {
-                  alert("이메일이 발송되었습니다.\n네트워크 상황에 따라 메일 수신까지 시간이 걸릴 수 있습니다.")
+                  setIsLoading(false)
                   setIsEmailSend(true)
+                  alert("이메일이 발송되었습니다.\n네트워크 상황에 따라 메일 수신까지 시간이 걸릴 수 있습니다.")
                 }
               })
           }
         })
         .catch (() => {
+          setIsLoading(false)
           alert("이미 존재하는 계정입니다.\n계정을 확인해 주세요.")
         })
-    } else{
+    } else {
       alert("이메일을 확인해주세요.")
     }
   }
@@ -137,6 +142,9 @@ export default function App() {
 
   return (
       <Container component="main" maxWidth="xs">
+        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+          <CircularProgress color="inherit"/>
+        </Backdrop>
         <Box
           sx={{
             marginTop: 8,

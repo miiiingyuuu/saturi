@@ -12,13 +12,15 @@ import {
   TextField,
   Typography,
   Button,
+  Divider,
 } from "@mui/material";
+import { grey } from "@mui/material/colors"
 
 export default function App() {
   const router = useRouter()
   const [ email, setEmail ] = useState("")
   const [ password, setPassword ] = useState("")
-  const isEmailValid = useMemo(() => !validateEmail(email),[email])
+  const isEmailValid = useMemo(() => validateEmail(email),[email])
 
   return (
     <Container component="main" maxWidth="xs">
@@ -85,6 +87,14 @@ export default function App() {
               </Link>
             </Grid>
           </Grid>
+          <Divider
+            sx={{
+              mt: 2,
+              color: grey[500]
+            }}
+          >
+            또는
+          </Divider>
           <Grid container spacing={1} mt={2}>
             <Grid item xs={6}>
               <img
