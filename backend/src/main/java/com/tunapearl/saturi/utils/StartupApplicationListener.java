@@ -35,6 +35,8 @@ public class StartupApplicationListener {
                                                         "잡화상", "광부", "석유부자", "빨간머리", "정찰대", "비밀결사", "쇼호스트", "용병",
                                                         "기관사", "삼총사"};
 
+    private static final String[] LESSON_CATEGORIES = {"일상", "드라마 대사", "영화 대사", "밈"};
+
     private final LocationService locationService;
     private final BirdService birdService;
     private final UserService userService;
