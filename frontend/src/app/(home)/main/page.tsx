@@ -2,14 +2,15 @@
 
 // 하위 컴포넌트들 
 import LeftPart from './leftpart';
+import MiddlePart from './middlepart';
 import RightPart from './rightpart';
 
+
 import { useState, useRef, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-// import { ReactComponent as KoreaMap } from './koreaMap.svg';
 import './style.css';
-// import { Button, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';
 import KoreaMap from './koreaMap';
+// import { Button, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';           //헤더 한다고 import 한건데 지워도 될듯?
+
 
 
 
@@ -37,31 +38,7 @@ interface MiddleMapProps {
 
 
 
-function MiddlePart({ middlePosition, mainPageIndicator, selectedRegion }: MiddlePartProps) {
-  return (
-    <div className="middlepart" style={{
-      left: (() => {
-        if (middlePosition === 0) {
-          return "-110%";
-        } else if (middlePosition === 1) {
-          return "0%";
-        } else if (middlePosition === 2) {
-          return "110%";
-        } else {
-          return null;
-        }
-      })()
-    }}>
-      <h1 className="blink" style={{
-        position: 'absolute',
-        top: '75%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        fontSize: 25,
-      }}> {mainPageIndicator} </h1>
-    </div>
-  );
-}
+
 
 
 

@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 
 interface LeftPartProps {
@@ -8,6 +9,8 @@ interface LeftPartProps {
   }
 
 export default function LeftPart({ middlePosition, moveDirection, selectedRegion }: LeftPartProps) {
+    const router = useRouter();
+
     useEffect(() => {
       if (middlePosition === 2) {
         // 사용 가능한 오디오 입력 장치 확인
@@ -34,8 +37,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
       }
     }, [middlePosition]);
   
-    function buttonLearn(num: number) {
-      const router = useRouter();
+    function buttonLearn(num: number) {      
       let region = 0;
       if (selectedRegion === "경기도") {
         region = 1;
