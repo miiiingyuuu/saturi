@@ -1,5 +1,6 @@
 "use client"
 
+import { getCookie } from "cookies-next";
 import { redirect } from "next/navigation";
 
 export default function App() {
@@ -7,11 +8,11 @@ export default function App() {
     case sessionStorage.getItem("accessToken"):
       redirect("/main")
       break
-    // case
-  }
-  if (sessionStorage.getItem("accessToken")) {
-    redirect("/main");
-  } else {
-    redirect("/start");
+    case getCookie("nickname"):
+      redirect("/user/1/profile")
+      break
+    default :
+      redirect("/start")
+      break
   }
 }

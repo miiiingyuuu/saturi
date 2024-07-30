@@ -1,4 +1,5 @@
 import { IPasswordProps } from "@/utils/props";
+import { ChangeEvent } from "react";
 
 
 export function validateEmail(value: string): boolean {

@@ -12,6 +12,7 @@ import { authToken } from "@/utils/authutils";
 import { styled } from "@mui/material/styles"
 import { useState, useEffect } from "react";
 
+
 // 버튼 색
 const LoginButton = styled(Button)(({ theme }) => ({
   backgroundColor: '#99DE83',
@@ -34,14 +35,14 @@ export default function RootLayout({
     const accessToken = sessionStorage.getItem("accessToken");
     const refreshToken = sessionStorage.getItem("refreshToken");
     setIsLoggedIn(!!accessToken);
+    if (sessionStorage.getItem("accessToken")) {
+      authToken()
+    }
   }, []);
 
   // 특정 경로에서 header를 숨기기
   const hideHeader = pathname.startsWith("/game/in-game");
 
-  if (sessionStorage.getItem("accessToken")) {
-    authToken()
-  }
 
   return (
     <html lang="ko" className="light">

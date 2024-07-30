@@ -1,5 +1,6 @@
 import api from "@/lib/axios";
 import { IHandleLogin } from "@/utils/props";
+import { setCookie } from "cookies-next";
 
 
 // 로그인
@@ -33,21 +34,32 @@ export function goNaverLogin() {
 // 토큰 유효성 확인
 // 페이지 옮길때마다 실행 (메인의 authutils에 달려있음)
 export function authToken() {
+  // 우선 토큰 유효성 검사
   api.get("/user/auth/token-check")
     .then( response => {
       if (response.status === 200) {
         api.get("user/auth/profile",
-          {headers: {accessToken: sessionStorage.getItem("accessToken")}},
         )
-          .then( response => {
-            console.log(response)
-            cookie.save('userId', `${response.data.userid}`)
-            cookie.save('email', `${response.data.email}`)
+          .then( res => {
+            // 유효성 검사 후, 받아온 데이터를 쿠키에 저장
+            setCookie("nickname", res.data.nickname)
+            setCookie("email", res.data.email)
             }
           )
-          .catch(err => console.log(err))
       }
-      }
-
-    )
+    })
+    .catch( err => {
+        // 401 에러 발생 시
+        if (err.response.status === 401) {
+          // 리프레시 토큰을 들고 토큰 리프레시 신청하러감
+          api.post("/user/auth/token-refresh", {} , {headers: {refreshToken: `${sessionStorage.getItem("refreshToken")}`}})
+            .then( response => {
+              sessionStorage.setItem("accessToken", response.data.accessToken);
+            })
+            // 만약 여기서도 401 뜨면, 로그아웃 처리 하고 로그인으로 보내기
+            .catch( err => {
+              console.log(err)
+            })
+        }
+    })
 }
