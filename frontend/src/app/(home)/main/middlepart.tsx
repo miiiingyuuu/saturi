@@ -16,13 +16,14 @@ export default function MiddlePart({ middlePosition, mainPageIndicator, selected
                 })()
             }}>
         <h1 
-          className="blink" style={{
-          position: 'absolute',
-          top: '75%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          fontSize: 25,
-        }}> {mainPageIndicator} </h1>
+          className="blink" 
+          style={{
+            position: 'absolute',
+            top: '75%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: 25,
+          }}> {mainPageIndicator} </h1>
       </div>
     );
   }

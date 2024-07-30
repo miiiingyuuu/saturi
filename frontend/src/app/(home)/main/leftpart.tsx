@@ -1,90 +1,93 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-
+import ButtonBase from '@mui/material/ButtonBase';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 
 interface LeftPartProps {
-    middlePosition: number;
-    moveDirection: string;
-    selectedRegion: string;
-  }
+  middlePosition: number;
+  moveDirection: string;
+  selectedRegion: string;
+}
 
 export default function LeftPart({ middlePosition, moveDirection, selectedRegion }: LeftPartProps) {
-    const router = useRouter();
+  const router = useRouter();
 
-    useEffect(() => {
-      if (middlePosition === 2) {
-        // 사용 가능한 오디오 입력 장치 확인
-        navigator.mediaDevices.enumerateDevices()
-          .then(devices => {
-            const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
-            if (audioInputDevices.length > 0) {
-              // 오디오 입력 장치가 있으면 getUserMedia 호출
-              navigator.mediaDevices.getUserMedia({ audio: true })
-                .then((stream) => {
-                  console.log('마이크 허용됨');
-                  // 마이크 스트림을 사용할 수 있습니다.
-                })
-                .catch((error) => {
-                  console.error('마이크 허용 오류:', error);
-                });
-            } else {
-              console.error('사용 가능한 오디오 입력 장치가 없습니다.');
-            }
-          })
-          .catch(error => {
-            console.error('장치 나열 오류:', error);
-          });
-      }
-    }, [middlePosition]);
-  
-    function buttonLearn(num: number) {      
-      let region = 0;
-      if (selectedRegion === "경기도") {
-        region = 1;
-      }
-      console.log("hey2");
-      router.push(`/lesson/${region}/${num}`);
+  useEffect(() => {
+    if (middlePosition === 2) {
+      navigator.mediaDevices.enumerateDevices()
+        .then(devices => {
+          const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+          if (audioInputDevices.length > 0) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+              .then((stream) => {
+                console.log('마이크 허용됨');
+              })
+              .catch((error) => {
+                console.error('마이크 허용 오류:', error);
+              });
+          } else {
+            console.error('사용 가능한 오디오 입력 장치가 없습니다.');
+          }
+        })
+        .catch(error => {
+          console.error('장치 나열 오류:', error);
+        });
     }
-  
-    return (
-      <div
-        className="leftpart"
-        style={{
-          zIndex: (() => {
-            if (middlePosition === 0) {
+  }, [middlePosition]);
+
+  function buttonLearn(num: number) {
+    let region = 0;
+    if (selectedRegion === "경기도") {
+      region = 1;
+    }
+    console.log("hey2");
+    router.push(`/lesson/${region}/${num}`);
+  }
+
+  return (
+    <div
+      className="leftpart"
+      style={{
+        zIndex: (() => {
+          if (middlePosition === 0) {
+            return 0;
+          } if (middlePosition === 1) {
+            if (moveDirection === "left") {
+              console.log("left");
               return 0;
-            }
-            else if (middlePosition === 1) {
-              if (moveDirection === "left") {
-                console.log("left");
-                return 0;
-              }
-              else if (moveDirection === "right") {
-                console.log("right");
-                return 2;
-              }
-            }
-            else if (middlePosition === 2) {
+            } if (moveDirection === "right") {
+              console.log("right");
               return 2;
             }
-          })()
-        }}>
-        <div style={{ position: 'absolute', margin: "50px", top: "5%", left: "70px" }}>
-          <div>
-            <h1 style={{ fontSize: 30, fontWeight: "bold" }}>학습 페이지</h1>
-          </div>
-          <br />
-          <div className="button-grid">
-            <img src="/MainPage/learnButton1.png" alt="" onClick={() => { buttonLearn(1) }} />
-            <img src="/MainPage/learnButton2.png" alt="" onClick={() => { buttonLearn(2) }} />
-            <img src="/MainPage/learnButton3.png" alt="" onClick={() => { buttonLearn(3) }} />
-            <img
+          } else if (middlePosition === 2) {
+            return 2;
+          }
+        })()
+      }}>
+      <Box sx={{ position: 'absolute', margin: "25px", top: "5%", left: "70px", width: "25vw" }}>
+        <Typography variant="h1" sx={{ fontSize: 30, fontWeight: "bold" }}>학습 페이지</Typography>
+        <br />
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
+          <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
+            <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          </ButtonBase>
+          <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
+            <Box component="img" src="/MainPage/learnButton2.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          </ButtonBase>
+          <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
+            <Box component="img" src="/MainPage/learnButton3.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          </ButtonBase>
+          <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
+            <Box component="img"
               src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}
-              onClick={() => { buttonLearn(4) }}
               alt=""
+              sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             />
-          </div>
-        </div>
-      </div>
-    );
-  }
+          </ButtonBase>
+        </Box>
+      </Box>
+    </div>
+  );
+}
