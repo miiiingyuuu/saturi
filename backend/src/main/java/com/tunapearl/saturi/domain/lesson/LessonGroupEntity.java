@@ -33,4 +33,8 @@ public class LessonGroupEntity {
     /**
      * 비즈니스 로직
      */
+    public void setLessons(LessonEntity lesson) {
+        this.lessons.add(lesson);
+        lesson.setLessonGroup(this);
+    }
 }

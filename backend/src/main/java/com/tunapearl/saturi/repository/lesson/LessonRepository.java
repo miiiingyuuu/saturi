@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
@@ -35,11 +36,19 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonGroupEntity>> findAllLessonGroup() {
-        return Optional.ofNullable(em.createQuery("select g from LessonGroupEntity g", LessonGroupEntity.class)
+        return Optional.ofNullable(em.createQuery("select g from LessonGroupEntity g join fetch g.lessons l", LessonGroupEntity.class)
                 .getResultList());
     }
 
     public void deleteById(Long lessonId) {
 
+    }
+
+    public Optional<List<LessonGroupEntity>> findLessonGroupByLocationAndCategory(Long locationId, Long categoryId) {
+        return Optional.ofNullable(em.createQuery("select g from LessonGroupEntity g where g.location.locationId = :locationId" +
+                        " and g.lessonCategory.lessonCategoryId = :categoryId", LessonGroupEntity.class)
+                .setParameter("locationId", locationId)
+                .setParameter("categoryId", categoryId)
+                .getResultList());
     }
 }

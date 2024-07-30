@@ -59,7 +59,8 @@ public class AdminLessonController {
         List<LessonGroupResponseDTO> allLessonGroupDTO = new ArrayList<>();
 
         allLessonGroup.forEach(lessonGroup -> allLessonGroupDTO.add(new LessonGroupResponseDTO(lessonGroup.getLessonGroupId(),
-                lessonGroup.getLocation().getName(), lessonGroup.getLessonCategory().getName(), lessonGroup.getName())));
+                lessonGroup.getLocation().getName(), lessonGroup.getLessonCategory().getName(), lessonGroup.getName(),
+                lessonGroup.getLessons())));
 
         return ResponseEntity.ok(allLessonGroupDTO);
     }
@@ -69,12 +70,13 @@ public class AdminLessonController {
      */
     //FIXME 파일 등록 추가
     @PostMapping
-    public ResponseEntity<AdminMsgResponseDTO> registerLesson(@ModelAttribute LessonRegisterRequestDTO request) throws IOException {
+    public ResponseEntity<AdminMsgResponseDTO> registerLesson(@RequestBody LessonRegisterRequestDTO request) throws IOException {
         log.info("received request to register lesson {}", request);
         LessonGroupEntity findLessonGroup = lessonService.findByIdLessonGroup(request.getLessonGroupId());
-        UploadFile attachFile = fileStoreUtil.storeFile(request.getSampleVoice());
-        gcsService.uploadFile("saturi", request.getSampleVoice().getOriginalFilename(), request.getSampleVoice());
-        String filePath = fileStoreUtil.getFullPath(attachFile.getStoreFileName());
+//        UploadFile attachFile = fileStoreUtil.storeFile(request.getSampleVoice());
+//        gcsService.uploadFile("saturi", request.getSampleVoice().getOriginalFilename(), request.getSampleVoice());
+//        String filePath = fileStoreUtil.getFullPath(attachFile.getStoreFileName());
+        String filePath = "this is filePath Sample";
         Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript(), filePath);
         return ResponseEntity.created(URI.create("/lesson")).body(new AdminMsgResponseDTO("ok"));
     }

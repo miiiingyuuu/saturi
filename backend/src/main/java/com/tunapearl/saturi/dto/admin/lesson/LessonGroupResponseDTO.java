@@ -1,8 +1,11 @@
 package com.tunapearl.saturi.dto.admin.lesson;
 
+import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -12,4 +15,5 @@ public class LessonGroupResponseDTO {
     private String locationName;
     private String lessonCategoryName;
     private String name;
+    private List<LessonEntity> lessons;
 }
