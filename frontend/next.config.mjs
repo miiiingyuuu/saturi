@@ -3,6 +3,7 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 const nextConfig = {
+  reactStrictMode: false,
   webpack(config, { isServer }) {
     config.module.rules.push({
       test: /\.svg$/,

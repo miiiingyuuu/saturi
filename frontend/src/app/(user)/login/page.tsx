@@ -18,6 +18,7 @@ import { grey } from "@mui/material/colors"
 
 export default function App() {
   const router = useRouter()
+
   const [ email, setEmail ] = useState("")
   const [ password, setPassword ] = useState("")
   const isEmailValid = useMemo(() => validateEmail(email),[email])
