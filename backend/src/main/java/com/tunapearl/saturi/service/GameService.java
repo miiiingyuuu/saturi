@@ -1,6 +1,8 @@
 package com.tunapearl.saturi.service;
 
 import com.tunapearl.saturi.domain.game.GameTipEntity;
+import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
+import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,7 @@ import java.util.Optional;
 public class GameService {
 
     private final GameRepository gameRepository;
-
+    private final RedisService redisService;
 
     /**
      * 팁 추가
@@ -36,5 +38,15 @@ public class GameService {
     public List<GameTipEntity> getTip() {
 
         return gameRepository.getTip().get();
+    }
+
+    public GameMatchingResponseDTO matching(GameMatchingRequestDTO gameMatchingRequestDTO) {
+        //TODO: 게임 대기열에 넣고
+//        redisService.addParticipant();
+
+        //TODO: 매칭완료되면 게임방 생성
+        //redis에 넣음과 동시에 id받아와서 보낼것
+        //TODO: 게임방 Id 반환
+        return null;
     }
 }

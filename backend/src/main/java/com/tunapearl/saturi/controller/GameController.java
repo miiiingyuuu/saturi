@@ -1,5 +1,7 @@
 package com.tunapearl.saturi.controller;
 
+import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
+import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
 import com.tunapearl.saturi.service.GameService;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +22,10 @@ public class GameController {
      * 게임 매칭
      */
     @PostMapping("/room/in")
-    public ResponseEntity<?> matchingRoom(@RequestParam("location") int locationId) {
-        log.info("Received room matching request for {}", locationId);
+    public ResponseEntity<GameMatchingResponseDTO> matchingRoom(@RequestBody GameMatchingRequestDTO request) {
+        log.info("Received room matching request for locationId:{} userId:{}", request.getLocationId(), request.getUserId());
 
-        //TODO: 게임 대기열에 넣고
-        
-        
-        
-        //TODO: 매칭완료되면 게임방 생성
-
-
-
-        //TODO: 게임방 Id 반환
-
-        return null;
+        return ResponseEntity.ok().body(gameService.matching(request));
     }
 
     /**
