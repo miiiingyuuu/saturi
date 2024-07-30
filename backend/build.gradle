@@ -36,6 +36,10 @@ dependencies {
 	// export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account-file.json"
 	implementation platform('com.google.cloud:libraries-bom:26.43.0')
 	implementation 'com.google.cloud:google-cloud-storage'
+
+	// javax to jakarta
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+	implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.1'
 	
 	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
