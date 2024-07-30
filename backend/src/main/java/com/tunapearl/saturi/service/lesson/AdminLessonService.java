@@ -40,10 +40,11 @@ public class AdminLessonService {
 
     // FIXME 파일 등록 추가
     @Transactional
-    public Long createLesson(LessonGroupEntity lessonGroup, String script) {
+    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath) {
         LessonEntity lesson = new LessonEntity();
         lesson.setLessonGroup(lessonGroup);
         lesson.setScript(script);
+        lesson.setSampleVoicePath(filePath);
         lesson.setLastUpdateDt(LocalDateTime.now());
         return adminLessonRepository.saveLesson(lesson);
     }
