@@ -36,7 +36,8 @@ public class UserService {
     private final RedisUtil redisUtil;
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
-    private final LocationRepository locationRepository;
+//    private final LocationRepository locationRepository;
+    private final LocationService locationService;
     /**
      * 정규표현식
      */
@@ -95,18 +96,15 @@ public class UserService {
     }
 
     private UserEntity createNewUser(UserRegisterRequestDTO request) {
-        log.info("request = {}", request);
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
         user.setPassword(PasswordEncoder.encrypt(request.getEmail(), request.getPassword()));
         user.setNickname(request.getNickname());
-        LocationEntity location = locationRepository.findById(request.getLocationId()).orElse(null);
-        user.setLocation(location);
-        user.setGender(request.getGender());
-        user.setAgeRange(request.getAgeRange());
+        user.setLocation(locationService.findById(1L));
+        user.setGender(Gender.DEFAULT);
+        user.setAgeRange(AgeRange.DEFAULT);
         user.setRegDate(LocalDateTime.now());
-        BirdEntity bird = birdRepository.findById(1L).orElse(null);
-        user.setBird(bird);
+        user.setBird(birdRepository.findById(1L).orElse(null));
         user.setExp(0L);
         user.setRole(Role.BASIC);
         return user;
