@@ -40,12 +40,15 @@ public class GameService {
         return gameRepository.getTip().get();
     }
 
+    /**
+     * 게임 매칭
+     */
     public GameMatchingResponseDTO matching(GameMatchingRequestDTO gameMatchingRequestDTO) {
         //TODO: 게임 대기열에 넣고
-//        redisService.addParticipant();
+        redisService.addParticipant();
 
         //TODO: 매칭완료되면 게임방 생성
-        //redis에 넣음과 동시에 id받아와서 보낼것
+        //방 생성과 동시에 id받아와서 보낼것
         //TODO: 게임방 Id 반환
         return null;
     }
