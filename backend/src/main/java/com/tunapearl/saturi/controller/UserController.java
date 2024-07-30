@@ -181,7 +181,7 @@ public class UserController {
      * accessToken 재발급
      */
     @PostMapping("/auth/token-refresh")
-    public ResponseEntity<TokenRefreshResponseDTO> refreshToken(@RequestBody TokenRefreshRequestDTO tokenrefreshrequestdto, HttpServletRequest request)
+    public ResponseEntity<TokenRefreshResponseDTO> refreshToken(@RequestBody @Valid TokenRefreshRequestDTO tokenrefreshrequestdto, HttpServletRequest request)
             throws Exception {
 
         String refreshToken = request.getHeader("refreshToken");

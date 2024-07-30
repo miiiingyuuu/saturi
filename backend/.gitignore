@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/resources/application-dev.yml
+src/main/resources/aesthetic-frame-430503-d3-34b5aec99979.json
 
 ### STS ###
 .apt_generated
