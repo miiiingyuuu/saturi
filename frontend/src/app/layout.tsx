@@ -5,12 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import Button from "@mui/material/Button";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Divider from "@mui/material/Divider";
 import { authToken } from "@/utils/authutils";
 import { styled } from "@mui/material/styles";
-import { Popover } from "@mui/material";
-import { useState, useEffect } from "react";
+import { Popover, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
 
 // 버튼 색
 const LoginButton = styled(Button)(({ theme }) => ({
@@ -27,6 +27,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
   const pathname = usePathname(); // 현재 경로 가져오기
   const [isLoggedIn, setIsLoggedIn ] = useState(false); // 로그인 상태 변수
 
@@ -43,6 +44,19 @@ export default function RootLayout({
     authToken()
   }
 
+  // 프로필 PopOver 관련 필요 변수들
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null)
+  };
+
+  const open = Boolean(anchorEl);
+
   return (
     <html lang="ko" className="light">
       <body className={inter.className}>
@@ -54,19 +68,43 @@ export default function RootLayout({
               </Link>
               {!isLoggedIn ? (
                 <Link href="/login">
-                <LoginButton
-                  variant="contained"
-                  sx={{
-                    fontWeight: 'bold',
-                    height: '50px',
-                    mt: 2,
-                  }}
-                >
-                  로그인
-                </LoginButton>
-              </Link>
+                  <LoginButton
+                    variant="contained"
+                    sx={{
+                      fontWeight: 'bold',
+                      height: '50px',
+                      mt: 2,
+                    }}
+                  >
+                    로그인
+                  </LoginButton>
+                </Link>
               ) : (
-                <Image src="/profile-pic.png" width={50} height={50} alt="Profile Picture" style={{ borderRadius: '50%' }} />
+                <div>
+                  <Image
+                    src="https://localhost:8000/bird/agent.png" 
+                    width={50} 
+                    height={50} 
+                    alt="Profile Picture" 
+                    style={{ borderRadius: '50%' }} 
+                    onClick={handleProfileClick}
+                  />
+                  <Popover
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handlePopoverClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                  >
+                    <Typography sx={{ p: 2 }}>My profile</Typography>
+                  </Popover>
+                </div> 
               )}
             </div>
             <Divider/>

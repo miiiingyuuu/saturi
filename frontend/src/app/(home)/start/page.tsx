@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@mui/material/Button";
@@ -13,6 +14,18 @@ import { styled } from '@mui/material/styles';
 import "./styles.css";
 
 export default function Start() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  React.useEffect(() => {
+    const accessToken = sessionStorage.getItem("accessToken");
+    const refreshToken = sessionStorage.getItem("refreshToken");
+    if (accessToken) {
+      setIsLoggedIn(true);
+      router.push('/main');
+    }
+  }, [router]);
+
   // 색
   const SignupButton = styled(Button)(({ theme }) => ({
     backgroundColor: '#99DE83',  // 원래 색상
