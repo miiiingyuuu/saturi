@@ -16,10 +16,8 @@ import java.time.Duration;
 @Slf4j
 public class RedisService {
 
-
     private final StringRedisTemplate stringRedisTemplate;
-//    private final RedisTemplate<String,Object> redisTemplate;
-
+    private final RedisTemplate<String,Object> redisTemplate;
 
     public void setData(String key, String value) {
         ValueOperations<String,String> ops = stringRedisTemplate.opsForValue();
@@ -40,5 +38,13 @@ public class RedisService {
         ops.set(key,value, Duration.ofSeconds(duration));
     }
 
-//    public void addParticipant()
+    public void addParticipant(){
+
+        log.info("addParticipant");
+        redisTemplate.opsForList().leftPush("list1","list1testToken1");
+        redisTemplate.opsForList().leftPush("list1","list1testToken2");
+        redisTemplate.opsForList().leftPush("list1","list1testToken3");
+        redisTemplate.opsForList().leftPush("list2","list2testToken1");
+        redisTemplate.opsForList().leftPush("list2","list2testToken2");
+    }
 }
