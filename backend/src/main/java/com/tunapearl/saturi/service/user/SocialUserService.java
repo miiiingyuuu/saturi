@@ -7,6 +7,7 @@ import com.tunapearl.saturi.dto.user.UserLoginResponseDTO;
 import com.tunapearl.saturi.dto.user.UserType;
 import com.tunapearl.saturi.dto.user.social.*;
 import com.tunapearl.saturi.exception.InvalidTokenException;
+import com.tunapearl.saturi.repository.BirdRepository;
 import com.tunapearl.saturi.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class SocialUserService {
     private final UserService userService;
     private final TokenService tokenService;
     private final LocationService locationService;
+    private final BirdRepository birdRepository;
 
     @Transactional
     public UserLoginResponseDTO doSocialLogin(UserLoginRequestDTO request) {
@@ -85,6 +87,7 @@ public class SocialUserService {
         user.setEmail(socialUserResponse.getEmail());
         user.setPassword(null);
         user.setLocation(locationService.findById(1L));
+        user.setBird(birdRepository.findById(1L).orElse(null));
         user.setNickname(socialUserResponse.getNickname());
         user.setGender(socialUserResponse.getGender());
         user.setAgeRange(socialUserResponse.getAgeRange());
