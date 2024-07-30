@@ -15,7 +15,6 @@ import static jakarta.persistence.EnumType.STRING;
 @Entity
 @Getter @Setter
 @Table(name = "user")
-@ToString
 public class UserEntity {
 
     @Id @GeneratedValue

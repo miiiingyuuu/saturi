@@ -1,10 +1,12 @@
 package com.tunapearl.saturi.utils;
 
 import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.user.AgeRange;
 import com.tunapearl.saturi.domain.user.Gender;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
 import com.tunapearl.saturi.service.GameService;
+import com.tunapearl.saturi.service.lesson.AdminLessonService;
 import com.tunapearl.saturi.service.user.BirdService;
 import com.tunapearl.saturi.service.user.LocationService;
 import com.tunapearl.saturi.service.user.UserService;
@@ -38,6 +40,13 @@ public class StartupApplicationListener {
     private final BirdService birdService;
     private final UserService userService;
     private final GameService gameService;
+    private static final String[] LESSON_CATEGORIES = {"일상", "드라마 대사", "영화 대사", "밈"};
+
+    private final LocationService locationService;
+    private final BirdService birdService;
+    private final UserService userService;
+    private final AdminLessonService adminLessonService;
+>>>>>>> backend/src/main/java/com/tunapearl/saturi/utils/StartupApplicationListener.java
 
     @EventListener
     @Transactional
@@ -46,6 +55,7 @@ public class StartupApplicationListener {
         createBird();
         createUser();
         createTip();
+        createLessonCategory();
     }
 
     private void createLocation() {
@@ -70,6 +80,12 @@ public class StartupApplicationListener {
     private void createTip() {
         for (int i = 0; i < Tips.length; i++) {
             gameService.registTip(Tips[i]);
+        }
+    }
+    private void createLessonCategory() {
+        for (int i = 0; i < LESSON_CATEGORIES.length; i++) {
+            LessonCategoryEntity lessonCategory = adminLessonService.createLessonCategory(LESSON_CATEGORIES[i]);
+            log.info("create lessonCategory sample {}", lessonCategory);
         }
     }
 }

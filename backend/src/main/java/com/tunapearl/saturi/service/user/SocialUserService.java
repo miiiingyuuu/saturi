@@ -26,6 +26,7 @@ public class SocialUserService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final TokenService tokenService;
+    private final LocationService locationService;
 
     @Transactional
     public UserLoginResponseDTO doSocialLogin(UserLoginRequestDTO request) {
@@ -83,6 +84,7 @@ public class SocialUserService {
         UserEntity user = new UserEntity();
         user.setEmail(socialUserResponse.getEmail());
         user.setPassword(null);
+        user.setLocation(locationService.findById(1L));
         user.setNickname(socialUserResponse.getNickname());
         user.setGender(socialUserResponse.getGender());
         user.setAgeRange(socialUserResponse.getAgeRange());

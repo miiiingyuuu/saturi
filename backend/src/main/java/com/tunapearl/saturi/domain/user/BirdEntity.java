@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @Table(name = "bird")
-@ToString
 public class BirdEntity {
 
     @Id @GeneratedValue

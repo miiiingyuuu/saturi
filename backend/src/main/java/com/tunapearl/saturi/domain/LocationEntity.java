@@ -13,7 +13,6 @@ import java.util.List;
 @Entity
 @Getter @Setter
 @Table(name = "location")
-@ToString
 public class LocationEntity {
 
     @Id @GeneratedValue
