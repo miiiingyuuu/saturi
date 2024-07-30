@@ -5,6 +5,7 @@ import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.user.AgeRange;
 import com.tunapearl.saturi.domain.user.Gender;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
+import com.tunapearl.saturi.service.GameService;
 import com.tunapearl.saturi.service.lesson.AdminLessonService;
 import com.tunapearl.saturi.service.user.BirdService;
 import com.tunapearl.saturi.service.user.LocationService;
@@ -27,18 +28,25 @@ public class StartupApplicationListener {
     private static final String[] LOCATION_NAMES = {"default", "gyungsang", "gyunggi", "gangwon", "chungcheong", "jeonra", "jeju"};
     private static final String BASE_URL = "http://localhost:8080/bird/";
     private static final String[] BIRD_NAMES = {"agent", "banker", "clown", "sailor", "deckhand", "evil_king", "cavalry", "cute_killer",
-                                                "store_owner", "miner", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
-                                                "engineer", "musketeer"};
+            "store_owner", "miner", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
+            "engineer", "musketeer"};
     private static final String[] BIRD_DESCRIPTIONS = {"요원", "은행원", "어릿광대", "선원", "갑판원", "악의수장", "총기병", "귀여운 살인마",
-                                                        "잡화상", "광부", "석유부자", "빨간머리", "정찰대", "비밀결사", "쇼호스트", "용병",
-                                                        "기관사", "삼총사"};
+            "잡화상", "광부", "석유부자", "빨간머리", "정찰대", "비밀결사", "쇼호스트", "용병",
+            "기관사", "삼총사"};
 
+    private static final String[] Tips = {"타자가 빠르면 유리합니다.", "손가락의 유연성을 높이기 위한 운동을 하세요.", "화면을 주의 깊게 살펴보며 빠르게 대응하세요.",
+            "손가락을 워밍업하고 시작하세요.", "빠른 판단력이 중요합니다."};
+    private final LocationService locationService;
+    private final BirdService birdService;
+    private final UserService userService;
+    private final GameService gameService;
     private static final String[] LESSON_CATEGORIES = {"일상", "드라마 대사", "영화 대사", "밈"};
 
     private final LocationService locationService;
     private final BirdService birdService;
     private final UserService userService;
     private final AdminLessonService adminLessonService;
+>>>>>>> backend/src/main/java/com/tunapearl/saturi/utils/StartupApplicationListener.java
 
     @EventListener
     @Transactional
@@ -46,6 +54,7 @@ public class StartupApplicationListener {
         createLocation();
         createBird();
         createUser();
+        createTip();
         createLessonCategory();
     }
 
@@ -54,6 +63,7 @@ public class StartupApplicationListener {
             LocationEntity findLocation = locationService.createLocationSample(name);
         }
     }
+
     private void createBird() {
         for (int i = 0; i < BIRD_NAMES.length; i++) {
             birdService.createBirdSample(BIRD_NAMES[i], BIRD_DESCRIPTIONS[i], BASE_URL + BIRD_NAMES[i] + ".png");
@@ -67,6 +77,11 @@ public class StartupApplicationListener {
         userService.registerUser(userInfo);
     }
 
+    private void createTip() {
+        for (int i = 0; i < Tips.length; i++) {
+            gameService.registTip(Tips[i]);
+        }
+    }
     private void createLessonCategory() {
         for (int i = 0; i < LESSON_CATEGORIES.length; i++) {
             LessonCategoryEntity lessonCategory = adminLessonService.createLessonCategory(LESSON_CATEGORIES[i]);

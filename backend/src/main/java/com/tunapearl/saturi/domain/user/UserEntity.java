@@ -1,12 +1,14 @@
 package com.tunapearl.saturi.domain.user;
 
 import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 
@@ -51,4 +53,7 @@ public class UserEntity {
     private BirdEntity bird;
 
     private LocalDateTime returnDt;
+
+    @OneToMany(mappedBy = "user")
+    private List<GameRoomParticipantEntity> gameRoomParticipants;
 }

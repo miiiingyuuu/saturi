@@ -7,9 +7,9 @@ import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.BirdRepository;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.UserRepository;
+import com.tunapearl.saturi.service.RedisService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import com.tunapearl.saturi.utils.PasswordEncoder;
-import com.tunapearl.saturi.utils.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
-    private final RedisUtil redisUtil;
+    private final RedisService redisService;
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
 //    private final LocationRepository locationRepository;
@@ -70,13 +70,13 @@ public class UserService {
     }
 
     private static void validateEmail(String email) {
-        if(!Pattern.matches(EMAIL_PATTERN, email)) {
+        if (!Pattern.matches(EMAIL_PATTERN, email)) {
             throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다");
         }
     }
 
     private static void validatePassword(String password) {
-        if(!Pattern.matches(PASSWORD_PATTERN, password)) {
+        if (!Pattern.matches(PASSWORD_PATTERN, password)) {
             throw new IllegalArgumentException("유효하지 않은 비밀번호 형식입니다");
         }
     }
@@ -115,8 +115,7 @@ public class UserService {
      */
     public UserLoginResponseDTO loginUser(UserLoginRequestDTO request) {
         validatePasswordIsNullOrEmpty(request);
-        List<UserEntity> findUsers = userRepository.findByEmailAndPassword(request.getEmail(),
-                PasswordEncoder.encrypt(request.getEmail(), request.getPassword())).get();
+        List<UserEntity> findUsers = userRepository.findByEmailAndPassword(request.getEmail(), PasswordEncoder.encrypt(request.getEmail(), request.getPassword())).get();
         validateAuthenticateUser(findUsers); // 아이디, 비밀번호 일치 여부 검증
         UserEntity findUser = findUsers.get(0);
 //        validateDeletedUser(findUser); // 탈퇴회원 검증
@@ -126,7 +125,7 @@ public class UserService {
     }
 
     private static void validatePasswordIsNullOrEmpty(UserLoginRequestDTO request) {
-        if(request.getPassword() == null || request.getPassword().isEmpty()) {
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new IllegalArgumentException("비밀번호를 제대로 입력하거나 다른 방법으로 로그인하세요");
         }
     }
@@ -138,8 +137,8 @@ public class UserService {
     }
 
     private static void validateBannedUser(UserEntity findUser) {
-        if(findUser.getRole() == Role.BANNED) {
-            if(LocalDateTime.now().isBefore(findUser.getReturnDt())) {
+        if (findUser.getRole() == Role.BANNED) {
+            if (LocalDateTime.now().isBefore(findUser.getReturnDt())) {
                 throw new IllegalStateException("계정이 정지되었습니다. [계정 복귀 일시 : " + findUser.getReturnDt() + " ]");
             }
             findUser.setRole(Role.BASIC); // 밴 상태인데 복귀 날짜가 지났으면 다시 역할 돌리기
@@ -222,14 +221,14 @@ public class UserService {
         Random r2 = new Random();
         StringBuilder randomNumber = new StringBuilder();
         for (int i = 0; i < 6; i++) {
-            if(r1.nextBoolean()) randomNumber.append(Integer.toString(r2.nextInt(10)));
-            else randomNumber.append((char)(r2.nextInt(26) + 97));
+            if (r1.nextBoolean()) randomNumber.append(Integer.toString(r2.nextInt(10)));
+            else randomNumber.append((char) (r2.nextInt(26) + 97));
         }
         return randomNumber.toString();
     }
 
     public boolean checkAuthNum(String email, String authNum) {
-        String getAuthNum = redisUtil.getData(authNum);
+        String getAuthNum = redisService.getData(authNum);
         if (getAuthNum == null) return false;
         return getAuthNum.equals(email);
     }
@@ -239,12 +238,7 @@ public class UserService {
         String setFromEmail = "gkwo7108@gmail.com";
         //FIXME 인증 보내는 내용 수정 필요(디자인)
         String title = "사투리가 서툴러유 인증번호";
-        String content =
-                "사투리가 서툴러유를 방문해주셔서 감사합니다😊" +
-                        "<br><br>" +
-                        "인증 번호는 [ " + authCode + " ] 입니다." +
-                        "<br>" +
-                        "인증번호를 홈페이지에서 입력해주세요";
+        String content = "사투리가 서툴러유를 방문해주셔서 감사합니다😊" + "<br><br>" + "인증 번호는 [ " + authCode + " ] 입니다." + "<br>" + "인증번호를 홈페이지에서 입력해주세요";
         emailSend(setFromEmail, email, title, content, authCode);
         return authCode;
     }
@@ -257,7 +251,7 @@ public class UserService {
         helper.setSubject(title);
         helper.setText(content, true);
         mailSender.send(message);
-        redisUtil.setDataExpire(authCode, setToEmail, 60 * 5L); // redis에 인증번호 저장("1a2a3a" : "email@email")
+        redisService.setDataExpire(authCode, setToEmail, 60 * 5L); // redis에 인증번호 저장("1a2a3a" : "email@email")
     }
 
     /**
@@ -266,7 +260,6 @@ public class UserService {
     public UserInfoResponseDTO getUserProfile(Long userId) {
         UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
         log.info("find User Profile {}", findUser);
-        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(),
-                findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getImagePath());
+        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getImagePath());
     }
 }
