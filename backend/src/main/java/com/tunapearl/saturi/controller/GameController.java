@@ -1,18 +1,19 @@
 package com.tunapearl.saturi.controller;
 
-import com.tunapearl.saturi.domain.game.GameTipEntity;
+import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
+import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
 import com.tunapearl.saturi.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/game")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class GameController {
 
     private final GameService gameService;
@@ -21,14 +22,14 @@ public class GameController {
      * 게임 매칭
      */
     @PostMapping("/room/in")
-    public ResponseEntity<?> matchingRoom(@RequestParam("location") int locationId) {
-        log.info("Received room matching request for {}", locationId);
+    public ResponseEntity<GameMatchingResponseDTO> matchingRoom(@RequestBody GameMatchingRequestDTO request) {
+        log.info("Received room matching request for locationId:{} userId:{}", request.getLocationId(), request.getUserId());
 
-        return null;
+        return ResponseEntity.ok().body(gameService.matching(request));
     }
 
     /**
-     * 팁 조회
+     * 팁 등록
      */
     @PostMapping("/tip")
     public ResponseEntity<?> userTip(@RequestBody GameTipRequestDTO request) {
@@ -38,6 +39,9 @@ public class GameController {
         return null;
     }
 
+    /**
+     * 팁 조회
+     */
     @GetMapping("/tip")
     public ResponseEntity<?> getTip() {
         log.info("Received select gameTip");
