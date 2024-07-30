@@ -5,13 +5,13 @@ FROM node:20.15.0
 WORKDIR /app
 
 # package.json 워킹 디렉토리에 복사
- COPY frontend/package*.json ./
+COPY package*.json ./
 
 # 의존성 설치
 RUN npm install
 
 # 결과물 복사
-COPY frontend/ ./
+COPY . .
 
 # 빌드하기
 RUN npm run build
