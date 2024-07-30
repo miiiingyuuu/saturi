@@ -11,9 +11,9 @@ import Button from '@mui/material/Button'
 import { Router } from 'next/router';
 
 
-///////////////////////
-// 헤더 파트
-///////////////////////
+// ///////////////////////
+// // 헤더 파트
+// ///////////////////////
 
 // function Header({ onProfileClick }) {
 //   const [isPopoverOpen, setPopoverOpen] = useState(false);
@@ -56,9 +56,9 @@ import { Router } from 'next/router';
 //   );
 // }
 
-///////////////////////////////
-// Left, Middle, Right 파트
-///////////////////////////////
+// ///////////////////////////////
+// // Left, Middle, Right 파트
+// ///////////////////////////////
 
 function LeftPart({ middlePosition, moveDirection, selectedRegion }) {
   useEffect(() => {
@@ -139,8 +139,8 @@ function LeftPart({ middlePosition, moveDirection, selectedRegion }) {
       </div>
     </div>
       
-  );
-}
+//   );
+// }
 
 function MiddlePart({ middlePosition, mainPageIndicator, selectedRegion }) {
   return (
@@ -198,15 +198,15 @@ function RightPart() {
   );
 }
 
-///////////////////////
-// Footer 파트
-///////////////////////
+// ///////////////////////
+// // Footer 파트
+// ///////////////////////
 
-function Footer () {
-  return (
-    console.log("")
-  )
-}
+// function Footer () {
+//   return (
+//     console.log("")
+//   )
+// }
 
 
 
@@ -267,37 +267,37 @@ export default function App() {
     setModalOpen(true);
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
-  };
+//   const closeModal = () => {
+//     setModalOpen(false);
+//   };
 
-  const handleLeftClick = (e) => {
-    e.preventDefault();
-    moveDirection.current = "left";
-    if (currentMainPageRef.current === 1) {
-      setMapLeft("80%");
-      setMiddleToWhere(2);
-      currentMainPageRef.current = 0; // 값 변경
-    } else if (currentMainPageRef.current === 2) {
-      setMapLeft("50%");
-      setMiddleToWhere(1);
-      currentMainPageRef.current = 1; // 값 변경
-    }
-  };
+//   const handleLeftClick = (e) => {
+//     e.preventDefault();
+//     moveDirection.current = "left";
+//     if (currentMainPageRef.current === 1) {
+//       setMapLeft("80%");
+//       setMiddleToWhere(2);
+//       currentMainPageRef.current = 0; // 값 변경
+//     } else if (currentMainPageRef.current === 2) {
+//       setMapLeft("50%");
+//       setMiddleToWhere(1);
+//       currentMainPageRef.current = 1; // 값 변경
+//     }
+//   };
 
-  const handleRightClick = (e) => {
-    e.preventDefault();
-    moveDirection.current = "right";
-    if (currentMainPageRef.current === 1) {
-      setMapLeft("20%");
-      setMiddleToWhere(0);
-      currentMainPageRef.current = 2; // 값 변경
-    } else if (currentMainPageRef.current === 0) {
-      setMapLeft("50%");
-      setMiddleToWhere(1);
-      currentMainPageRef.current = 1; // 값 변경
-    }
-  };
+//   const handleRightClick = (e) => {
+//     e.preventDefault();
+//     moveDirection.current = "right";
+//     if (currentMainPageRef.current === 1) {
+//       setMapLeft("20%");
+//       setMiddleToWhere(0);
+//       currentMainPageRef.current = 2; // 값 변경
+//     } else if (currentMainPageRef.current === 0) {
+//       setMapLeft("50%");
+//       setMiddleToWhere(1);
+//       currentMainPageRef.current = 1; // 값 변경
+//     }
+//   };
 
 
 

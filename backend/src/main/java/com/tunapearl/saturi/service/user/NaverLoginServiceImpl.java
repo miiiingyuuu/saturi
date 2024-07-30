@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.service;
+package com.tunapearl.saturi.service.user;
 
 import com.tunapearl.saturi.domain.user.AgeRange;
 import com.tunapearl.saturi.domain.user.Gender;

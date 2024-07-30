@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.stream.Location;
 import java.util.Optional;
 
 @Repository
@@ -13,8 +14,9 @@ public class LocationRepository {
 
     private final EntityManager em;
 
-    public void save(LocationEntity location) {
+    public Long save(LocationEntity location) {
         em.persist(location);
+        return location.getLocationId();
     }
 
     public Optional<LocationEntity> findById(Long locationId) {

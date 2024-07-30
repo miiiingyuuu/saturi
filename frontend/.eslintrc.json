@@ -27,6 +27,7 @@
     "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],
     "react/jsx-props-no-multi-spaces": "error",
     "react/jsx-first-prop-new-line": ["error", "multiline"],
+    "react/jsx-no-bind": "off",
     "react/jsx-max-props-per-line": [
       "error",
       {
