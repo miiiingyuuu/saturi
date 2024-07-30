@@ -3,13 +3,13 @@
 import "@/styles/globals.css";
 import Link from "next/link";
 import Image from "next/image";
-// import type { Metadata } from "next"
 import { Inter } from "next/font/google";
 import Button from "@mui/material/Button";
 import { usePathname } from "next/navigation";
 import Divider from "@mui/material/Divider";
 import { authToken } from "@/utils/authutils";
-import { styled } from "@mui/material/styles"
+import { styled } from "@mui/material/styles";
+import { Popover } from "@mui/material";
 import { useState, useEffect } from "react";
 
 // 버튼 색
@@ -49,7 +49,7 @@ export default function RootLayout({
           {!hideHeader && (
           <header>
             <div className="header">
-              <Link href="/start"> {/* 링크 바꿔야 함 */}
+              <Link href={isLoggedIn ? "/main" : "/start"}>
                 <Image src="/SSLogo.png" width={127.5} height={85} alt="SSLogo" />
               </Link>
               {!isLoggedIn ? (
@@ -66,9 +66,7 @@ export default function RootLayout({
                 </LoginButton>
               </Link>
               ) : (
-                <Link href="/profile">
-                  <Image src="/profile-pic.png" width={50} height={50} alt="Profile Picture" style={{ borderRadius: '50%' }} />
-                </Link>
+                <Image src="/profile-pic.png" width={50} height={50} alt="Profile Picture" style={{ borderRadius: '50%' }} />
               )}
             </div>
             <Divider/>
