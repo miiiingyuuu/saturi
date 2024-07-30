@@ -7,13 +7,16 @@ import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.AdminMsgResponseDTO;
 import com.tunapearl.saturi.dto.admin.lesson.*;
 import com.tunapearl.saturi.service.lesson.AdminLessonService;
+import com.tunapearl.saturi.service.lesson.GcsService;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.service.user.LocationService;
+import com.tunapearl.saturi.utils.FileStoreUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,8 @@ public class AdminLessonController {
     private final AdminLessonService adminLessonService;
     private final LocationService locationService;
     private final LessonService lessonService;
+    private final FileStoreUtil fileStoreUtil;
+    private final GcsService gcsService;
 
     /**
      * lesson group 등록
@@ -60,14 +65,17 @@ public class AdminLessonController {
     }
 
     /**
-     * 레슨 등록
+     * 레슨 등록(file 등록이 필요하여 form으로 전송해야함  enctype="multipart/form-data"
      */
     //FIXME 파일 등록 추가
     @PostMapping
-    public ResponseEntity<AdminMsgResponseDTO> registerLesson(@RequestBody LessonRegisterRequestDTO request) {
+    public ResponseEntity<AdminMsgResponseDTO> registerLesson(@ModelAttribute LessonRegisterRequestDTO request) throws IOException {
         log.info("received request to register lesson {}", request);
         LessonGroupEntity findLessonGroup = lessonService.findByIdLessonGroup(request.getLessonGroupId());
-        Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript());
+        UploadFile attachFile = fileStoreUtil.storeFile(request.getSampleVoice());
+        gcsService.uploadFile("saturi", request.getSampleVoice().getOriginalFilename(), request.getSampleVoice());
+        String filePath = fileStoreUtil.getFullPath(attachFile.getStoreFileName());
+        Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript(), filePath);
         return ResponseEntity.created(URI.create("/lesson")).body(new AdminMsgResponseDTO("ok"));
     }
 
