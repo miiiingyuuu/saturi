@@ -1,8 +1,7 @@
 import axios from "axios";
-import { baseURL } from "@/app/constants";
 
 const api = axios.create({
-  baseURL,
+  baseURL : process.env.NEXT_PUBLIC_BACKURL,
   timeout: 10000,
   // 기본으로 넣어줘야할 헤더
   headers: {
@@ -28,9 +27,9 @@ api.interceptors.request.use(
   (config) => {
     // 엑세스 토큰을 세션 스토리지에서 가져오고,
     const token = sessionStorage.getItem("accessToken");
-    // 헤더에 추가
+    // 토큰이 있으면 토큰을 넣어서 요청을 보냅니다.
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `${token}`;
     }
     return config;
   },
@@ -60,7 +59,8 @@ api.interceptors.response.use(
 
         error.config.headers = {
           "content-Type: "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          // 리프레시 토큰 변수 확인하기
+          refreshToken: `${accessToken}`,
         }
 
         const response = await axios.request(error.config)

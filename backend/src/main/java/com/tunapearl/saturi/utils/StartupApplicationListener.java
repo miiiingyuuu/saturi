@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.user.AgeRange;
 import com.tunapearl.saturi.domain.user.Gender;
+import com.tunapearl.saturi.domain.user.BirdEntity;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
 import com.tunapearl.saturi.service.GameService;
 import com.tunapearl.saturi.service.lesson.AdminLessonService;
@@ -24,6 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class StartupApplicationListener {
+    
+    private final LocationService locationService;
+    private final BirdService birdService;
+    private final UserService userService;
+    private final GameService gameService;
+    private final AdminLessonService adminLessonService;
 
     private static final String[] LOCATION_NAMES = {"default", "gyungsang", "gyunggi", "gangwon", "chungcheong", "jeonra", "jeju"};
     private static final String BASE_URL = "http://localhost:8080/bird/";
@@ -36,12 +43,8 @@ public class StartupApplicationListener {
 
     private static final String[] Tips = {"타자가 빠르면 유리합니다.", "손가락의 유연성을 높이기 위한 운동을 하세요.", "화면을 주의 깊게 살펴보며 빠르게 대응하세요.",
             "손가락을 워밍업하고 시작하세요.", "빠른 판단력이 중요합니다."};
-    private final LocationService locationService;
-    private final BirdService birdService;
-    private final UserService userService;
-    private final GameService gameService;
     private static final String[] LESSON_CATEGORIES = {"일상", "드라마 대사", "영화 대사", "밈"};
-    private final AdminLessonService adminLessonService;
+    
 
     @EventListener
     @Transactional
@@ -82,4 +85,5 @@ public class StartupApplicationListener {
             log.info("create lessonCategory sample {}", lessonCategory);
         }
     }
+
 }

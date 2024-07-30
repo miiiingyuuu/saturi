@@ -1,12 +1,39 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Button ,RadioGroup, Radio } from '@nextui-org/react';
 import "./styles.css"
 import Link from 'next/link';
+import { RadioGroup, FormControlLabel, Radio, Button, Typography, Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import axios from 'axios';
+
+const StyledSelectBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  marginTop: '50px',
+  textAlign: 'center',
+  height: 'auto',
+  minHeight: '100%',
+  fontSize: '2rem'
+}));
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  width: '100%',
+  maxWidth: '600px',
+  margin: 'auto',
+  padding: '20px',
+  boxShadow: 1,
+  borderRadius: 2,
+  justifyContent: 'center',
+}));
 
 export default function Step() {
-  const [ step, setStep ] = useState(1)
+  const [step, setStep] = useState(1)
+  const [formData, setFormData] = useState({
+    gender: '',
+    ageRange: '',
+    locationId: '',
+  });
 
   const handleNext = () => {
     setStep(step + 1)
@@ -16,62 +43,79 @@ export default function Step() {
     setStep(step - 1)
   }
 
+
+
+  // 버튼 색
+  const NextButton = styled(Button)(({ theme }) => ({
+    backgroundColor: '#99DE83',
+    '&:hover': {
+      backgroundColor: '#7AB367',
+    },
+  }));
+
   return (
-    <div className="select">
-    {step === 1 && (
-      <RadioGroup label="성별이 어떻게 되시나요?" defaultValue="null">
-        <div className="box">
-          <Radio value="male" className="content">남자</Radio>``
-          <Radio value="female" className="content">여자</Radio>
-          <Radio value="null" className="content">알려주고 싶지 않아요...</Radio>
-        </div>
-        <div className="first-button">
-          <Button className="button" onClick={handleNext}>다음</Button>
-        </div>
-      </RadioGroup>
-    )}
-    {step === 2 && (
-      <RadioGroup label="연령대가 어떻게 되시나요?" defaultValue="null">
-        <div className="box">
-          <Radio value="teen-twen" className="content">10대 ~ 20대</Radio>
-          <Radio value="thri-four" className="content">30대 ~ 40대</Radio>
-          <Radio value="fif-six" className="content">50대 ~ 60대</Radio>
-          <Radio value="over-seven" className="content">70대 이상</Radio>
-          <Radio value="null" className="content">알려주고 싶지 않아요...</Radio>
-        </div>
-        <div className="selectbutton">
-          <Button className="button" onClick={handleBack}>뒤로가기</Button>
-          <Button className="button" onClick={handleNext}>다음</Button>
-        </div>
-      </RadioGroup>
-    )}
-    {step === 3 && (
-      <RadioGroup label="주로 사용하시는 사투리는 무엇인가요?" defaultValue="null">
-        <div className="box">
-          <Radio value="gyeonggi" className="content">경기도</Radio>
-          <Radio value="gyeongsang" className="content">경상도</Radio>
-          <Radio value="jeolla" className="content">전라도</Radio>
-          <Radio value="chungchung" className="content">충청도</Radio>
-          <Radio value="kangwon" className="content">강원도</Radio>
-          <Radio value="jeju" className="content">제주도</Radio>
-          <Radio value="null" className="content">알려주고 싶지 않아요...</Radio>
-        </div>
-        <div className="selectbutton">
-          <Button className="button" onClick={handleBack}>뒤로가기</Button>
-          <Button className="button" onClick={handleNext}>회원가입 완료</Button>
-        </div>
-    </RadioGroup>
-    )}
-    {step === 4 && (
-        <div>
-          <h2>회원가입이 완료되었습니다!</h2>
-          <div className="final">
-            <Link href="/login">
-              <Button className="last-button">로그인 페이지로</Button>
-            </Link>
-          </div>
-        </div>
+    <StyledSelectBox>
+      {step === 1 && (
+        <Box>
+          <Typography variant="h6" gutterBottom  sx={{ justifyContent: 'center' }}>성별이 어떻게 되시나요?</Typography>
+          <RadioGroup defaultValue="null">
+            <StyledBox className="box">
+              <FormControlLabel value="male" control={<Radio />} label="남자" className="content" />
+              <FormControlLabel value="female" control={<Radio />} label="여자" className="content" />
+              <FormControlLabel value="null" control={<Radio />} label="알려주고 싶지 않아요..." className="content" />
+            </StyledBox>
+            <Box className="first-button">
+              <NextButton variant="contained" className="button" onClick={handleNext}>다음</NextButton>
+            </Box>
+          </RadioGroup>
+        </Box>
       )}
-  </div>
+      {step === 2 && (
+        <Box>
+          <Typography variant="h6" gutterBottom>연령대가 어떻게 되시나요?</Typography>
+          <RadioGroup defaultValue="null">
+            <StyledBox className="box">
+              <FormControlLabel value="teen-twen" control={<Radio />} label="10대 ~ 20대" className="content" />
+              <FormControlLabel value="thri-four" control={<Radio />} label="30대 ~ 40대" className="content" />
+              <FormControlLabel value="fif-six" control={<Radio />} label="50대 ~ 60대" className="content" />
+              <FormControlLabel value="over-seven" control={<Radio />} label="70대 이상" className="content" />
+              <FormControlLabel value="null" control={<Radio />} label="알려주고 싶지 않아요..." className="content" />
+            </StyledBox>
+            <Box className="selectbutton">
+              <NextButton variant="contained" className="button" onClick={handleBack}>뒤로가기</NextButton>
+              <NextButton variant="contained" className="button" onClick={handleNext}>다음</NextButton>
+            </Box>
+          </RadioGroup>
+        </Box>
+      )}
+      {step === 3 && (
+        <Box>
+          <Typography variant="h6" gutterBottom>주로 사용하시는 사투리는 무엇인가요?</Typography>
+          <RadioGroup defaultValue="null">
+            <StyledBox className="box">
+              <FormControlLabel value="gyeonggi" control={<Radio />} label="경기도" className="content" />
+              <FormControlLabel value="gyeongsang" control={<Radio />} label="경상도" className="content" />
+              <FormControlLabel value="jeolla" control={<Radio />} label="전라도" className="content" />
+              <FormControlLabel value="chungchung" control={<Radio />} label="충청도" className="content" />
+              <FormControlLabel value="kangwon" control={<Radio />} label="강원도" className="content" />
+              <FormControlLabel value="jeju" control={<Radio />} label="제주도" className="content" />
+              <FormControlLabel value="null" control={<Radio />} label="알려주고 싶지 않아요..." className="content" />
+            </StyledBox>
+            <Box className="selectbutton">
+              <NextButton variant="contained" className="button" onClick={handleBack}>뒤로가기</NextButton>
+              <NextButton variant="contained" className="button" onClick={handleNext}>회원가입 완료</NextButton>
+            </Box>
+          </RadioGroup>
+        </Box>
+      )}
+      {step === 4 && (
+        <Box>
+          <Typography variant="h4" gutterBottom>회원가입이 완료되었습니다!</Typography>
+            <Link href="/login" passHref>
+              <NextButton variant="contained" sx={{ width:'200px', height:'50px', padding: 'auto' }}>로그인 페이지로</NextButton>
+            </Link>
+        </Box>
+      )} 
+    </StyledSelectBox>
   )
 }

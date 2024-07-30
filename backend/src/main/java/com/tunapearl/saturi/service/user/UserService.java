@@ -96,6 +96,7 @@ public class UserService {
     }
 
     private UserEntity createNewUser(UserRegisterRequestDTO request) {
+        log.info("request = {}", request);
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
         user.setPassword(PasswordEncoder.encrypt(request.getEmail(), request.getPassword()));

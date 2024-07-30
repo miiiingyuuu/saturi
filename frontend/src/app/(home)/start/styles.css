@@ -1,133 +1,79 @@
 /* styles/start.css */
 
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
-    background-position: center;
-    color: #fff;
-    max-width: 1200px;
-    width: 100%;
-    padding: 0 20px;
-    box-sizing: border-box;
-    margin: 0 auto;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
 
-  .logo2 {
-    width: 30%;
-    height: 30%;
-  }
-  
-  .loginButton, .signupButton {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 15px;
-    font-weight: bold;
-  }
-  
-  .loginButton {
-    background-color: #99de83;
-    color: white;
-    height: 50px;
-    margin-right: 10px;
-  }
+.logo2 {
+  width: 30%;
+  height: 30%;
+}
 
-  .signupButton {
-    background-color: #99de83;
-    color: white;
-    height: 70px;
-    width: 450px;
-    font-size: 25px;
-    margin-top: 30px;
-  }
-  
-  .main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin-top: 150px;
-    margin-bottom: 210px;
-    color: black;
-  }
-  
-  .title {
-    font-size: 3rem;
-    margin: 0;
-  }
-  
-  .description {
-    font-size: 1.5rem;
-    margin: 20px 0;
-    margin-bottom: 70px;
-    font-weight: bold;
-  }
-  
-  .startButton {
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    background-color: #99de83;
-    color: white;
-    cursor: pointer;
-  }
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: 150px;
+  margin-bottom: 210px;
+  color: black;
+}
 
-  .intro {
-    margin-top: 40px; /* Margin to separate from the content */
-    /* padding: 250px; */
-    text-align: center;
-    color: black;
-    margin-bottom: 40px;
-    white-space: nowrap;
-  }
-  
-  .intro h2 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-  }
-  
-  .intro p {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
+.title {
+  font-size: 3rem;
+  margin: 0;
+}
 
-  .bottom {
-    display: contents;
-    color: black;
-    /* text-align: center; */
-    justify-content: center;
-    font-weight: bold;
-    font-size: 30px;
-  }
+.description {
+  font-size: 1.5rem;
+  margin: 20px 0;
+  margin-bottom: 70px;
+  font-weight: bold;
+}
 
-    /* Styling for the FAQ section */
-  .faq {
-    margin-top: 80px;
-    width: 100%;
-    max-width: 800px; /* Center the FAQ container with a max width */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center align the items within the container */
-    color: black;
-    font-weight: bold;
-  }
+.intro {
+  margin-top: 40px; /* Margin to separate from the content */
+  /* padding: 250px; */
+  text-align: center;
+  color: black;
+  margin-bottom: 40px;
+  white-space: nowrap;
+}
 
-  .faq h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    text-align: center;
-  }
+.intro h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
 
-  .faq-item {
-    background-color: #fff;
-    border-radius: 15px;
-    margin-bottom: 10px;
-    padding: 10px 20px;
-    width: 100%; /* Make the FAQ items take full width of the container */
-  }
+.intro p {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.bottom {
+  display: contents;
+  color: black;
+  /* text-align: center; */
+  justify-content: center;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.faq h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: black;
+}

@@ -8,10 +8,6 @@
     font-size: 2rem;
 }
 
-.select box {
-    text-align: center;
-}
-
 .first-button {
     display: flex;
     justify-content: right;
@@ -20,15 +16,6 @@
 .selectbutton {
     display: flex;
     justify-content: space-between;
-    /* margin-left: auto;
-    margin-right: auto; */
-}
-
-.button {
-    background-color:#99de83;
-    color: white;
-    font-weight: bold;
-    margin-top: 5px;
 }
 
 .content {
@@ -40,6 +27,9 @@
     border-radius: 15px;
     background-color: white;
     flex-direction: column;
+    height: auto;
+    width: 400px;
+    margin-top: 10px;
     margin-bottom: 20px;
 }
 

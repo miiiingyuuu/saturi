@@ -1,3 +1,5 @@
+import { ChangeEvent } from "react";
+
 // auth-util
 export interface IHandleLogin {
   email: string
