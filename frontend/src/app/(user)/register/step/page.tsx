@@ -12,6 +12,8 @@ import {
   Box
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { handleValueChange } from "@/utils/utils";
+import { updateUser } from "@/utils/authutils";
 
 const StyledSelectBox = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -34,7 +36,7 @@ const StyledBox = styled(Box)(({theme}) => ({
 }));
 
 export default function Step() {
-  const [step, setStep] = useState(1)
+  const [ step, setStep ] = useState(1)
   const [ gender, setGender ] = useState("")
   const [ ageRange, setAgeRange ] = useState("")
   const [ locationId, setLocationId ] = useState("")
@@ -57,7 +59,7 @@ export default function Step() {
       {step === 1 && (
         <Box>
           <Typography variant="h6" gutterBottom sx={{ justifyContent: 'center' }}>성별이 어떻게 되시나요?</Typography>
-          <RadioGroup defaultValue="null">
+          <RadioGroup defaultValue="null" value={gender} onChange={(event)=> handleValueChange(event,setGender)}>
             <StyledBox className="box">
               <FormControlLabel value="male" control={<Radio />} label="남자" className="content" />
               <FormControlLabel value="female" control={<Radio />} label="여자" className="content" />
@@ -72,7 +74,7 @@ export default function Step() {
       {step === 2 && (
         <Box>
           <Typography variant="h6" gutterBottom>연령대가 어떻게 되시나요?</Typography>
-          <RadioGroup defaultValue="null">
+          <RadioGroup defaultValue="null" value={ageRange} onChange={(event) => handleValueChange(event, setAgeRange)}>
             <StyledBox className="box">
               <FormControlLabel value="teen-twen" control={<Radio />} label="10대 ~ 20대" className="content" />
               <FormControlLabel value="thri-four" control={<Radio />} label="30대 ~ 40대" className="content" />
@@ -90,7 +92,7 @@ export default function Step() {
       {step === 3 && (
         <Box>
           <Typography variant="h6" gutterBottom>주로 사용하시는 사투리는 무엇인가요?</Typography>
-          <RadioGroup defaultValue="null">
+          <RadioGroup defaultValue="null" value={locationId} onChange={(event) => handleValueChange(event, setLocationId)}>
             <StyledBox className="box">
               <FormControlLabel value="gyeonggi" control={<Radio />} label="경기도" className="content" />
               <FormControlLabel value="gyeongsang" control={<Radio />} label="경상도" className="content" />
@@ -102,7 +104,14 @@ export default function Step() {
             </StyledBox>
             <Box className="selectbutton">
               <NextButton variant="contained" className="button" onClick={() => handleStep(-1)}>뒤로가기</NextButton>
-              <NextButton variant="contained" className="button" onClick={() => handleStep(1)}>회원가입 완료</NextButton>
+              <NextButton variant="contained" className="button" onClick={() => {
+                updateUser({
+                  gender,
+                  locationId,
+                  ageRange
+                })
+                handleStep(1)
+              }}>회원가입 완료</NextButton>
             </Box>
           </RadioGroup>
         </Box>

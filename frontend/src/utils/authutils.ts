@@ -2,7 +2,6 @@ import api from "@/lib/axios";
 import { IHandleLogin } from "@/utils/props";
 import { setCookie } from "cookies-next";
 
-
 // 로그인
 export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
   api.post("/user/auth/login", {
@@ -19,13 +18,13 @@ export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
       console.log(error)
     })
 }
-
+// 카카오 로그인
 export function goKakaoLogin() {
   console.log("goKakaoLogin 호출");
   const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/kakao`
   window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAOSECRET}&redirect_uri=${redirectUrl}&response_type=code`
 }
-
+// 네이버 로그인
 export function goNaverLogin() {
   const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/naver`
   window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_NAVERKEY}&client_secret=${process.env.NEXT_PUBLIC_NAVERSECRET}&redirect_uri=${redirectUrl}&state=8697240`
@@ -62,4 +61,13 @@ export function authToken() {
             })
         }
     })
+}
+
+// 회원 정보 수정
+export function updateUser(data: object) {
+  // 이미 엑세스 토큰을 머리에 달고 있음
+  // 기타 정보는 쿠키에 담겨 있음
+  api.put("/user/auth", data)
+    .then(response => console.log(response))
+  // 여기 반환해야 할게 있나?
 }
