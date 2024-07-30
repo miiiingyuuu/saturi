@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.service;
+package com.tunapearl.saturi.service.user;
 
 import com.tunapearl.saturi.dto.user.UserLoginResponseDTO;
 import com.tunapearl.saturi.utils.JWTUtil;
@@ -19,38 +19,20 @@ public class TokenService {
 
     public UserLoginResponseDTO saveRefreshToken(Long userId){
 
-
         String accessToken = jwtUtil.createAccessToken(userId);
         String refreshToken = jwtUtil.createRefreshToken(userId);
 
-        redisUtil.setDataExpire(userId.toString(),refreshToken,60 * 5L);
+        redisUtil.setData(userId.toString(),refreshToken);
         return new UserLoginResponseDTO(accessToken, refreshToken);
     }
 
     public String getRefreshToken(Long id){
 
-//        Optional<Token> tokenOptional = tokenRepository.findById(id);
-//
-//        if (tokenOptional.isEmpty()) {
-//            throw new Exception("Refresh token not found for id: " + id);
-//        }
-//        else{
-//            Token token = tokenOptional.get();
-//            log.info("refreshToken found for id: {}", token.getRefreshToken());
-//            return token.getRefreshToken();
-//        }
         return redisUtil.getData(id.toString());
     }
 
     public void deleteRefreshToken(Long id){
 
-//        Optional<Token> registeredUser = tokenRepository.findById(id);
-//        if (registeredUser.isPresent()) {
-//            throw new UserExistException("[" + id + "] 등록된 사용자 입니다.");
-//        }
-//        tokenRepository.deleteById(id);
-
         redisUtil.deleteData(id.toString());
     }
-
 }

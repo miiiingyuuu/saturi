@@ -3,7 +3,9 @@ package com.tunapearl.saturi.controller;
 
 import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.*;
-import com.tunapearl.saturi.service.*;
+import com.tunapearl.saturi.service.user.SocialUserService;
+import com.tunapearl.saturi.service.user.TokenService;
+import com.tunapearl.saturi.service.user.UserService;
 import com.tunapearl.saturi.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -93,7 +95,8 @@ public class UserController {
     @GetMapping("/auth/profile")
     public ResponseEntity<UserInfoResponseDTO> userProfile(@RequestHeader("accessToken") String authorization) throws UnAuthorizedException {
         Long userId = jwtUtil.getUserId(authorization);
-        log.info("Received user profile info request for {}", userId);
+        UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
+        log.info("Received user profile info response for {}", userProfile);
         return ResponseEntity.ok().body(userService.getUserProfile(userId));
     }
 
@@ -136,13 +139,10 @@ public class UserController {
      * 이메일 인증 메일 전송
      */
     @PostMapping("/auth/email-valid")
-    public ResponseEntity<String> emailSend(@RequestBody @Valid EmailRequestDTO request) {
+    public ResponseEntity<String> emailSend(@RequestBody @Valid EmailRequestDTO request) throws MessagingException {
         log.info("Received normal user email send request for {}", request.getEmail());
-        try {
-            return ResponseEntity.ok().body(userService.setEmailSend(request.getEmail()));
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.ok().body(userService.setEmailSend(request.getEmail()));
+
     }
 
     /**

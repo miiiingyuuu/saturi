@@ -3,17 +3,37 @@
 import React, { useState } from 'react';
 import "./styles.css"
 import Link from 'next/link';
-import { 
-  RadioGroup, 
-  FormControlLabel, 
-  Radio, 
-  Button, 
-  Typography, 
-  Box 
-} from '@mui/material';
+import { RadioGroup, FormControlLabel, Radio, Button, Typography, Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import axios from 'axios';
+
+const StyledSelectBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  marginTop: '50px',
+  textAlign: 'center',
+  height: 'auto',
+  minHeight: '100%',
+  fontSize: '2rem'
+}));
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  width: '100%',
+  maxWidth: '600px',
+  margin: 'auto',
+  padding: '20px',
+  boxShadow: 1,
+  borderRadius: 2,
+  justifyContent: 'center',
+}));
 
 export default function Step() {
   const [step, setStep] = useState(1)
+  const [formData, setFormData] = useState({
+    gender: '',
+    ageRange: '',
+    locationId: '',
+  });
 
   const handleNext = () => {
     setStep(step + 1)
@@ -23,32 +43,29 @@ export default function Step() {
     setStep(step - 1)
   }
 
+
+
+  // 버튼 색
+  const NextButton = styled(Button)(({ theme }) => ({
+    backgroundColor: '#99DE83',
+    '&:hover': {
+      backgroundColor: '#7AB367',
+    },
+  }));
+
   return (
-    <Box className="select">
+    <StyledSelectBox>
       {step === 1 && (
         <Box>
-          <Typography variant="h6" gutterBottom>성별이 어떻게 되시나요?</Typography>
+          <Typography variant="h6" gutterBottom  sx={{ justifyContent: 'center' }}>성별이 어떻게 되시나요?</Typography>
           <RadioGroup defaultValue="null">
-            <Box className="box">
+            <StyledBox className="box">
               <FormControlLabel value="male" control={<Radio />} label="남자" className="content" />
               <FormControlLabel value="female" control={<Radio />} label="여자" className="content" />
               <FormControlLabel value="null" control={<Radio />} label="알려주고 싶지 않아요..." className="content" />
-            </Box>
+            </StyledBox>
             <Box className="first-button">
-            <Button 
-              variant="contained" 
-              sx={{
-                background: '#99DE83',
-                width: 'auto',
-                height: '40px',
-                '&:hover': {
-                  backgroundColor: '#7AB367',
-                },
-              }}
-              onClick={handleNext}
-            >
-              다음
-            </Button>
+              <NextButton variant="contained" className="button" onClick={handleNext}>다음</NextButton>
             </Box>
           </RadioGroup>
         </Box>
@@ -57,42 +74,16 @@ export default function Step() {
         <Box>
           <Typography variant="h6" gutterBottom>연령대가 어떻게 되시나요?</Typography>
           <RadioGroup defaultValue="null">
-            <Box className="box">
+            <StyledBox className="box">
               <FormControlLabel value="teen-twen" control={<Radio />} label="10대 ~ 20대" className="content" />
               <FormControlLabel value="thri-four" control={<Radio />} label="30대 ~ 40대" className="content" />
               <FormControlLabel value="fif-six" control={<Radio />} label="50대 ~ 60대" className="content" />
               <FormControlLabel value="over-seven" control={<Radio />} label="70대 이상" className="content" />
               <FormControlLabel value="null" control={<Radio />} label="알려주고 싶지 않아요..." className="content" />
-            </Box>
+            </StyledBox>
             <Box className="selectbutton">
-            <Button 
-              variant="contained" 
-              sx={{
-                background: '#99DE83',
-                width: 'auto',
-                height: '40px',
-                '&:hover': {
-                  backgroundColor: '#7AB367',
-                },
-              }}
-              onClick={handleBack}
-            >
-              뒤로가기
-            </Button>
-            <Button 
-              variant="contained" 
-              sx={{
-                background: '#99DE83',
-                width: 'auto',
-                height: '40px',
-                '&:hover': {
-                  backgroundColor: '#7AB367',
-                },
-              }}
-              onClick={handleNext}
-            >
-              다음
-            </Button>
+              <NextButton variant="contained" className="button" onClick={handleBack}>뒤로가기</NextButton>
+              <NextButton variant="contained" className="button" onClick={handleNext}>다음</NextButton>
             </Box>
           </RadioGroup>
         </Box>
@@ -101,7 +92,7 @@ export default function Step() {
         <Box>
           <Typography variant="h6" gutterBottom>주로 사용하시는 사투리는 무엇인가요?</Typography>
           <RadioGroup defaultValue="null">
-            <Box className="box">
+            <StyledBox className="box">
               <FormControlLabel value="gyeonggi" control={<Radio />} label="경기도" className="content" />
               <FormControlLabel value="gyeongsang" control={<Radio />} label="경상도" className="content" />
               <FormControlLabel value="jeolla" control={<Radio />} label="전라도" className="content" />
@@ -109,36 +100,10 @@ export default function Step() {
               <FormControlLabel value="kangwon" control={<Radio />} label="강원도" className="content" />
               <FormControlLabel value="jeju" control={<Radio />} label="제주도" className="content" />
               <FormControlLabel value="null" control={<Radio />} label="알려주고 싶지 않아요..." className="content" />
-            </Box>
+            </StyledBox>
             <Box className="selectbutton">
-            <Button 
-              variant="contained" 
-              sx={{
-                background: '#99DE83',
-                width: 'auto',
-                height: '40px',
-                '&:hover': {
-                  backgroundColor: '#7AB367',
-                },
-              }}
-              onClick={handleBack}
-            >
-              뒤로가기
-            </Button>
-            <Button 
-              variant="contained" 
-              sx={{
-                background: '#99DE83',
-                width: 'auto',
-                height: '40px',
-                '&:hover': {
-                  backgroundColor: '#7AB367',
-                },
-              }}
-              onClick={handleNext}
-            >
-              회원가입 완료
-            </Button>
+              <NextButton variant="contained" className="button" onClick={handleBack}>뒤로가기</NextButton>
+              <NextButton variant="contained" className="button" onClick={handleNext}>회원가입 완료</NextButton>
             </Box>
           </RadioGroup>
         </Box>
@@ -146,27 +111,11 @@ export default function Step() {
       {step === 4 && (
         <Box>
           <Typography variant="h4" gutterBottom>회원가입이 완료되었습니다!</Typography>
-          <Box className="final">
             <Link href="/login" passHref>
-            <Button 
-            variant="contained" 
-            sx={{
-              background: '#99DE83',
-              width: '400px',
-              height: '50px',
-              marginTop: '30px',
-              fontSize: '1rem',
-              '&:hover': {
-                backgroundColor: '#7AB367',
-              },
-            }}
-            >
-              회원 가입 완료
-          </Button>
+              <NextButton variant="contained" sx={{ width:'200px', height:'50px', padding: 'auto' }}>로그인 페이지로</NextButton>
             </Link>
-          </Box>
         </Box>
-      )}
-    </Box>
+      )} 
+    </StyledSelectBox>
   )
 }
