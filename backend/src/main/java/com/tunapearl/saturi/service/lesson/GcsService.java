@@ -21,11 +21,10 @@ public class GcsService {
     private final Storage storage = StorageOptions.getDefaultInstance().getService();
 
     public String uploadFile(String bucketName, String fileName, MultipartFile file) throws IOException {
-        log.info("시ㄹㅇㄴㄹㅇㄴㅇㄴ리ㅓㅏㄹㅇㄴㄹ너ㅣㅏㅇㄴㅇ {}", file.getBytes());
+        log.info("내가 맞니??? {}, {}", storage.getOptions().getProjectId(), storage.getOptions().getCredentials());
         BlobId blobId = BlobId.of(bucketName, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
         Blob blob = storage.create(blobInfo, file.getBytes());
-
         return blob.getMediaLink();
     }
 
