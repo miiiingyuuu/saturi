@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.controller;
+package com.tunapearl.saturi.controller.admin;
 
 import com.tunapearl.saturi.dto.admin.UserBanRequestDTO;
 import com.tunapearl.saturi.dto.user.UserMsgResponseDTO;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping("/admin/claim")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class AdminController {
+public class AdminClaimController {
 
     private final AdminService adminService;
     private final UserService userService;
@@ -23,7 +23,7 @@ public class AdminController {
     /**
      * 회원 정지
      */
-    @PostMapping("/claim/user")
+    @PostMapping("/user")
     public ResponseEntity<UserMsgResponseDTO> userBan(@RequestBody @Valid UserBanRequestDTO request) {
         log.info("Received user ban request for {}", request.getUserId());
         return ResponseEntity.ok().body(adminService.banUser(request));

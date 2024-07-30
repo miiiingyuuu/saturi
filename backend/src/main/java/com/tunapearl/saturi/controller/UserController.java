@@ -93,7 +93,7 @@ public class UserController {
      * 회원 프로필 조회
      */
     @GetMapping("/auth/profile")
-    public ResponseEntity<UserInfoResponseDTO> userProfile(@RequestHeader("accessToken") String authorization) throws UnAuthorizedException {
+    public ResponseEntity<UserInfoResponseDTO> userProfile(@RequestHeader("Authorization") String authorization) throws UnAuthorizedException {
         Long userId = jwtUtil.getUserId(authorization);
         UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
         log.info("Received user profile info response for {}", userProfile);
@@ -104,7 +104,7 @@ public class UserController {
      * 회원 수정
      */
     @PutMapping("/auth")
-    public ResponseEntity<UserMsgResponseDTO> userUpdate(@RequestHeader("accessToken") String authorization,
+    public ResponseEntity<UserMsgResponseDTO> userUpdate(@RequestHeader("Authorization") String authorization,
                                                          @RequestBody @Valid UserUpdateRequestDTO request) throws UnAuthorizedException {
         Long userId = jwtUtil.getUserId(authorization);
         log.info("Received user update request for {}", userId);
@@ -115,7 +115,7 @@ public class UserController {
      * 회원 비밀번호 변경
      */
     @PutMapping("/auth/password-update")
-    public ResponseEntity<UserMsgResponseDTO> userUpdatePassword(@RequestHeader("accessToken") String authorization,
+    public ResponseEntity<UserMsgResponseDTO> userUpdatePassword(@RequestHeader("Authorization") String authorization,
                                                                  @RequestBody @Valid UserPasswordUpdateRequestDTO request) throws UnAuthorizedException {
         Long userId = jwtUtil.getUserId(authorization);
         log.info("Received user password update request for {}", userId);
@@ -126,7 +126,7 @@ public class UserController {
      * 회원 삭제(DB 삭제 x, 회원탈퇴 상태로 변경)
      */
     @DeleteMapping("/auth")
-    public ResponseEntity<UserMsgResponseDTO> userDelete(@RequestHeader("accessToken") String authorization) throws Exception, UnAuthorizedException {
+    public ResponseEntity<UserMsgResponseDTO> userDelete(@RequestHeader("Authorization") String authorization) throws Exception, UnAuthorizedException {
         Long userId = jwtUtil.getUserId(authorization);
         log.info("Received user delete request for {}", userId);
 
