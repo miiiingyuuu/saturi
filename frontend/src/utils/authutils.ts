@@ -40,6 +40,7 @@ export function authToken() {
           {headers: {accessToken: sessionStorage.getItem("accessToken")}},
         )
           .then( response => {
+            console.log(response)
             cookie.save('userId', `${response.data.userid}`)
             cookie.save('email', `${response.data.email}`)
             }
