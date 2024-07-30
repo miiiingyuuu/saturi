@@ -41,12 +41,7 @@ public class StartupApplicationListener {
     private final UserService userService;
     private final GameService gameService;
     private static final String[] LESSON_CATEGORIES = {"일상", "드라마 대사", "영화 대사", "밈"};
-
-    private final LocationService locationService;
-    private final BirdService birdService;
-    private final UserService userService;
     private final AdminLessonService adminLessonService;
->>>>>>> backend/src/main/java/com/tunapearl/saturi/utils/StartupApplicationListener.java
 
     @EventListener
     @Transactional
@@ -72,8 +67,7 @@ public class StartupApplicationListener {
 
     private void createUser() {
         UserRegisterRequestDTO userInfo = new UserRegisterRequestDTO(
-                "test@email.com", "password1!", "testnickname",
-                1L, Gender.DEFAULT, AgeRange.DEFAULT);
+                "test@email.com", "password1!", "testnickname");
         userService.registerUser(userInfo);
     }
 
