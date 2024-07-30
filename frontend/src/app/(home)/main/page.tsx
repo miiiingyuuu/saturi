@@ -2,10 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 // import { ReactComponent as KoreaMap } from './koreaMap.svg';
 import './style.css';
-import { Button, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';
+// import { Button, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';
 import KoreaMap from './koreaMap';
+import Button from '@mui/material/Button'
+import { Router } from 'next/router';
 
 
 ///////////////////////
@@ -84,13 +87,15 @@ function LeftPart({ middlePosition, moveDirection, selectedRegion }) {
     }
   }, [middlePosition]);
 
-  function buttonLearn() {
+  function buttonLearn(num : number) {
+    const router = useRouter()
     let region = 0
     if (selectedRegion === "경기도") {
       region = 1;
     }
     console.log("hey2")
-    redirect(`/lesson/${region}/1`);
+    router.push(`/lesson/${region}/${num}`)
+    // redirect(`/lesson/${region}/${num}`);
   }
 
   return (
@@ -122,11 +127,12 @@ function LeftPart({ middlePosition, moveDirection, selectedRegion }) {
         </div>
         <br />
         <div className="button-grid">
-          <img src="/MainPage/learnButton1.png" alt="" />
-          <img src="/MainPage/learnButton2.png" alt="" />
-          <img src="/MainPage/learnButton3.png" alt="" />
+          <img src="/MainPage/learnButton1.png" alt="" onClick={() => {buttonLearn(1)}}/>
+          <img src="/MainPage/learnButton2.png" alt="" onClick={() => {buttonLearn(2)}}/>
+          <img src="/MainPage/learnButton3.png" alt="" onClick={() => {buttonLearn(3)}}/>
           <img 
-            src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}             
+            src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}  
+            onClick={() => {buttonLearn(4)}}           
             alt="" 
           />       
         </div>
@@ -164,9 +170,12 @@ function MiddlePart({ middlePosition, mainPageIndicator, selectedRegion }) {
 
 
 function RightPart() {
+
+  const router = useRouter()
+
   function GameStartButton() {
     console.log("hey");
-    redirect("/game");
+    router.push("/game");
   }
   
 
@@ -182,7 +191,7 @@ function RightPart() {
           <div className="profile-grid" style={{ margin: '20px 0' }}>
             <img src="/MainPage/buttonFood.png" alt="" />
           </div>
-          <Button onClick={GameStartButton} style={{ marginTop: '20px' }}>게임 시작</Button>
+          <Button variant="contained" onClick={GameStartButton} style={{ marginTop: '20px' }}>게임 시작</Button>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^5.16.5",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
+    "@nextui-org/react": "^2.4.6",
     "axios": "^1.7.2",
     "next": "^14.2.5",
     "next-auth": "^4.24.7",
