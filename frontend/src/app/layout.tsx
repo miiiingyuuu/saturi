@@ -8,6 +8,7 @@ import { Inter } from "next/font/google";
 import Button from "@mui/material/Button";
 import { usePathname } from "next/navigation";
 import Divider from "@mui/material/Divider";
+import { authToken } from "@/utils/authutils";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,6 +27,8 @@ export default function RootLayout({
 
   // 특정 경로에서 header를 숨기기
   const hideHeader = pathname.startsWith("/game/in-game");
+
+  authToken()
 
   return (
     <html lang="en" className="light">

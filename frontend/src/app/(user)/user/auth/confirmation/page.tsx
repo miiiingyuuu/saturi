@@ -9,6 +9,7 @@ export default function Authenticate() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+
   const handleAuthenticate = async () => {
     // 비밀번호 인증 로직
     const isAuthenticated = await fakePasswordCheck(password);
