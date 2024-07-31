@@ -40,10 +40,11 @@ public class AdminLessonService {
 
     // FIXME 파일 등록 추가
     @Transactional
-    public Long createLesson(LessonGroupEntity lessonGroup, String script) {
+    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath) {
         LessonEntity lesson = new LessonEntity();
         lesson.setLessonGroup(lessonGroup);
         lesson.setScript(script);
+        lesson.setSampleVoicePath(filePath);
         lesson.setLastUpdateDt(LocalDateTime.now());
         return adminLessonRepository.saveLesson(lesson);
     }
@@ -52,8 +53,8 @@ public class AdminLessonService {
         return adminLessonRepository.findAll().orElse(null);
     }
 
-    public List<LessonEntity> findByLocationAndLessonCategory(Long locationId, Long lessonCategoryId) {
-        return adminLessonRepository.findByLocationAndLessonCategory(locationId, lessonCategoryId).orElse(null);
+    public List<LessonEntity> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId) {
+        return adminLessonRepository.findByLocationAndLessonCategory(lessonGroupId, locationId, lessonCategoryId).orElse(null);
     }
 
     public LessonEntity findById(Long lessonId) {

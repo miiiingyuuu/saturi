@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { IHandleLogin } from "@/utils/props";
+import { HandleLoginProps } from "@/utils/props";
 import { getCookies, setCookie } from "cookies-next";
 import { AxiosResponse } from "axios";
 
@@ -22,7 +22,7 @@ export function insertCookie(response: AxiosResponse) {
 }
 
 // 로그인
-export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
+export function handleLogin({ email, password, router, goTo }: HandleLoginProps) {
   api.post("/user/auth/login", {
     email,
     password,
@@ -39,13 +39,54 @@ export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
     insertCookie(response)
     )
   })
+    })
+    .then(() => {
+    api.get("user/auth/profile")
+      .then((response) =>
+    insertCookie(response)
+    )
+  })
     .catch((error) => {
-      console.log(error)
+      if (error.response.status === 400) {
+        alert("아이디 또는 비밀번호가 올바르지 않습니다.")
+      }
     })
 }
 // 소셜 로그인
 export function goSocialLogin(provider: string) {
   const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/${provider}`
+// 소셜 로그인
+export function goSocialLogin(provider: string) {
+  const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/${provider}`
+
+  switch (provider) {
+    case "kakao":
+      window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAOSECRET}&redirect_uri=${redirectUrl}&response_type=code`
+      break
+    case "naver":
+      window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_NAVERKEY}&client_secret=${process.env.NEXT_PUBLIC_NAVERSECRET}&redirect_uri=${redirectUrl}&state=8697240`
+      break
+  }
+}
+
+export async function frontLogOut() {
+  // 세션 스토리지에서 토큰 제거
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
+  const cookies = getCookies();
+
+  // 쿠키를 가져와서 삭제
+  async function deleteCookies() {
+    const cookieNames = Object.keys(cookies)
+    await cookieNames.reduce(async (promise, cookieName) => {
+      await promise
+      setCookie(cookieName, "", {maxAge: -1})
+    }, Promise.resolve())
+  }
+  await deleteCookies()
+  // 쿠키 삭제 후 리다이렉션
+}
+
 
   switch (provider) {
     case "kakao":
@@ -83,6 +124,7 @@ export function authToken(router: any) {
   // 우선 토큰 유효성 검사
   api.get("/user/auth/token-check")
     .then(response => {
+    .then(response => {
       if (response.status === 200) {
         api.get("user/auth/profile",
         )
@@ -103,7 +145,7 @@ export function authToken(router: any) {
             sessionStorage.setItem("accessToken", response.data.accessToken);
           })
           // 만약 여기서도 401 뜨면, 로그아웃 처리 하고 로그인으로 보내기
-
+          // 문제 1) 어차피 안되는거 500도 초기로 돌려야되는거아님?
           .catch(() => {
               frontLogOut().then(response => {
                 alert("장시간 이용이 없어 초기화면으로 돌아갑니다.")

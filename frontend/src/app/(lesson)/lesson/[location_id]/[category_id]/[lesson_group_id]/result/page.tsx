@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
+import { Button } from "@mui/material";
 import { useState } from "react";
 import FirstResult from "../../../../../../../components/lesson/result/firstResult";
 import SecondResult from "../../../../../../../components/lesson/result/secondResult";

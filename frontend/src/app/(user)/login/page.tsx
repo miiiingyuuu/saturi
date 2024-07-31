@@ -101,7 +101,7 @@ export default function App() {
               <img
                 src="/naverBtn.png"
                 alt="naverLogin"
-                onClick={goSocialLogin}
+                onClick={() => goSocialLogin("naver")}
                 style={{
                   width: "100%",
                   height: "56px",
@@ -114,7 +114,7 @@ export default function App() {
               <img
                 src="/kakao_login_medium_narrow.png"
                 alt="kakaoLogin"
-                onClick={goSocialLogin}
+                onClick={() => goSocialLogin("kakao")}
                 style={{
                   width: "100%",
                   height: "56px",
