@@ -99,4 +99,17 @@ public class LessonService {
         }
         return result;
     }
+
+    public void skipLesson(Long userId, Long lessonId) {
+        // 레슨아이디로 레슨그룹 아이디를 찾는다
+        // 유저아이디와 레슨그룹 아이디로 레슨그룹결과 아이디를 찾는다.
+        // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.
+        // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
+    }
+
+    public Long createLessonGroupResult(Long userId, Long lessonGroupId) {
+        LessonGroupResultEntity lessonGroupResult = new LessonGroupResultEntity();
+        // TODO lessonGroupResult 생성 기능 추가
+        return lessonRepository.createLessonGroupResult(lessonGroupResult).orElse(null);
+    }
 }

@@ -6,8 +6,7 @@ import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
-import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
-import com.tunapearl.saturi.dto.lesson.LessonGroupProgressResponseDTO;
+import com.tunapearl.saturi.dto.lesson.*;
 import com.tunapearl.saturi.dto.user.UserExpAndRankDTO;
 import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
@@ -77,6 +76,7 @@ public class LessonController {
     public ResponseEntity<LessonGroupProgressResponseDTO> getLessonGroupProgressByUser(@RequestHeader("Authorization") String authorization,
                                                                                        @RequestParam("locationId") Long locationId,
                                                                                        @RequestParam("categoryId") Long lessonCategoryId) throws UnAuthorizedException {
+        log.info("received request to get lessonGroup progress by user {}, {}", locationId, lessonCategoryId);
         Long userId = jwtUtil.getUserId(authorization);
 
         // 진척도
@@ -97,17 +97,24 @@ public class LessonController {
      * 레슨 건너뛰기
      */
     @PutMapping("/lesson/{lessonId}")
-    public ResponseEntity<?> skipLesson() {
+    public ResponseEntity<LessonMsgResponseDTO> skipLesson(@RequestHeader("Authorization") String accessToken,
+                                                           @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
         // TODO 레슨 건너뛰기 기능 구현
-        return ResponseEntity.ok("");
+        log.info("received request to skip Lesson {}", lessonId);
+        Long userId = jwtUtil.getUserId(accessToken);
+        lessonService.skipLesson(userId, lessonId);
+        return ResponseEntity.ok(new LessonMsgResponseDTO("ok"));
     }
 
     /**
      * 레슨 그룹 결과 생성
      */
     @PostMapping("/lesson-group-result")
-    public ResponseEntity<?> createLessonGroupResult() {
+    public ResponseEntity<CreateLessonGroupResultResponseDTO> createLessonGroupResult(@RequestHeader("Authorization") String accessToken,
+                                                                                      @RequestBody CreateLessonGroupResultRequestDTO request) throws UnAuthorizedException {
         // TODO 레슨 그룹 결과 생성 기능 구현
-        return ResponseEntity.created(URI.create("/")).body("");
+        Long userId = jwtUtil.getUserId(accessToken);
+        Long lessonGroupResultId = lessonService.createLessonGroupResult(userId, request.getLessonGroupId());
+        return ResponseEntity.created(URI.create("/learn/lesson-group-result")).body(new CreateLessonGroupResultResponseDTO(lessonGroupResultId));
     }
 }

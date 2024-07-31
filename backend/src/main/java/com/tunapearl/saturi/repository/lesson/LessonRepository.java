@@ -80,4 +80,9 @@ public class LessonRepository {
 
 
     }
+
+    public Optional<Long> createLessonGroupResult(LessonGroupResultEntity lessonGroupResult) {
+        em.persist(lessonGroupResult);
+        return Optional.ofNullable(lessonGroupResult.getLessonGroupResultId());
+    }
 }
