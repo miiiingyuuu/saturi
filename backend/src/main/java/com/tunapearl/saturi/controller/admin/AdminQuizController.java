@@ -1,7 +1,7 @@
 package com.tunapearl.saturi.controller.admin;
 
-import com.tunapearl.saturi.dto.quiz.QuizRequestDto;
-import com.tunapearl.saturi.dto.quiz.QuizResponseDto;
+import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
+import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
 import com.tunapearl.saturi.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +19,14 @@ public class AdminQuizController {
     private final QuizService quizService;
 
     @GetMapping(value = "/quiz")
-    public ResponseEntity<?> getAllQuiz(@ModelAttribute("quizRequestDto") QuizRequestDto quizRequestDto) {
-        log.info("GET all quiz: {}", quizRequestDto);
-        List<QuizResponseDto> list = quizService.finaAll(quizRequestDto);
+    public ResponseEntity<?> getAllQuiz(@ModelAttribute("quizRequestDto") QuizReadRequestDto quizReadRequestDto) {
+        log.info("GET all quiz: {}", quizReadRequestDto);
+        List<QuizReadResponseDto> list = quizService.finaAll(quizReadRequestDto);
         return ResponseEntity.ok(list);
     }
 
-    @PostMapping(value = )
+    @PostMapping(value = "/quiz")
+    public ResponseEntity<?> registerQuiz(@RequestBody QuizReadRequestDto quizReadRequestDto) {
+        return null;
+    }
 }

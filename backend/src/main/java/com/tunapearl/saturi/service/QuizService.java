@@ -1,15 +1,14 @@
 package com.tunapearl.saturi.service;
 
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
-import com.tunapearl.saturi.dto.quiz.QuizRequestDto;
-import com.tunapearl.saturi.dto.quiz.QuizResponseDto;
+import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
+import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
 import com.tunapearl.saturi.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,13 +23,13 @@ public class QuizService {
         return quiz.getQuizId();
     }
 
-    public List<QuizResponseDto> finaAll(QuizRequestDto quizRequestDto){
-        List<QuizEntity> list = quizRepository.findAll(quizRequestDto);
+    public List<QuizReadResponseDto> finaAll(QuizReadRequestDto quizReadRequestDto){
+        List<QuizEntity> list = quizRepository.findAll(quizReadRequestDto);
         return list.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
-    private QuizResponseDto convertToDto(QuizEntity quizEntity){
-        return QuizResponseDto.builder()
+    private QuizReadResponseDto convertToDto(QuizEntity quizEntity){
+        return QuizReadResponseDto.builder()
                 .quizId(quizEntity.getQuizId())
                 .locationId(quizEntity.getLocation().getLocationId())
                 .question(quizEntity.getQuestion())
