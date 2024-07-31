@@ -9,6 +9,7 @@ import RightPart from './rightpart';
 import { useState, useRef, useEffect, ReactNode } from 'react';
 import './style.css';
 import KoreaMap from './koreaMap';
+import Jigsaw from './jigsaw'
 // import { Button, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';           //헤더 한다고 import 한건데 지워도 될듯?
 
 
@@ -58,6 +59,7 @@ function MiddleMap({ left, onRegionClick, selectedRegion }: MiddleMapProps) {
       <h1 style={{ textAlign: "center" }}> {selectedRegion}</h1>
       <div style={{ width: '50%', height: '50%' }}>
         <KoreaMap onRegionClick={onRegionClick} />
+        <Jigsaw/>
       </div>
     </div>
   );
@@ -141,7 +143,7 @@ export default function App() {
           left={mapLeft}
           onRegionClick={handleRegionClick}
           selectedRegion={selectedRegion}
-        />
+        />        
       </div>
     </div>
   );
