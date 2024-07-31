@@ -62,9 +62,10 @@ public class GameService {
 
             log.info("방 이따");
             GameRoomEntity gameRoomEntity = findUsers.get().get(0);
-            GameRoomParticipantEntity gameRoomParticipantEntity=new GameRoomParticipantEntity();
-            gameRoomParticipantEntity.setGameRoom(gameRoomEntity);
-            gameRoomParticipantEntity.setUser(userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).get());
+            UserEntity user=userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).get();
+            GameRoomParticipantEntity gameRoomParticipantEntity=new GameRoomParticipantEntity(gameRoomEntity,user);
+//            gameRoomParticipantEntity.setGameRoom(gameRoomEntity);
+//            gameRoomParticipantEntity.setUser();
 
             gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
         }else{

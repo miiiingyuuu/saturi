@@ -27,4 +27,9 @@ public class GameRoomParticipantEntity {
     @Column(name = "match_rank")
     private int matchRank;
 
+    public GameRoomParticipantEntity(GameRoomEntity gameRoom, UserEntity user) {
+        this.id = new GameRoomParticipantId(gameRoom.getRoomId(), user.getUserId());
+        this.gameRoom = gameRoom;
+        this.user = user;
+    }
 }
