@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import './koreaMap.css';
 
-function Icon({ onRegionClick }) {
-  const [selectedRegion, setSelectedRegion] = useState(null);
+interface IconProps {
+  onRegionClick?: (region: string) => void;
+}
+
+function Icon({ onRegionClick }: IconProps) {
+  const [selectedRegion, setSelectedRegion] = useState<SVGGElement | null>(null);
 
   useEffect(() => {
-    const allRegions = document.querySelectorAll("g[fill='#CCC'], g[fill='#AAA'], g[fill='#EEE']");
+    const allRegions = document.querySelectorAll<SVGGElement>("g[fill='#CCC'], g[fill='#AAA'], g[fill='#EEE']");
     allRegions.forEach(region => {
       region.setAttribute("fill", "#CCC");
     });
   }, []);
 
   useEffect(() => {
-    const allRegions = document.querySelectorAll("g[fill='#CCC'], g[fill='#AAA'], g[fill='#EEE']");
+    const allRegions = document.querySelectorAll<SVGGElement>("g[fill='#CCC'], g[fill='#AAA'], g[fill='#EEE']");
     allRegions.forEach(region => {
       if (selectedRegion && region !== selectedRegion) {
         region.setAttribute("fill", "#CCC");
@@ -26,10 +30,10 @@ function Icon({ onRegionClick }) {
     }
   }, [selectedRegion]);
 
-  const handleClick = (e) => {
-    const region = e.target.parentElement;
+  const handleClick = (e: React.MouseEvent<SVGElement, MouseEvent>) => {
+    const region = e.currentTarget as SVGGElement;
     setSelectedRegion(region);
-    if (region.className && typeof onRegionClick === 'function') {
+    if (region.className.baseVal && typeof onRegionClick === 'function') {
       onRegionClick(region.className.baseVal);
     }
   };
