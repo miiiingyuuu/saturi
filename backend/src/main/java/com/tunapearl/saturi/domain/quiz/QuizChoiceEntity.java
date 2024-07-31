@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.domain.game;
+package com.tunapearl.saturi.domain.quiz;
 
 import jakarta.persistence.*;
 import lombok.Getter;
