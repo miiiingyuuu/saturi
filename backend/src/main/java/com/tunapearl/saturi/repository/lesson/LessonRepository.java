@@ -1,9 +1,6 @@
 package com.tunapearl.saturi.repository.lesson;
 
-import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
-import com.tunapearl.saturi.domain.lesson.LessonEntity;
-import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
-import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
+import com.tunapearl.saturi.domain.lesson.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -62,6 +59,25 @@ public class LessonRepository {
                                     " where gr.user.userId = :userId and gr.isCompleted = true", LessonGroupResultEntity.class)
                     .setParameter("userId", userId)
                     .getResultList());
+
+    }
+
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdWithoutIsCompleted(Long userId) {
+        return Optional.ofNullable(em.createQuery("select gr from LessonGroupResultEntity gr" +
+                                    " join fetch gr.lessonGroup lg" +
+                                    " where gr.user.userId = :userId", LessonGroupResultEntity.class)
+                    .setParameter("userId", userId)
+                    .getResultList());
+
+    }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
+        return Optional.ofNullable(em.createQuery("select lr from LessonResultEntity lr" +
+                                    " join fetch lr.lessonGroupResult" +
+                                    " where lr.isSkipped = false and lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList());
+
 
     }
 }

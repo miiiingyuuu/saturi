@@ -1,10 +1,7 @@
 package com.tunapearl.saturi.service.lesson;
 
 import com.tunapearl.saturi.domain.LocationEntity;
-import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
-import com.tunapearl.saturi.domain.lesson.LessonEntity;
-import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
-import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
+import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +63,7 @@ public class LessonService {
     }
 
     public Long getProgressByUserIdLocationAndCategory(Long userId, Long locationId, Long lessonCategoryId) {
-        int completedCnt = 0;
+        int completedLessonGroupCnt = 0;
         // 유저 아이디로 그룹 결과 조회(완료된거만)
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
         // 조회된 그룹 결과를 그룹 아이디로 조회하며 지역과 대화유형이 맞는 개수를 셈
@@ -76,23 +73,24 @@ public class LessonService {
             LessonCategoryEntity lessonCategory = lgResult.getLessonGroup().getLessonCategory();
             log.info("location and lessonCategory {}, {}", location.getLocationId(), lessonCategory.getLessonCategoryId());
             if(location.getLocationId().equals(locationId) && lessonCategory.getLessonCategoryId().equals(lessonCategoryId)) {
-                completedCnt++;
+                completedLessonGroupCnt++;
             }
         }
         // 그 개수 / 9 해서 진척도 리턴
-        return (completedCnt * 100) / 9L;
+        return (completedLessonGroupCnt * 100) / 9L;
     }
 
     public List<LessonGroupProgressByUserDTO> getLessonGroupProgressAndAvgAccuracy(Long userId, Long locationId, Long lessonCategoryId) {
-
-        List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+        // lessonGroup 완성 여부에 상관없이 lessonGroupResult 받아오기
+        List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
             // lessonGroupId
             Long lessonGroupId = lgResult.getLessonGroup().getLessonGroupId();
             // groupProgress
             Long lessonGroupResultId = lgResult.getLessonGroupResultId();
-            Long groupProcess = 0L;
+            List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
+            Long groupProcess = (lessonResults.size() * 100) / 5L;
             // avgAccuracy
             Long avgAccuracy = (lgResult.getAvgAccuracy() + lgResult.getAvgSimilarity()) / 2L;
 

@@ -81,11 +81,11 @@ public class LessonController {
         // 진척도
         Long resultProgress = lessonService.getProgressByUserIdLocationAndCategory(userId, locationId, lessonCategoryId);
 
-        // 퍼즐별 test data 시작
-        LessonGroupProgressByUserDTO lgpbuDTO = new LessonGroupProgressByUserDTO(1L, 0L, 0L);
-        List<LessonGroupProgressByUserDTO> lgpbuDTOs = new ArrayList<>();
-        lgpbuDTOs.add(lgpbuDTO);
-        // 퍼즐벌 test data 끝
+//        // 퍼즐별 test data 시작
+//        LessonGroupProgressByUserDTO lgpbuDTO = new LessonGroupProgressByUserDTO(1L, 0L, 0L);
+//        List<LessonGroupProgressByUserDTO> lgpbuDTOs = new ArrayList<>();
+//        lgpbuDTOs.add(lgpbuDTO);
+//        // 퍼즐벌 test data 끝
 
         // 퍼즐별 진행률, 평균 정확도(유사도+정확도/2)
         List<LessonGroupProgressByUserDTO> resultLessonGroupProgressAndAvgAccuracy = lessonService.getLessonGroupProgressAndAvgAccuracy(userId, locationId, lessonCategoryId);
@@ -95,6 +95,6 @@ public class LessonController {
         Long userRank = userService.getUserRank(userId);
         UserExpAndRankDTO resultUserInfo = new UserExpAndRankDTO(userProfile.getExp(), userRank);
 
-        return ResponseEntity.ok(new LessonGroupProgressResponseDTO(resultProgress, lgpbuDTOs, resultUserInfo));
+        return ResponseEntity.ok(new LessonGroupProgressResponseDTO(resultProgress, resultLessonGroupProgressAndAvgAccuracy, resultUserInfo));
     }
 }
