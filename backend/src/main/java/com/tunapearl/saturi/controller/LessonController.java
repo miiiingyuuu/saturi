@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,12 +82,6 @@ public class LessonController {
         // 진척도
         Long resultProgress = lessonService.getProgressByUserIdLocationAndCategory(userId, locationId, lessonCategoryId);
 
-//        // 퍼즐별 test data 시작
-//        LessonGroupProgressByUserDTO lgpbuDTO = new LessonGroupProgressByUserDTO(1L, 0L, 0L);
-//        List<LessonGroupProgressByUserDTO> lgpbuDTOs = new ArrayList<>();
-//        lgpbuDTOs.add(lgpbuDTO);
-//        // 퍼즐벌 test data 끝
-
         // 퍼즐별 진행률, 평균 정확도(유사도+정확도/2)
         List<LessonGroupProgressByUserDTO> resultLessonGroupProgressAndAvgAccuracy = lessonService.getLessonGroupProgressAndAvgAccuracy(userId, locationId, lessonCategoryId);
 
@@ -96,5 +91,23 @@ public class LessonController {
         UserExpAndRankDTO resultUserInfo = new UserExpAndRankDTO(userProfile.getExp(), userRank);
 
         return ResponseEntity.ok(new LessonGroupProgressResponseDTO(resultProgress, resultLessonGroupProgressAndAvgAccuracy, resultUserInfo));
+    }
+
+    /**
+     * 레슨 건너뛰기
+     */
+    @PutMapping("/lesson/{lessonId}")
+    public ResponseEntity<?> skipLesson() {
+        // TODO 레슨 건너뛰기 기능 구현
+        return ResponseEntity.ok("");
+    }
+
+    /**
+     * 레슨 그룹 결과 생성
+     */
+    @PostMapping("/lesson-group-result")
+    public ResponseEntity<?> createLessonGroupResult() {
+        // TODO 레슨 그룹 결과 생성 기능 구현
+        return ResponseEntity.created(URI.create("/")).body("");
     }
 }
