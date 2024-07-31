@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Button } from "@nextui-org/react";
+import { Button } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
-
-
 
 export default function LessonPage() {
   const texts = [
@@ -55,7 +53,13 @@ export default function LessonPage() {
           {texts.map((text, index) => (
             <h1
               key={text.id}
-              className={`mb-2 ${index === currentIndex ? "text-4xl font-bold text-black" : index > currentIndex ? "text-lg text-gray-300" : "text-xl text-gray-400"}`}
+              className={`mb-2 ${
+                index === currentIndex
+                  ? "text-4xl font-bold text-black"
+                  : index > currentIndex
+                  ? "text-lg text-gray-300"
+                  : "text-xl text-gray-400"
+              }`}
               style={{
                 display:
                   index === currentIndex || index > currentIndex
@@ -68,27 +72,31 @@ export default function LessonPage() {
           ))}
           <div className="mt-4 flex space-x-2">
             <Button
-              className={`px-4 py-2 rounded ${isRecording ? "bg-red-500" : "bg-green-500"} text-white`}
+              variant="contained"
+              color={isRecording ? "error" : "success"}
               onClick={handleRecording}
             >
               {isRecording ? "녹음중" : "녹음하기"}
             </Button>
             <Button
-              className="bg-green-500 text-white px-4 py-2 rounded"
+              variant="contained"
+              color="success"
               onClick={handleNext}
             >
               건너뛰기
             </Button>
             {currentIndex < texts.length - 1 ? (
               <Button
-                className="bg-green-500 text-white px-4 py-2 rounded"
+                variant="contained"
+                color="success"
                 onClick={handleNext}
               >
                 다음 문장
               </Button>
             ) : (
               <Button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                variant="contained"
+                color="primary"
                 onClick={handleResult}
               >
                 결과 보기
