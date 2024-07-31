@@ -11,6 +11,7 @@ import { authToken } from "@/utils/authutils";
 import { styled } from "@mui/material/styles";
 import { Popover, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
+import { getProfileImage } from '@/utils/profileimage';
 
 // 버튼 색
 const LoginButton = styled(Button)(({ theme }) => ({
@@ -27,22 +28,42 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const router = useRouter();
+
   const pathname = usePathname(); // 현재 경로 가져오기
   const [isLoggedIn, setIsLoggedIn ] = useState(false); // 로그인 상태 변수
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [error, setError] = useState<Error | null>(null); // 에러 상태
 
   useEffect(() => {
     const accessToken = sessionStorage.getItem("accessToken");
-    const refreshToken = sessionStorage.getItem("refreshToken");
     setIsLoggedIn(!!accessToken);
+
+    const fetchProfileImage = async () => {
+      if (accessToken) {
+        try {
+          const imageUrl = await getProfileImage(accessToken);
+          setProfileImage(imageUrl);
+        } catch (err) {
+          setError(err as Error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    if (accessToken) {
+      authToken()
+      fetchProfileImage();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   // 특정 경로에서 header를 숨기기
   const hideHeader = pathname.startsWith("/game/in-game");
-
-  if (sessionStorage.getItem("accessToken")) {
-    authToken()
-  }
 
   // 프로필 PopOver 관련 필요 변수들
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -57,10 +78,14 @@ export default function RootLayout({
 
   const open = Boolean(anchorEl);
 
+  if (loading) {
+    return <div>Loading...</div>; // 로딩 상태 표시
+  }
+
   return (
-    <html lang="ko" className="light">
+    // <html lang="ko" className="light">
       <body className={inter.className}>
-          {!hideHeader && (
+        {!hideHeader && (
           <header>
             <div className="header">
               <Link href={isLoggedIn ? "/main" : "/start"}>
@@ -81,48 +106,54 @@ export default function RootLayout({
                 </Link>
               ) : (
                 <div>
-                  <Image
-                    src="https://localhost:8000/bird/agent.png" 
-                    width={50} 
-                    height={50} 
-                    alt="Profile Picture" 
-                    style={{ borderRadius: '50%' }} 
-                    onClick={handleProfileClick}
-                  />
+                  {error ? (
+                    <div>Error loading profile image</div> // 에러 처리
+                  ) : (
+                    <div>
+                      <Image
+                        src={profileImage || "/default-profile.png"} // 기본 프로필 이미지
+                        width={50}
+                        height={50}
+                        alt="Profile Picture"
+                        style={{ borderRadius: '50%', marginTop: '16px' }}
+                        onClick={handleProfileClick}
+                      />
+                    </div>
+                  )}
                   <Popover
                     open={open}
                     anchorEl={anchorEl}
                     onClose={handlePopoverClose}
                     anchorOrigin={{
                       vertical: 'bottom',
-                      horizontal: 'left',
+                      horizontal: 'center',
                     }}
                     transformOrigin={{
                       vertical: 'top',
-                      horizontal: 'center',
+                      horizontal: 'right',
                     }}
                   >
                     <Typography sx={{ p: 2 }}>My profile</Typography>
                   </Popover>
-                </div> 
+                </div>
               )}
             </div>
-            <Divider/>
+            <Divider />
           </header>
-          )}
-            {children}
-          <footer className="footer">
-            <div className="footer-content">
-              <Image src="/SSLogo.png" width={127.5} height={85} alt="SSLogo"/>
-              <div className="footer-links">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
-              </div>
-              <p>&copy; 2024 My Next.js App. All rights reserved.</p>
+        )}
+        {children}
+        <footer className="footer">
+          <div className="footer-content">
+            <Image src="/SSLogo.png" width={127.5} height={85} alt="SSLogo" />
+            <div className="footer-links">
+              <a href="/">Home</a>
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
             </div>
-          </footer>
+            <p>&copy; 2024 My Next.js App. All rights reserved.</p>
+          </div>
+        </footer>
       </body>
-    </html>
+    // </html>
   );
 }

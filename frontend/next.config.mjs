@@ -1,13 +1,9 @@
 /** @type {import('next').NextConfig} */
-
-// import { createRequire } from 'module';
-// const require = createRequire(import.meta.url);
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 const nextConfig = {
   reactStrictMode: false,
-  images: {
-    domains: ['localhost'],
-  },
   webpack(config, { isServer }) {
     config.module.rules.push({
       test: /\.svg$/,
