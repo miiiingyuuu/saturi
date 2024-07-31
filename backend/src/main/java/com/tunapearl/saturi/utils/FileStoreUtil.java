@@ -29,7 +29,7 @@ public class FileStoreUtil {
 
     public UploadFile storeFile(MultipartFile multipartFile) throws IOException {
         if(multipartFile.isEmpty()) return null;
-        log.info("내가 맞니 {}, {}", storage.getOptions().getProjectId(), storage.getOptions().getCredentials());
+        log.info("key info {}, {}", storage.getOptions().getProjectId(), storage.getOptions().getCredentials());
         String originFileName = multipartFile.getOriginalFilename();
         String storeFileName = createStoreFileName(originFileName);
         File file = new File(getFullPath(storeFileName));
@@ -39,7 +39,9 @@ public class FileStoreUtil {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(multipartFile.getContentType()).build();
         Blob blob = storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-        return new UploadFile(originFileName, storeFileName);
+        file.delete();
+
+        return new UploadFile(originFileName, blob.getMediaLink());
     }
 
     private String createStoreFileName(String originFileName) {

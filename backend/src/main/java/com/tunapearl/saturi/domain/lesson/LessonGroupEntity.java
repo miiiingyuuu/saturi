@@ -27,7 +27,7 @@ public class LessonGroupEntity {
     
     private String name; // 소제목
     
-    @OneToMany(mappedBy = "lessonGroup")
+    @OneToMany(mappedBy = "lessonGroup", cascade = CascadeType.ALL)
     private List<LessonEntity> lessons = new ArrayList<>();
 
     /**

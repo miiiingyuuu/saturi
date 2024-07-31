@@ -1,6 +1,7 @@
 package com.tunapearl.saturi.dto.admin.lesson;
 
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
+import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -16,4 +17,12 @@ public class LessonGroupResponseDTO {
     private String lessonCategoryName;
     private String name;
     private List<LessonEntity> lessons;
+
+    public LessonGroupResponseDTO(LessonGroupEntity lg) {
+        lessonGroupId = lg.getLessonGroupId();
+        locationName = lg.getLocation().getName();
+        lessonCategoryName = lg.getLessonCategory().getName();
+        name = lg.getName();
+        lessons = lg.getLessons();
+    }
 }

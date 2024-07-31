@@ -1,6 +1,8 @@
 package com.tunapearl.saturi.controller;
 
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
+import com.tunapearl.saturi.domain.lesson.LessonEntity;
+import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,18 @@ public class LessonController {
                                                                             @RequestParam Long categoryId) {
         log.info("received request to get lesson group id by location and category {}, {}", locationId, categoryId);
         return ResponseEntity.ok(lessonService.findLessonGroupByLocationAndCategory(locationId, categoryId));
+    }
+
+    /**
+     * 레슨 개별 조회
+     */
+    @GetMapping("/lesson/{lessonId}")
+    public ResponseEntity<LessonResponseDTO> getLesson(@PathVariable Long lessonId) {
+        log.info("received request to find Lesson {}", lessonId);
+        LessonEntity findLesson = lessonService.findById(lessonId);
+        return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
+                findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
+                findLesson.getSampleVoicePath(), findLesson.getScript(), findLesson.getLastUpdateDt()));
     }
 
 }

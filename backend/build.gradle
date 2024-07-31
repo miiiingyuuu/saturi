@@ -36,6 +36,7 @@ dependencies {
 	// export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account-file.json"
 	implementation platform('com.google.cloud:libraries-bom:26.43.0')
 	implementation 'com.google.cloud:google-cloud-storage'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 
 	// javax to jakarta
 	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'

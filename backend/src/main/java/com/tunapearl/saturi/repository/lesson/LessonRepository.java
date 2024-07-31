@@ -36,12 +36,11 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonGroupEntity>> findAllLessonGroup() {
-        return Optional.ofNullable(em.createQuery("select g from LessonGroupEntity g join fetch g.lessons l", LessonGroupEntity.class)
+        return Optional.ofNullable(em.createQuery("select distinct g from LessonGroupEntity g " +
+                        " join fetch g.location lo" +
+                        " join fetch g.lessonCategory lc" +
+                        " left join fetch g.lessons l", LessonGroupEntity.class)
                 .getResultList());
-    }
-
-    public void deleteById(Long lessonId) {
-
     }
 
     public Optional<List<LessonGroupEntity>> findLessonGroupByLocationAndCategory(Long locationId, Long categoryId) {

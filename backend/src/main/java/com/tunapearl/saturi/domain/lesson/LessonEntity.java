@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.domain.lesson;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class LessonEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_group_id")
+    @JsonIgnore
     private LessonGroupEntity lessonGroup;
 
     private String sampleVoicePath;
