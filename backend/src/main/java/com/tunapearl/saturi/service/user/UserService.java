@@ -1,12 +1,11 @@
 package com.tunapearl.saturi.service.user;
 
-import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.user.*;
 import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.BirdRepository;
-import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.UserRepository;
+import com.tunapearl.saturi.repository.redis.EmailRepository;
 import com.tunapearl.saturi.service.RedisService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import com.tunapearl.saturi.utils.PasswordEncoder;
@@ -34,9 +33,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
     private final RedisService redisService;
+    private final EmailRepository emailRepository;
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
-//    private final LocationRepository locationRepository;
+    //    private final LocationRepository locationRepository;
     private final LocationService locationService;
     /**
      * 정규표현식
@@ -229,9 +229,18 @@ public class UserService {
     }
 
     public boolean checkAuthNum(String email, String authNum) {
-        String getAuthNum = redisService.getData(authNum);
-        if (getAuthNum == null) return false;
-        return getAuthNum.equals(email);
+
+//        String getAuthNum = redisService.getData(authNum);
+//        String getAuthNum = emailRepository.findById(email).get().getAuthNum();
+//        if (getAuthNum == null) return false;
+//        return getAuthNum.equals(authNum);
+
+        Optional<RedisEmail> optionalUser = emailRepository.findById(email);
+        if (optionalUser.isPresent()) {
+            String getAuthNum = optionalUser.get().getAuthNum();
+            return getAuthNum.equals(authNum);
+        }
+        return false;
     }
 
     public String setEmailSend(String email) throws MessagingException {
@@ -252,7 +261,8 @@ public class UserService {
         helper.setSubject(title);
         helper.setText(content, true);
         mailSender.send(message);
-        redisService.setDataExpire(authCode, setToEmail, 60 * 5L); // redis에 인증번호 저장("1a2a3a" : "email@email")
+//        redisService.setDataExpire(authCode, setToEmail, 60 * 5L); // redis에 인증번호 저장("1a2a3a" : "email@email")
+        emailRepository.save(new RedisEmail(setToEmail, authCode));
     }
 
     /**
@@ -261,6 +271,35 @@ public class UserService {
     public UserInfoResponseDTO getUserProfile(Long userId) {
         UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
         log.info("find User Profile {}", findUser);
-        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getImagePath());
+        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getId());
+    }
+
+    /**
+     * 어드민회원 회원가입
+     */
+    @Transactional
+    public UserMsgResponseDTO registerAdminUser(UserRegisterRequestDTO request) {
+        validateEmail(request.getEmail());
+        validatePassword(request.getPassword());
+        validateDuplicateUserEmail(request.getEmail());
+        validateDuplicateUserNickname(request.getNickname());
+        UserEntity user = createAdminUser(request);
+        userRepository.saveUser(user);
+        return new UserMsgResponseDTO("유저 회원가입 성공");
+    }
+
+    private UserEntity createAdminUser(UserRegisterRequestDTO request) {
+        UserEntity user = new UserEntity();
+        user.setEmail(request.getEmail());
+        user.setPassword(PasswordEncoder.encrypt(request.getEmail(), request.getPassword()));
+        user.setNickname(request.getNickname());
+        user.setLocation(locationService.findById(1L));
+        user.setGender(Gender.DEFAULT);
+        user.setAgeRange(AgeRange.DEFAULT);
+        user.setRegDate(LocalDateTime.now());
+        user.setBird(birdRepository.findById(1L).orElse(null));
+        user.setExp(0L);
+        user.setRole(Role.ADMIN);
+        return user;
     }
 }

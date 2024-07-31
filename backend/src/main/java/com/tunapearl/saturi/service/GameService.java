@@ -45,7 +45,7 @@ public class GameService {
      */
     public GameMatchingResponseDTO matching(GameMatchingRequestDTO gameMatchingRequestDTO) {
         //TODO: 게임 대기열에 넣고
-        redisService.addParticipant();
+        redisService.addParticipant(gameMatchingRequestDTO);
 
         //TODO: 매칭완료되면 게임방 생성
         //방 생성과 동시에 id받아와서 보낼것
