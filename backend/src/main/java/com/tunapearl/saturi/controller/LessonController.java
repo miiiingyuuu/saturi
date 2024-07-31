@@ -1,7 +1,10 @@
 package com.tunapearl.saturi.controller;
 
+import com.sun.source.tree.LiteralTree;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
+import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +32,18 @@ public class LessonController {
         return ResponseEntity.ok(lessonService.findAllLessonCategory());
     }
     
-    //TODO 지역, 유형을 받고 해당하는 퍼즐 반환
     /**
      * 퍼즐 조회(지역+유형)
+     * 레슨 그룹, 그룹안에 들어가있는 레슨들 정보도 같이 보냄
      */
     @GetMapping("/lesson-group")
-    public ResponseEntity<?> getLessonGroupIdByLocationAndCategory(@RequestParam Long locationId,
-                                                                            @RequestParam Long categoryId) {
+    public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroupIdByLocationAndCategory(@RequestParam Long locationId,
+                                                                                              @RequestParam Long categoryId) {
         log.info("received request to get lesson group id by location and category {}, {}", locationId, categoryId);
-        return ResponseEntity.ok(lessonService.findLessonGroupByLocationAndCategory(locationId, categoryId));
+        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(locationId, categoryId);
+        List<LessonGroupResponseDTO> result = lessonGroupByLocationAndCategory.stream()
+                .map(g -> new LessonGroupResponseDTO(g)).toList();
+        return ResponseEntity.ok(result);
     }
 
     /**

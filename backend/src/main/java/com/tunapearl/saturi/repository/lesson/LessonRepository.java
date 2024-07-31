@@ -44,8 +44,12 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonGroupEntity>> findLessonGroupByLocationAndCategory(Long locationId, Long categoryId) {
-        return Optional.ofNullable(em.createQuery("select g from LessonGroupEntity g where g.location.locationId = :locationId" +
-                        " and g.lessonCategory.lessonCategoryId = :categoryId", LessonGroupEntity.class)
+        return Optional.ofNullable(em.createQuery("select distinct g from LessonGroupEntity g " +
+                                " join fetch g.location lo" +
+                                " join fetch g.lessonCategory lc" +
+                                " left join fetch g.lessons l" +
+                                    " where g.location.locationId = :locationId" +
+                                    " and g.lessonCategory.lessonCategoryId = :categoryId", LessonGroupEntity.class)
                 .setParameter("locationId", locationId)
                 .setParameter("categoryId", categoryId)
                 .getResultList());

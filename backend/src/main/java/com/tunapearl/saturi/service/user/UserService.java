@@ -261,6 +261,6 @@ public class UserService {
     public UserInfoResponseDTO getUserProfile(Long userId) {
         UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
         log.info("find User Profile {}", findUser);
-        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getImagePath());
+        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getId());
     }
 }
