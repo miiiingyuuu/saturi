@@ -52,4 +52,12 @@ public class LessonService {
         findLesson.setIsDeleted(true);
         findLesson.setLastUpdateDt(LocalDateTime.now());
     }
+
+    public List<LessonGroupEntity> findLessonGroupByLocationAndCategory(Long locationId, Long categoryId) {
+        return lessonRepository.findLessonGroupByLocationAndCategory(locationId, categoryId).orElse(null);
+    }
+
+    public LessonEntity findById(Long lessonId) {
+        return lessonRepository.findById(lessonId).orElse(null);
+    }
 }

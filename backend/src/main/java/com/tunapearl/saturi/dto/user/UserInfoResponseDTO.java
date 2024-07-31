@@ -22,5 +22,5 @@ public class UserInfoResponseDTO {
     private Role role;
     private AgeRange ageRange;
     private String locationName;
-    private String birdImagePath;
+    private Long birdId;
 }

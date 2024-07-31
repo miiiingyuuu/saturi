@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class TokenRefreshRequestDTO {
-    private Long userId;
+@AllArgsConstructor
+public class UserExpAndRankDTO {
+    private Long exp;
+    private Long rank;
 }

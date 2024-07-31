@@ -59,6 +59,9 @@ dependencies {
 	//Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// hibernate
+	// jackson 라이브러리는 프록시 객체를 json으로 어떻게 생성하는지 모른다 Hibernate5Module을 스프링 빈으로 등록하면 해결
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 	//queryDSL
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'

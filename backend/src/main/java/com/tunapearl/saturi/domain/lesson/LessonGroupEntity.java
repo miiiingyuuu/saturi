@@ -27,10 +27,14 @@ public class LessonGroupEntity {
     
     private String name; // 소제목
     
-    @OneToMany(mappedBy = "lessonGroup")
+    @OneToMany(mappedBy = "lessonGroup", cascade = CascadeType.ALL)
     private List<LessonEntity> lessons = new ArrayList<>();
 
     /**
      * 비즈니스 로직
      */
+    public void setLessons(LessonEntity lesson) {
+        this.lessons.add(lesson);
+        lesson.setLessonGroup(this);
+    }
 }
