@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { IHandleLogin } from "@/utils/props";
+import { HandleLoginProps } from "@/utils/props";
 import { getCookies, setCookie } from "cookies-next";
 import { AxiosResponse } from "axios";
 
@@ -22,7 +22,7 @@ export function insertCookie(response: AxiosResponse) {
 }
 
 // 로그인
-export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
+export function handleLogin({ email, password, router, goTo }: HandleLoginProps) {
   api.post("/user/auth/login", {
     email,
     password,
@@ -40,7 +40,9 @@ export function handleLogin({ email, password, router, goTo }: IHandleLogin) {
     )
   })
     .catch((error) => {
-      console.log(error)
+      if (error.response.status === 400) {
+        alert("아이디 또는 비밀번호가 올바르지 않습니다.")
+      }
     })
 }
 // 소셜 로그인
@@ -103,7 +105,7 @@ export function authToken(router: any) {
             sessionStorage.setItem("accessToken", response.data.accessToken);
           })
           // 만약 여기서도 401 뜨면, 로그아웃 처리 하고 로그인으로 보내기
-
+          // 문제 1) 어차피 안되는거 500도 초기로 돌려야되는거아님?
           .catch(() => {
               frontLogOut().then(response => {
                 alert("장시간 이용이 없어 초기화면으로 돌아갑니다.")

@@ -1,4 +1,4 @@
-import { IPasswordProps } from "@/utils/props";
+import { PasswordProps } from "@/utils/props";
 import { ChangeEvent } from "react";
 
 
@@ -17,7 +17,7 @@ export function validatePassword(value: string): boolean {
   return /^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\S+$).{8,}$/.test(value);
 }
 
-export function passwordConfirm({password, passwordConf}: IPasswordProps) {
+export function passwordConfirm({password, passwordConf}: PasswordProps) {
   return password===passwordConf
 }
 

@@ -15,6 +15,7 @@
     "@mui/icons-material": "^5.16.5",
     "@mui/material": "^5.16.5",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
+    "@mui/x-charts": "^7.11.1",
     "@nextui-org/react": "^2.4.6",
     "axios": "^1.7.2",
     "cookies-next": "^4.2.1",
