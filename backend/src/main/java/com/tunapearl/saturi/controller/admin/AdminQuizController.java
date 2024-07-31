@@ -31,6 +31,6 @@ public class AdminQuizController {
     public ResponseEntity<?> registerQuiz(@RequestBody QuizRegisterRequestDto quizRegisterRequestDto) {
         log.info("POST, register quiz: {}", quizRegisterRequestDto);
         Long quizId = quizService.saveQuiz(quizRegisterRequestDto);
-        return new ResponseEntity<String>(String.format("%l: 퀴즈 등록 완료", quizId),HttpStatus.CREATED);
+        return new ResponseEntity<String>("퀴즈 등록 완료",HttpStatus.CREATED);
     }
 }

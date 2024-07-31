@@ -15,9 +15,11 @@ public class QuizChoiceEntity {
     protected QuizChoiceEntity() {}
 
     @EmbeddedId
-    private QuizChoicePk quizChoicePK;
+    private QuizChoicePk quizChoicePK = new QuizChoicePk();
 
+    @MapsId("quizId")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id")
     private QuizEntity quiz;
 
     @Column
@@ -26,6 +28,13 @@ public class QuizChoiceEntity {
     @Column(name = "is_answer")
     private Boolean isAnswer;
 
+    
+    /*
+    * 연관관계 편의 메서드
+    */
+    public void setQuiz(QuizEntity quiz) {
+        this.quiz = quiz;
+    }
 
     /*
     * 생성 메서드
@@ -33,8 +42,7 @@ public class QuizChoiceEntity {
     // 퀴즈 답안 1개 생성
     public static QuizChoiceEntity createQuizChoice(Long choiceId, String content, Boolean isAnswer) {
         QuizChoiceEntity quizChoice = new QuizChoiceEntity();
-        //TODO: quizID 수정 필요
-        quizChoice.quizChoicePK = QuizChoicePk.createChoicePk(0L, choiceId);
+        quizChoice.quizChoicePK.setChoiceId(choiceId);
         quizChoice.content = content;
         quizChoice.isAnswer = isAnswer;
         return quizChoice;
@@ -45,7 +53,7 @@ public class QuizChoiceEntity {
         List<QuizChoiceEntity> list = new ArrayList<>();
         for(QuizRegisterRequestDto.Choice register: registerChoiceList){
             QuizChoiceEntity quizChoice = new QuizChoiceEntity();
-            quizChoice.quizChoicePK = QuizChoicePk.createChoicePk(0L, register.getChoiceId());
+            quizChoice.quizChoicePK = QuizChoicePk.createChoicePk(register.getChoiceId());
             quizChoice.content = register.getContent();
             quizChoice.isAnswer = register.getIsAnswer();
             list.add(quizChoice);
