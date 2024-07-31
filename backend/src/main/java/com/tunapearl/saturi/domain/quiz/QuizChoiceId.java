@@ -14,6 +14,6 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Getter
 public class QuizChoiceId implements Serializable {
-    private Long quiz_id;
-    private Long choice_id;
+    private Long quizId;
+    private Long choiceId;
 }

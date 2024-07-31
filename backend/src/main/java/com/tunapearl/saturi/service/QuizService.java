@@ -1,6 +1,8 @@
 package com.tunapearl.saturi.service;
 
+import com.tunapearl.saturi.domain.quiz.QuizChoiceEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
 import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
 import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
 import com.tunapearl.saturi.repository.QuizRepository;
@@ -18,17 +20,20 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
 
-    public Long saveQuiz(QuizEntity quiz){
-        quizRepository.save(quiz);
-        return quiz.getQuizId();
+    public Long saveQuiz(QuizRegisterRequestDto registerRequestDto){
+
+        List<QuizChoiceEntity> choiceList = QuizChoiceEntity.createQuizChoiceList(registerRequestDto.getChoiceList());
+
+
+        return 1L;
     }
 
     public List<QuizReadResponseDto> finaAll(QuizReadRequestDto quizReadRequestDto){
         List<QuizEntity> list = quizRepository.findAll(quizReadRequestDto);
-        return list.stream().map(this::convertToDto).collect(Collectors.toList());
+        return list.stream().map(this::convertReadDtoToEntty).collect(Collectors.toList());
     }
 
-    private QuizReadResponseDto convertToDto(QuizEntity quizEntity){
+    private QuizReadResponseDto convertReadDtoToEntty(QuizEntity quizEntity){
         return QuizReadResponseDto.builder()
                 .quizId(quizEntity.getQuizId())
                 .locationId(quizEntity.getLocation().getLocationId())
