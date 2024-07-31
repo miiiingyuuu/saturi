@@ -1,7 +1,7 @@
-import { ChangeEvent } from "react";
-
 // auth-util
-export interface IHandleLogin {
+import * as React from "react";
+
+export interface HandleLoginProps {
   email: string
   password: string
   router: any
@@ -9,7 +9,17 @@ export interface IHandleLogin {
 }
 
 // util
-export interface IPasswordProps {
+export interface PasswordProps {
   password: string
   passwordConf: string
+}
+
+
+// component
+export interface CustomAccordionItemProps {
+  primaryText: string;
+  items: string[];
+  icon: React.ReactElement;
+  paths: string[];
+  basePath: string;
 }

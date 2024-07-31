@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './koreaMap.css';
 
-function Icon({ onRegionClick }) {
+function Icon( onRegionClick: any ) {
   const [selectedRegion, setSelectedRegion] = useState(null);
 
   useEffect(() => {
