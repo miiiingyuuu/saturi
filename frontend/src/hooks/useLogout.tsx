@@ -3,11 +3,13 @@
 import { useRouter } from 'next/router';
 import { getCookies, setCookie } from 'cookies-next';
 import { useCallback } from 'react';
+import api from "@/lib/axios"
 
 export default function useLogout() {
   const router = useRouter();
 
   return useCallback(async () => {
+    await api.post("/user/auth/logout")
     // 세션 스토리지에서 토큰 제거
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("refreshToken");
@@ -27,6 +29,12 @@ export default function useLogout() {
   }, [router]);
 };
 
-// 사용방식:
+// // 사용방식:
 // const logout = useLogout()
-// <button onClick={logout} />
+//   return (
+//     <Button onClick={() => {
+//       authToken()
+//       logout()
+//       }
+//     }/>
+//   )

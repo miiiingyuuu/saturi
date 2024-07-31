@@ -30,6 +30,7 @@ api.interceptors.request.use(
     // 토큰이 있으면 토큰을 넣어서 요청을 보냅니다.
     if (token) {
       config.headers.Authorization = `${token}`;
+      config.headers.accessToken = `${token}`;
     }
     return config;
   },

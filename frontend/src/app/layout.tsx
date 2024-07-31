@@ -1,17 +1,16 @@
 "use client"
 
 import "@/styles/globals.css";
+// import type { Metadata } from "next"
 import Link from "next/link";
 import Image from "next/image";
-// import type { Metadata } from "next"
 import { Inter } from "next/font/google";
 import Button from "@mui/material/Button";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Divider from "@mui/material/Divider";
 import { authToken } from "@/utils/authutils";
 import { styled } from "@mui/material/styles"
 import { useState, useEffect } from "react";
-
 
 // 버튼 색
 const LoginButton = styled(Button)(({ theme }) => ({
@@ -28,6 +27,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter()
   const pathname = usePathname(); // 현재 경로 가져오기
   const [isLoggedIn, setIsLoggedIn ] = useState(false); // 로그인 상태 변수
 
@@ -35,10 +35,10 @@ export default function RootLayout({
     const accessToken = sessionStorage.getItem("accessToken");
     const refreshToken = sessionStorage.getItem("refreshToken");
     setIsLoggedIn(!!accessToken);
-    if (sessionStorage.getItem("accessToken")) {
-      authToken()
+    if (accessToken) {
+      authToken(router)
     }
-  }, []);
+  }, [router]);
 
   // 특정 경로에서 header를 숨기기
   const hideHeader = pathname.startsWith("/game/in-game");

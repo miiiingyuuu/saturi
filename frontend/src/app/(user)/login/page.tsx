@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { validateEmail, handleValueChange } from "@/utils/utils";
-import { goKakaoLogin, goNaverLogin, handleLogin } from "@/utils/authutils";
+import { goSocialLogin, handleLogin } from "@/utils/authutils";
 import {
   Box,
   Container,
@@ -101,7 +101,7 @@ export default function App() {
               <img
                 src="/naverBtn.png"
                 alt="naverLogin"
-                onClick={goNaverLogin}
+                onClick={() => goSocialLogin("naver")}
                 style={{
                   width: "100%",
                   height: "56px",
@@ -114,7 +114,7 @@ export default function App() {
               <img
                 src="/kakao_login_medium_narrow.png"
                 alt="kakaoLogin"
-                onClick={goKakaoLogin}
+                onClick={() => goSocialLogin("kakao")}
                 style={{
                   width: "100%",
                   height: "56px",
