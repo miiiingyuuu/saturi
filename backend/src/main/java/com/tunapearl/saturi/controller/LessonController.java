@@ -77,15 +77,24 @@ public class LessonController {
                                                                                        @RequestParam("locationId") Long locationId,
                                                                                        @RequestParam("categoryId") Long lessonCategoryId) throws UnAuthorizedException {
         Long userId = jwtUtil.getUserId(authorization);
-        UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
-        Long userRank = userService.getUserRank(userId);
-        UserExpAndRankDTO userInfo = new UserExpAndRankDTO(userProfile.getExp(), userRank);
 
-        // 85~87 test 위함
+        // 진척도
+        Long resultProgress = lessonService.getProgressByUserIdLocationAndCategory(userId, locationId, lessonCategoryId);
+
+        // 퍼즐별 test data 시작
         LessonGroupProgressByUserDTO lgpbuDTO = new LessonGroupProgressByUserDTO(1L, 0L, 0L);
         List<LessonGroupProgressByUserDTO> lgpbuDTOs = new ArrayList<>();
         lgpbuDTOs.add(lgpbuDTO);
+        // 퍼즐벌 test data 끝
 
-        return ResponseEntity.ok(new LessonGroupProgressResponseDTO(0L, lgpbuDTOs, userInfo));
+        // 퍼즐별 진행률, 평균 정확도(유사도+정확도/2)
+        List<LessonGroupProgressByUserDTO> resultLessonGroupProgressAndAvgAccuracy = lessonService.getLessonGroupProgressAndAvgAccuracy(userId, locationId, lessonCategoryId);
+
+        // 유저 정보
+        UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
+        Long userRank = userService.getUserRank(userId);
+        UserExpAndRankDTO resultUserInfo = new UserExpAndRankDTO(userProfile.getExp(), userRank);
+
+        return ResponseEntity.ok(new LessonGroupProgressResponseDTO(resultProgress, lgpbuDTOs, resultUserInfo));
     }
 }
