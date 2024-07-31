@@ -1,25 +1,20 @@
-package com.tunapearl.saturi.controller;
+package com.tunapearl.saturi.controller.admin;
 
-import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.quiz.QuizRequestDto;
 import com.tunapearl.saturi.dto.quiz.QuizResponseDto;
 import com.tunapearl.saturi.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/admin/game")
-public class QuizController {
+public class AdminQuizController {
 
     private final QuizService quizService;
 
@@ -29,4 +24,6 @@ public class QuizController {
         List<QuizResponseDto> list = quizService.finaAll(quizRequestDto);
         return ResponseEntity.ok(list);
     }
+
+    @PostMapping(value = )
 }
