@@ -3,6 +3,7 @@ package com.tunapearl.saturi.exception.advice;
 import com.tunapearl.saturi.controller.UserController;
 import com.tunapearl.saturi.dto.error.ErrorResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
+import com.tunapearl.saturi.exception.UnAuthorizedUserException;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,12 @@ public class ExControllerAdvice {
     public ErrorResponseDTO ExHandle(Exception e) {
         log.error("[exceptionHandle] ex", e);
         return new ErrorResponseDTO("INTER_SERVER_ERROR", "서버 내부 오류");
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnAuthorizedUserException.class)
+    public ErrorResponseDTO UnAuthorizeUserHandle(UnAuthorizedUserException e) {
+        log.error("[exceptionHandle] ex", e);
+        return new ErrorResponseDTO("UNAUTHORIZED", "관리자 아님");
     }
 }
