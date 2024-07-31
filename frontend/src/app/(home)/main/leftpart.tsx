@@ -66,7 +66,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
           }
         })()
       }}>
-      <Box sx={{ position: 'absolute', margin: "25px", top: "5%", left: "70px", width: "25vw" }}>
+      <Box sx={{ position: 'absolute', margin: "25px", top: "7%", left: "70px", width: "25vw" }}>
         <Typography variant="h1" sx={{ fontSize: 30, fontWeight: "bold" }}>학습 페이지</Typography>
         <br />
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
@@ -80,7 +80,8 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
             <Box component="img" src="/MainPage/learnButton3.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
           </ButtonBase>
           <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
-            <Box component="img"
+            <Box 
+              component="img"
               src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}
               alt=""
               sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}

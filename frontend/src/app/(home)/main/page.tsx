@@ -21,8 +21,6 @@ interface MiddlePartProps {
   selectedRegion: string;
 }
 
-
-
 interface ButtonPartProps {
   onLeftClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
   onRightClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
@@ -35,12 +33,6 @@ interface MiddleMapProps {
   onRegionClick: (region: string) => void;
   selectedRegion: string;
 }
-
-
-
-
-
-
 
 function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }: ButtonPartProps) {
   return (
@@ -122,7 +114,7 @@ export default function App() {
   };
 
   return (
-    <div>
+    <div style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
       <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
         <LeftPart
           middlePosition={middleToWhere}
@@ -133,6 +125,10 @@ export default function App() {
           middlePosition={middleToWhere}
           mainPageIndicator={mainPageIndicator}
           selectedRegion={selectedRegion}
+          sx={{
+            width: "100vw",
+            overflow: "hidden" // MiddlePart 자체에 overflow: hidden 추가 (필요한 경우)
+          }}
         />
         <RightPart />
         <ButtonPart
