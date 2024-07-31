@@ -84,13 +84,13 @@ export async function frontLogOut() {
 // 토큰 유효성 확인
 // 페이지 옮길때마다 실행 (메인의 authutils에 달려있음)
 export function authToken(router: any) {
-  // 우선 토큰 유효성 검사
-  api
-    .get("/user/auth/token-check")
+  console.log("쉿! 유효성 검사중")
+  api.get("/user/auth/token-check")
     .then(response => {
       if (response.status === 200) {
         api.get("user/auth/profile").then(response => {
           // 유효성 검사 후, 받아온 데이터를 쿠키에 저장
+          console.log("쉿! 유효성 검사 완료")
           insertCookie(response);
         });
       }
@@ -99,8 +99,7 @@ export function authToken(router: any) {
       // 401 에러 발생 시
       if (err.response.status === 401) {
         // 리프레시 토큰을 들고 토큰 리프레시 신청하러감
-        api
-          .post(
+        api.post(
             "/user/auth/token-refresh",
             {},
             {

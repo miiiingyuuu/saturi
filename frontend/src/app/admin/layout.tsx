@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import MuiDrawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -17,6 +17,8 @@ import {
   IconButton,
 } from "@mui/material";
 import { secondaryListItems } from "@/components/sample-admin/listItems";
+import { useEffect } from "react";
+import { getCookie } from "cookies-next";
 
 const drawerWidth: number = 240;
 
@@ -71,17 +73,25 @@ const Drawer = styled(MuiDrawer, {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({children}: Readonly<{children: React.ReactNode}>) {
   const pathname = usePathname();
+  const router = useRouter()
   const [open, setOpen] = React.useState(true);
   const hideHeader = pathname === "/admin/auth";
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  useEffect(() => {
+    switch (true) {
+      case (getCookie("role") !== "ADMIN"):
+        router.push("/")
+        break
+      case (sessionStorage.getItem("adminToken") !== process.env.NEXT_PUBLIC_ADMIN_TOKEN):
+        router.push("/admin/auth")
+        break
+    }
+  }, [router]);
 
   return (
     <ThemeProvider theme={defaultTheme}>

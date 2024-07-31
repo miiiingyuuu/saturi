@@ -1,43 +1,122 @@
 "use client";
 
-import { Typography, Box } from "@mui/material";
-import { useEffect } from "react";
-import { getCookie } from "cookies-next";
-import { createInfo, getInfo } from "@/utils/adminutils";
-import { useRouter, usePathname } from "next/navigation";
+import {
+  Typography,
+  Box,
+  Container,
+  Grid,
+  TextField,
+  Button,
+} from "@mui/material";
+import api from "@/lib/axios";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { handleValueChange } from "@/utils/utils";
+import {
+  // getLessonGroup,
+  getLocation,
+  getLessonCategory,
+} from "@/utils/adminutils"
 
 export default function App() {
-  const router = useRouter();
   const pathname = usePathname();
   const [category, method] = pathname?.split("/").slice(-2) || [];
+  const [locationId, setLocationId] = useState({});
+  const [lessonCategoryId, setLessonCategoryId] = useState({});
+  const [name, setName] = useState("");
 
+  function createLessonGroup() {
+    api.post("/admin/lesson/lesson-group", {
+      locationId,
+      lessonCategoryId,
+      name
+    }).then((response) => {
+      console.log(response.data)
+      // 1,2,3 넣었을 때 ok 확인 받아봄
+    })
+  }
+  // TODO: 어지간하면 데이터 담기 전에 전처리 해서 담기
+  // 함수 내부에서 미리 전처리해서 state 에 담으면 될듯
   useEffect(() => {
-    if (getCookie("role") !== "ADMIN") {
-      router.push("/");
-    }
-    if (sessionStorage.getItem("adminToken") === "good") {
-      router.push("/admin");
-    }
-  }, [router]);
+    setLocationId(getLocation)
+    setLessonCategoryId(getLessonCategory)
+  }, []);
 
   if (category === "lesson" && method === "create") {
     return (
-      <Box>
-        <Typography component="h1" variant="h5">
-          레슨 등록
-        </Typography>
-        <form onSubmit={event => createInfo(event)}>
-          <input name="" type="text" />
-          <input name="" type="text" />
-          <input type="file" />
-          <input type="submit" />
-        </form>
-      </Box>
+      <Container component="main" maxWidth="sm">
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography component="h1" variant="h5">
+            레슨 그룹 등록
+          </Typography>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={event => {
+              event.preventDefault();
+              createLessonGroup()
+              }
+            }
+            sx={{ mt: 3 }}
+          >
+            <Grid container spacing={3}> {/* Add spacing here */}
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="locationId"
+                  value={locationId}
+                  onChange={(event) => handleValueChange(event, setLocationId)}
+                  label="지역 ID"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="lessonCategoryId"
+                  value={lessonCategoryId}
+                  onChange={(event) => handleValueChange(event, setLessonCategoryId)}
+                  label="카테고리 ID"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="name"
+                  value={name}
+                  onChange={(event) => handleValueChange(event, setName)}
+                  label="레슨 그룹 이름"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    fontSize: "1rem",
+                    height: "56px",
+                  }}
+                >
+                  등록
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
     );
   }
+  return null;
 }
-/*
-                                                        큐 돌아감                  큐 잡힘         //     게임 시작
-버튼 => 토큰 주고 요청 (get) => 방 아이디(서버-클라이언트) 응답 => 구독 요청 => 인원 차면 새로운 방id 응답 => 새로 구독 요청 => 새로 구독한 방에서 통신 시작
-
- */
