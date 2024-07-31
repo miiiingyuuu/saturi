@@ -1,10 +1,12 @@
 package com.tunapearl.saturi.domain.quiz;
 
 import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,18 +34,21 @@ public class QuizEntity {
     private Boolean isObjective;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<QuizChoiceEntity> quizChoiceList;
+    private List<QuizChoiceEntity> quizChoiceList = new ArrayList<>();
 
     /*
     * 생성 메서드
     */
-    public static QuizEntity createQuiz(LocationEntity location, String question, Boolean isObjective, List<QuizChoiceEntity> quizChoiceList) {
+    public static QuizEntity createQuiz(LocationEntity location, String question, Boolean isObjective, List<QuizRegisterRequestDto.Choice> registerDtoList) {
         QuizEntity quiz = new QuizEntity();
         quiz.location = location;
         quiz.question = question;
         quiz.creationDt = LocalDateTime.now();
         quiz.isObjective = isObjective;
-        quiz.quizChoiceList = quizChoiceList;
+
+        for(QuizRegisterRequestDto.Choice dto: registerDtoList){
+            quiz.quizChoiceList.add(QuizChoiceEntity.createQuizChoice(dto.getChoiceId(), dto.getContent(), dto.getIsAnswer()));
+        }
         return quiz;
     }
 }

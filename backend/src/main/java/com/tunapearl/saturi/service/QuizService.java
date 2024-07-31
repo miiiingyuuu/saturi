@@ -1,10 +1,12 @@
 package com.tunapearl.saturi.service;
 
+import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.quiz.QuizChoiceEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
 import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
 import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
+import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,13 +21,18 @@ import java.util.stream.Collectors;
 public class QuizService {
 
     private final QuizRepository quizRepository;
+    private final LocationRepository locationRepository;
 
     public Long saveQuiz(QuizRegisterRequestDto registerRequestDto){
-
-        List<QuizChoiceEntity> choiceList = QuizChoiceEntity.createQuizChoiceList(registerRequestDto.getChoiceList());
-
-
-        return 1L;
+        LocationEntity location = locationRepository.findById(registerRequestDto.getLocationId()).orElseThrow();
+        QuizEntity quiz = QuizEntity.createQuiz(
+                location,
+                registerRequestDto.getQuestion(),
+                registerRequestDto.getIsObjective(),
+                registerRequestDto.getChoiceList()
+        );
+        quizRepository.save(quiz);
+        return quiz.getQuizId();
     }
 
     public List<QuizReadResponseDto> finaAll(QuizReadRequestDto quizReadRequestDto){
