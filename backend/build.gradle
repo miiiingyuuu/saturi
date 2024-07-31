@@ -36,7 +36,6 @@ dependencies {
 	// export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account-file.json"
 	implementation platform('com.google.cloud:libraries-bom:26.43.0')
 	implementation 'com.google.cloud:google-cloud-storage'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 
 	// javax to jakarta
 	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
@@ -57,6 +56,10 @@ dependencies {
 
 	//Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// hibernate
+	// jackson 라이브러리는 프록시 객체를 json으로 어떻게 생성하는지 모른다 Hibernate5Module을 스프링 빈으로 등록하면 해결
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 }
 
 tasks.named('test') {

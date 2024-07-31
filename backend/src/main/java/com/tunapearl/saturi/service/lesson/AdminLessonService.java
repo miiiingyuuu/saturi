@@ -53,8 +53,8 @@ public class AdminLessonService {
         return adminLessonRepository.findAll().orElse(null);
     }
 
-    public List<LessonEntity> findByLocationAndLessonCategory(Long locationId, Long lessonCategoryId) {
-        return adminLessonRepository.findByLocationAndLessonCategory(locationId, lessonCategoryId).orElse(null);
+    public List<LessonEntity> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId) {
+        return adminLessonRepository.findByLocationAndLessonCategory(lessonGroupId, locationId, lessonCategoryId).orElse(null);
     }
 
     public LessonEntity findById(Long lessonId) {

@@ -8,6 +8,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class LessonSearch {
+    private Long lessonGroupId;
     private Long locationId;
     private Long lessonCategoryId;
 }

@@ -6,7 +6,9 @@ import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
+import com.tunapearl.saturi.dto.lesson.LessonGroupProgressResponseDTO;
 import com.tunapearl.saturi.service.lesson.LessonService;
+import com.tunapearl.saturi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.List;
 public class LessonController {
 
     private final LessonService lessonService;
+    private final UserService userService;
 
     /**
      * 모든 카테고리 조회
@@ -58,4 +61,14 @@ public class LessonController {
                 findLesson.getSampleVoicePath(), findLesson.getScript(), findLesson.getLastUpdateDt()));
     }
 
+    /**
+     * 현재 지역과 유형에 맞는 퍼즐의 유저별 정보 조회
+     * 진척도, 퍼즐별(진행률, 평균 정확도), 유저 정보(경험치, 순위)
+     */
+//    @GetMapping("/lesson-group/progress")
+//    public ResponseEntity<LessonGroupProgressResponseDTO> getLessonGroupProgressByUser(@RequestHeader("Authorization") String authorization,
+//                                                                                       @RequestParam("locationId") Long locationId,
+//                                                                                       @RequestParam("categoryId") Long lessonCategoryId) {
+//
+//    }
 }

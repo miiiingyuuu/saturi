@@ -40,7 +40,7 @@ public class AdminLessonRepository {
         return Optional.ofNullable(em.find(LessonEntity.class, lessonId));
     }
 
-    public Optional<List<LessonEntity>> findByLocationAndLessonCategory(Long locationId, Long lessonCategoryId) {
+    public Optional<List<LessonEntity>> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId) {
         //FIXME querydsl로 지역, 유형으로 구분 동적 쿼리 생성
         return Optional.ofNullable(em.createQuery("select l from LessonEntity l where l.isDeleted = false", LessonEntity.class)
                 .getResultList());

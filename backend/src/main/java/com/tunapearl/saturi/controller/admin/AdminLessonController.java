@@ -84,7 +84,7 @@ public class AdminLessonController {
     @GetMapping
     public ResponseEntity<List<LessonResponseDTO>> getAllLesson(@ModelAttribute LessonSearch request) {
         log.info("received request to find All lessons");
-        List<LessonEntity> lessons = adminLessonService.findByLocationAndLessonCategory(request.getLocationId(), request.getLessonCategoryId());
+        List<LessonEntity> lessons = adminLessonService.findByLocationAndLessonCategory(request.getLessonGroupId(), request.getLocationId(), request.getLessonCategoryId());
         List<LessonResponseDTO> allLessonDTO = new ArrayList<>();
         lessons.forEach((lesson) -> allLessonDTO.add(new LessonResponseDTO(
                 lesson.getLessonId(), lesson.getLessonGroup().getLessonGroupId(),

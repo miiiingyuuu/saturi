@@ -74,7 +74,6 @@ public class UserController {
             log.info("Received social login request for {}", request.getCode());
             return ResponseEntity.created(URI.create("/auth/login")).body(socialUserService.doSocialLogin(request));
         }
-
     }
 
     /**
