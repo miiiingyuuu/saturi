@@ -181,15 +181,20 @@ public class UserController {
      * accessToken 재발급
      */
     @PostMapping("/auth/token-refresh")
-    public ResponseEntity<TokenRefreshResponseDTO> refreshToken(@RequestBody TokenRefreshRequestDTO tokenrefreshrequestdto, HttpServletRequest request)
-            throws Exception {
+    public ResponseEntity<TokenRefreshResponseDTO> refreshToken(HttpServletRequest request)
+            throws Exception, UnAuthorizedException {
 
         String refreshToken = request.getHeader("refreshToken");
 
         if (jwtUtil.checkToken(refreshToken)) {
-            if (refreshToken.equals(tokenService.getRefreshToken(tokenrefreshrequestdto.getUserId()))) {
 
-                String accessToken = jwtUtil.createAccessToken(tokenrefreshrequestdto.getUserId());
+            Long userId = jwtUtil.getUserId(refreshToken);
+            log.info("Id searched by refresh_token is {}", userId);
+            log.info("refreshToken is {}", refreshToken);
+            log.info("getRefreshToken is {}", tokenService.getRefreshToken(userId));
+            if (refreshToken.equals(tokenService.getRefreshToken(userId))){
+                log.info("Refresh token is valid");
+                String accessToken = jwtUtil.createAccessToken(userId);
                 return ResponseEntity.ok().body(new TokenRefreshResponseDTO(accessToken));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
