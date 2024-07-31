@@ -5,16 +5,16 @@ export default function MiddlePart({ middlePosition, mainPageIndicator, selected
       <div 
         className="middlepart" 
         style={{
-            left: (() => {
-              if (middlePosition === 0) {
-                  return "-110%";
-              } if (middlePosition === 1) {
-                  return "0%";
-              } if (middlePosition === 2) {
-                  return "110%";
-              } return null;              
-                })()
-            }}>
+          left: (() => {
+            if (middlePosition === 0) {
+                return "-110%";
+            } if (middlePosition === 1) {
+                return "0%";
+            } if (middlePosition === 2) {
+                return "110%";
+            } return null;              
+              })()
+          }}>
         <h1 
           className="blink" 
           style={{

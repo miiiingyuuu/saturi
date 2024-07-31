@@ -38,9 +38,28 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
   }, [middlePosition]);
 
   function buttonLearn(num: number) {
-    let region = 0;
-    if (selectedRegion === "경기도") {
-      region = 1;
+    let region = 1;    
+    switch (selectedRegion) {
+      case "경기도":
+        region = 2;
+        break;
+      case "강원도":
+        region = 3;
+        break;
+      case "충청도":
+        region = 4;
+        break;
+      case "전라도":
+        region = 5;
+        break;
+      case "경상도":
+        region = 6;
+        break;
+      case "제주도":
+        region = 7;
+        break;
+      default:
+        console.log(" 에러")
     }
     console.log("hey2");
     router.push(`/lesson/${region}/${num}`);
