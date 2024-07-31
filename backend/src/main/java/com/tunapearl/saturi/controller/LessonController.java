@@ -6,14 +6,20 @@ import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
+import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressResponseDTO;
+import com.tunapearl.saturi.dto.user.UserExpAndRankDTO;
+import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
+import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.service.user.UserService;
+import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,6 +31,7 @@ public class LessonController {
 
     private final LessonService lessonService;
     private final UserService userService;
+    private final JWTUtil jwtUtil;
 
     /**
      * 모든 카테고리 조회
@@ -65,10 +72,20 @@ public class LessonController {
      * 현재 지역과 유형에 맞는 퍼즐의 유저별 정보 조회
      * 진척도, 퍼즐별(진행률, 평균 정확도), 유저 정보(경험치, 순위)
      */
-//    @GetMapping("/lesson-group/progress")
-//    public ResponseEntity<LessonGroupProgressResponseDTO> getLessonGroupProgressByUser(@RequestHeader("Authorization") String authorization,
-//                                                                                       @RequestParam("locationId") Long locationId,
-//                                                                                       @RequestParam("categoryId") Long lessonCategoryId) {
-//
-//    }
+    @GetMapping("/lesson-group/progress")
+    public ResponseEntity<LessonGroupProgressResponseDTO> getLessonGroupProgressByUser(@RequestHeader("Authorization") String authorization,
+                                                                                       @RequestParam("locationId") Long locationId,
+                                                                                       @RequestParam("categoryId") Long lessonCategoryId) throws UnAuthorizedException {
+        Long userId = jwtUtil.getUserId(authorization);
+        UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
+        Long userRank = userService.getUserRank(userId);
+        UserExpAndRankDTO userInfo = new UserExpAndRankDTO(userProfile.getExp(), userRank);
+
+        // 85~87 test 위함
+        LessonGroupProgressByUserDTO lgpbuDTO = new LessonGroupProgressByUserDTO(1L, 0L, 0L);
+        List<LessonGroupProgressByUserDTO> lgpbuDTOs = new ArrayList<>();
+        lgpbuDTOs.add(lgpbuDTO);
+
+        return ResponseEntity.ok(new LessonGroupProgressResponseDTO(0L, lgpbuDTOs, userInfo));
+    }
 }
