@@ -3,7 +3,9 @@ package com.tunapearl.saturi.controller;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
+import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.service.GameService;
+import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +19,15 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
 
     private final GameService gameService;
+    private final JWTUtil jwtUtil;
 
     /**
      * 게임 매칭
      */
     @PostMapping("/room/in")
-    public ResponseEntity<GameMatchingResponseDTO> matchingRoom(@RequestBody GameMatchingRequestDTO request) {
-        log.info("Received room matching request for locationId:{} userId:{}", request.getLocationId(), request.getUserId());
+    public ResponseEntity<GameMatchingResponseDTO> matchingRoom(@RequestHeader("Authorization") String authorization,@RequestBody GameMatchingRequestDTO request) throws UnAuthorizedException {
 
+        request.setUserId(jwtUtil.getUserId(authorization));
         return ResponseEntity.ok().body(gameService.matching(request));
     }
 

@@ -26,4 +26,5 @@ public class GameRoomParticipantEntity {
 
     @Column(name = "match_rank")
     private int matchRank;
+
 }
