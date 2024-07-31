@@ -1,14 +1,13 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL : process.env.NEXT_PUBLIC_BACKURL,
+  baseURL: process.env.NEXT_PUBLIC_BACKURL,
   timeout: 10000,
   // 기본으로 넣어줘야할 헤더
   headers: {
     "Content-Type": "application/json",
   },
 });
-
 
 /*
 request
@@ -24,7 +23,7 @@ api.interceptors.request.use(
  */
 
 api.interceptors.request.use(
-  (config) => {
+  config => {
     // 엑세스 토큰을 세션 스토리지에서 가져오고,
     const token = sessionStorage.getItem("accessToken");
     const refreshToken = sessionStorage.getItem("refreshToken");
@@ -36,10 +35,8 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error),
 );
-
-
 
 /*
 repsonse
@@ -76,8 +73,8 @@ api.interceptors.response.use(
  */
 
 api.interceptors.response.use(
-  (response) => response,
-  (error) => Promise.reject(error)
+  response => response,
+  error => Promise.reject(error),
 );
 
 export default api;

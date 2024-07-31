@@ -57,8 +57,8 @@ export default function LessonPage() {
                 index === currentIndex
                   ? "text-4xl font-bold text-black"
                   : index > currentIndex
-                  ? "text-lg text-gray-300"
-                  : "text-xl text-gray-400"
+                    ? "text-lg text-gray-300"
+                    : "text-xl text-gray-400"
               }`}
               style={{
                 display:
@@ -78,19 +78,11 @@ export default function LessonPage() {
             >
               {isRecording ? "녹음중" : "녹음하기"}
             </Button>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleNext}
-            >
+            <Button variant="contained" color="success" onClick={handleNext}>
               건너뛰기
             </Button>
             {currentIndex < texts.length - 1 ? (
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleNext}
-              >
+              <Button variant="contained" color="success" onClick={handleNext}>
                 다음 문장
               </Button>
             ) : (

@@ -19,7 +19,7 @@ export default function Puzzle({ id, onSelect }: PuzzleProps) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setProgress((oldProgress) => {
+      setProgress(oldProgress => {
         if (oldProgress >= 60) {
           clearInterval(timer);
           return 60;
@@ -45,7 +45,7 @@ export default function Puzzle({ id, onSelect }: PuzzleProps) {
           sx={{
             height: 8, // 원하는 높이로 설정
             borderRadius: 5, // 테두리를 둥글게 설정
-            '& .MuiLinearProgress-bar': {
+            "& .MuiLinearProgress-bar": {
               borderRadius: 5, // 진행 바 자체도 둥글게 설정
             },
           }}
@@ -54,8 +54,11 @@ export default function Puzzle({ id, onSelect }: PuzzleProps) {
       <Grid container spacing={2}>
         {pieces.map(piece => (
           <Grid item xs={4} key={piece}>
-            <Card className="cursor-pointer w-full h-full" onClick={() => onClick(piece)}>
-                <PuzzlePiece locationId={id} piece={piece} />
+            <Card
+              className="cursor-pointer w-full h-full"
+              onClick={() => onClick(piece)}
+            >
+              <PuzzlePiece locationId={id} piece={piece} />
             </Card>
           </Grid>
         ))}

@@ -2,18 +2,17 @@
 import * as React from "react";
 
 export interface HandleLoginProps {
-  email: string
-  password: string
-  router: any
-  goTo: string
+  email: string;
+  password: string;
+  router: any;
+  goTo: string;
 }
 
 // util
 export interface PasswordProps {
-  password: string
-  passwordConf: string
+  password: string;
+  passwordConf: string;
 }
-
 
 // component
 export interface CustomAccordionItemProps {

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import ButtonBase from '@mui/material/ButtonBase';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
+import ButtonBase from "@mui/material/ButtonBase";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 
 interface LeftPartProps {
   middlePosition: number;
@@ -11,34 +11,42 @@ interface LeftPartProps {
   selectedRegion: string;
 }
 
-export default function LeftPart({ middlePosition, moveDirection, selectedRegion }: LeftPartProps) {
+export default function LeftPart({
+  middlePosition,
+  moveDirection,
+  selectedRegion,
+}: LeftPartProps) {
   const router = useRouter();
 
   useEffect(() => {
     if (middlePosition === 2) {
-      navigator.mediaDevices.enumerateDevices()
+      navigator.mediaDevices
+        .enumerateDevices()
         .then(devices => {
-          const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+          const audioInputDevices = devices.filter(
+            device => device.kind === "audioinput",
+          );
           if (audioInputDevices.length > 0) {
-            navigator.mediaDevices.getUserMedia({ audio: true })
-              .then((stream) => {
-                console.log('마이크 허용됨');
+            navigator.mediaDevices
+              .getUserMedia({ audio: true })
+              .then(stream => {
+                console.log("마이크 허용됨");
               })
-              .catch((error) => {
-                console.error('마이크 허용 오류:', error);
+              .catch(error => {
+                console.error("마이크 허용 오류:", error);
               });
           } else {
-            console.error('사용 가능한 오디오 입력 장치가 없습니다.');
+            console.error("사용 가능한 오디오 입력 장치가 없습니다.");
           }
         })
         .catch(error => {
-          console.error('장치 나열 오류:', error);
+          console.error("장치 나열 오류:", error);
         });
     }
   }, [middlePosition]);
 
   function buttonLearn(num: number) {
-    let region = 1;    
+    let region = 1;
     switch (selectedRegion) {
       case "경기도":
         region = 2;
@@ -59,7 +67,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
         region = 7;
         break;
       default:
-        console.log(" 에러")
+        console.log(" 에러");
     }
     console.log("hey2");
     router.push(`/lesson/${region}/${num}`);
@@ -72,38 +80,144 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
         zIndex: (() => {
           if (middlePosition === 0) {
             return 0;
-          } if (middlePosition === 1) {
+          }
+          if (middlePosition === 1) {
             if (moveDirection === "left") {
               console.log("left");
               return 0;
-            } if (moveDirection === "right") {
+            }
+            if (moveDirection === "right") {
               console.log("right");
               return 2;
             }
           } else if (middlePosition === 2) {
             return 2;
           }
-        })()
-      }}>
-      <Box sx={{ position: 'absolute', margin: "25px", top: "7%", left: "70px", width: "25vw" }}>
-        <Typography variant="h1" sx={{ fontSize: 30, fontWeight: "bold" }}>학습 페이지</Typography>
+        })(),
+      }}
+    >
+      <Box
+        sx={{
+          position: "absolute",
+          margin: "25px",
+          top: "7%",
+          left: "70px",
+          width: "25vw",
+        }}
+      >
+        <Typography variant="h1" sx={{ fontSize: 30, fontWeight: "bold" }}>
+          학습 페이지
+        </Typography>
         <br />
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-          <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
-            <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
-            <Box component="img" src="/MainPage/learnButton2.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
-            <Box component="img" src="/MainPage/learnButton3.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative' }}>
-            <Box 
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: 2,
+          }}
+        >
+          <ButtonBase
+            onClick={() => {
+              buttonLearn(1);
+            }}
+            sx={{
+              width: "100%",
+              height: 0,
+              paddingBottom: "100%",
+              position: "relative",
+            }}
+          >
+            <Box
               component="img"
-              src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}
+              src="/MainPage/learnButton1.png"
               alt=""
-              sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </ButtonBase>
+          <ButtonBase
+            onClick={() => {
+              buttonLearn(2);
+            }}
+            sx={{
+              width: "100%",
+              height: 0,
+              paddingBottom: "100%",
+              position: "relative",
+            }}
+          >
+            <Box
+              component="img"
+              src="/MainPage/learnButton2.png"
+              alt=""
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </ButtonBase>
+          <ButtonBase
+            onClick={() => {
+              buttonLearn(3);
+            }}
+            sx={{
+              width: "100%",
+              height: 0,
+              paddingBottom: "100%",
+              position: "relative",
+            }}
+          >
+            <Box
+              component="img"
+              src="/MainPage/learnButton3.png"
+              alt=""
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </ButtonBase>
+          <ButtonBase
+            onClick={() => {
+              buttonLearn(4);
+            }}
+            sx={{
+              width: "100%",
+              height: 0,
+              paddingBottom: "100%",
+              position: "relative",
+            }}
+          >
+            <Box
+              component="img"
+              src={
+                selectedRegion !== "경기도"
+                  ? "/MainPage/learnButton4.png"
+                  : "/MainPage/learnButton5.png"
+              }
+              alt=""
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
             />
           </ButtonBase>
         </Box>

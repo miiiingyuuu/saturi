@@ -5,7 +5,7 @@ import { handleValueChange } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { handleAdminLogin } from "@/utils/adminutils";
-import { getCookie } from "cookies-next"
+import { getCookie } from "cookies-next";
 
 // 쿠키에서 우선 검증 => admin이 아닌 경우 "/"로 보냄
 // 관리자 비밀번호 검증
@@ -17,13 +17,13 @@ export default function App() {
   const router = useRouter();
 
   useEffect(() => {
-    if (getCookie("role") !=="ADMIN") {
-      router.push("/")
+    if (getCookie("role") !== "ADMIN") {
+      router.push("/");
     }
     if (sessionStorage.getItem("adminToken") === "good") {
-      router.push("/admin")
+      router.push("/admin");
     }
-  }, [router])
+  }, [router]);
 
   return (
     <Box
@@ -38,39 +38,39 @@ export default function App() {
       <Container component="main" maxWidth="sm">
         <Box
           component="form"
-          onSubmit={(event) => {
+          onSubmit={event => {
             event.preventDefault();
-            handleAdminLogin(password, router)
+            handleAdminLogin(password, router);
           }}
           noValidate
           sx={{ mt: 1 }}
         >
-        <Typography component="h1" variant="h3" align="center">
-          관리자 페이지 로그인
-        </Typography>
+          <Typography component="h1" variant="h3" align="center">
+            관리자 페이지 로그인
+          </Typography>
 
-        <TextField
-          margin="normal"
-          fullWidth
-          id="password"
-          label="비밀번호"
-          type="password"
-          value={password}
-          onChange={(event) => handleValueChange(event, setPassword)}
-          autoComplete="current-password"
-        />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{
-            mt: 3,
-            mb: 2,
-            height: "56px",
-          }}
-        >
-          관리자 페이지 로그인
-        </Button>
+          <TextField
+            margin="normal"
+            fullWidth
+            id="password"
+            label="비밀번호"
+            type="password"
+            value={password}
+            onChange={event => handleValueChange(event, setPassword)}
+            autoComplete="current-password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              mt: 3,
+              mb: 2,
+              height: "56px",
+            }}
+          >
+            관리자 페이지 로그인
+          </Button>
         </Box>
       </Container>
     </Box>

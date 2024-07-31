@@ -1,43 +1,39 @@
-"use client"
+"use client";
 
-import {
-  Typography,
-  Box
-} from "@mui/material"
+import { Typography, Box } from "@mui/material";
 import { useEffect } from "react";
 import { getCookie } from "cookies-next";
-import { createInfo, getInfo } from "@/utils/adminutils"
-import { useRouter, usePathname } from "next/navigation"
-
+import { createInfo, getInfo } from "@/utils/adminutils";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function App() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [category, method] = pathname?.split('/').slice(-2) || [];
+  const router = useRouter();
+  const pathname = usePathname();
+  const [category, method] = pathname?.split("/").slice(-2) || [];
 
   useEffect(() => {
-    if (getCookie("role") !=="ADMIN") {
-      router.push("/")
+    if (getCookie("role") !== "ADMIN") {
+      router.push("/");
     }
     if (sessionStorage.getItem("adminToken") === "good") {
-      router.push("/admin")
+      router.push("/admin");
     }
-  }, [router])
+  }, [router]);
 
   if (category === "lesson" && method === "create") {
     return (
       <Box>
-      <Typography component="h1" variant="h5">
-        레슨 등록
-      </Typography>
-        <form onSubmit={(event) => createInfo(event)}>
+        <Typography component="h1" variant="h5">
+          레슨 등록
+        </Typography>
+        <form onSubmit={event => createInfo(event)}>
           <input name="" type="text" />
           <input name="" type="text" />
           <input type="file" />
           <input type="submit" />
         </form>
       </Box>
-    )
+    );
   }
 }
 /*

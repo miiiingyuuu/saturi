@@ -25,16 +25,36 @@ export default function SideNavbar({ location }: SideNavbarProps) {
       <h1 className="text-2xl font-bold mb-4">Sidebar</h1>
       <ol className="grid grid-cols-1 gap-4 m-0 p-0">
         <li className="flex justify-center">
-          <Image src="/MainPage/learnButton1.png" alt="" width={100} height={100} />
+          <Image
+            src="/MainPage/learnButton1.png"
+            alt=""
+            width={100}
+            height={100}
+          />
         </li>
         <li className="flex justify-center">
-          <Image src="/MainPage/learnButton2.png" alt="" width={100} height={100} />
+          <Image
+            src="/MainPage/learnButton2.png"
+            alt=""
+            width={100}
+            height={100}
+          />
         </li>
         <li className="flex justify-center">
-          <Image src="/MainPage/learnButton3.png" alt="" width={100} height={100} />
+          <Image
+            src="/MainPage/learnButton3.png"
+            alt=""
+            width={100}
+            height={100}
+          />
         </li>
         <li className="flex justify-center">
-          <Image src="/MainPage/learnButton4.png" alt="" width={100} height={100} />
+          <Image
+            src="/MainPage/learnButton4.png"
+            alt=""
+            width={100}
+            height={100}
+          />
         </li>
       </ol>
     </div>

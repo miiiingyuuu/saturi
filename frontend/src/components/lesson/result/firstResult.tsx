@@ -1,4 +1,10 @@
-import { Popover, LinearProgress, Button, Box, Typography } from "@mui/material";
+import {
+  Popover,
+  LinearProgress,
+  Button,
+  Box,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 
 export default function FirstResult() {
@@ -9,8 +15,16 @@ export default function FirstResult() {
       text: "마 니 국밥 무봤나",
       progress: { pronunciation: 60, intonation: 50 },
     },
-    { id: 2, text: "마 니 자신있나", progress: { pronunciation: 90, intonation: 80 } },
-    { id: 3, text: "맛이 깔끼하네", progress: { pronunciation: 70, intonation: 65 } },
+    {
+      id: 2,
+      text: "마 니 자신있나",
+      progress: { pronunciation: 90, intonation: 80 },
+    },
+    {
+      id: 3,
+      text: "맛이 깔끼하네",
+      progress: { pronunciation: 70, intonation: 65 },
+    },
     {
       id: 4,
       text: "블루베리 스무디",
@@ -59,12 +73,12 @@ export default function FirstResult() {
               anchorEl={anchorEl}
               onClose={handleClose}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               transformOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: "bottom",
+                horizontal: "left",
               }}
             >
               <Box className="p-2">
@@ -83,8 +97,11 @@ export default function FirstResult() {
             억양
           </Typography>
         </Box>
-        {texts.map((item) => (
-          <Box key={item.id} className="flex justify-between items-center w-full mb-4">
+        {texts.map(item => (
+          <Box
+            key={item.id}
+            className="flex justify-between items-center w-full mb-4"
+          >
             <Box className="w-1/2 pr-2">
               <LinearProgress
                 variant="determinate"

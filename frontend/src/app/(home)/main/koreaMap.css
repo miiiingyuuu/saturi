@@ -1,48 +1,47 @@
 .경기도 {
-    transition: fill 0.3s ease;
-  }
+  transition: fill 0.3s ease;
+}
 
 .경기도:hover {
-    fill: #AAA;
+  fill: #aaa;
 }
 
 .강원도 {
-    transition: fill 0.3s ease;
-  }
+  transition: fill 0.3s ease;
+}
 
 .강원도:hover {
-    fill: #AAA;
+  fill: #aaa;
 }
 
 .충청도 {
-    transition: fill 0.3s ease;
-  }
+  transition: fill 0.3s ease;
+}
 
 .충청도:hover {
-    fill: #AAA;
+  fill: #aaa;
 }
 
 .전라도 {
-    transition: fill 0.3s ease;
-  }
+  transition: fill 0.3s ease;
+}
 
 .전라도:hover {
-    fill: #AAA;
+  fill: #aaa;
 }
 
 .경상도 {
-    transition: fill 0.3s ease;
-  }
+  transition: fill 0.3s ease;
+}
 
 .경상도:hover {
-    fill: #AAA;
+  fill: #aaa;
 }
 
 .제주도 {
-    transition: fill 0.3s ease;
-  }
-
-.제주도:hover {
-    fill: #AAA;
+  transition: fill 0.3s ease;
 }
 
+.제주도:hover {
+  fill: #aaa;
+}

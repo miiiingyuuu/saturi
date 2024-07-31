@@ -1,9 +1,4 @@
-import {
-  Button,
-  Popover,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Button, Popover, Typography, Box } from "@mui/material";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -30,15 +25,14 @@ export default function PuzzlePiece({ locationId, piece }: IPuzzlePiece) {
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <div>
       <Box className="w-48 h-24" onClick={handleClick}>
-          <Typography variant="h5" component="p">
-            {piece}
-          </Typography>
-       
+        <Typography variant="h5" component="p">
+          {piece}
+        </Typography>
       </Box>
       <Popover
         id={id}
@@ -46,12 +40,12 @@ export default function PuzzlePiece({ locationId, piece }: IPuzzlePiece) {
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         }}
         transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
+          vertical: "bottom",
+          horizontal: "center",
         }}
       >
         <div className="px-1 py-2">

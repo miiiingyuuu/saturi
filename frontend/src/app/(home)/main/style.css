@@ -48,7 +48,9 @@
   height: 100%;
   left: 0%;
   z-index: 2;
-  transition: left 1s ease, right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+  transition:
+    left 1s ease,
+    right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
 }
 
 .rightpart {
@@ -84,7 +86,9 @@
   right: null;
   transform: translate(-50%, -50%); /* 정중앙으로 이동 */
   z-index: 10; /* 다른 요소들보다 위에 오도록 z-index 설정 */
-  transition: left 1s ease, right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+  transition:
+    left 1s ease,
+    right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
 }
 
 /* /////////////// */
@@ -122,13 +126,10 @@
 
 .profile-grid {
   border: 2px solid black;
-  border-radius: 10px;    
+  border-radius: 10px;
   width: 200px;
   height: 300px;
 }
-
-
-
 
 /* 반짝이게 하기 */
 @keyframes blink-effect {

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
@@ -14,14 +14,14 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import { grey } from "@mui/material/colors"
+import { grey } from "@mui/material/colors";
 
 export default function App() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [ email, setEmail ] = useState("")
-  const [ password, setPassword ] = useState("")
-  const isEmailValid = useMemo(() => validateEmail(email),[email])
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const isEmailValid = useMemo(() => validateEmail(email), [email]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -38,7 +38,7 @@ export default function App() {
         </Typography>
         <Box
           component="form"
-          onSubmit={(event) => {
+          onSubmit={event => {
             event.preventDefault();
             handleLogin({ email, password, router, goTo: "/main" });
           }}
@@ -53,10 +53,10 @@ export default function App() {
             label="이메일"
             autoComplete="email"
             value={email}
-            onChange={(event) => handleValueChange(event, setEmail)}
+            onChange={event => handleValueChange(event, setEmail)}
             autoFocus
             error={!isEmailValid}
-            helperText={isEmailValid? "" : "이메일이 유효하지 않습니다."}
+            helperText={isEmailValid ? "" : "이메일이 유효하지 않습니다."}
           />
           <TextField
             margin="normal"
@@ -66,7 +66,7 @@ export default function App() {
             label="비밀번호"
             type="password"
             value={password}
-            onChange={(event) => handleValueChange(event, setPassword)}
+            onChange={event => handleValueChange(event, setPassword)}
             autoComplete="current-password"
           />
           <Button
@@ -91,7 +91,7 @@ export default function App() {
           <Divider
             sx={{
               mt: 2,
-              color: grey[500]
+              color: grey[500],
             }}
           >
             또는
@@ -127,5 +127,5 @@ export default function App() {
         </Box>
       </Box>
     </Container>
-  )
+  );
 }
