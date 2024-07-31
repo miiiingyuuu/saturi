@@ -263,4 +263,33 @@ public class UserService {
         log.info("find User Profile {}", findUser);
         return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getId());
     }
+
+    /**
+     * 어드민회원 회원가입
+     */
+    @Transactional
+    public UserMsgResponseDTO registerAdminUser(UserRegisterRequestDTO request) {
+        validateEmail(request.getEmail());
+        validatePassword(request.getPassword());
+        validateDuplicateUserEmail(request.getEmail());
+        validateDuplicateUserNickname(request.getNickname());
+        UserEntity user = createAdminUser(request);
+        userRepository.saveUser(user);
+        return new UserMsgResponseDTO("유저 회원가입 성공");
+    }
+
+    private UserEntity createAdminUser(UserRegisterRequestDTO request) {
+        UserEntity user = new UserEntity();
+        user.setEmail(request.getEmail());
+        user.setPassword(PasswordEncoder.encrypt(request.getEmail(), request.getPassword()));
+        user.setNickname(request.getNickname());
+        user.setLocation(locationService.findById(1L));
+        user.setGender(Gender.DEFAULT);
+        user.setAgeRange(AgeRange.DEFAULT);
+        user.setRegDate(LocalDateTime.now());
+        user.setBird(birdRepository.findById(1L).orElse(null));
+        user.setExp(0L);
+        user.setRole(Role.ADMIN);
+        return user;
+    }
 }
