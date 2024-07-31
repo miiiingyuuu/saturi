@@ -46,6 +46,8 @@ public class StartupApplicationListener {
     private static final String[] LESSON_CATEGORIES = {"일상", "드라마 대사", "영화 대사", "밈"};
     
     //TODO 레슨 샘플 데이터 등록 필요
+    
+    //TODO 퀴즈 샘플 데이터 등록 필요
 
     @EventListener
     @Transactional
