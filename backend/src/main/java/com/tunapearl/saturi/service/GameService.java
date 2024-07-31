@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.service;
 
+import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.game.GameRoomEntity;
 import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
 import com.tunapearl.saturi.domain.game.GameTipEntity;
@@ -52,30 +53,41 @@ public class GameService {
     }
 
     /**
-     * 게임 매칭
+     * 게임 매칭,
+     * 도중에 매칭취소한다면 participant에서 삭제할 것
      */
     public GameMatchingResponseDTO matching(GameMatchingRequestDTO gameMatchingRequestDTO) {
 
-        //TODO:locationId, status로 가져오기
-        Optional<List<GameRoomEntity>> findUsers = gameRoomRepository.findByStatus(Status.MATCHING);
-        if (findUsers.isPresent()) {
+        LocationEntity location=locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow();
+        Optional<List<GameRoomEntity>> findRooms = gameRoomRepository.findByLocationAndStatus(location,Status.MATCHING);
+        GameRoomEntity gameRoomEntity;
 
-            log.info("방 이따");
-            GameRoomEntity gameRoomEntity = findUsers.get().get(0);
-            UserEntity user=userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).get();
-            GameRoomParticipantEntity gameRoomParticipantEntity=new GameRoomParticipantEntity(gameRoomEntity,user);
-//            gameRoomParticipantEntity.setGameRoom(gameRoomEntity);
-//            gameRoomParticipantEntity.setUser();
+        if (findRooms.isPresent()) {
 
-            gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
+            gameRoomEntity = findRooms.get().get(0);
+
         }else{
             //방 생성
-            GameRoomEntity gameRoomEntity = new GameRoomEntity();
+            gameRoomEntity = new GameRoomEntity();
             gameRoomEntity.setStatus(Status.MATCHING);
-            gameRoomEntity.setLocation(locationRepository.findById(gameMatchingRequestDTO.getLocationId()).get());
-//            gameRoomRepository.saveGameRoom(gameRoomEntity);
-            log.info("room created {}",gameRoomRepository.saveGameRoom(gameRoomEntity));
+            gameRoomEntity.setLocation(locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow());
+            gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
         }
+
+        //채팅방 매칭완료 4명 이하면 참여자로 넣어야햄,,,
+        //5명이 되면 넣으면서 gameRoom status=inProgress..?로
+        UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
+        GameRoomParticipantEntity gameRoomParticipantEntity = new GameRoomParticipantEntity(gameRoomEntity, user);
+        gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
+
+        List<GameRoomParticipantEntity> participants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
+
+        if (participants.size() == 5) {
+            gameRoomEntity.setStatus(Status.IN_PROGRESS);
+            gameRoomRepository.updateGameRoom(gameRoomEntity);
+        }
+
+        //채팅방Id 넘겨주자
         return null;
     }
 }
