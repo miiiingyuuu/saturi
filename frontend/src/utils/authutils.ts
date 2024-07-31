@@ -39,6 +39,13 @@ export function handleLogin({ email, password, router, goTo }: HandleLoginProps)
     insertCookie(response)
     )
   })
+    })
+    .then(() => {
+    api.get("user/auth/profile")
+      .then((response) =>
+    insertCookie(response)
+    )
+  })
     .catch((error) => {
       if (error.response.status === 400) {
         alert("아이디 또는 비밀번호가 올바르지 않습니다.")
@@ -48,6 +55,38 @@ export function handleLogin({ email, password, router, goTo }: HandleLoginProps)
 // 소셜 로그인
 export function goSocialLogin(provider: string) {
   const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/${provider}`
+// 소셜 로그인
+export function goSocialLogin(provider: string) {
+  const redirectUrl = `${process.env.NEXT_PUBLIC_FRONTURL}/user/auth/login/${provider}`
+
+  switch (provider) {
+    case "kakao":
+      window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAOSECRET}&redirect_uri=${redirectUrl}&response_type=code`
+      break
+    case "naver":
+      window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_NAVERKEY}&client_secret=${process.env.NEXT_PUBLIC_NAVERSECRET}&redirect_uri=${redirectUrl}&state=8697240`
+      break
+  }
+}
+
+export async function frontLogOut() {
+  // 세션 스토리지에서 토큰 제거
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
+  const cookies = getCookies();
+
+  // 쿠키를 가져와서 삭제
+  async function deleteCookies() {
+    const cookieNames = Object.keys(cookies)
+    await cookieNames.reduce(async (promise, cookieName) => {
+      await promise
+      setCookie(cookieName, "", {maxAge: -1})
+    }, Promise.resolve())
+  }
+  await deleteCookies()
+  // 쿠키 삭제 후 리다이렉션
+}
+
 
   switch (provider) {
     case "kakao":
@@ -84,6 +123,7 @@ export async function frontLogOut() {
 export function authToken(router: any) {
   // 우선 토큰 유효성 검사
   api.get("/user/auth/token-check")
+    .then(response => {
     .then(response => {
       if (response.status === 200) {
         api.get("user/auth/profile",
