@@ -19,11 +19,10 @@ public class BirdService {
     private final BirdRepository birdRepository;
 
     @Transactional
-    public void createBirdSample(String name, String description, String imagePath) {
+    public void createBirdSample(String name, String description) {
         BirdEntity bird = new BirdEntity();
         bird.setName(name);
         bird.setDescription(description);
-        bird.setImagePath(imagePath);
         birdRepository.save(bird);
     }
 
