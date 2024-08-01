@@ -33,7 +33,6 @@ public class StartupApplicationListener {
     private final AdminLessonService adminLessonService;
 
     private static final String[] LOCATION_NAMES = {"default", "gyungsang", "gyunggi", "gangwon", "chungcheong", "jeonra", "jeju"};
-    private static final String BASE_URL = "http://localhost:8080/bird/";
     private static final String[] BIRD_NAMES = {"agent", "banker", "clown", "sailor", "deckhand", "evil_king", "cavalry", "cute_killer",
             "store_owner", "miner", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
             "engineer", "musketeer"};
@@ -67,7 +66,7 @@ public class StartupApplicationListener {
 
     private void createBird() {
         for (int i = 0; i < BIRD_NAMES.length; i++) {
-            birdService.createBirdSample(BIRD_NAMES[i], BIRD_DESCRIPTIONS[i], BASE_URL + BIRD_NAMES[i] + ".png");
+            birdService.createBirdSample(BIRD_NAMES[i], BIRD_DESCRIPTIONS[i]);
         }
     }
 

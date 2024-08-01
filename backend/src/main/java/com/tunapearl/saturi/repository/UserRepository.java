@@ -56,4 +56,9 @@ public class UserRepository {
                 em.createQuery("select u from UserEntity u", UserEntity.class)
                 .getResultList());
     }
+
+    public Optional<List<UserEntity>> findAllSortedByExp() {
+        return Optional.ofNullable(em.createQuery("select u from UserEntity u where u.isDeleted = false order by u.exp desc")
+                .getResultList());
+    }
 }
