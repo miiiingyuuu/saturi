@@ -1,17 +1,23 @@
-# 기본 이미지 설정
+# 가져올 이미지 정의
 FROM node:20.15.0
 
-# 작업 디렉토리 설정
+# 경로 설정
 WORKDIR /app
 
-# 의존성 파일 복사
-COPY package.json package-lock.json ./
+# package.json 워킹 디렉토리에 복사
+COPY package*.json ./
 
 # 의존성 설치
-RUN npm i
+RUN npm install
 
-# 소스 코드 복사
+# 결과물 복사
 COPY . .
 
-# 빌드
+# 빌드하기
 RUN npm run build
+
+# 포트 노출
+EXPOSE 3000
+
+# 실행 명령어 정의
+CMD ["npm", "start"]
