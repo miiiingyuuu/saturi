@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LessonGroupProgressByUserDTO {
     private Long lessonGroupId;
+    private String lessonGroupName;
     private Long groupProgress;
     private Long avgAccuracy;
 }
