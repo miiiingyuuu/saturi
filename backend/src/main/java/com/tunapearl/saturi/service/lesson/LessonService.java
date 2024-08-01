@@ -178,4 +178,29 @@ public class LessonService {
         }
         return Optional.ofNullable(new LessonInfoDTO(false, lessonResult.getAccentSimilarity(), lessonResult.getPronunciationAccuracy()));
     }
+
+    public Long saveLesson(Long userId, Long lessonId, Long lessonGroupResultId, String filePath, Long accentSimilarity, Long pronunciationAccuracy, String script) {
+        // 레슨 아이디로 레슨 객체 조회
+        LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
+
+        // 레슨그룹결과아이디로 레슨그룹결과 객체 조회
+        LessonGroupResultEntity findLessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
+
+        // 레슨 아이디, 레슨그룹결과 아이디, 기타 정보 저장(건너뛰기 false, 레슨 학습 일시, 나머지)
+        LessonResultEntity lessonResult = createLessonResult(findLesson, findLessonGroupResult, filePath, script, accentSimilarity, pronunciationAccuracy);
+        return lessonRepository.saveLessonResult(lessonResult).orElse(null);
+    }
+
+    private LessonResultEntity createLessonResult(LessonEntity lesson, LessonGroupResultEntity lessonGroupResult, String filePath, String script, Long accentSimilarity, Long pronunciationAccuracy) {
+        LessonResultEntity lessonResult = new LessonResultEntity();
+        lessonResult.setLesson(lesson);
+        lessonResult.setLessonGroupResult(lessonGroupResult);
+        lessonResult.setUserVoicePath(filePath);
+        lessonResult.setUserVoiceScript(script);
+        lessonResult.setAccentSimilarity(accentSimilarity);
+        lessonResult.setPronunciationAccuracy(pronunciationAccuracy);
+        lessonResult.setLessonDt(LocalDateTime.now());
+        lessonResult.setIsSkipped(false);
+        return lessonResult;
+    }
 }

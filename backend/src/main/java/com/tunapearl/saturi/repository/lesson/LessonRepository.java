@@ -121,4 +121,9 @@ public class LessonRepository {
         if(result.isEmpty()) return Optional.empty();
         return Optional.ofNullable(result);
     }
+
+    public Optional<Long> saveLessonResult(LessonResultEntity lessonResult) {
+        em.persist(lessonResult);
+        return Optional.ofNullable(lessonResult.getLessonResultId());
+    }
 }

@@ -136,9 +136,10 @@ public class LessonController {
      */
     @PostMapping("lesson")
     public ResponseEntity<LessonMsgResponseDTO> saveLessonResult(@RequestHeader("Authorization") String accessToken,
-                                                                 @RequestBody LessonSaveRequestDTO request) {
-        // TODO 레슨 저장 기능 구현
-
+                                                                 @RequestBody LessonSaveRequestDTO request) throws UnAuthorizedException {
+        Long userId = jwtUtil.getUserId(accessToken);
+        Long savelessonId = lessonService.saveLesson(userId, request.getLessonId(), request.getLessonGroupResultId(), request.getFilePath(),
+                request.getAccentSimilarity(), request.getPronunciationAccuracy(), request.getScript());
         return ResponseEntity.created(URI.create("/learn/lesson")).body(new LessonMsgResponseDTO("ok"));
     }
 
