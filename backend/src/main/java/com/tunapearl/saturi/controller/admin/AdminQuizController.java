@@ -36,7 +36,6 @@ public class AdminQuizController {
         return ResponseEntity.ok(quizDetailReadResponseDto);
     }
 
-
     @PostMapping(value = "/quiz")
     public ResponseEntity<?> registerQuiz(@RequestBody QuizRegisterRequestDTO quizRegisterRequestDto) {
         log.info("POST, register quiz: {}", quizRegisterRequestDto);
