@@ -138,4 +138,12 @@ public class LessonRepository {
                 " join fetch lc.lesson l" +
                 " join fetch lc.user u", LessonClaimEntity.class).getResultList());
     }
+
+    public Optional<List<LessonEntity>> findAllByLessonGroupId(Long lessonGroupId) {
+        return Optional.ofNullable(em.createQuery("select l from LessonEntity l" +
+                " join fetch l.lessonGroup lg" +
+                " where l.lessonGroup.lessonGroupId = :lessonGroupId", LessonEntity.class)
+                .setParameter("lessonGroupId", lessonGroupId)
+                .getResultList());
+    }
 }

@@ -232,4 +232,9 @@ public class LessonService {
         log.info("lesson Claims {}", lessonClaims);
         return lessonClaims;
     }
+
+    public List<LessonEntity> findAllByLessonGroupId(Long lessonGroupId) {
+        return lessonRepository.findAllByLessonGroupId(lessonGroupId).orElse(null);
+
+    }
 }

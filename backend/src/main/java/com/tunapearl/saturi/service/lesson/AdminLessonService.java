@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.repository.lesson.AdminLessonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.util.List;
 public class AdminLessonService {
 
     private final AdminLessonRepository adminLessonRepository;
+    private final LessonService lessonService;
 
     @Transactional
     public LessonCategoryEntity createLessonCategory(String name) {
@@ -31,7 +33,10 @@ public class AdminLessonService {
 
     @Transactional
     public Long createLessonGroup(LocationEntity location, LessonCategoryEntity lessonCategory, String name) {
-        //TODO 등록된 레슨 그룹이 이미 9개면 익셉션
+        List<LessonGroupEntity> lessonGroups = lessonService.findLessonGroupByLocationAndCategory(location.getLocationId(), lessonCategory.getLessonCategoryId());
+        if(lessonGroups.size() >= 9) {
+            throw new AlreadyMaxSizeException();
+        }
         LessonGroupEntity lessonGroup = new LessonGroupEntity();
         lessonGroup.setLocation(location);
         lessonGroup.setLessonCategory(lessonCategory);
@@ -41,7 +46,10 @@ public class AdminLessonService {
 
     @Transactional
     public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath) {
-        //TODO 등록된 레슨이 이미 5개면 익셉션
+        List<LessonEntity> lessons = lessonService.findAllByLessonGroupId(lessonGroup.getLessonGroupId());
+        if(lessons.size() >= 5) {
+            throw new AlreadyMaxSizeException();
+        }
         LessonEntity lesson = new LessonEntity();
         lesson.setLessonGroup(lessonGroup);
         lesson.setScript(script);
