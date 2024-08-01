@@ -1,3 +1,5 @@
+import "../styles/background.css";
+
 interface MiddlePartProps {
   middlePosition: number;
   mainPageIndicator: string;
@@ -19,6 +21,21 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           } return "0%";              
         })()
       }}>
+      <div className="area">
+        <ul className="circles">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+
+      </div>
       <h1 
         className="blink" 
         style={{

@@ -33,7 +33,11 @@
 
 .leftpart {
   position: absolute;
-  background-color: whitesmoke;
+  /* background-color: whitesmoke; */
+  background: #4e54c8;  
+  background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  
+  width: 100%;
+  height:100vh;
   z-index: 2;
   top: 0;
   bottom: 0;
@@ -55,7 +59,11 @@
 
 .rightpart {
   position: absolute;
-  background-color: whitesmoke;
+  /* background-color: whitesmoke; */
+  background: #4e54c8;  
+  background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  
+  width: 100%;
+  height:100vh;
   z-index: 1;
   top: 0;
   bottom: 0;
@@ -64,6 +72,12 @@
 }
 
 .buttonLeft {
+  /* background: url('/MainPage/buttonLeft.png') no-repeat center center;
+  background-size: contain; */  
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
@@ -72,6 +86,12 @@
 }
 
 .buttonRight {
+  /* background: url('/MainPage/buttonRight.png') no-repeat center center;
+  background-size: contain; */  
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
