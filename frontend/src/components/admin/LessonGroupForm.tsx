@@ -1,7 +1,4 @@
-"use client";
-
 import {
-  Typography,
   Box,
   Grid,
   TextField,
@@ -10,7 +7,6 @@ import {
 } from "@mui/material";
 import api from "@/lib/axios";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { handleValueChange } from "@/utils/utils";
 import { ILessonCategoryProps, ILocationProps } from "@/utils/props";
 import {
@@ -19,11 +15,9 @@ import {
 } from "@/utils/adminutils";
 
 export default function LessonGroupForm() {
-  const pathname = usePathname();
-  const [category, method] = pathname?.split("/").slice(-2) || [];
   const [locationId, setLocationId] = useState<ILocationProps | null>(null);
   const [locationOptions, setLocationOptions] = useState<ILocationProps[]>([]);
-  const [lessonCategoryId, setLessonCategoryId] = useState<ILessonCategoryProps | null>(null);
+  const [lessonCategory, setLessonCategory] = useState<ILessonCategoryProps | null>(null);
   const [lessonCategoryOptions, setLessonCategoryOptions] = useState<ILessonCategoryProps[]>([]);
   const [name, setName] = useState("");
 
@@ -31,7 +25,7 @@ export default function LessonGroupForm() {
   function createLessonGroup() {
     api.post("admin/lesson/lesson-group", {
       locationId: locationId?.locationId,
-      lessonCategoryId: lessonCategoryId?.lessonCategoryId,
+      lessonCategoryId: lessonCategory?.lessonCategoryId,
       name,
     }).then(response => {
       console.log(response.data);
@@ -85,8 +79,8 @@ export default function LessonGroupForm() {
             options={lessonCategoryOptions}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option, value) => option.lessonCategoryId === value.lessonCategoryId}
-            value={lessonCategoryId}
-            onChange={(event, newValue) => setLessonCategoryId(newValue)}
+            value={lessonCategory}
+            onChange={(event, newValue) => setLessonCategory(newValue)}
             renderInput={(params) => <TextField {...params} label="카테고리" required />}
           />
         </Grid>
