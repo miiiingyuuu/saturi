@@ -19,4 +19,6 @@ export default function App() {
       router.push("/start");
     }
   }, [router]);
-}
+  
+  return null;
+};
