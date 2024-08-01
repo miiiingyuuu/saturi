@@ -50,6 +50,17 @@ public class QuizRepository {
                 .fetch();
     }
 
+    public void deleteQuizById(Long quizId){
+        em.remove(em.find(QuizEntity.class, quizId));
+    }
+
+    public void deleteChoiceByQuizId(Long quizId){
+        em.createQuery("delete from QuizChoiceEntity c where c.quizChoicePK.quizId = :quizId")
+                .setParameter("quizId", quizId)
+                .executeUpdate();
+        em.clear();
+    }
+
     private BooleanExpression quizIdEq(QQuizEntity quiz, Long quizIdCond){
         if(quizIdCond == null) return null;
         return quiz.quizId.eq(quizIdCond);
@@ -69,6 +80,7 @@ public class QuizRepository {
         if(objectiveCond == null) return null;
         return quiz.isObjective.eq(objectiveCond);
     }
+
 
 
 }

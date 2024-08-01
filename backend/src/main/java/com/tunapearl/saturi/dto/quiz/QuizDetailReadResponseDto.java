@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.dto.admin.quiz;
+package com.tunapearl.saturi.dto.quiz;
 
 
 import jakarta.validation.constraints.*;
@@ -9,32 +9,18 @@ import java.util.List;
 
 @Data
 @Builder
-public class QuizRegisterRequestDto {
-
-    @NotNull @Min(1) @Max(7)
+public class QuizDetailReadResponseDto {
+    private Long quizId;
     private Long locationId;
-
-    @NotEmpty @Size(min = 2, max = 150)
     private String question;
-
-    @NotNull
     private Boolean isObjective;
-
-    @NotNull
     private List<Choice> choiceList;
 
     @Builder
     @Data
     public static class Choice {
-
-        @NotNull @PositiveOrZero @Max(5)
         private Long choiceId;
-
-        @NotEmpty @Size(min = 2, max = 150)
         private String content;
-
-        @NotNull
         private Boolean isAnswer;
     }
-
 }

@@ -9,7 +9,10 @@ import java.util.List;
 
 @Data
 @Builder
-public class QuizRegisterRequestDto {
+public class QuizUpdateRequestDto {
+
+    @Positive
+    private Long quizId;
 
     @NotNull @Min(1) @Max(7)
     private Long locationId;

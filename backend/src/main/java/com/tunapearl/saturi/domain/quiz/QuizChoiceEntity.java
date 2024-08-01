@@ -47,18 +47,4 @@ public class QuizChoiceEntity {
         quizChoice.isAnswer = isAnswer;
         return quizChoice;
     }
-
-    // 퀴즈 답안 리스트 생성
-    public static List<QuizChoiceEntity> createQuizChoiceList(List<QuizRegisterRequestDto.Choice> registerChoiceList) {
-        List<QuizChoiceEntity> list = new ArrayList<>();
-        for(QuizRegisterRequestDto.Choice register: registerChoiceList){
-            QuizChoiceEntity quizChoice = new QuizChoiceEntity();
-            quizChoice.quizChoicePK = QuizChoicePk.createChoicePk(register.getChoiceId());
-            quizChoice.content = register.getContent();
-            quizChoice.isAnswer = register.getIsAnswer();
-            list.add(quizChoice);
-        }
-        return list;
-    }
-
 }

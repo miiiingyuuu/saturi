@@ -1,6 +1,8 @@
 package com.tunapearl.saturi.controller.admin;
 
 import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
+import com.tunapearl.saturi.dto.admin.quiz.QuizUpdateRequestDto;
+import com.tunapearl.saturi.dto.quiz.QuizDetailReadResponseDto;
 import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
 import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
 import com.tunapearl.saturi.service.QuizService;
@@ -32,5 +34,15 @@ public class AdminQuizController {
         log.info("POST, register quiz: {}", quizRegisterRequestDto);
         Long quizId = quizService.saveQuiz(quizRegisterRequestDto);
         return new ResponseEntity<String>("퀴즈 등록 완료",HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/quiz/{quizId}")
+    public ResponseEntity<?> updateQuiz(@PathVariable("quizId") Long quizId
+            , @RequestBody QuizUpdateRequestDto quizUpdateRequestDto) {
+
+        quizUpdateRequestDto.setQuizId(quizId);
+        log.info("POST, update quiz: {}", quizUpdateRequestDto);
+        QuizDetailReadResponseDto responseDto = quizService.updateQuiz(quizUpdateRequestDto);
+        return ResponseEntity.ok(responseDto);
     }
 }

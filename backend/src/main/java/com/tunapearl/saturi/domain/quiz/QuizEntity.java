@@ -2,6 +2,7 @@ package com.tunapearl.saturi.domain.quiz;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
+import com.tunapearl.saturi.dto.admin.quiz.QuizUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -33,7 +34,7 @@ public class QuizEntity {
     @Column(nullable = false, name = "is_objective")
     private Boolean isObjective;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<QuizChoiceEntity> quizChoiceList = new ArrayList<>();
 
 
@@ -60,6 +61,23 @@ public class QuizEntity {
         for(QuizRegisterRequestDto.Choice dto: registerDtoList){
             QuizChoiceEntity choice = QuizChoiceEntity.createQuizChoice(dto.getChoiceId(), dto.getContent(), dto.getIsAnswer());
             quiz.addQuizChoice(choice);
+        }
+        return quiz;
+    }
+
+    /*
+    *  수정 메서드
+    */
+    public static QuizEntity updateQuiz(QuizEntity quiz, QuizUpdateRequestDto updateDto, LocationEntity location) {
+        quiz.location = location;
+        quiz.question = updateDto.getQuestion();
+        quiz.creationDt = LocalDateTime.now();
+        quiz.isObjective = updateDto.getIsObjective();
+
+        quiz.quizChoiceList.clear();
+        for(QuizUpdateRequestDto.Choice choice: updateDto.getChoiceList()){
+            QuizChoiceEntity entity = QuizChoiceEntity.createQuizChoice(choice.getChoiceId(), choice.getContent(), choice.getIsAnswer());
+            quiz.addQuizChoice(entity);
         }
         return quiz;
     }
