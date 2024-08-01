@@ -1,23 +1,21 @@
 # 가져올 이미지 정의
 FROM node:20.15.0 AS build
 
-# 경로 설정
-WORKDIR /app
-
-# package.json 워킹 디렉토리에 복사
-COPY package*.json ./
+# 작업 폴더를 만들기
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
 # 의존성 설치
+COPY package*.json /usr/src/app/
 RUN npm install
 
-# 결과물 복사
-COPY . .
-
-# 빌드하기
+# 결과물을 작업폴더로 복사하고 빌드
+COPY . /usr/src/app
 RUN npm run build
 
 # 빌드된 파일들을 Nginx가 서비스할 수 있도록 build 폴더 복사
-RUN cp -r app/build /usr/share/nginx/html
+RUN cp -r /usr/src/app/build /usr/share/nginx/html
 
 # 포트 노출
 EXPOSE 3000
