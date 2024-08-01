@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Box,
   Stepper,
@@ -14,7 +13,10 @@ import {
   TextField,
   Container,
 } from "@mui/material";
-import { updateUser } from "@/utils/authutils";
+import api from "@/lib/axios";
+import { getCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // Sample data for Autocomplete options
 interface Option {
@@ -52,12 +54,13 @@ const ageRangeOptions: Option[] = [
 ];
 
 const steps = [
-  { label: 'Select Gender' },
-  { label: 'Select Location' },
-  { label: 'Select Age Range' },
+  { label: '당신의 성별은 무엇입니까?' },
+  { label: '당신이 거주하고 있는 지역은 어디입니까?' },
+  { label: '당신의 연령대를 선택해주세요.' },
 ];
 
 export default function App() {
+  const router = useRouter()
   const [activeStep, setActiveStep] = useState(0);
   const [gender, setGender] = useState<Option | null>(null);
   const [location, setLocation] = useState<Option | null>(null);
@@ -71,14 +74,32 @@ export default function App() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+
+  // handleNext 에 axios 걸어서 하나씩 보내기
   const handleUpdateUser = () => {
     const genderId = gender?.id ?? null;
     const locationId = location?.id ?? null;
     const ageRangeId = ageRange?.id ?? null;
+    const nickname = getCookie("nickname")
     // TODO: 여기서 안들어온 값 함수 단에서 처리하기
-    updateUser({ gender: genderId, location: locationId, ageRange: ageRangeId });
+    api.put("/user/auth", {
+      gender: genderId,
+      locationId,
+      ageRange: ageRangeId,
+      nickname,
+      isChanged: 0,
+      birdId: 1,
+    })
+      .then(response => console.log(response))
   };
 
+
+  // 네비가드 형태로 사용 ( 여기서는 기본정보가 default인 사람들만 들어오게하기 )
+  useEffect(() => {
+    if (typeof window !== "undefined" && getCookie("gender")==="DEFAULT" && getCookie("location")==="default" && getCookie("ageRange")==="DEFAULT") {
+      router.push("/")
+    }
+  }, []);
   return (
     <Container component="main" maxWidth="sm">
       <Box
@@ -150,13 +171,17 @@ export default function App() {
           ))}
         </Stepper>
         {activeStep === steps.length && (
-          <Paper square elevation={0} sx={{ p: 3, width: '100%' }}>
-            <Typography>All steps completed - you&apos;re finished</Typography>
+          <Paper square elevation={0} sx={{ p: 3, width: '100%', backgroundColor: 'transparent' }}>
+            <Typography>
+              모든 준비가 완료되었습니다!
+            </Typography>
             <Button
-              onClick={handleUpdateUser}
+              onClick={() => {
+                router.push("/");
+              }}
               sx={{ mt: 1, mr: 1 }}
             >
-              Update
+              메인으로
             </Button>
           </Paper>
         )}

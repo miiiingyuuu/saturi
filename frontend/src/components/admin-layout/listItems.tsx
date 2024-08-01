@@ -67,7 +67,7 @@ function AccordionItem({
 export default (
   <>
     <ListSubheader component="div" inset>
-      집에 가고 싶다
+      목록
     </ListSubheader>
     <AccordionItem
       primaryText="회원 관리"

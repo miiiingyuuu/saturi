@@ -8,18 +8,32 @@ import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { authToken } from "@/utils/authutils";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
   const router = useRouter()
+  const pathname = usePathname()
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
       authToken(router)
     }
   },[])
+
+  if (pathname.startsWith("/admin")) {
+    return (
+      <html lang="ko" className={inter.className}>
+        <body>
+          <main>
+            {children}
+          </main>
+        </body>
+      </html>
+    )
+  }
+
   return (
     <html lang="ko" className={inter.className}>
     <body>

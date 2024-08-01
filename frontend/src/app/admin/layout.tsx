@@ -75,7 +75,7 @@ const Drawer = styled(MuiDrawer, {
 const defaultTheme = createTheme();
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
@@ -141,7 +141,7 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
                   noWrap
                   sx={{ flexGrow: 1 }}
                 >
-                  대충 관리자 페이지 레이아웃
+                  관리자 페이지
                 </Typography>
               </Toolbar>
             </AppBar>

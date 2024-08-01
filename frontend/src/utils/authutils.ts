@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { HandleLoginProps } from "@/utils/props";
-import { getCookies, setCookie } from "cookies-next";
+import { deleteCookie, getCookies, setCookie } from "cookies-next";
 import { AxiosResponse } from "axios";
 
 // 쿠키 삽입
@@ -76,7 +76,7 @@ export async function frontLogOut() {
     const cookieNames = Object.keys(cookies);
     await cookieNames.reduce(async (promise, cookieName) => {
       await promise;
-      setCookie(cookieName, "", { maxAge: -1 });
+      deleteCookie(cookieName);
     }, Promise.resolve());
   }
   await deleteCookies();
@@ -129,8 +129,6 @@ export function authToken(router: any) {
 
 // 회원 정보 수정
 export function updateUser(data: object) {
-  // 이미 엑세스 토큰을 머리에 달고 있음
-  // 기타 정보는 쿠키에 담겨 있음
-  api.put("/user/auth", data).then(response => console.log(response));
-  // 여기 반환해야 할게 있나?
+  api.post("/user/auth", data)
+    .then(response => console.log(response))
 }

@@ -8,6 +8,11 @@ export interface HandleLoginProps {
   goTo: string;
 }
 
+export interface PasswordConfirmProps {
+  email: string;
+  password: string;
+}
+
 // util
 export interface PasswordProps {
   password: string;

@@ -46,7 +46,7 @@ export default function App() {
           component="form"
           onSubmit={event => {
             event.preventDefault();
-            handleLogin({ email, password, router, goTo: "/main" });
+            handleLogin({ email, password, router, goTo: "/" });
           }}
           noValidate
           sx={{ mt: 1 }}
