@@ -5,9 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tunapearl.saturi.domain.user.AgeRange;
 import com.tunapearl.saturi.domain.user.Gender;
-import com.tunapearl.saturi.dto.user.social.KakaoUserResponse;
-import com.tunapearl.saturi.dto.user.social.SocialAuthResponse;
-import com.tunapearl.saturi.dto.user.social.SocialUserResponse;
+import com.tunapearl.saturi.dto.user.social.KakaoUserResponseDTO;
+import com.tunapearl.saturi.dto.user.social.SocialAuthResponseDTO;
+import com.tunapearl.saturi.dto.user.social.SocialUserResponseDTO;
 import com.tunapearl.saturi.dto.user.UserType;
 import com.tunapearl.saturi.exception.InvalidTokenException;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class KakaoLoginServiceImpl implements SocialLoginService {
     }
 
     @Override
-    public SocialAuthResponse getAccessToken(String code) {
+    public SocialAuthResponseDTO getAccessToken(String code) {
         String url = "https://kauth.kakao.com/oauth/token";
 
         //헤더 셋팅
@@ -67,11 +67,11 @@ public class KakaoLoginServiceImpl implements SocialLoginService {
 
         //요청
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<SocialAuthResponse> response = restTemplate.exchange(
+        ResponseEntity<SocialAuthResponseDTO> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 requestEntity,
-                SocialAuthResponse.class
+                SocialAuthResponseDTO.class
         );
         log.info("Kakao Access Token Headers: {}", response.getHeaders());
         log.info("Kakao Access Token Response: {}", response.getBody());
@@ -114,7 +114,7 @@ public class KakaoLoginServiceImpl implements SocialLoginService {
     }
 
     @Override
-    public SocialAuthResponse refreshAccessToken(String refreshToken) {
+    public SocialAuthResponseDTO refreshAccessToken(String refreshToken) {
         String url = "https://kauth.kakao.com/oauth/token";
 
         //헤더 셋팅
@@ -130,11 +130,11 @@ public class KakaoLoginServiceImpl implements SocialLoginService {
 
         //요청
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<SocialAuthResponse> response = restTemplate.exchange(
+        ResponseEntity<SocialAuthResponseDTO> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 requestEntity,
-                SocialAuthResponse.class
+                SocialAuthResponseDTO.class
         );
 
         //응답
@@ -142,7 +142,7 @@ public class KakaoLoginServiceImpl implements SocialLoginService {
     }
 
     @Override
-    public SocialUserResponse getUserInfo(String accessToken) {
+    public SocialUserResponseDTO getUserInfo(String accessToken) {
 
         //쿼리 파라미터 & URI 셋팅
         String url = "https://kapi.kakao.com/v2/user/me";
@@ -170,15 +170,15 @@ public class KakaoLoginServiceImpl implements SocialLoginService {
                 .create();
 
         //파싱한 Json으로 유저정보 뽑아내기
-        KakaoUserResponse kakaoUserResponse = gson.fromJson(jsonString, KakaoUserResponse.class);
-        KakaoUserResponse.KakaoUserData kakaoUserData =
-                Optional.ofNullable(kakaoUserResponse.getKakao_account())
-                        .orElse(KakaoUserResponse.KakaoUserData.builder().build());
+        KakaoUserResponseDTO kakaoUserResponseDTO = gson.fromJson(jsonString, KakaoUserResponseDTO.class);
+        KakaoUserResponseDTO.KakaoUserData kakaoUserData =
+                Optional.ofNullable(kakaoUserResponseDTO.getKakao_account())
+                        .orElse(KakaoUserResponseDTO.KakaoUserData.builder().build());
 
 
         //유저정보를 DTO에 감싸서 반환
         Gender gender = (kakaoUserData.getGender().equals("FEMALE"))?(Gender.FEMALE):(Gender.MALE);
-        return SocialUserResponse.builder()
+        return SocialUserResponseDTO.builder()
                 .nickname(kakaoUserData.getProfile().getNickname())
                 .email(kakaoUserData.getEmail())
                 .gender(gender)

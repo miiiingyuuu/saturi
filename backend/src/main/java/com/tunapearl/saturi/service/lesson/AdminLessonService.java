@@ -31,6 +31,7 @@ public class AdminLessonService {
 
     @Transactional
     public Long createLessonGroup(LocationEntity location, LessonCategoryEntity lessonCategory, String name) {
+        //TODO 등록된 레슨 그룹이 이미 9개면 익셉션
         LessonGroupEntity lessonGroup = new LessonGroupEntity();
         lessonGroup.setLocation(location);
         lessonGroup.setLessonCategory(lessonCategory);
@@ -38,9 +39,9 @@ public class AdminLessonService {
         return adminLessonRepository.saveLessonGroup(lessonGroup);
     }
 
-    // FIXME 파일 등록 추가
     @Transactional
     public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath) {
+        //TODO 등록된 레슨이 이미 5개면 익셉션
         LessonEntity lesson = new LessonEntity();
         lesson.setLessonGroup(lessonGroup);
         lesson.setScript(script);

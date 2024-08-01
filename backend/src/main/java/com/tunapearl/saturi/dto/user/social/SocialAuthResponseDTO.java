@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @ToString
 
-public class SocialAuthResponse {
+public class SocialAuthResponseDTO {
     @JsonProperty("access_token")
     private String accessToken;
 

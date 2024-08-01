@@ -1,6 +1,11 @@
 package com.tunapearl.saturi.dto.game;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class GameMatchingResponseDTO {
 
-    private long roomId;
+    private String topicId;
 }

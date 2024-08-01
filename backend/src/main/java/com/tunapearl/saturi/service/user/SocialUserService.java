@@ -37,7 +37,7 @@ public class SocialUserService {
         SocialLoginService socialLoginService = getLoginService(request.getUserType());
 
         // 유저 토큰 정보 얻기
-        SocialAuthResponse authResponse = socialLoginService.getAccessToken(request.getCode());
+        SocialAuthResponseDTO authResponse = socialLoginService.getAccessToken(request.getCode());
 
         // 토큰 유효성 검사
         try {
@@ -52,7 +52,7 @@ public class SocialUserService {
         }
 
         // 유저 개인 정보 얻기
-        SocialUserResponse userResponse = socialLoginService.getUserInfo(authResponse.getAccessToken());
+        SocialUserResponseDTO userResponse = socialLoginService.getUserInfo(authResponse.getAccessToken());
         log.info("User Response: {}", userResponse);
 
         // 기존재 하던 계정인지 검사
@@ -82,15 +82,15 @@ public class SocialUserService {
         throw new RuntimeException("The wrong approach: No selceted Service");
     }
 
-    private UserEntity createNewUser(SocialUserResponse socialUserResponse){
+    private UserEntity createNewUser(SocialUserResponseDTO socialUserResponseDTO){
         UserEntity user = new UserEntity();
-        user.setEmail(socialUserResponse.getEmail());
+        user.setEmail(socialUserResponseDTO.getEmail());
         user.setPassword(null);
         user.setLocation(locationService.findById(1L));
         user.setBird(birdRepository.findById(1L).orElse(null));
-        user.setNickname(socialUserResponse.getNickname());
-        user.setGender(socialUserResponse.getGender());
-        user.setAgeRange(socialUserResponse.getAgeRange());
+        user.setNickname(socialUserResponseDTO.getNickname());
+        user.setGender(socialUserResponseDTO.getGender());
+        user.setAgeRange(socialUserResponseDTO.getAgeRange());
         user.setRegDate(LocalDateTime.now());
         user.setExp(0L);
         user.setRole(Role.BASIC);

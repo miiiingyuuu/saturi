@@ -27,9 +27,9 @@ public class LessonResultEntity {
 
     private String userVoiceScript;
 
-    private Integer accentSimilarity; // 억양 유사도
+    private Long accentSimilarity; // 억양 유사도
 
-    private Integer pronunciationAccuracy; // 발음 정확도
+    private Long pronunciationAccuracy; // 발음 정확도
 
     private LocalDateTime lessonDt; // 레슨 학습 일시
 
