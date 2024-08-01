@@ -2,6 +2,7 @@ package com.tunapearl.saturi.controller;
 
 import com.sun.source.tree.LiteralTree;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
+import com.tunapearl.saturi.domain.lesson.LessonClaimEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
@@ -147,10 +148,23 @@ public class LessonController {
      * 레슨 그룹 저장(레슨 다 학습한 뒤)
      */
     @PutMapping("lesson-group-result")
-    public ResponseEntity<?> saveLessonGroupResult() {
+    public ResponseEntity<?> saveLessonGroupResult(@RequestHeader("Authorization") String accessToken) throws UnAuthorizedException {
         // TODO 레슨 그룹 저장 기능 구현
         // TODO 경험치 부여, 평균 유사도, 평균 정확도 설정
         // TODO 5개 다 완료했으면 레슨 그룹 종료 일시 설정, 레슨 그룹 완료 여부 true로 변경
+        Long userId = jwtUtil.getUserId(accessToken);
         return ResponseEntity.ok("");
+    }
+
+    /**
+     * 레슨 신고
+     */
+    @PostMapping("/lesson/claim")
+    public ResponseEntity<LessonMsgResponseDTO> claimLesson(@RequestHeader("Authorization") String accessToken,
+                                                            @RequestBody LessonClaimRequestDTO request) throws UnAuthorizedException {
+        // TODO
+        Long userId = jwtUtil.getUserId(accessToken);
+        Long lessonClaimId = lessonService.saveClaim(userId, request.getLessonId(), request.getContent());
+        return ResponseEntity.created(URI.create("/learn/lesson/claim")).body(new LessonMsgResponseDTO("ok"));
     }
 }

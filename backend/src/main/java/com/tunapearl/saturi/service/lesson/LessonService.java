@@ -5,6 +5,7 @@ import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
 import com.tunapearl.saturi.dto.lesson.LessonInfoDTO;
+import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import com.tunapearl.saturi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     public LessonCategoryEntity findByIdLessonCategory(Long lessonCategoryId) {
         return lessonRepository.findByIdLessonCategory(lessonCategoryId).orElse(null);
@@ -202,5 +204,15 @@ public class LessonService {
         lessonResult.setLessonDt(LocalDateTime.now());
         lessonResult.setIsSkipped(false);
         return lessonResult;
+    }
+
+    public Long saveClaim(Long userId, Long lessonId, String content) {
+        LessonClaimEntity lessonClaim = new LessonClaimEntity();
+        UserEntity user = userRepository.findByUserId(userId).orElse(null);
+        LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
+        lessonClaim.setUser(user);
+        lessonClaim.setLesson(lesson);
+        lessonClaim.setContent(content);
+        return lessonRepository.saveLessonClaim(lessonClaim).orElse(null);
     }
 }

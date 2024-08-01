@@ -126,4 +126,9 @@ public class LessonRepository {
         em.persist(lessonResult);
         return Optional.ofNullable(lessonResult.getLessonResultId());
     }
+
+    public Optional<Long> saveLessonClaim(LessonClaimEntity lessonClaim) {
+        em.persist(lessonClaim);
+        return Optional.ofNullable(lessonClaim.getLessonClaimId());
+    }
 }
