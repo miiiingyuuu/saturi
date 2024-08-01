@@ -22,14 +22,13 @@ public class AdminInterceptor implements HandlerInterceptor {
     private final UserService userService;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("어드민 체크 인터셉터 실행 {}", request.getRequestURI());
+        log.info("admin check Interceptor {}", request.getRequestURI());
         String accessToken = request.getHeader("Authorization");
         try {
             Long userId = jwtUtil.getUserId(accessToken);
             UserInfoResponseDTO findUser = userService.getUserProfile(userId);
             Role role = findUser.getRole();
             if(!role.equals(Role.ADMIN)) throw new UnAuthorizedUserException();
-            log.info("어드민 인정");
             return true;
         } catch (UnAuthorizedException e) {
             throw new UnAuthorizedUserException(e);
