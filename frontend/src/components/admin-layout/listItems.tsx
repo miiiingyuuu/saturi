@@ -26,16 +26,15 @@ function AccordionItem({
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const handleClick = () => {
+  function handleClick() {
     setOpen(!open);
   };
 
-  const handleItemClick = (path: string) => {
+  function handleItemClick(path: string) {
     router.push(`${basePath}/${path}`);
   };
-
   return (
-    <React.Fragment>
+    <>
       <ListItemButton onClick={handleClick} sx={{ pl: 2, pr: 2 }}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={primaryText} />
@@ -60,12 +59,12 @@ function AccordionItem({
           </ListItemButton>
         ))}
       </Collapse>
-    </React.Fragment>
+    </>
   );
 }
 
 // Secondary List Items with Accordion and Custom Icons
-export const secondaryListItems = (
+export default (
   <>
     <ListSubheader component="div" inset>
       집에 가고 싶다

@@ -25,17 +25,17 @@ export function handleAdminLogin(value: string, router: any) {
   }
 }
 // 세개 다 어떻게 사용할 지 솔직히 잘 모르겠음.
-export function getLocation() {
-  api.get("/location")
+export async function getLocation() {
+  return api.get("/location")
     .then(response => response.data)
 }
 
-export function getLessonGroup() {
-  api.get("/admin/lesson/lesson-group")
+export async function getLessonGroup() {
+  return api.get("/admin/lesson/lesson-group")
     .then(response => response.data)
 }
 
-export function getLessonCategory() {
-  api.get("/learn/lesson-category")
+export async function getLessonCategory() {
+  return api.get("/learn/lesson-category")
     .then(response => response.data)
 }
