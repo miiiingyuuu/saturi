@@ -1,5 +1,5 @@
 # 가져올 이미지 정의
-FROM node:20.15.0
+FROM node:20.15.0 AS build
 
 # 경로 설정
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # 빌드된 파일들을 Nginx가 서비스할 수 있도록 build 폴더 복사
-RUN cp -r build /usr/share/nginx/html
+RUN cp -r app/build /usr/share/nginx/html
 
 # 포트 노출
 EXPOSE 3000
