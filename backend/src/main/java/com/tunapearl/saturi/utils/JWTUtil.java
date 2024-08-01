@@ -78,7 +78,6 @@ public class JWTUtil {
     //	전달 받은 토큰이 제대로 생성된 것인지 확인 하고 문제가 있다면 UnauthorizedException 발생.
     public boolean checkToken(String token) {
         try {
-
             Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(token);
             log.debug("claims: {}", claims);
             return true;

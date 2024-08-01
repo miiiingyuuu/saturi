@@ -165,9 +165,8 @@ public class UserController {
 
         if (jwtUtil.checkToken(request.getHeader("Authorization"))) {
             try {
-                //FIXME: 반환DTO 수정 필요
-                return ResponseEntity.ok().body("ok");
 
+                return ResponseEntity.ok().body("ok");
             } catch (Exception e) {
                 return ResponseEntity.internalServerError().body("Internal Server Error");
             }

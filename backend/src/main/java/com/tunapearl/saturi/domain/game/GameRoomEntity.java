@@ -35,6 +35,9 @@ public class GameRoomEntity {
     @Enumerated(STRING)
     private Status status;
 
+    @Column(name="topic_id", length = 50)
+    private String topicId;
+
     @OneToMany(mappedBy = "gameRoom")
     private List<GameRoomParticipantEntity> participants;
 }

@@ -1,15 +1,17 @@
-package com.tunapearl.saturi.controller;
+package com.tunapearl.saturi.controller.game;
 
+import com.tunapearl.saturi.domain.game.GameRoomTopic;
+import com.tunapearl.saturi.domain.game.PersonTopic;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
+import com.tunapearl.saturi.dto.user.UserMsgResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.service.GameService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -27,8 +29,13 @@ public class GameController {
     @PostMapping("/room/in")
     public ResponseEntity<GameMatchingResponseDTO> matchingRoom(@RequestHeader("Authorization") String authorization,@RequestBody GameMatchingRequestDTO request) throws UnAuthorizedException {
 
-        request.setUserId(jwtUtil.getUserId(authorization));
-        return ResponseEntity.ok().body(gameService.matching(request));
+        long userId = jwtUtil.getUserId(authorization);
+        request.setUserId(userId);
+        //TODO: 개인방 TopicId준다.
+        PersonTopic topic= PersonTopic.create(userId);
+        GameMatchingResponseDTO responseDTO=new GameMatchingResponseDTO();
+        responseDTO.setTopicId(topic.getPersonTopicId());
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     /**
