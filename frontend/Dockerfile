@@ -1,5 +1,5 @@
 # 가져올 이미지 정의
-FROM node:20.15.0 AS build
+FROM node:20.15.0
 
 # 경로 설정
 WORKDIR /app
@@ -16,14 +16,11 @@ COPY . .
 # 빌드하기
 RUN npm run build
 
-# Nginx 이미지를 기반으로 하는 최종 이미지 단계
-FROM nginx:alpine
-
-# 빌드된 파일들을 Nginx가 서비스할 수 있도록 복사
-COPY --from=build /app/build /usr/share/nginx/html
+# 빌드된 파일들을 Nginx가 서비스할 수 있도록 build 폴더 복사
+RUN cp -r build /usr/share/nginx/html
 
 # 포트 노출
-EXPOSE 80
+EXPOSE 3000
 
-# Nginx 실행
-CMD ["nginx", "-g", "daemon off;"]
+# 실행 명령어 정의
+CMD ["npm", "start"]
