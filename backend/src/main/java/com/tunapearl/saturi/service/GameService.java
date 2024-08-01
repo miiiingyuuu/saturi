@@ -1,9 +1,18 @@
 package com.tunapearl.saturi.service;
 
+import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.game.GameRoomEntity;
+import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
 import com.tunapearl.saturi.domain.game.GameTipEntity;
+import com.tunapearl.saturi.domain.game.Status;
+import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
-import com.tunapearl.saturi.repository.GameRepository;
+import com.tunapearl.saturi.repository.LocationRepository;
+import com.tunapearl.saturi.repository.UserRepository;
+import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
+import com.tunapearl.saturi.repository.game.GameRoomRepository;
+import com.tunapearl.saturi.repository.game.GameTipRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,12 +23,15 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class GameService {
 
-    private final GameRepository gameRepository;
-    private final RedisService redisService;
+    private final GameTipRepository gameTipRepository;
+    private final GameRoomRepository gameRoomRepository;
+    private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
+    private final GameRoomParticipantRepository gameRoomParticipantRepository;
 
     /**
      * 팁 추가
@@ -28,7 +40,7 @@ public class GameService {
     public void registTip(String content) {
         GameTipEntity gametip = new GameTipEntity();
         gametip.setContent(content);
-        gameRepository.saveTip(gametip);
+        gameTipRepository.saveTip(gametip);
     }
 
     /**
@@ -37,19 +49,45 @@ public class GameService {
     @Transactional
     public List<GameTipEntity> getTip() {
 
-        return gameRepository.getTip().get();
+        return gameTipRepository.getTip().get();
     }
 
     /**
-     * 게임 매칭
+     * 게임 매칭,
+     * 도중에 매칭취소한다면 participant에서 삭제할 것
      */
     public GameMatchingResponseDTO matching(GameMatchingRequestDTO gameMatchingRequestDTO) {
-        //TODO: 게임 대기열에 넣고
-        redisService.addParticipant(gameMatchingRequestDTO);
 
-        //TODO: 매칭완료되면 게임방 생성
-        //방 생성과 동시에 id받아와서 보낼것
-        //TODO: 게임방 Id 반환
+        LocationEntity location=locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow();
+        Optional<List<GameRoomEntity>> findRooms = gameRoomRepository.findByLocationAndStatus(location,Status.MATCHING);
+        GameRoomEntity gameRoomEntity;
+
+        if (findRooms.isPresent()) {
+
+            gameRoomEntity = findRooms.get().get(0);
+
+        }else{
+            //방 생성
+            gameRoomEntity = new GameRoomEntity();
+            gameRoomEntity.setStatus(Status.MATCHING);
+            gameRoomEntity.setLocation(locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow());
+            gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
+        }
+
+        //채팅방 매칭완료 4명 이하면 참여자로 넣어야햄,,,
+        //5명이 되면 넣으면서 gameRoom status=inProgress..?로
+        UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
+        GameRoomParticipantEntity gameRoomParticipantEntity = new GameRoomParticipantEntity(gameRoomEntity, user);
+        gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
+
+        List<GameRoomParticipantEntity> participants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
+
+        if (participants.size() == 5) {
+            gameRoomEntity.setStatus(Status.IN_PROGRESS);
+            gameRoomRepository.updateGameRoom(gameRoomEntity);
+        }
+
+        //채팅방Id 넘겨주자
         return null;
     }
 }

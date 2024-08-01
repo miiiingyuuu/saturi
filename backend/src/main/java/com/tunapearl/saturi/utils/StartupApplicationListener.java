@@ -72,12 +72,27 @@ public class StartupApplicationListener {
     }
 
     private void createUser() {
-        UserRegisterRequestDTO userInfoBasic = new UserRegisterRequestDTO(
-                "test@email.com", "password1!", "testnickname");
+        UserRegisterRequestDTO userInfoBasic1 = new UserRegisterRequestDTO(
+                "test1@email.com", "password1!", "testnickname1");
+        UserRegisterRequestDTO userInfoBasic2 = new UserRegisterRequestDTO(
+                "test2@email.com", "password1!", "testnickname2");
+        UserRegisterRequestDTO userInfoBasic3 = new UserRegisterRequestDTO(
+                "test3@email.com", "password1!", "testnickname3");
+        UserRegisterRequestDTO userInfoBasic4 = new UserRegisterRequestDTO(
+                "test4@email.com", "password1!", "testnickname4");
+        UserRegisterRequestDTO userInfoBasic5 = new UserRegisterRequestDTO(
+                "test5@email.com", "password1!", "testnickname5");
+        UserRegisterRequestDTO userInfoBasic6 = new UserRegisterRequestDTO(
+                "test6@email.com", "password1!", "testnickname6");
         UserRegisterRequestDTO userInfoAdmin = new UserRegisterRequestDTO(
                 "admin@email.com", "password1!", "admintest");
 
-        userService.registerUser(userInfoBasic);
+        userService.registerUser(userInfoBasic1);
+        userService.registerUser(userInfoBasic2);
+        userService.registerUser(userInfoBasic3);
+        userService.registerUser(userInfoBasic4);
+        userService.registerUser(userInfoBasic5);
+        userService.registerUser(userInfoBasic6);
         userService.registerAdminUser(userInfoAdmin);
     }
 
