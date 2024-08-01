@@ -85,4 +85,13 @@ public class LessonRepository {
         em.persist(lessonGroupResult);
         return Optional.ofNullable(lessonGroupResult.getLessonGroupResultId());
     }
+
+    public Optional<LessonGroupResultEntity> findLessonGroupResultById(Long lessonGroupResultId) {
+        return Optional.ofNullable(em.find(LessonGroupResultEntity.class, lessonGroupResultId));
+    }
+
+    public Optional<Long> saveLessonForSkipped(LessonResultEntity lessonResultSkipped) {
+        em.persist(lessonResultSkipped);
+        return Optional.ofNullable(lessonResultSkipped.getLessonResultId());
+    }
 }

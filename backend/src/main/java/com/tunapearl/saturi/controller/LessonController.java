@@ -100,14 +100,14 @@ public class LessonController {
     public ResponseEntity<LessonMsgResponseDTO> skipLesson(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
         // TODO 레슨 건너뛰기 기능 구현
-        log.info("received request to skip Lesson {}", lessonId);
+//        log.info("received request to skip Lesson {}", lessonId);
         Long userId = jwtUtil.getUserId(accessToken);
-        lessonService.skipLesson(userId, lessonId);
+        Long lessonResultId = lessonService.skipLesson(userId, lessonId);
         return ResponseEntity.ok(new LessonMsgResponseDTO("ok"));
     }
 
     /**
-     * 레슨 그룹 결과 생성
+     * 레슨 그룹 결과 테이블 생성
      */
     @PostMapping("/lesson-group-result")
     public ResponseEntity<CreateLessonGroupResultResponseDTO> createLessonGroupResult(@RequestHeader("Authorization") String accessToken,

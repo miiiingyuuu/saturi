@@ -100,11 +100,31 @@ public class LessonService {
         return result;
     }
 
-    public void skipLesson(Long userId, Long lessonId) {
+    public Long skipLesson(Long userId, Long lessonId) {
         // 레슨아이디로 레슨그룹 아이디를 찾는다
+        LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
+        Long lessonGroupId = findLesson.getLessonGroup().getLessonGroupId();
+
         // 유저아이디와 레슨그룹 아이디로 레슨그룹결과 아이디를 찾는다.
+        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonId);
+
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.
+        LessonResultEntity lessonResultSkipped = new LessonResultEntity();
+        LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
+        lessonResultSkipped.setIsSkipped(true);
+        lessonResultSkipped.setLesson(findLesson);
+        lessonResultSkipped.setLessonGroupResult(lessonGroupResult);
+
         // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
+        return lessonRepository.saveLessonForSkipped(lessonResultSkipped).orElse(null);
+    }
+
+    private Long findLessonGroupResultId(List<LessonGroupResultEntity> lessonGroupResults, Long lessonId) {
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            if(lgr.getLessonGroup().getLessonGroupId().equals(lessonId)) return lgr.getLessonGroupResultId();
+        }
+        return null;
     }
 
     public Long createLessonGroupResult(Long userId, Long lessonGroupId) {
