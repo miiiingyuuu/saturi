@@ -12,10 +12,11 @@ export default function CategorySelectPage() {
   const router = useRouter();
   const [locationId, setLocationId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [categoryName, setCategoryName] = useState<string>("daily");
-  const [selectedPuzzle, setSelectedPuzzle] = useState<number | null>(null);
+  const [categoryName, setCategoryName] = useState<string>("not yet");
+  const [selectedPuzzleId, setSelectedPuzzleId] = useState<number | null>(null);
+  const [selectedPuzzleAccuracy, setSelectedPuzzleAccuracy] = useState<number | null>(null);
   const [categoryProgress, setCategoryProgress] = useState<number>(0);
-  const [eachLessonProgress,setEachLessonProgress] = useState<object|null>(null);
+  const [eachLessonProgress, setEachLessonProgress] = useState<object | null>(null);
 
   // 선택된 지역, 카테고리 할당
   useEffect(() => {
@@ -71,23 +72,38 @@ export default function CategorySelectPage() {
     }
   }, [locationId, categoryId]);
 
+  // 새로운 onSelect 함수 구현
+  const handlePuzzleSelect = (pieceId: number, avgAccuracy: number) => {
+    setSelectedPuzzleId(pieceId);
+    setSelectedPuzzleAccuracy(avgAccuracy);
+  };
+
   return (
-    <div className="flex flex-col h-screen w-screen justify-center items-center">
-      <div className="flex w-full h-5/6 items-center">
+    <div className="flex flex-col justify-center items-center">
+      <div className="flex w-full justify-center items-center">
         <div className="w-1/5 bg-gray-100 p-4">
           <h2>locationID = {locationId}</h2>
           <h2>CategoryName = {categoryName}</h2>
           <SideNavbar location={locationId} />
         </div>
-        <div className="flex-grow flex flex-col items-center justify-center p-4">
+        <div className="flex-none flex flex-col items-center justify-center p-4">
           {/* 태훈형이 만들어준 퍼즐 조각 넣을 예정 */}
           {locationId && (
-            <Puzzle id={locationId} totalProgress={categoryProgress} onSelect={setSelectedPuzzle} eachLessonProgress={eachLessonProgress}/>
+            <Puzzle
+              id={locationId}
+              totalProgress={categoryProgress}
+              onSelect={handlePuzzleSelect} // 새로운 onSelect 핸들러 사용
+              eachLessonProgress={eachLessonProgress}
+            />
           )}
         </div>
         <div className="w-1/5 p-4 flex items-center">
-          {selectedPuzzle !== null && (
-            <PuzzleInfo locationId={locationId} id={selectedPuzzle} />
+          {selectedPuzzleId !== null && selectedPuzzleAccuracy !== null && (
+            <PuzzleInfo
+              locationId={locationId}
+              id={selectedPuzzleId}
+              avgAccuracy={selectedPuzzleAccuracy} // avgAccuracy 전달
+            />
           )}
         </div>
       </div>
