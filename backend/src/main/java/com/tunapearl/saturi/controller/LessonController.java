@@ -152,10 +152,11 @@ public class LessonController {
 
     /**
      * 레슨 그룹 저장(레슨 다 학습한 뒤)
-     * 이름이 저장이라서
+     * 이름이 저장이라서 헷갈리는데, 프론트에서 보냈던 레슨 저장 정보를 바탕으로 결과를 종합해서 리턴
      */
-    @PutMapping("lesson-group-result")
-    public ResponseEntity<?> saveLessonGroupResult(@RequestHeader("Authorization") String accessToken) throws UnAuthorizedException {
+    @PutMapping("lesson-group-result/{lessonGroupResultId}")
+    public ResponseEntity<?> saveLessonGroupResult(@RequestHeader("Authorization") String accessToken,
+                                                   @PathVariable("lessonGroupResultId") Long lessonGroupResultId) throws UnAuthorizedException {
         log.info("received request to save lesson group result");
         // TODO 레슨 그룹 저장 기능 구현
         // TODO 경험치 부여, 평균 유사도, 평균 정확도 설정
