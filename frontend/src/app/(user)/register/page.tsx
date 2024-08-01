@@ -231,6 +231,7 @@ export default function App() {
                 <Button
                   onClick={handleAuthEmailNumber}
                   fullWidth
+                  disabled={isAuthEmail}
                   variant="contained"
                   sx={{
                     fontSize: "0.75rem",

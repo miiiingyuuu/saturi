@@ -1,6 +1,9 @@
-"use client";
+"use client"
 
 import "@/styles/globals.css";
+// import type { Metadata } from "next"
+import Link from "next/link";
+import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"

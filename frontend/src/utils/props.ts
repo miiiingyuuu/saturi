@@ -22,3 +22,14 @@ export interface CustomAccordionItemProps {
   paths: string[];
   basePath: string;
 }
+
+//admin-utils
+export interface ILocationProps {
+  locationId: number
+  name: string
+}
+
+export interface ILessonCategoryProps {
+  lessonCategoryId: number
+  name: string
+}

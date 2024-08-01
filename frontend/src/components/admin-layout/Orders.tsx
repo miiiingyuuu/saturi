@@ -5,7 +5,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Title from "@/components/sample-admin/Title";
+import Title from "@/components/admin-layout/Title";
 
 // Generate Order Data
 function createData(

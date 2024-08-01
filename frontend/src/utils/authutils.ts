@@ -67,6 +67,7 @@ export async function frontLogOut() {
   // 세션 스토리지에서 토큰 제거
   sessionStorage.removeItem("accessToken");
   sessionStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("adminToken");
   const cookies = getCookies();
 
   // 쿠키를 가져와서 삭제
@@ -84,23 +85,23 @@ export async function frontLogOut() {
 // 토큰 유효성 확인
 // 페이지 옮길때마다 실행 (메인의 authutils에 달려있음)
 export function authToken(router: any) {
-  // 우선 토큰 유효성 검사
-  api
-    .get("/user/auth/token-check")
+  console.log("쉿! 유효성 검사중")
+  api.get("/user/auth/token-check")
     .then(response => {
       if (response.status === 200) {
         api.get("user/auth/profile").then(response => {
           // 유효성 검사 후, 받아온 데이터를 쿠키에 저장
+          console.log("쉿! 유효성 검사 완료")
           insertCookie(response);
         });
       }
     })
     .catch(err => {
       // 401 에러 발생 시
+      console.log("헉! 유효성 검사 실패")
       if (err.response.status === 401) {
         // 리프레시 토큰을 들고 토큰 리프레시 신청하러감
-        api
-          .post(
+        api.post(
             "/user/auth/token-refresh",
             {},
             {
@@ -110,6 +111,7 @@ export function authToken(router: any) {
             },
           )
           .then(response => {
+            console.log("헉! 토큰 재발급 완료")
             sessionStorage.setItem("accessToken", response.data.accessToken);
           })
           // 만약 여기서도 401 뜨면, 로그아웃 처리 하고 로그인으로 보내기
