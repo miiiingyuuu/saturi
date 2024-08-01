@@ -1,9 +1,4 @@
-import {
-  Button,
-  Popover,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Button, Popover, Typography, Box } from "@mui/material";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -31,7 +26,7 @@ export default function PuzzlePiece({ locationId, piece }: IPuzzlePiece) {
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <div>

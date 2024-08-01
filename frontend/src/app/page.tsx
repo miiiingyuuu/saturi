@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { redirect } from "next/navigation";
+import { getCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function App() {
-  switch (true) {
-    case sessionStorage.getItem("accessToken"):
-      redirect("/main")
-      break
-    // case
-  }
-  if (sessionStorage.getItem("accessToken")) {
-    redirect("/main");
-  } else {
-    redirect("/start");
-  }
+  const router = useRouter();
+
+  useEffect(() => {
+    const accessToken = sessionStorage.getItem("accessToken");
+    const nickname = getCookie("nickname");
+
+    if (accessToken && nickname) {
+      router.push("/main");
+    } else if (accessToken && !nickname) {
+      router.push("/user/profile");
+    } else {
+      router.push("/start");
+    }
+  }, [router]);
 }

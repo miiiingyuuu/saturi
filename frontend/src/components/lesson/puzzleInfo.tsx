@@ -6,7 +6,6 @@ interface PuzzleInfoProps {
 }
 
 export default function PuzzleInfo({ locationId, id }: PuzzleInfoProps) {
-  
   const locations = ["표준어", "경상도 사투리"];
   const [location, setLocation] = useState("표준어");
 

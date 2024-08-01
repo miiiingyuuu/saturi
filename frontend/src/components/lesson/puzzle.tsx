@@ -68,8 +68,8 @@ export default function Puzzle({ id, totalProgress=60, eachLessonProgress, onSel
   useEffect(() => {
     // progress를 totalProgress에 맞춰 설정
     const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-        if (oldProgress >= totalProgress) {
+      setProgress(oldProgress => {
+        if (oldProgress >= 60) {
           clearInterval(timer);
           return totalProgress;
         }
@@ -94,7 +94,7 @@ export default function Puzzle({ id, totalProgress=60, eachLessonProgress, onSel
           sx={{
             height: 8, // 원하는 높이로 설정
             borderRadius: 5, // 테두리를 둥글게 설정
-            '& .MuiLinearProgress-bar': {
+            "& .MuiLinearProgress-bar": {
               borderRadius: 5, // 진행 바 자체도 둥글게 설정
             },
           }}

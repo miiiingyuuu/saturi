@@ -1,5 +1,5 @@
-import { IPasswordProps } from "@/utils/props";
-
+import { PasswordProps } from "@/utils/props";
+import { ChangeEvent } from "react";
 
 export function validateEmail(value: string): boolean {
   if (!value) return true;
@@ -12,14 +12,17 @@ export function validateNickname(value: string): boolean {
 }
 
 export function validatePassword(value: string): boolean {
-  if (!value) return true
+  if (!value) return true;
   return /^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\S+$).{8,}$/.test(value);
 }
 
-export function passwordConfirm({password, passwordConf}: IPasswordProps) {
-  return password===passwordConf
+export function passwordConfirm({ password, passwordConf }: PasswordProps) {
+  return password === passwordConf;
 }
 
-export function handleValueChange(event: ChangeEvent, setFunction: (value: string) => void) {
-  setFunction(event.target.value)
+export function handleValueChange(
+  event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  setFunction: (value: string) => void,
+) {
+  setFunction(event.target.value);
 }

@@ -1,15 +1,24 @@
-import { ChangeEvent } from "react";
-
 // auth-util
-export interface IHandleLogin {
-  email: string
-  password: string
-  router: any
-  goTo: string
+import * as React from "react";
+
+export interface HandleLoginProps {
+  email: string;
+  password: string;
+  router: any;
+  goTo: string;
 }
 
 // util
-export interface IPasswordProps {
-  password: string
-  passwordConf: string
+export interface PasswordProps {
+  password: string;
+  passwordConf: string;
+}
+
+// component
+export interface CustomAccordionItemProps {
+  primaryText: string;
+  items: string[];
+  icon: React.ReactElement;
+  paths: string[];
+  basePath: string;
 }
