@@ -27,17 +27,19 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final LocationRepository locationRepository;
 
-
+    // 퀴즈 조회
     public List<QuizReadResponseDTO> finaAll(QuizReadRequestDTO quizReadRequestDto){
         List<QuizEntity> list = quizRepository.findAll(quizReadRequestDto);
         return list.stream().map(this::convertReadDtoToEntity).collect(Collectors.toList());
     }
 
+    // 퀴즈 상세 조회
     public QuizDetailReadResponseDTO findOne(Long quizId) {
         QuizEntity quiz = quizRepository.findById(quizId).orElseThrow(()->new RuntimeException("Quiz not found"));
         return this.convertEntityToDetailDto(quiz);
     }
 
+    // 퀴즈 저장
     public Long saveQuiz(QuizRegisterRequestDTO registerRequestDto){
         LocationEntity location = locationRepository.findById(registerRequestDto.getLocationId()).orElseThrow();
         QuizEntity quiz = QuizEntity.createQuiz(
@@ -50,6 +52,7 @@ public class QuizService {
         return quiz.getQuizId();
     }
 
+    // 퀴즈 수정
     public QuizDetailReadResponseDTO updateQuiz(QuizUpdateRequestDTO updateDto) {
 
         // 퀴즈의 답 삭제
@@ -67,6 +70,11 @@ public class QuizService {
         // 퀴즈 수정
         quiz = QuizEntity.updateQuiz(quiz, updateDto, location);
         return convertEntityToDetailDto(quiz);
+    }
+
+    // 퀴즈 삭제
+    public void removeOne(Long quizId) {
+        quizRepository.deleteQuizById(quizId);
     }
 
     private QuizReadResponseDTO convertReadDtoToEntity(QuizEntity quizEntity){
@@ -98,4 +106,5 @@ public class QuizService {
                 .choiceList(choiceDtoList)
                 .build();
     }
+
 }
