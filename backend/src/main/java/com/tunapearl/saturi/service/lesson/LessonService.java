@@ -5,6 +5,7 @@ import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
 import com.tunapearl.saturi.dto.lesson.LessonInfoDTO;
+import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import com.tunapearl.saturi.service.user.UserService;
@@ -42,12 +43,16 @@ public class LessonService {
         return lessonRepository.findAllLessonGroup().orElse(null);
     }
 
-    // FIXME 레슨 수정을 수정
-    public void updateLesson(Long lessonId, Long lessonGroupId, String script) {
+    public void updateLesson(Long lessonId, Long lessonGroupId, String script, String filePath) {
+        List<LessonEntity> allByLessonGroupId = findAllByLessonGroupId(lessonGroupId);
+        if(allByLessonGroupId.size() >= 5) {
+            throw new AlreadyMaxSizeException();
+        }
         LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
         LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
         lesson.setLessonGroup(findLessonGroup);
         lesson.setScript(script);
+        lesson.setSampleVoicePath(filePath);
         lesson.setLastUpdateDt(LocalDateTime.now());
     }
 
