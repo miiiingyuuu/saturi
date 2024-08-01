@@ -1,14 +1,13 @@
-"use client"
-
-import "@/styles/globals.css";
-// import type { Metadata } from "next"
 import Link from "next/link";
 import Image from "next/image";
 import { Inter } from "next/font/google";
+import { ReactNode } from "react";
+import "@/styles/globals.css";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { authToken } from "@/utils/authutils";
-
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +20,9 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
   },[])
   return (
     <html lang="en">
-    <body className={inter.className}>
-      {children}
-    </body>
+      <body className={inter.className}>
+        <main>{children}</main>
+      </body>
     </html>
   );
 }
