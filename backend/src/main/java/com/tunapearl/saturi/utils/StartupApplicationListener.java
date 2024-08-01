@@ -2,11 +2,8 @@ package com.tunapearl.saturi.utils;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
-import com.tunapearl.saturi.domain.user.AgeRange;
-import com.tunapearl.saturi.domain.user.Gender;
-import com.tunapearl.saturi.domain.user.BirdEntity;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
-import com.tunapearl.saturi.service.GameService;
+import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.service.lesson.AdminLessonService;
 import com.tunapearl.saturi.service.user.BirdService;
 import com.tunapearl.saturi.service.user.LocationService;
