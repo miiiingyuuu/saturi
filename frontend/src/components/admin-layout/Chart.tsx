@@ -2,7 +2,7 @@ import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import { LineChart, axisClasses } from "@mui/x-charts";
 import { ChartsTextStyle } from "@mui/x-charts/ChartsText";
-import Title from "@/components/sample-admin/Title";
+import Title from "@/components/admin-layout/Title";
 
 // Generate Sales Data
 function createData(

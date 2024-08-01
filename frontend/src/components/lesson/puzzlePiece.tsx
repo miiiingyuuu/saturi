@@ -12,6 +12,7 @@ export default function PuzzlePiece({ locationId, piece }: IPuzzlePiece) {
   const router = useRouter();
   const currentPath = usePathname();
 
+
   const startLesson = () => {
     router.push(`${currentPath}/${piece}`);
   };
@@ -29,10 +30,10 @@ export default function PuzzlePiece({ locationId, piece }: IPuzzlePiece) {
 
   return (
     <div>
-      <Box className="w-48 h-24" onClick={handleClick}>
-        <Typography variant="h5" component="p">
-          {piece}
-        </Typography>
+      <Box className="w-48 h-24 align-middle" onClick={handleClick}>
+          <Typography variant="h5" component="p">
+            {piece}
+          </Typography>       
       </Box>
       <Popover
         id={id}
@@ -40,19 +41,18 @@ export default function PuzzlePiece({ locationId, piece }: IPuzzlePiece) {
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
+          vertical: 'bottom',
+          horizontal: 'center',
         }}
         transformOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
+          vertical: 'top',
+          horizontal: 'center',
         }}
-      >
-        <div className="px-1 py-2">
+        >
+        <div className="p-1 rounded-full">
           <Typography variant="subtitle1" className="font-bold">
-            Popover Content
+            문제 그룹 이름
           </Typography>
-          <Typography variant="body2">This is the popover content</Typography>
           <div className="flex justify-center pt-2">
             <Button variant="contained" color="primary" onClick={startLesson}>
               Start

@@ -1,12 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { usePathname } from "next/navigation";
-import MuiDrawer from "@mui/material/Drawer";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import {
   CssBaseline,
   Box,
@@ -15,8 +8,19 @@ import {
   Typography,
   Divider,
   IconButton,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
-import { secondaryListItems } from "@/components/sample-admin/listItems";
+import { getCookie } from "cookies-next";
+import { useEffect, useState } from "react";
+import MuiDrawer from "@mui/material/Drawer";
+import MenuIcon from "@mui/icons-material/Menu";
+import { usePathname, useRouter } from "next/navigation";
+import listItems from "@/components/admin-layout/listItems";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+
 
 const drawerWidth: number = 240;
 
@@ -25,7 +29,7 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: prop => prop !== "open",
+  shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
@@ -43,7 +47,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: prop => prop !== "open",
+  shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   "& .MuiDrawer-paper": {
     position: "relative",
@@ -68,20 +72,43 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const [open, setOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
-  const [open, setOpen] = React.useState(true);
+  const router = useRouter();
   const hideHeader = pathname === "/admin/auth";
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  // 시작시 실행
+  useEffect(() => {
+    setIsLoading(true)
+    switch (true) {
+      case getCookie("role") !== "ADMIN":
+        router.push("/");
+        break;
+      case sessionStorage?.getItem("adminToken") !== process.env.NEXT_PUBLIC_ADMIN_TOKEN:
+        router.push("/admin/auth");
+        break;
+      default:
+        setIsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router,sessionStorage.getItem("adminToken")]);
+
+  if (isLoading&&!hideHeader) {
+    return (
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -89,7 +116,7 @@ export default function Layout({ children }: LayoutProps) {
         <CssBaseline />
         {!hideHeader && (
           <>
-            <AppBar position="absolute" open={open}>
+            <AppBar open={open}>
               <Toolbar
                 sx={{
                   pr: "24px", // keep right padding when drawer closed
@@ -132,14 +159,14 @@ export default function Layout({ children }: LayoutProps) {
                 </IconButton>
               </Toolbar>
               <Divider />
-              <List component="nav">{secondaryListItems}</List>
+              <List component="nav">{listItems}</List>
             </Drawer>
           </>
         )}
         <Box
           component="main"
           sx={{
-            backgroundColor: theme =>
+            backgroundColor: (theme) =>
               theme.palette.mode === "light"
                 ? theme.palette.grey[100]
                 : theme.palette.grey[900],

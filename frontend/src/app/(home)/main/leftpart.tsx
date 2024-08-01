@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import ButtonBase from "@mui/material/ButtonBase";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
+import ButtonBase from '@mui/material/ButtonBase';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 interface LeftPartProps {
   middlePosition: number;
@@ -27,20 +26,22 @@ export default function LeftPart({
             device => device.kind === "audioinput",
           );
           if (audioInputDevices.length > 0) {
-            navigator.mediaDevices
-              .getUserMedia({ audio: true })
-              .then(stream => {
-                console.log("마이크 허용됨");
+            navigator.mediaDevices.getUserMedia({ audio: true })
+              .then(() => {
+                // 마이크 허용됨
               })
-              .catch(error => {
-                console.error("마이크 허용 오류:", error);
+              .catch((error) => {
+                // eslint-disable-next-line no-console
+                console.error('마이크 허용 오류:', error);
               });
           } else {
-            console.error("사용 가능한 오디오 입력 장치가 없습니다.");
+            // eslint-disable-next-line no-console
+            console.error('사용 가능한 오디오 입력 장치가 없습니다.');
           }
         })
         .catch(error => {
-          console.error("장치 나열 오류:", error);
+          // eslint-disable-next-line no-console
+          console.error('장치 나열 오류:', error);
         });
     }
   }, [middlePosition]);
@@ -67,9 +68,9 @@ export default function LeftPart({
         region = 7;
         break;
       default:
-        console.log(" 에러");
+        // eslint-disable-next-line no-console
+        console.error("지역 설정 에러");
     }
-    console.log("hey2");
     router.push(`/lesson/${region}/${num}`);
   }
 
@@ -80,34 +81,18 @@ export default function LeftPart({
         zIndex: (() => {
           if (middlePosition === 0) {
             return 0;
-          }
+          } 
           if (middlePosition === 1) {
-            if (moveDirection === "left") {
-              console.log("left");
-              return 0;
-            }
-            if (moveDirection === "right") {
-              console.log("right");
-              return 2;
-            }
-          } else if (middlePosition === 2) {
+            return moveDirection === "right" ? 2 : 0;
+          }
+          if (middlePosition === 2) {
             return 2;
           }
-        })(),
-      }}
-    >
-      <Box
-        sx={{
-          position: "absolute",
-          margin: "25px",
-          top: "7%",
-          left: "70px",
-          width: "25vw",
-        }}
-      >
-        <Typography variant="h1" sx={{ fontSize: 30, fontWeight: "bold" }}>
-          학습 페이지
-        </Typography>
+          return 0;
+        })()
+      }}>
+      <Box sx={{ position: 'absolute', margin: "25px", top: "7%", left: "70px", width: "25vw" }}>
+        <Typography variant="h1" sx={{ fontSize: 30, fontWeight: "bold" }}>학습 페이지</Typography>
         <br />
         <Box
           sx={{
