@@ -41,7 +41,6 @@ export function handleLogin({
     })
     .then(() => {
       api.get("user/auth/profile").then(response => insertCookie(response));
-      window.location.href = `${process.env.NEXT_PUBLIC_FRONTURL}/main`;
     })
     .catch(error => {
       if (error.response.status === 400) {
