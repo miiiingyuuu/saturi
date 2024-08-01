@@ -1,7 +1,7 @@
 interface MiddlePartProps {
   middlePosition: number;
   mainPageIndicator: string;
-  // selectedRegion?: string;
+  selectedRegion: string;
 }
 
 export default function MiddlePart({ middlePosition, mainPageIndicator }: MiddlePartProps) {

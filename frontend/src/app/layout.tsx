@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link";
 import Image from "next/image";
 import { Inter } from "next/font/google";
@@ -19,10 +21,12 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     }
   },[])
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="ko" className={inter.className}>
+    <body>
+      <Header />
         <main>{children}</main>
-      </body>
-    </html>
+      <Footer />
+    </body>
+  </html>
   );
 }

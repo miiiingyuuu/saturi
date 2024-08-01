@@ -97,7 +97,7 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
         setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router,sessionStorage.getItem("adminToken")]);
+  }, [router]);
 
   if (isLoading&&!hideHeader) {
     return (
