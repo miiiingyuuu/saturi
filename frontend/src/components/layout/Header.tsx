@@ -63,7 +63,7 @@ export default function Header() {
     // 이미지 가져오기
     if (accessToken) {
       setIsLoggedIn(true);
-      getProfile(accessToken)
+      getProfile()
         .then(imageUrl => {
           setProfileImage(imageUrl);
         })
