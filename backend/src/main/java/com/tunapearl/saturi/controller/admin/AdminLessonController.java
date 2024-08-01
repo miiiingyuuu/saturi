@@ -2,6 +2,7 @@ package com.tunapearl.saturi.controller.admin;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
+import com.tunapearl.saturi.domain.lesson.LessonClaimEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.AdminMsgResponseDTO;
@@ -126,6 +127,15 @@ public class AdminLessonController {
         log.info("received request to delete lesson {}", lessonId);
         lessonService.deleteLesson(lessonId);
         return ResponseEntity.ok(new AdminMsgResponseDTO("ok"));
+    }
+
+    /**
+     * 레슨 신고 조회
+     */
+    @GetMapping("claim")
+    public ResponseEntity<List<LessonClaimEntity>> getLessonClaims() {
+        log.info("received request to get claims");
+        return ResponseEntity.ok(lessonService.findAllLessonClaim());
     }
 }
 

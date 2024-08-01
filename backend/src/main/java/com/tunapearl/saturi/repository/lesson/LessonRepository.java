@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Repository
 @RequiredArgsConstructor
@@ -130,5 +131,9 @@ public class LessonRepository {
     public Optional<Long> saveLessonClaim(LessonClaimEntity lessonClaim) {
         em.persist(lessonClaim);
         return Optional.ofNullable(lessonClaim.getLessonClaimId());
+    }
+
+    public Optional<List<LessonClaimEntity>> findAllLessonClaim() {
+        return Optional.ofNullable(em.createQuery("select lc from LessonClaimEntity lc", LessonClaimEntity.class).getResultList());
     }
 }

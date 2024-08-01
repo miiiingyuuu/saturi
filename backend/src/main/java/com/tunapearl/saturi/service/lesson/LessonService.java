@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -173,8 +171,20 @@ public class LessonService {
         // 결과가 없으면 null 반환
         if(lessonResults.isEmpty()) return Optional.empty();
 
-        // 결과가 있는데 건너뛰기 한거면 건너뛰기로 데이터 반환
+
+        // 평균 정확도가 높은 순으로 정렬
+        Collections.sort(lessonResults.orElse(null), new Comparator<LessonResultEntity>() {
+
+            @Override
+            public int compare(LessonResultEntity o1, LessonResultEntity o2) {
+                return Long.compare((o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2,
+                        (o1.getAccentSimilarity() + o1.getPronunciationAccuracy()) / 2);
+            }
+        });
+        // 평균 정확도가 높은 레슨결과를 가져옴
         LessonResultEntity lessonResult = lessonResults.orElse(null).get(0);
+
+        // 결과가 있는데 건너뛰기 한거면 건너뛰기로 데이터 반환
         if(lessonResult.getIsSkipped()) {
             return Optional.ofNullable(new LessonInfoDTO(true, null, null));
         }
@@ -213,6 +223,11 @@ public class LessonService {
         lessonClaim.setUser(user);
         lessonClaim.setLesson(lesson);
         lessonClaim.setContent(content);
+        lessonClaim.setClaimDt(LocalDateTime.now());
         return lessonRepository.saveLessonClaim(lessonClaim).orElse(null);
+    }
+
+    public List<LessonClaimEntity> findAllLessonClaim() {
+        return lessonRepository.findAllLessonClaim().orElse(null);
     }
 }
