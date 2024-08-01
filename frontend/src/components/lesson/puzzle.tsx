@@ -1,42 +1,91 @@
-import { LinearProgress, Grid, Card, Box } from "@mui/material";
+import { LinearProgress, Grid, Card } from "@mui/material";
 import { useState, useEffect } from "react";
 import PuzzlePiece from "./puzzlePiece";
 
 interface PuzzleProps {
   id: number | null;
-  onSelect: (pieceId: number) => void; // Function to pass the clicked puzzle piece to the parent
+  totalProgress: number;
+  eachLessonProgress: object | null;
+  onSelect: (pieceId: number) => void; // 클릭된 퍼즐 조각을 부모에게 전달하는 함수
 }
 
-export default function Puzzle({ id, onSelect }: PuzzleProps) {
-  // Simulated pieces data, replace with actual data fetching logic
-  const pieces = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+export default function Puzzle({ id, totalProgress=60, eachLessonProgress, onSelect }: PuzzleProps) {
+  // 퍼즐 조각 데이터 (실제 데이터 가져오는 로직으로 대체 가능)
+  const tempEachLessonProgress = [
+    {
+        "lessonGroupId": 1,
+        "groupProgress": 100,
+        "avgAccuracy": 80
+    },
+    {
+        "lessonGroupId": 2,
+        "groupProgress": 60,
+        "avgAccuracy": 81
+    },
+    {
+        "lessonGroupId": 3,
+        "groupProgress": 20,
+        "avgAccuracy": 82
+    },
+    {
+        "lessonGroupId": 4,
+        "groupProgress": 0,
+        "avgAccuracy": 83
+    },
+    {
+        "lessonGroupId": 5,
+        "groupProgress": 0,
+        "avgAccuracy": 84
+    },
+    {
+        "lessonGroupId": 6,
+        "groupProgress": 0,
+        "avgAccuracy": 85
+    },
+    {
+        "lessonGroupId": 7,
+        "groupProgress": 0,
+        "avgAccuracy": 86
+    },
+    {
+        "lessonGroupId": 8,
+        "groupProgress": 0,
+        "avgAccuracy": 87
+    },
+    {
+        "lessonGroupId": 9,
+        "groupProgress": 0,
+        "avgAccuracy": 88
+    }
+]
 
   const onClick = (piece: number) => {
-    onSelect(piece); // Pass the selected puzzle piece to the parent
+    onSelect(piece); // 선택된 퍼즐 조각을 부모에게 전달
   };
 
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    // progress를 totalProgress에 맞춰 설정
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
-        if (oldProgress >= 60) {
+        if (oldProgress >= totalProgress) {
           clearInterval(timer);
-          return 60;
+          return totalProgress;
         }
         const diff = Math.random() * 10;
-        return Math.min(oldProgress + diff, 60);
+        return Math.min(oldProgress + diff, totalProgress);
       });
     }, 100);
 
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [totalProgress]); // totalProgress가 변경될 때마다 useEffect 재실행
 
   return (
     <div>
-      <div>
+      <div className="grid">
         <LinearProgress
           variant="determinate"
           value={progress}
@@ -51,11 +100,11 @@ export default function Puzzle({ id, onSelect }: PuzzleProps) {
           }}
         />
       </div>
-      <Grid container spacing={2}>
-        {pieces.map(piece => (
-          <Grid item xs={4} key={piece}>
-            <Card className="cursor-pointer w-full h-full" onClick={() => onClick(piece)}>
-                <PuzzlePiece locationId={id} piece={piece} />
+      <Grid container spacing={2} className="grid p-5">
+        {tempEachLessonProgress.map(piece => (
+          <Grid item xs={4} key={piece.lessonGroupId}>
+            <Card className="cursor-pointer" onClick={() => onClick(piece.lessonGroupId)}>
+              <PuzzlePiece locationId={id} piece={piece.lessonGroupId} />
             </Card>
           </Grid>
         ))}
