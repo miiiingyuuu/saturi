@@ -1,19 +1,26 @@
 "use client"
 
-import Link from "next/link";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 import "@/styles/globals.css";
+import CssBaseline from "@mui/material/CssBaseline";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { createTheme } from "@mui/material";
+import { ThemeProvider } from "@emotion/react";
 import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { authToken } from "@/utils/authutils";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+});
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   useEffect(() => {
@@ -22,6 +29,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     }
   },[])
 
+  
   if (pathname.startsWith("/admin")) {
     return (
       <html lang="ko" className={inter.className}>
@@ -36,11 +44,13 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
 
   return (
     <html lang="ko" className={inter.className}>
-    <body>
-      <Header />
-        <main>{children}</main>
-      <Footer />
-    </body>
-  </html>
-  );
-}
+      <body>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Header />
+            <main>{children}</main>
+          <Footer />
+        </ThemeProvider>
+      </body>
+    </html>
+  )}
