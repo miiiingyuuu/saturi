@@ -27,8 +27,6 @@ public class TokenService {
         String refreshToken = jwtUtil.createRefreshToken(userId);
 
         tokenRepository.save(new RedisToken(userId,refreshToken));
-        emailRepository.save(new RedisEmail("test@email.com","111111"));
-        emailRepository.save(new RedisEmail("test222@email.com","22222"));
         return new UserLoginResponseDTO(accessToken, refreshToken);
     }
 

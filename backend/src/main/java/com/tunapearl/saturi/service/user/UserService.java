@@ -106,7 +106,7 @@ public class UserService {
         user.setAgeRange(AgeRange.DEFAULT);
         user.setRegDate(LocalDateTime.now());
         user.setBird(birdRepository.findById(1L).orElse(null));
-        user.setExp(0L);
+        user.setExp(10L);
         user.setRole(Role.BASIC);
         return user;
     }
@@ -298,8 +298,18 @@ public class UserService {
         user.setAgeRange(AgeRange.DEFAULT);
         user.setRegDate(LocalDateTime.now());
         user.setBird(birdRepository.findById(1L).orElse(null));
-        user.setExp(0L);
+        user.setExp(20L);
         user.setRole(Role.ADMIN);
         return user;
+    }
+
+    public Long getUserRank(Long userId) {
+        List<UserEntity> findUsers = userRepository.findAllSortedByExp().orElse(null);
+        for (int i=0; i < findUsers.size(); i++) {
+            if(findUsers.get(i).getUserId().equals(userId)) {
+                return Long.valueOf(i+1);
+            }
+        }
+        return null;
     }
 }

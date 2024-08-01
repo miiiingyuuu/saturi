@@ -1,8 +1,6 @@
 package com.tunapearl.saturi.repository.lesson;
 
-import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
-import com.tunapearl.saturi.domain.lesson.LessonEntity;
-import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.domain.lesson.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -37,9 +35,9 @@ public class LessonRepository {
 
     public Optional<List<LessonGroupEntity>> findAllLessonGroup() {
         return Optional.ofNullable(em.createQuery("select distinct g from LessonGroupEntity g " +
-                        " join fetch g.location lo" +
-                        " join fetch g.lessonCategory lc" +
-                        " left join fetch g.lessons l", LessonGroupEntity.class)
+                                " join fetch g.location lo" +
+                                " join fetch g.lessonCategory lc" +
+                                " left join fetch g.lessons l", LessonGroupEntity.class)
                 .getResultList());
     }
 
@@ -53,5 +51,79 @@ public class LessonRepository {
                 .setParameter("locationId", locationId)
                 .setParameter("categoryId", categoryId)
                 .getResultList());
+    }
+
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserId(Long userId) {
+        return Optional.ofNullable(em.createQuery("select gr from LessonGroupResultEntity gr" +
+                                    " join fetch gr.lessonGroup lg" +
+                                    " where gr.user.userId = :userId and gr.isCompleted = true", LessonGroupResultEntity.class)
+                    .setParameter("userId", userId)
+                    .getResultList());
+
+    }
+
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdWithoutIsCompleted(Long userId) {
+        return Optional.ofNullable(em.createQuery("select gr from LessonGroupResultEntity gr" +
+                                    " join fetch gr.lessonGroup lg" +
+                                    " where gr.user.userId = :userId", LessonGroupResultEntity.class)
+                    .setParameter("userId", userId)
+                    .getResultList());
+
+    }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
+        return Optional.ofNullable(em.createQuery("select lr from LessonResultEntity lr" +
+                                    " join fetch lr.lessonGroupResult" +
+                                    " where lr.isSkipped = false and lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList());
+
+
+    }
+
+    public Optional<Long> createLessonGroupResult(LessonGroupResultEntity lessonGroupResult) {
+        em.persist(lessonGroupResult);
+        return Optional.ofNullable(lessonGroupResult.getLessonGroupResultId());
+    }
+
+    public Optional<LessonGroupResultEntity> findLessonGroupResultById(Long lessonGroupResultId) {
+        return Optional.ofNullable(em.find(LessonGroupResultEntity.class, lessonGroupResultId));
+    }
+
+    public Optional<Long> saveLessonForSkipped(LessonResultEntity lessonResultSkipped) {
+        em.persist(lessonResultSkipped);
+        return Optional.ofNullable(lessonResultSkipped.getLessonResultId());
+    }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonIdAndLessonGroupResultId(Long lessonId, Long lessonGroupResultId) {
+        List resultList = em.createQuery("select lr from LessonResultEntity lr " +
+                        " join fetch lr.lesson" +
+                        " join fetch lr.lessonGroupResult" +
+                        " where lr.lesson.lessonId = :lessonId and" +
+                        " lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId")
+                .setParameter("lessonId", lessonId)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList();
+
+        if(resultList.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(resultList);
+    }
+
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdAndLessonGroupId(Long userId, Long lessonGroupId) {
+        List result = em.createQuery("select lgr from LessonGroupResultEntity lgr" +
+                        " join fetch lgr.user" +
+                        " join fetch lgr.lessonGroup " +
+                        " where lgr.user.userId = :userId" +
+                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId")
+                .setParameter("userId", userId)
+                .setParameter("lessonGroupId", lessonGroupId)
+                .getResultList();
+        if(result.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(result);
+    }
+
+    public Optional<Long> saveLessonResult(LessonResultEntity lessonResult) {
+        em.persist(lessonResult);
+        return Optional.ofNullable(lessonResult.getLessonResultId());
     }
 }

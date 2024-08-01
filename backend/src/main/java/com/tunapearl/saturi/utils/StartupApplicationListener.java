@@ -33,7 +33,6 @@ public class StartupApplicationListener {
     private final AdminLessonService adminLessonService;
 
     private static final String[] LOCATION_NAMES = {"default", "gyungsang", "gyunggi", "gangwon", "chungcheong", "jeonra", "jeju"};
-    private static final String BASE_URL = "http://localhost:8080/bird/";
     private static final String[] BIRD_NAMES = {"agent", "banker", "clown", "sailor", "deckhand", "evil_king", "cavalry", "cute_killer",
             "store_owner", "miner", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
             "engineer", "musketeer"};
@@ -67,17 +66,32 @@ public class StartupApplicationListener {
 
     private void createBird() {
         for (int i = 0; i < BIRD_NAMES.length; i++) {
-            birdService.createBirdSample(BIRD_NAMES[i], BIRD_DESCRIPTIONS[i], BASE_URL + BIRD_NAMES[i] + ".png");
+            birdService.createBirdSample(BIRD_NAMES[i], BIRD_DESCRIPTIONS[i]);
         }
     }
 
     private void createUser() {
-        UserRegisterRequestDTO userInfoBasic = new UserRegisterRequestDTO(
-                "test@email.com", "password1!", "testnickname");
+        UserRegisterRequestDTO userInfoBasic1 = new UserRegisterRequestDTO(
+                "test1@email.com", "password1!", "testnickname1");
+        UserRegisterRequestDTO userInfoBasic2 = new UserRegisterRequestDTO(
+                "test2@email.com", "password1!", "testnickname2");
+        UserRegisterRequestDTO userInfoBasic3 = new UserRegisterRequestDTO(
+                "test3@email.com", "password1!", "testnickname3");
+        UserRegisterRequestDTO userInfoBasic4 = new UserRegisterRequestDTO(
+                "test4@email.com", "password1!", "testnickname4");
+        UserRegisterRequestDTO userInfoBasic5 = new UserRegisterRequestDTO(
+                "test5@email.com", "password1!", "testnickname5");
+        UserRegisterRequestDTO userInfoBasic6 = new UserRegisterRequestDTO(
+                "test6@email.com", "password1!", "testnickname6");
         UserRegisterRequestDTO userInfoAdmin = new UserRegisterRequestDTO(
                 "admin@email.com", "password1!", "admintest");
 
-        userService.registerUser(userInfoBasic);
+        userService.registerUser(userInfoBasic1);
+        userService.registerUser(userInfoBasic2);
+        userService.registerUser(userInfoBasic3);
+        userService.registerUser(userInfoBasic4);
+        userService.registerUser(userInfoBasic5);
+        userService.registerUser(userInfoBasic6);
         userService.registerAdminUser(userInfoAdmin);
     }
 

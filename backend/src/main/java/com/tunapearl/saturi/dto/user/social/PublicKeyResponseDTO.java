@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class PublicKeyResponse {
+public class PublicKeyResponseDTO {
     private List<Key> keys;
 
     @Builder

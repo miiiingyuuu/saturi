@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -27,5 +28,9 @@ public class AdminService {
         findUser.setReturnDt(returnDt);
 
         return new UserMsgResponseDTO("ok");
+    }
+
+    public List<UserEntity> getAllUsersSortedByExp() {
+        return userRepository.findAllSortedByExp().orElse(null);
     }
 }

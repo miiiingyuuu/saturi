@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.repository;
+package com.tunapearl.saturi.repository.game;
 
 import com.tunapearl.saturi.domain.game.GameTipEntity;
 import jakarta.persistence.EntityManager;
@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class GameRepository {
+public class GameTipRepository {
 
     private final EntityManager em;
 
