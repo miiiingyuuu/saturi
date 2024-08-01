@@ -1,15 +1,18 @@
 package com.tunapearl.saturi.service;
 
+import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.quiz.QuizChoiceEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
-import com.tunapearl.saturi.dto.quiz.QuizRequestDto;
-import com.tunapearl.saturi.dto.quiz.QuizResponseDto;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
+import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
+import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
+import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,19 +21,27 @@ import java.util.stream.Collectors;
 public class QuizService {
 
     private final QuizRepository quizRepository;
+    private final LocationRepository locationRepository;
 
-    public Long saveQuiz(QuizEntity quiz){
+    public Long saveQuiz(QuizRegisterRequestDto registerRequestDto){
+        LocationEntity location = locationRepository.findById(registerRequestDto.getLocationId()).orElseThrow();
+        QuizEntity quiz = QuizEntity.createQuiz(
+                location,
+                registerRequestDto.getQuestion(),
+                registerRequestDto.getIsObjective(),
+                registerRequestDto.getChoiceList()
+        );
         quizRepository.save(quiz);
         return quiz.getQuizId();
     }
 
-    public List<QuizResponseDto> finaAll(QuizRequestDto quizRequestDto){
-        List<QuizEntity> list = quizRepository.findAll(quizRequestDto);
-        return list.stream().map(this::convertToDto).collect(Collectors.toList());
+    public List<QuizReadResponseDto> finaAll(QuizReadRequestDto quizReadRequestDto){
+        List<QuizEntity> list = quizRepository.findAll(quizReadRequestDto);
+        return list.stream().map(this::convertReadDtoToEntty).collect(Collectors.toList());
     }
 
-    private QuizResponseDto convertToDto(QuizEntity quizEntity){
-        return QuizResponseDto.builder()
+    private QuizReadResponseDto convertReadDtoToEntty(QuizEntity quizEntity){
+        return QuizReadResponseDto.builder()
                 .quizId(quizEntity.getQuizId())
                 .locationId(quizEntity.getLocation().getLocationId())
                 .question(quizEntity.getQuestion())
