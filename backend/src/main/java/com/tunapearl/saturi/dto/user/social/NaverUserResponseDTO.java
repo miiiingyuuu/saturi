@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class NaverUserResponse {
+public class NaverUserResponseDTO {
 
     private String resultCode;
     private String message;

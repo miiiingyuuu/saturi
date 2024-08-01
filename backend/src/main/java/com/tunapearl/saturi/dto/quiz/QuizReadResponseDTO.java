@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class QuizReadResponseDto {
+public class QuizReadResponseDTO {
     private Long quizId;
     private Long locationId;
     private String question;

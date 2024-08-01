@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tunapearl.saturi.domain.quiz.QQuizEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
-import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
+import com.tunapearl.saturi.dto.quiz.QuizReadRequestDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -36,7 +36,7 @@ public class QuizRepository {
         return res.isEmpty() ? Optional.empty() : Optional.of(res);
     }
 
-    public List<QuizEntity> findAll(QuizReadRequestDto dto){
+    public List<QuizEntity> findAll(QuizReadRequestDTO dto){
         QQuizEntity qQuiz = new QQuizEntity("q");
 
         return queryFactory
@@ -48,6 +48,17 @@ public class QuizRepository {
                         isObjectiveEq(qQuiz, dto.getIsObjective())
                 ).limit(1000)
                 .fetch();
+    }
+
+    public void deleteQuizById(Long quizId){
+        em.remove(em.find(QuizEntity.class, quizId));
+    }
+
+    public void deleteChoiceByQuizId(Long quizId){
+        em.createQuery("delete from QuizChoiceEntity c where c.quizChoicePK.quizId = :quizId")
+                .setParameter("quizId", quizId)
+                .executeUpdate();
+        em.clear();
     }
 
     private BooleanExpression quizIdEq(QQuizEntity quiz, Long quizIdCond){
@@ -69,6 +80,7 @@ public class QuizRepository {
         if(objectiveCond == null) return null;
         return quiz.isObjective.eq(objectiveCond);
     }
+
 
 
 }

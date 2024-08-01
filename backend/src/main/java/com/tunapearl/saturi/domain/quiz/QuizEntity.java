@@ -1,7 +1,8 @@
 package com.tunapearl.saturi.domain.quiz;
 
 import com.tunapearl.saturi.domain.LocationEntity;
-import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDTO;
+import com.tunapearl.saturi.dto.admin.quiz.QuizUpdateRequestDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -33,7 +34,7 @@ public class QuizEntity {
     @Column(nullable = false, name = "is_objective")
     private Boolean isObjective;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<QuizChoiceEntity> quizChoiceList = new ArrayList<>();
 
 
@@ -50,16 +51,33 @@ public class QuizEntity {
     /*
     * 생성 메서드
     */
-    public static QuizEntity createQuiz(LocationEntity location, String question, Boolean isObjective, List<QuizRegisterRequestDto.Choice> registerDtoList) {
+    public static QuizEntity createQuiz(LocationEntity location, String question, Boolean isObjective, List<QuizRegisterRequestDTO.Choice> registerDtoList) {
         QuizEntity quiz = new QuizEntity();
         quiz.location = location;
         quiz.question = question;
         quiz.creationDt = LocalDateTime.now();
         quiz.isObjective = isObjective;
 
-        for(QuizRegisterRequestDto.Choice dto: registerDtoList){
+        for(QuizRegisterRequestDTO.Choice dto: registerDtoList){
             QuizChoiceEntity choice = QuizChoiceEntity.createQuizChoice(dto.getChoiceId(), dto.getContent(), dto.getIsAnswer());
             quiz.addQuizChoice(choice);
+        }
+        return quiz;
+    }
+
+    /*
+    *  수정 메서드
+    */
+    public static QuizEntity updateQuiz(QuizEntity quiz, QuizUpdateRequestDTO updateDto, LocationEntity location) {
+        quiz.location = location;
+        quiz.question = updateDto.getQuestion();
+        quiz.creationDt = LocalDateTime.now();
+        quiz.isObjective = updateDto.getIsObjective();
+
+        quiz.quizChoiceList.clear();
+        for(QuizUpdateRequestDTO.Choice choice: updateDto.getChoiceList()){
+            QuizChoiceEntity entity = QuizChoiceEntity.createQuizChoice(choice.getChoiceId(), choice.getContent(), choice.getIsAnswer());
+            quiz.addQuizChoice(entity);
         }
         return quiz;
     }

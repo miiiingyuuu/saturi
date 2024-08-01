@@ -3,9 +3,9 @@ package com.tunapearl.saturi.service.user;
 import com.tunapearl.saturi.domain.user.AgeRange;
 import com.tunapearl.saturi.domain.user.Gender;
 import com.tunapearl.saturi.dto.user.UserType;
-import com.tunapearl.saturi.dto.user.social.NaverUserResponse;
-import com.tunapearl.saturi.dto.user.social.SocialAuthResponse;
-import com.tunapearl.saturi.dto.user.social.SocialUserResponse;
+import com.tunapearl.saturi.dto.user.social.NaverUserResponseDTO;
+import com.tunapearl.saturi.dto.user.social.SocialAuthResponseDTO;
+import com.tunapearl.saturi.dto.user.social.SocialUserResponseDTO;
 import com.tunapearl.saturi.exception.InvalidTokenException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,7 @@ public class NaverLoginServiceImpl implements SocialLoginService {
     }
 
     @Override
-    public SocialAuthResponse getAccessToken(String code) {
+    public SocialAuthResponseDTO getAccessToken(String code) {
 
         //쿼리 파라미터 + URI 설정
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://nid.naver.com/oauth2.0/token");
@@ -67,7 +67,7 @@ public class NaverLoginServiceImpl implements SocialLoginService {
         URI uri = builder.queryParam("code", code).build().toUri();
 
         // 요청
-        SocialAuthResponse response = restTemplate.getForObject(uri, SocialAuthResponse.class);
+        SocialAuthResponseDTO response = restTemplate.getForObject(uri, SocialAuthResponseDTO.class);
 
         //로깅
         log.info("Naver Access Token: {}", response.toString());
@@ -80,12 +80,12 @@ public class NaverLoginServiceImpl implements SocialLoginService {
     }
 
     @Override
-    public SocialAuthResponse refreshAccessToken(String refreshToken) {
+    public SocialAuthResponseDTO refreshAccessToken(String refreshToken) {
         return null;
     }
 
     @Override
-    public SocialUserResponse getUserInfo(String accessToken) {
+    public SocialUserResponseDTO getUserInfo(String accessToken) {
 
         String url = "https://openapi.naver.com/v1/nid/me";
 
@@ -97,9 +97,9 @@ public class NaverLoginServiceImpl implements SocialLoginService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         //요청
-        ResponseEntity<NaverUserResponse> response = restTemplate
-                .exchange(url, HttpMethod.GET, entity, NaverUserResponse.class);
-        NaverUserResponse.NaverUserData userData = response.getBody().getNaverUserData();
+        ResponseEntity<NaverUserResponseDTO> response = restTemplate
+                .exchange(url, HttpMethod.GET, entity, NaverUserResponseDTO.class);
+        NaverUserResponseDTO.NaverUserData userData = response.getBody().getNaverUserData();
 
         //SocialUserResponse로 반환
         Gender gender;
@@ -108,7 +108,7 @@ public class NaverLoginServiceImpl implements SocialLoginService {
             case "M": gender = Gender.MALE; break;
             default: gender = null; break;
         }
-        return SocialUserResponse.builder()
+        return SocialUserResponseDTO.builder()
                 .nickname(userData.getNickname())
                 .email(userData.getEmail())
                 .gender(gender)
