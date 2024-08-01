@@ -21,8 +21,6 @@ public class BirdEntity {
 
     private String description;
 
-    private String imagePath;
-
 //    @OneToMany(mappedBy = "bird")
 //    private List<UserEntity> users = new ArrayList<>();
 }

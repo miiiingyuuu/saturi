@@ -1,54 +1,75 @@
-"use client"
+"use client";
 
-import React, { useState } from "react";
+import { Button, Container, TextField, Typography, Box } from "@mui/material";
+import { handleValueChange } from "@/utils/utils";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardBody, CardFooter, Button, Input } from "@nextui-org/react";
+import { getCookie } from "cookies-next";
+import { handleLogin } from "@/utils/authutils";
 
-export default function Authenticate() {
+export default function App() {
+  const [ email, setEmail ] = useState("");
+  const [ password, setPassword] = useState("");
   const router = useRouter();
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-
-  const handleAuthenticate = async () => {
-    // 비밀번호 인증 로직
-    const isAuthenticated = await fakePasswordCheck(password);
-
-    if (isAuthenticated) {
-      sessionStorage.setItem('isAuthenticated', 'true'); // 인증 성공 시 세션 스토리지에 플래그 저장
-      router.push('/accounts/profile/update');
+  useEffect(() => {
+    if (typeof window !== "undefined" && !sessionStorage.getItem("accessToken")) {
+      router.push("/")
     } else {
-      setError('비밀번호가 일치하지 않습니다.');
+      const cookieEmail = getCookie("email")
+      if (cookieEmail) {
+      setEmail(cookieEmail);
+      }
     }
-  };
-
-  // 가짜 비밀번호 체크 함수 (실제 API 호출로 대체)
-  const fakePasswordCheck = async (password) => {
-    return password === "correctpassword"; // 가짜 비밀번호 "correctpassword" 체크
-  };
-
+  }, []);
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <Card style={{ width: '400px' }}>
-        <CardHeader>
-          <h3>비밀번호 인증</h3>
-        </CardHeader>
-        <CardBody>
-          <Input
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    >
+      <Container component="main" maxWidth="sm">
+        <Box
+          component="form"
+          onSubmit={event => {
+            event.preventDefault();
+            handleLogin({ email, password, router, goTo:"", })
+          }}
+          noValidate
+          sx={{ mt: 1 }}
+        >
+          <Typography component="h1" variant="h3" align="center">
+            비밀번호 확인
+          </Typography>
+
+          <TextField
+            margin="normal"
+            fullWidth
+            id="password"
+            label="비밀번호"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            fullWidth
-            placeholder="비밀번호를 입력하세요"
+            onChange={event => handleValueChange(event, setPassword)}
+            autoComplete="current-password"
           />
-          {error && <p className="text-red-500">{error}</p>}
-        </CardBody>
-        <CardFooter className="flex justify-end">
-          <Button onClick={handleAuthenticate}>
-            인증
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              mt: 3,
+              mb: 2,
+              height: "56px",
+            }}
+          >
+            비밀번호 확인
           </Button>
-        </CardFooter>
-      </Card>
-    </div>
+        </Box>
+      </Container>
+    </Box>
   );
 }

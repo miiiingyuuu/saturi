@@ -8,6 +8,9 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { createTheme } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
+import { useEffect } from "react"
+import { useRouter, usePathname } from "next/navigation"
+import { authToken } from "@/utils/authutils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +21,27 @@ const theme = createTheme({
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const router = useRouter()
+  const pathname = usePathname()
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
+      authToken(router)
+    }
+  },[])
+
+  
+  if (pathname.startsWith("/admin")) {
+    return (
+      <html lang="ko" className={inter.className}>
+        <body>
+          <main>
+            {children}
+          </main>
+        </body>
+      </html>
+    )
+  }
+
   return (
     <html lang="ko" className={inter.className}>
       <body>
@@ -29,5 +53,4 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </ThemeProvider>
       </body>
     </html>
-  );
-}
+  )}

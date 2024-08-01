@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { validateEmail, handleValueChange } from "@/utils/utils";
 import { goSocialLogin, handleLogin } from "@/utils/authutils";
 import {
@@ -23,6 +23,12 @@ export default function App() {
   const [password, setPassword] = useState("");
   const isEmailValid = useMemo(() => validateEmail(email), [email]);
 
+  useEffect(() => {
+    if (sessionStorage.getItem("accessToken")) {
+      router.push("/")
+    }
+  }, []);
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -40,7 +46,7 @@ export default function App() {
           component="form"
           onSubmit={event => {
             event.preventDefault();
-            handleLogin({ email, password, router, goTo: "/main" });
+            handleLogin({ email, password, router, goTo: "/" });
           }}
           noValidate
           sx={{ mt: 1 }}

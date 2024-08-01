@@ -1,262 +1,191 @@
 "use client";
 
-import "./styles.css";
-import { useState } from "react";
-import Link from "next/link";
 import {
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Button,
-  Typography,
   Box,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  Button,
+  Paper,
+  Typography,
+  Autocomplete,
+  TextField,
+  Container,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { handleValueChange } from "@/utils/utils";
-import { updateUser } from "@/utils/authutils";
+import api from "@/lib/axios";
+import { getCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const StyledSelectBox = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  marginTop: "50px",
-  textAlign: "center",
-  height: "auto",
-  minHeight: "100%",
-  fontSize: "2rem",
-}));
+// Sample data for Autocomplete options
+interface Option {
+  label: string;
+  id: number;
+}
 
-const StyledBox = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "600px",
-  margin: "auto",
-  padding: "20px",
-  boxShadow: theme.shadows[1], // boxShadow 값을 theme에서 가져옴
-  borderRadius: theme.shape.borderRadius * 2, // borderRadius 값을 theme에서 가져옴
-  justifyContent: "center",
-}));
+const genderOptions: Option[] = [
+  { label: "알려주고 싶지 않아요", id: 0 },
+  { label: "남자", id: 1 },
+  { label: "여자", id: 2 },
+];
 
-export default function Step() {
-  const [step, setStep] = useState(1);
-  const [gender, setGender] = useState("");
-  const [ageRange, setAgeRange] = useState("");
-  const [locationId, setLocationId] = useState("");
+const locationOptions: Option[] = [
+  { label: "알려주고 싶지 않아요", id: 1 },
+  { label: "경상도", id: 2 },
+  { label: "경기도", id: 3 },
+  { label: "강원도", id: 4 },
+  { label: "충청도", id: 5 },
+  { label: "전라도", id: 6 },
+  { label: "제주도", id: 7 },
+];
 
-  function handleStep(value: number) {
-    setStep(prev => prev + value);
-  }
+const ageRangeOptions: Option[] = [
+  { label: "10대 이하", id: 0 },
+  { label: "10대", id: 1 },
+  { label: "20대", id: 2 },
+  { label: "30대", id: 3 },
+  { label: "40대", id: 4 },
+  { label: "50대", id: 5 },
+  { label: "60대", id: 6 },
+  { label: "70대", id: 7 },
+  { label: "80대", id: 8 },
+  { label: "90대", id: 9 },
+];
 
-  // 버튼 색
-  const NextButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "#99DE83",
-    "&:hover": {
-      backgroundColor: "#7AB367",
-    },
-  }));
+const steps = [
+  { label: '당신의 성별은 무엇입니까?' },
+  { label: '당신이 거주하고 있는 지역은 어디입니까?' },
+  { label: '당신의 연령대를 선택해주세요.' },
+];
 
+export default function App() {
+  const router = useRouter()
+  const [activeStep, setActiveStep] = useState(0);
+  const [gender, setGender] = useState<Option | null>(null);
+  const [location, setLocation] = useState<Option | null>(null);
+  const [ageRange, setAgeRange] = useState<Option | null>(null);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+
+  // handleNext 에 axios 걸어서 하나씩 보내기
+  const handleUpdateUser = () => {
+    const genderId = gender?.id ?? null;
+    const locationId = location?.id ?? null;
+    const ageRangeId = ageRange?.id ?? null;
+    const nickname = getCookie("nickname")
+    // TODO: 여기서 안들어온 값 함수 단에서 처리하기
+    api.put("/user/auth", {
+      gender: genderId,
+      locationId,
+      ageRange: ageRangeId,
+      nickname,
+      isChanged: 0,
+      birdId: 1,
+    })
+      .then(response => console.log(response))
+  };
+
+
+  // 네비가드 형태로 사용 ( 여기서는 기본정보가 default인 사람들만 들어오게하기 )
+  useEffect(() => {
+    if (typeof window !== "undefined" && getCookie("gender")==="DEFAULT" && getCookie("location")==="default" && getCookie("ageRange")==="DEFAULT") {
+      router.push("/")
+    }
+  }, []);
   return (
-    <StyledSelectBox>
-      {step === 1 && (
-        <Box>
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{ justifyContent: "center" }}
-          >
-            성별이 어떻게 되시나요?
-          </Typography>
-          <RadioGroup
-            defaultValue="null"
-            value={gender}
-            onChange={event => handleValueChange(event, setGender)}
-          >
-            <StyledBox className="box">
-              <FormControlLabel
-                value="male"
-                control={<Radio />}
-                label="남자"
-                className="content"
-              />
-              <FormControlLabel
-                value="female"
-                control={<Radio />}
-                label="여자"
-                className="content"
-              />
-              <FormControlLabel
-                value="null"
-                control={<Radio />}
-                label="알려주고 싶지 않아요..."
-                className="content"
-              />
-            </StyledBox>
-            <Box className="first-button">
-              <NextButton
-                variant="contained"
-                className="button"
-                onClick={() => handleStep(1)}
-              >
-                다음
-              </NextButton>
-            </Box>
-          </RadioGroup>
-        </Box>
-      )}
-      {step === 2 && (
-        <Box>
-          <Typography variant="h6" gutterBottom>
-            연령대가 어떻게 되시나요?
-          </Typography>
-          <RadioGroup
-            defaultValue="null"
-            value={ageRange}
-            onChange={event => handleValueChange(event, setAgeRange)}
-          >
-            <StyledBox className="box">
-              <FormControlLabel
-                value="teen-twen"
-                control={<Radio />}
-                label="10대 ~ 20대"
-                className="content"
-              />
-              <FormControlLabel
-                value="thri-four"
-                control={<Radio />}
-                label="30대 ~ 40대"
-                className="content"
-              />
-              <FormControlLabel
-                value="fif-six"
-                control={<Radio />}
-                label="50대 ~ 60대"
-                className="content"
-              />
-              <FormControlLabel
-                value="over-seven"
-                control={<Radio />}
-                label="70대 이상"
-                className="content"
-              />
-              <FormControlLabel
-                value="null"
-                control={<Radio />}
-                label="알려주고 싶지 않아요..."
-                className="content"
-              />
-            </StyledBox>
-            <Box className="selectbutton">
-              <NextButton
-                variant="contained"
-                className="button"
-                onClick={() => handleStep(-1)}
-              >
-                뒤로가기
-              </NextButton>
-              <NextButton
-                variant="contained"
-                className="button"
-                onClick={() => handleStep(1)}
-              >
-                다음
-              </NextButton>
-            </Box>
-          </RadioGroup>
-        </Box>
-      )}
-      {step === 3 && (
-        <Box>
-          <Typography variant="h6" gutterBottom>
-            주로 사용하시는 사투리는 무엇인가요?
-          </Typography>
-          <RadioGroup
-            defaultValue="null"
-            value={locationId}
-            onChange={event => handleValueChange(event, setLocationId)}
-          >
-            <StyledBox className="box">
-              <FormControlLabel
-                value="gyeonggi"
-                control={<Radio />}
-                label="경기도"
-                className="content"
-              />
-              <FormControlLabel
-                value="gyeongsang"
-                control={<Radio />}
-                label="경상도"
-                className="content"
-              />
-              <FormControlLabel
-                value="jeolla"
-                control={<Radio />}
-                label="전라도"
-                className="content"
-              />
-              <FormControlLabel
-                value="chungchung"
-                control={<Radio />}
-                label="충청도"
-                className="content"
-              />
-              <FormControlLabel
-                value="kangwon"
-                control={<Radio />}
-                label="강원도"
-                className="content"
-              />
-              <FormControlLabel
-                value="jeju"
-                control={<Radio />}
-                label="제주도"
-                className="content"
-              />
-              <FormControlLabel
-                value="null"
-                control={<Radio />}
-                label="알려주고 싶지 않아요..."
-                className="content"
-              />
-            </StyledBox>
-            <Box className="selectbutton">
-              <NextButton
-                variant="contained"
-                className="button"
-                onClick={() => handleStep(-1)}
-              >
-                뒤로가기
-              </NextButton>
-              <NextButton
-                variant="contained"
-                className="button"
-                onClick={() => {
-                  updateUser({
-                    gender,
-                    locationId,
-                    ageRange,
-                  });
-                  handleStep(1);
-                }}
-              >
-                회원가입 완료
-              </NextButton>
-            </Box>
-          </RadioGroup>
-        </Box>
-      )}
-      {step === 4 && (
-        <Box>
-          <Typography variant="h4" gutterBottom>
-            회원가입이 완료되었습니다!
-          </Typography>
-          <Link href="/login" passHref>
-            <NextButton
-              variant="contained"
-              sx={{ width: "200px", height: "50px", padding: "auto" }}
+    <Container component="main" maxWidth="sm">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: '100%',
+          maxWidth: 'md',
+        }}
+      >
+        <Stepper activeStep={activeStep} orientation="vertical" sx={{ width: '100%' }}>
+          {steps.map((step, index) => (
+            <Step key={step.label}>
+              <StepLabel>{step.label}</StepLabel>
+              <StepContent>
+                {index === 0 && (
+                  <Autocomplete
+                    disablePortal
+                    options={genderOptions}
+                    getOptionLabel={(option) => option.label}
+                    value={gender}
+                    onChange={(event, newValue: Option | null) => setGender(newValue)}
+                    renderInput={(params) => <TextField {...params} label="Gender" fullWidth />}
+                    sx={{ mb: 2 }}
+                  />
+                )}
+                {index === 1 && (
+                  <Autocomplete
+                    disablePortal
+                    options={locationOptions}
+                    getOptionLabel={(option) => option.label}
+                    value={location}
+                    onChange={(event, newValue: Option | null) => setLocation(newValue)}
+                    renderInput={(params) => <TextField {...params} label="Location" fullWidth />}
+                    sx={{ mb: 2 }}
+                  />
+                )}
+                {index === 2 && (
+                  <Autocomplete
+                    disablePortal
+                    options={ageRangeOptions}
+                    getOptionLabel={(option) => option.label}
+                    value={ageRange}
+                    onChange={(event, newValue: Option | null) => setAgeRange(newValue)}
+                    renderInput={(params) => <TextField {...params} label="Age Range" fullWidth />}
+                    sx={{ mb: 2 }}
+                  />
+                )}
+                <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                  <Button
+                    variant="contained"
+                    onClick={handleNext}
+                    sx={{ mt: 1, mr: 1 }}
+                  >
+                    {index === steps.length - 1 ? 'Finish' : 'Next'}
+                  </Button>
+                  <Button
+                    disabled={index === 0}
+                    onClick={handleBack}
+                    sx={{ mt: 1, ml: 1 }}
+                  >
+                    Back
+                  </Button>
+                </Box>
+              </StepContent>
+            </Step>
+          ))}
+        </Stepper>
+        {activeStep === steps.length && (
+          <Paper square elevation={0} sx={{ p: 3, width: '100%', backgroundColor: 'transparent' }}>
+            <Typography>
+              모든 준비가 완료되었습니다!
+            </Typography>
+            <Button
+              onClick={() => {
+                router.push("/");
+              }}
+              sx={{ mt: 1, mr: 1 }}
             >
-              로그인 페이지로
-            </NextButton>
-          </Link>
-        </Box>
-      )}
-    </StyledSelectBox>
+              메인으로
+            </Button>
+          </Paper>
+        )}
+      </Box>
+    </Container>
   );
 }

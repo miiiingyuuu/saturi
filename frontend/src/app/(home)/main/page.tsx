@@ -1,18 +1,30 @@
-"use client"; // 클라이언트 컴포넌트로 지정
+"use client";
 
-// 하위 컴포넌트들
-import LeftPart from "./leftpart";
-import MiddlePart from "./middlepart";
-import RightPart from "./rightpart";
+import { useState, useRef } from 'react';
+import Image from "next/image"
 
-import { useState, useRef, useEffect, ReactNode } from "react";
-import "./style.css";
-import KoreaMap from "./koreaMap";
-// import { Button, Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';           //헤더 한다고 import 한건데 지워도 될듯?
+// 하위 컴포넌트들 
+import LeftPart from './components/leftpart';
+import MiddlePart from './components/middlepart';
+import RightPart from './components/rightpart';
+
+import './styles/mainPage.css';
+import KoreaMap from './components/koreaMap';
+
+///////////////////////////////////////////////////////////////
+// Main Page 설명
+// Main Page는 
+// 1. App과 
+// 2. 하위 3가지 파트로 나뉨(leftpart, middlepart, rightpart)
+// 
+// 3가지 파트 모두에게 쓰이는 Button와 Map은
+// 따로 분리되어 있지 않으며 
+// 이 page 안, App function 위에 있음.
+///////////////////////////////////////////////////////////////
 
 interface ButtonPartProps {
-  onLeftClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
-  onRightClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onLeftClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onRightClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   middleToWhere: number;
   selectedRegion: string;
 }
@@ -23,24 +35,20 @@ interface MiddleMapProps {
   selectedRegion: string;
 }
 
-function ButtonPart({
-  onLeftClick,
-  onRightClick,
-  middleToWhere,
-  selectedRegion,
-}: ButtonPartProps) {
+// 버튼 부분과 맵 파트
+function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }: ButtonPartProps) {
   return (
     <div>
       {selectedRegion !== "_" && middleToWhere !== 2 && (
-        <a href="#" className="buttonLeft" onClick={onLeftClick}>
-          <img src="/MainPage/buttonLeft.png" alt="button" width={50} />
-        </a>
+        <button type="button" className='buttonLeft' onClick={onLeftClick}>
+          <Image src="/MainPage/buttonLeft.png" alt="button" width={60} height={60} />
+        </button>
       )}
 
       {selectedRegion !== "_" && middleToWhere !== 0 && (
-        <a href="#" className="buttonRight" onClick={onRightClick}>
-          <img src="/MainPage/buttonRight.png" alt="button" width={50} />
-        </a>
+        <button type="button" className='buttonRight' onClick={onRightClick}>
+          <Image src="/MainPage/buttonRight.png" alt="button" width={60} height={60} />
+        </button>
       )}
     </div>
   );
@@ -48,26 +56,21 @@ function ButtonPart({
 
 function MiddleMap({ left, onRegionClick, selectedRegion }: MiddleMapProps) {
   return (
-    <div
-      className="middleMap"
-      style={{ left: left === undefined ? undefined : left, top: "39%" }}
-    >
+    <div className="middleMap" style={{ left: left === "null" ? undefined : left, top: "39vh" }}>
       <h1 style={{ textAlign: "center" }}> {selectedRegion}</h1>
-      <div style={{ width: "50%", height: "50%" }}>
+      <div style={{ width: '100%', height: '100%' }}>
         <KoreaMap onRegionClick={onRegionClick} />
       </div>
     </div>
   );
 }
 
+// 컴포넌트 
 export default function App() {
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const [mapLeft, setMapLeft] = useState<string>("50%"); // 초기 left 값을 50%로 설정
+  const [mapLeft, setMapLeft] = useState<string>('50%'); // 초기 left 값을 50%로 설정
   const [middleToWhere, setMiddleToWhere] = useState<number>(1); // 0, 1, 2 이 세 가지 값을 사용
-  let moveDirection = useRef<string>("null");
-  const [isCapitalChoosed, setIsCapitalChoosed] = useState<boolean>(false);
-  const [mainPageIndicator, setMainPageIndicator] =
-    useState<string>("지역을 선택하세요");
+  const moveDirection = useRef<string>("null");
+  const [mainPageIndicator, setMainPageIndicator] = useState<string>("지역을 선택하세요");
   const currentMainPageRef = useRef<number>(1);
   const [selectedRegion, setSelectedRegion] = useState<string>("_");
 
@@ -78,16 +81,11 @@ export default function App() {
     }
   };
 
-  const handleProfileClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    setModalOpen(true);
-  };
-
-  const handleLeftClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLeftClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     moveDirection.current = "left";
     if (currentMainPageRef.current === 1) {
-      setMapLeft("80%");
+      setMapLeft("70%");
       setMiddleToWhere(2);
       currentMainPageRef.current = 0; // 값 변경
     } else if (currentMainPageRef.current === 2) {
@@ -97,11 +95,11 @@ export default function App() {
     }
   };
 
-  const handleRightClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleRightClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     moveDirection.current = "right";
     if (currentMainPageRef.current === 1) {
-      setMapLeft("20%");
+      setMapLeft("35%");
       setMiddleToWhere(0);
       currentMainPageRef.current = 2; // 값 변경
     } else if (currentMainPageRef.current === 0) {
@@ -112,10 +110,8 @@ export default function App() {
   };
 
   return (
-    <div style={{ overflow: "hidden" }}>
-      {" "}
-      {/* 부모 요소에 overflow: hidden 추가 */}
-      <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+    <div style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
+      <div style={{ position: 'relative', width: '100%', height: '95vh' }}>
         <LeftPart
           middlePosition={middleToWhere}
           moveDirection={moveDirection.current}
@@ -125,10 +121,6 @@ export default function App() {
           middlePosition={middleToWhere}
           mainPageIndicator={mainPageIndicator}
           selectedRegion={selectedRegion}
-          style={{
-            width: "100vw",
-            overflow: "hidden", // MiddlePart 자체에 overflow: hidden 추가 (필요한 경우)
-          }}
         />
         <RightPart />
         <ButtonPart
@@ -141,7 +133,7 @@ export default function App() {
           left={mapLeft}
           onRegionClick={handleRegionClick}
           selectedRegion={selectedRegion}
-        />
+        />        
       </div>
     </div>
   );

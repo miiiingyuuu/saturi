@@ -3,7 +3,7 @@
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/utils/authutils";
-import { FormEvent, useMemo, useState, MouseEvent } from "react";
+import { FormEvent, useMemo, useState, MouseEvent, useEffect } from "react";
 import {
   validateEmail,
   passwordConfirm,
@@ -160,6 +160,11 @@ export default function App() {
     }
   }
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
+      router.push("/")
+    }
+  }, []);
   return (
     <Container component="main" maxWidth="xs">
       <Backdrop
@@ -231,6 +236,7 @@ export default function App() {
                 <Button
                   onClick={handleAuthEmailNumber}
                   fullWidth
+                  disabled={isAuthEmail}
                   variant="contained"
                   sx={{
                     fontSize: "0.75rem",
