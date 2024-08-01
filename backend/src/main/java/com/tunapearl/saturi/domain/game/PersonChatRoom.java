@@ -10,16 +10,14 @@ import java.util.UUID;
 @RedisHash("PersonTopic")
 @Getter
 @Setter
-public class PersonTopic {
+public class PersonChatRoom {
 
     @Id
-    private String personTopicId;
-    private Long userId;
+    private String personchatroomId;
 
-    public static PersonTopic create(long userId) {
-        PersonTopic topic = new PersonTopic();
-        topic.setUserId(userId);
-        topic.personTopicId= UUID.randomUUID().toString();
+    public static PersonChatRoom create(long userId) {
+        PersonChatRoom topic = new PersonChatRoom();
+        topic.personchatroomId = UUID.randomUUID().toString();
         return topic;
     }
 }

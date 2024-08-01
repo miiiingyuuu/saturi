@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LessonGroupProgressByUserDTO {
+public class LessonGroupResultForSaveLessonGroupDTO {
     private Long lessonGroupId;
     private String lessonGroupName;
-    private Long groupProgress;
     private Long avgAccuracy;
+    private Long avgSimilarity;
 }
