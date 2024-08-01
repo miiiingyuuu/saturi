@@ -94,4 +94,18 @@ public class LessonRepository {
         em.persist(lessonResultSkipped);
         return Optional.ofNullable(lessonResultSkipped.getLessonResultId());
     }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonIdAndLessonGroupResultId(Long lessonId, Long lessonGroupResultId) {
+        List resultList = em.createQuery("select lr from LessonResultEntity lr " +
+                        " join fetch lr.lesson" +
+                        " join fetch lr.lessonGroupResult" +
+                        " where lr.lesson.lessonId = :lessonId and" +
+                        " lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId")
+                .setParameter("lessonId", lessonId)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList();
+
+        if(resultList.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(resultList);
+    }
 }

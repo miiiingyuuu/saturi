@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -111,7 +112,6 @@ public class LessonController {
     @PostMapping("/lesson-group-result/{lessonGroupId}")
     public ResponseEntity<CreateLessonGroupResultResponseDTO> createLessonGroupResult(@RequestHeader("Authorization") String accessToken,
                                                                                       @PathVariable("lessonGroupId") Long lessonGroupId) throws UnAuthorizedException {
-        // TODO 레슨 그룹 결과 생성 기능 구현
         Long userId = jwtUtil.getUserId(accessToken);
         Long lessonGroupResultId = lessonService.createLessonGroupResult(userId, lessonGroupId);
         return ResponseEntity.created(URI.create("/learn/lesson-group-result")).body(new CreateLessonGroupResultResponseDTO(lessonGroupResultId));
@@ -121,9 +121,14 @@ public class LessonController {
      * 유저별 레슨 결과 조회
      */
     @GetMapping("lesson/user/{lessonId}")
-    public ResponseEntity<?> findUserLessonResult() {
+    public ResponseEntity<LessonResultByUserResponseDTO> findUserLessonResult(@RequestHeader("Authorization") String accessToken,
+                                                  @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
         // TODO 유저별 레슨 결과 조회
-        return ResponseEntity.ok("");
+        Long userId = jwtUtil.getUserId(accessToken);
+        Boolean isAccessed = false;
+        Optional<LessonInfoDTO> lessonInfo = lessonService.getLessonInfoForUser(userId, lessonId);
+        if(lessonInfo.isPresent()) isAccessed = true;
+        return ResponseEntity.ok(new LessonResultByUserResponseDTO(isAccessed, lessonInfo.orElse(null)));
     }
 
     /**

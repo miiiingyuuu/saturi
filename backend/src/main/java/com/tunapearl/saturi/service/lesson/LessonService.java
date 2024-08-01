@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
+import com.tunapearl.saturi.dto.lesson.LessonInfoDTO;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import com.tunapearl.saturi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -147,5 +148,27 @@ public class LessonService {
         lessonGroupResult.setStartDt(LocalDateTime.now());
         lessonGroupResult.setIsCompleted(false);
         return lessonGroupResult;
+    }
+
+    public Optional<LessonInfoDTO> getLessonInfoForUser(Long userId, Long lessonId) {
+        // 레슨 아이디로 레슨 조회해서 레슨 그룹 아이디 조회
+        LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
+
+        // 유저 아이디와 레슨 그룹 아이디로 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonId);
+
+        // 레슨 아이디랑 레슨 그룹 결과 아이디로 레슨 결과 조회
+        Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
+
+        // 결과가 없으면 null 반환
+        if(lessonResults.isEmpty()) return Optional.empty();
+
+        // 결과가 있는데 건너뛰기 한거면 건너뛰기로 데이터 반환
+        LessonResultEntity lessonResult = lessonResults.orElse(null).get(0);
+        if(lessonResult.getIsSkipped()) {
+            return Optional.ofNullable(new LessonInfoDTO(true, null, null));
+        }
+        return Optional.ofNullable(new LessonInfoDTO(false, lessonResult.getAccentSimilarity(), lessonResult.getPronunciationAccuracy()));
     }
 }
