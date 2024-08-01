@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './koreaMap.css';
+import '../styles/koreaMap.css';
 
 interface IconProps {
   onRegionClick?: (region: string) => void;
@@ -9,14 +9,14 @@ function Icon({ onRegionClick }: IconProps) {
   const [selectedRegion, setSelectedRegion] = useState<SVGGElement | null>(null);
 
   useEffect(() => {
-    const allRegions = document.querySelectorAll<SVGGElement>("g[fill='#CCC'], g[fill='#AAA'], g[fill='#EEE']");
+    const allRegions = document.querySelectorAll<SVGGElement>("g[fill='#CCC'], g[fill='#AAA'], g[fill='#ebb33e']");
     allRegions.forEach(region => {
       region.setAttribute("fill", "#CCC");
     });
   }, []);
 
   useEffect(() => {
-    const allRegions = document.querySelectorAll<SVGGElement>("g[fill='#CCC'], g[fill='#AAA'], g[fill='#EEE']");
+    const allRegions = document.querySelectorAll<SVGGElement>("g[fill='#CCC'], g[fill='#AAA'], g[fill='#ebb33e']");
     allRegions.forEach(region => {
       if (selectedRegion && region !== selectedRegion) {
         region.setAttribute("fill", "#CCC");
@@ -26,7 +26,7 @@ function Icon({ onRegionClick }: IconProps) {
     });
 
     if (selectedRegion) {
-      selectedRegion.setAttribute("fill", "#EEE");
+      selectedRegion.setAttribute("fill", "#ebb33e");
     }
   }, [selectedRegion]);
 
@@ -41,17 +41,17 @@ function Icon({ onRegionClick }: IconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="973.451"
-      height="390.966"
+      width="973"
+      height="550"
       // width="200%"
       // height="200%"
       x="0"
-      y="30"
+      y="0"
       version="1.1"
       viewBox="-234.383 134.604 973.451 686.966"
       xmlSpace="preserve"
     >
-      <g fill="#CCC" stroke="#FFF" strokeWidth="0.5">        
+      <g fill="#CCC" stroke="#FFF" strokeWidth="1">        
         <g fill="#CCC" className="경기도" onClick={handleClick}>
           <path d="M118.187 309.904L115.408 307.013 114.648 306.882 113.757 309.313 114.937 309.608 114.832 311.545 115.776 312.465 117.347 312.038z" />
           <path d="M108.149 292.875L108.543 293.435 110.403 292.81 112.447 293.237 112.708 291.789 109.748 292.217 108.333 290.208 107.467 290.473 105.634 289.222 107.495 291.725 107.128 293.83z" />

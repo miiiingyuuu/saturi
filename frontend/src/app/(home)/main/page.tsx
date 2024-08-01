@@ -4,12 +4,23 @@ import { useState, useRef } from 'react';
 import Image from "next/image"
 
 // 하위 컴포넌트들 
-import LeftPart from './leftpart';
-import MiddlePart from './middlepart';
-import RightPart from './rightpart';
+import LeftPart from './components/leftpart';
+import MiddlePart from './components/middlepart';
+import RightPart from './components/rightpart';
 
-import './style.css';
-import KoreaMap from './koreaMap';
+import './styles/mainPage.css';
+import KoreaMap from './components/koreaMap';
+
+///////////////////////////////////////////////////////////////
+// Main Page 설명
+// Main Page는 
+// 1. App과 
+// 2. 하위 3가지 파트로 나뉨(leftpart, middlepart, rightpart)
+// 
+// 3가지 파트 모두에게 쓰이는 Button와 Map은
+// 따로 분리되어 있지 않으며 
+// 이 page 안, App function 위에 있음.
+///////////////////////////////////////////////////////////////
 
 interface ButtonPartProps {
   onLeftClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -30,13 +41,13 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
     <div>
       {selectedRegion !== "_" && middleToWhere !== 2 && (
         <button type="button" className='buttonLeft' onClick={onLeftClick}>
-          <Image src="/MainPage/buttonLeft.png" alt="button" width={50} height={50} />
+          <Image src="/MainPage/buttonLeft.png" alt="button" width={60} height={60} />
         </button>
       )}
 
       {selectedRegion !== "_" && middleToWhere !== 0 && (
         <button type="button" className='buttonRight' onClick={onRightClick}>
-          <Image src="/MainPage/buttonRight.png" alt="button" width={50} height={50} />
+          <Image src="/MainPage/buttonRight.png" alt="button" width={60} height={60} />
         </button>
       )}
     </div>
@@ -45,9 +56,9 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
 
 function MiddleMap({ left, onRegionClick, selectedRegion }: MiddleMapProps) {
   return (
-    <div className="middleMap" style={{ left: left === "null" ? undefined : left, top: "39%" }}>
+    <div className="middleMap" style={{ left: left === "null" ? undefined : left, top: "39vh" }}>
       <h1 style={{ textAlign: "center" }}> {selectedRegion}</h1>
-      <div style={{ width: '50%', height: '50%' }}>
+      <div style={{ width: '100%', height: '100%' }}>
         <KoreaMap onRegionClick={onRegionClick} />
       </div>
     </div>
@@ -74,7 +85,7 @@ export default function App() {
     e.preventDefault();
     moveDirection.current = "left";
     if (currentMainPageRef.current === 1) {
-      setMapLeft("80%");
+      setMapLeft("70%");
       setMiddleToWhere(2);
       currentMainPageRef.current = 0; // 값 변경
     } else if (currentMainPageRef.current === 2) {
@@ -88,7 +99,7 @@ export default function App() {
     e.preventDefault();
     moveDirection.current = "right";
     if (currentMainPageRef.current === 1) {
-      setMapLeft("20%");
+      setMapLeft("35%");
       setMiddleToWhere(0);
       currentMainPageRef.current = 2; // 값 변경
     } else if (currentMainPageRef.current === 0) {
@@ -100,7 +111,7 @@ export default function App() {
 
   return (
     <div style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
-      <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+      <div style={{ position: 'relative', width: '100%', height: '95vh' }}>
         <LeftPart
           middlePosition={middleToWhere}
           moveDirection={moveDirection.current}

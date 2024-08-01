@@ -87,6 +87,7 @@ export default function LessonPage() {
     <div className="grid grid-cols-2 h-screen justify-center items-center">
       <div className="grid grid-cols-1 justify-center items-center w-full h-full">
         <div className="flex items-center p-4">
+          {/* 새 이미지 */}
           <Image
             src="/images/quokka.jpg"
             alt="귀여운 쿼카"
