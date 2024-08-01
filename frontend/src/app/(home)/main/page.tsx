@@ -3,10 +3,10 @@
 import { useState, useRef } from 'react';
 import Image from "next/image"
 
-// 하위 컴포넌트들
-import LeftPart from "./leftpart";
-import MiddlePart from "./middlepart";
-import RightPart from "./rightpart";
+// 하위 컴포넌트들 
+import LeftPart from './leftpart';
+import MiddlePart from './middlepart';
+import RightPart from './rightpart';
 
 import './style.css';
 import KoreaMap from './koreaMap';
@@ -47,7 +47,7 @@ function MiddleMap({ left, onRegionClick, selectedRegion }: MiddleMapProps) {
   return (
     <div className="middleMap" style={{ left: left === "null" ? undefined : left, top: "39%" }}>
       <h1 style={{ textAlign: "center" }}> {selectedRegion}</h1>
-      <div style={{ width: "50%", height: "50%" }}>
+      <div style={{ width: '50%', height: '50%' }}>
         <KoreaMap onRegionClick={onRegionClick} />
       </div>
     </div>
@@ -99,10 +99,8 @@ export default function App() {
   };
 
   return (
-    <div style={{ overflow: "hidden" }}>
-      {" "}
-      {/* 부모 요소에 overflow: hidden 추가 */}
-      <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+    <div style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
+      <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
         <LeftPart
           middlePosition={middleToWhere}
           moveDirection={moveDirection.current}
@@ -124,7 +122,7 @@ export default function App() {
           left={mapLeft}
           onRegionClick={handleRegionClick}
           selectedRegion={selectedRegion}
-        />
+        />        
       </div>
     </div>
   );
