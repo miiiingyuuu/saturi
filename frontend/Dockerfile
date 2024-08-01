@@ -15,7 +15,7 @@ COPY . /usr/src/app
 RUN npm run build
 
 # 빌드된 파일들을 Nginx가 서비스할 수 있도록 build 폴더 복사
-RUN cp -r /usr/src/app/.next /usr/share/nginx/html
+RUN cp -r /usr/src/app/.next /var/jenkins_home/nginx/
 
 # 포트 노출
 EXPOSE 3000
