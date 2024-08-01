@@ -36,8 +36,9 @@ public class UserService {
     private final EmailRepository emailRepository;
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
-    //    private final LocationRepository locationRepository;
     private final LocationService locationService;
+    private final BirdService birdService;
+
     /**
      * 정규표현식
      */
@@ -160,17 +161,19 @@ public class UserService {
      */
     @Transactional
     public UserMsgResponseDTO updateUser(Long userId, UserUpdateRequestDTO request) {
-        validateDuplicateUserNickname(request.getNickname());
+        if(request.getIsChanged().equals(1L)) validateDuplicateUserNickname(request.getNickname());
         UserEntity findUser = userRepository.findByUserId(userId).get();
-        changeUserInfo(findUser, request.getNickname(), request.getLocationId(), request.getGender(), request.getAgeRange());
+        BirdEntity bird = birdService.findById(request.getBirdId());
+        changeUserInfo(findUser, request.getNickname(), request.getLocationId(), request.getGender(), request.getAgeRange(), bird);
         return new UserMsgResponseDTO("회원 수정 완료");
     }
 
-    private void changeUserInfo(UserEntity findUser, String nickname, Long locationId, Gender gender, AgeRange ageRange) {
+    private void changeUserInfo(UserEntity findUser, String nickname, Long locationId, Gender gender, AgeRange ageRange, BirdEntity bird) {
         findUser.setNickname(nickname);
         findUser.getLocation().setLocationId(locationId);
         findUser.setGender(gender);
         findUser.setAgeRange(ageRange);
+        findUser.setBird(bird);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.tunapearl.saturi.exception.advice;
 
 import com.tunapearl.saturi.controller.UserController;
 import com.tunapearl.saturi.dto.error.ErrorResponseDTO;
+import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.exception.UnAuthorizedUserException;
 import jakarta.mail.MessagingException;
@@ -56,5 +57,12 @@ public class ExControllerAdvice {
     public ErrorResponseDTO UnAuthorizeUserHandle(UnAuthorizedUserException e) {
         log.error("[exceptionHandle] ex", e);
         return new ErrorResponseDTO("UNAUTHORIZED", "관리자 아님");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(AlreadyMaxSizeException.class)
+    public ErrorResponseDTO AlreadyMaxSizeExHandle(AlreadyMaxSizeException e) {
+        log.error("[exceptionHandle] ex", e);
+        return new ErrorResponseDTO("ALREADY_MAX_SIZE", e.getMessage());
     }
 }

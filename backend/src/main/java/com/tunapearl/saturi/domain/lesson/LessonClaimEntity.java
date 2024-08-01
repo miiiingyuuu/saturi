@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter @Setter
 @Table(name = "lesson_claim")
@@ -23,4 +25,6 @@ public class LessonClaimEntity {
     private UserEntity user;
     
     private String content; // 신고 내용
+
+    private LocalDateTime claimDt;
 }
