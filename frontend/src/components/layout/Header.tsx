@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { getProfile, getAllCookies  } from "@/utils/profile";
-
+import { frontLogOut } from "@/utils/authutils";
 
 // 버튼 색
 const LoginButton = styled(Button)(({ theme }) => ({
@@ -27,6 +27,7 @@ export default function Header() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -76,18 +77,17 @@ export default function Header() {
     } else {
       setIsLoggedIn(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
     updateUserInfo();
   }, []);
 
-  const handleLogout = () => {
-    // accessToken 제거
-    sessionStorage.removeItem('accessToken');
+  const handleLogout = async () => {
+    await frontLogOut();
     updateUserInfo();
-    // 로그아웃 후 start 페이지로
-    router.push('/start');
+    router.push('/start')
   };
 
   return (
@@ -101,8 +101,10 @@ export default function Header() {
           style={{ cursor: 'pointer' }}
           onClick={handleLogoClick}
         />
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-          {!isLoggedIn ? (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {loading ? (
+            <Avatar sx={{ width: 32, height: 32 }} />
+          ) : !isLoggedIn ? (
             <Link href="/login">
               <LoginButton
                 variant="contained"
@@ -114,10 +116,10 @@ export default function Header() {
                 로그인
               </LoginButton>
             </Link>
-          ) : (
+          ) : (   
             // 프로필 클릭 시 팝업되서 나오는 메뉴들
             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-              <Tooltip title="Account settings">
+              <Tooltip title="View Profile">
                 <IconButton
                   onClick={handleOpenMenu}
                   size="large"

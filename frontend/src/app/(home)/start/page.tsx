@@ -28,12 +28,11 @@ export default function Start() {
   const router = useRouter();
 
   useEffect(() => {
-    const accessToken = sessionStorage.getItem("accessToken");
+    const accessToken = sessionStorage.getItem('accessToken');
     if (accessToken) {
-      router.push("/main");
+      router.push('/main');
     }
   }, [router]);
-  
 
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
