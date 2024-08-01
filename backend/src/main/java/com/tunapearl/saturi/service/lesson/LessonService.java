@@ -2,8 +2,10 @@ package com.tunapearl.saturi.service.lesson;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
+import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
+import com.tunapearl.saturi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class LessonService {
 
     private final LessonRepository lessonRepository;
+    private final UserService userService;
 
     public LessonCategoryEntity findByIdLessonCategory(Long lessonCategoryId) {
         return lessonRepository.findByIdLessonCategory(lessonCategoryId).orElse(null);
@@ -38,7 +41,7 @@ public class LessonService {
         return lessonRepository.findAllLessonGroup().orElse(null);
     }
 
-    // FIXME 파일 수정 추가
+    // FIXME 레슨 수정을 수정
     public void updateLesson(Long lessonId, Long lessonGroupId, String script) {
         LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
         LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
@@ -128,8 +131,21 @@ public class LessonService {
     }
 
     public Long createLessonGroupResult(Long userId, Long lessonGroupId) {
-        LessonGroupResultEntity lessonGroupResult = new LessonGroupResultEntity();
-        // TODO lessonGroupResult 생성 기능 추가
+        // userId로 유저 객체 찾기
+        UserEntity findUser = userService.findById(userId);
+        // lessonGroupId로 레슨 그룹 객체 찾기
+        LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
+        // 유저, 레슨그룹, 레슨 그룹 시작 일시 설정, 완료 여부 false
+        LessonGroupResultEntity lessonGroupResult = createLessonGroupResult(findUser, findLessonGroup);
         return lessonRepository.createLessonGroupResult(lessonGroupResult).orElse(null);
+    }
+
+    private static LessonGroupResultEntity createLessonGroupResult(UserEntity findUser, LessonGroupEntity findLessonGroup) {
+        LessonGroupResultEntity lessonGroupResult = new LessonGroupResultEntity();
+        lessonGroupResult.setUser(findUser);
+        lessonGroupResult.setLessonGroup(findLessonGroup);
+        lessonGroupResult.setStartDt(LocalDateTime.now());
+        lessonGroupResult.setIsCompleted(false);
+        return lessonGroupResult;
     }
 }
