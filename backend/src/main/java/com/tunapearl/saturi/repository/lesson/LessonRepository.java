@@ -85,4 +85,45 @@ public class LessonRepository {
         em.persist(lessonGroupResult);
         return Optional.ofNullable(lessonGroupResult.getLessonGroupResultId());
     }
+
+    public Optional<LessonGroupResultEntity> findLessonGroupResultById(Long lessonGroupResultId) {
+        return Optional.ofNullable(em.find(LessonGroupResultEntity.class, lessonGroupResultId));
+    }
+
+    public Optional<Long> saveLessonForSkipped(LessonResultEntity lessonResultSkipped) {
+        em.persist(lessonResultSkipped);
+        return Optional.ofNullable(lessonResultSkipped.getLessonResultId());
+    }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonIdAndLessonGroupResultId(Long lessonId, Long lessonGroupResultId) {
+        List resultList = em.createQuery("select lr from LessonResultEntity lr " +
+                        " join fetch lr.lesson" +
+                        " join fetch lr.lessonGroupResult" +
+                        " where lr.lesson.lessonId = :lessonId and" +
+                        " lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId")
+                .setParameter("lessonId", lessonId)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList();
+
+        if(resultList.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(resultList);
+    }
+
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdAndLessonGroupId(Long userId, Long lessonGroupId) {
+        List result = em.createQuery("select lgr from LessonGroupResultEntity lgr" +
+                        " join fetch lgr.user" +
+                        " join fetch lgr.lessonGroup " +
+                        " where lgr.user.userId = :userId" +
+                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId")
+                .setParameter("userId", userId)
+                .setParameter("lessonGroupId", lessonGroupId)
+                .getResultList();
+        if(result.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(result);
+    }
+
+    public Optional<Long> saveLessonResult(LessonResultEntity lessonResult) {
+        em.persist(lessonResult);
+        return Optional.ofNullable(lessonResult.getLessonResultId());
+    }
 }

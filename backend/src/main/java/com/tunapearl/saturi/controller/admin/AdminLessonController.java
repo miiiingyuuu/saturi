@@ -109,6 +109,7 @@ public class AdminLessonController {
     /**
      * 레슨 수정
      */
+    // FIXME 레슨 수정(등록처럼 폼으로 받아야함)
     @PutMapping("/{lessonId}")
     public ResponseEntity<AdminMsgResponseDTO> updateLesson(@PathVariable Long lessonId,
                                                             @RequestBody LessonUpdateRequestDTO request) {

@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.utils;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import com.tunapearl.saturi.dto.admin.lesson.UploadFile;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.UUID;
@@ -21,7 +23,17 @@ public class FileStoreUtil {
     
     @Value("${file.dir}") //FIXME 경로 수정
     private String fileDir;
-    private final Storage storage = StorageOptions.getDefaultInstance().getService();
+//    private final Storage storage = StorageOptions.getDefaultInstance().getService();
+    private Storage storage;
+    {
+        try {
+            storage = StorageOptions.newBuilder().setCredentials(GoogleCredentials
+                    .fromStream(new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"))))
+                    .build().getService();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String getFullPath(String fileName) {
         return fileDir + fileName;

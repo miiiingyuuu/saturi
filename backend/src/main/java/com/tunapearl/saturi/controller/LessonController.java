@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -99,22 +100,57 @@ public class LessonController {
     @PutMapping("/lesson/{lessonId}")
     public ResponseEntity<LessonMsgResponseDTO> skipLesson(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
-        // TODO 레슨 건너뛰기 기능 구현
         log.info("received request to skip Lesson {}", lessonId);
         Long userId = jwtUtil.getUserId(accessToken);
-        lessonService.skipLesson(userId, lessonId);
+        Long lessonResultId = lessonService.skipLesson(userId, lessonId);
         return ResponseEntity.ok(new LessonMsgResponseDTO("ok"));
     }
 
     /**
-     * 레슨 그룹 결과 생성
+     * 레슨 그룹 결과 테이블 생성
      */
-    @PostMapping("/lesson-group-result")
+    @PostMapping("/lesson-group-result/{lessonGroupId}")
     public ResponseEntity<CreateLessonGroupResultResponseDTO> createLessonGroupResult(@RequestHeader("Authorization") String accessToken,
-                                                                                      @RequestBody CreateLessonGroupResultRequestDTO request) throws UnAuthorizedException {
-        // TODO 레슨 그룹 결과 생성 기능 구현
+                                                                                      @PathVariable("lessonGroupId") Long lessonGroupId) throws UnAuthorizedException {
         Long userId = jwtUtil.getUserId(accessToken);
-        Long lessonGroupResultId = lessonService.createLessonGroupResult(userId, request.getLessonGroupId());
+        Long lessonGroupResultId = lessonService.createLessonGroupResult(userId, lessonGroupId);
         return ResponseEntity.created(URI.create("/learn/lesson-group-result")).body(new CreateLessonGroupResultResponseDTO(lessonGroupResultId));
+    }
+
+    /**
+     * 유저별 레슨 결과 조회
+     */
+    @GetMapping("lesson/user/{lessonId}")
+    public ResponseEntity<LessonResultByUserResponseDTO> findUserLessonResult(@RequestHeader("Authorization") String accessToken,
+                                                  @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
+        // TODO 테스트
+        Long userId = jwtUtil.getUserId(accessToken);
+        Boolean isAccessed = false;
+        Optional<LessonInfoDTO> lessonInfo = lessonService.getLessonInfoForUser(userId, lessonId);
+        if(lessonInfo.isPresent()) isAccessed = true;
+        return ResponseEntity.ok(new LessonResultByUserResponseDTO(isAccessed, lessonInfo.orElse(null)));
+    }
+
+    /**
+     * 레슨 저장(Django에서 받음)
+     */
+    @PostMapping("lesson")
+    public ResponseEntity<LessonMsgResponseDTO> saveLessonResult(@RequestHeader("Authorization") String accessToken,
+                                                                 @RequestBody LessonSaveRequestDTO request) throws UnAuthorizedException {
+        Long userId = jwtUtil.getUserId(accessToken);
+        Long savelessonId = lessonService.saveLesson(userId, request.getLessonId(), request.getLessonGroupResultId(), request.getFilePath(),
+                request.getAccentSimilarity(), request.getPronunciationAccuracy(), request.getScript());
+        return ResponseEntity.created(URI.create("/learn/lesson")).body(new LessonMsgResponseDTO("ok"));
+    }
+
+    /**
+     * 레슨 그룹 저장(레슨 다 학습한 뒤)
+     */
+    @PutMapping("lesson-group-result")
+    public ResponseEntity<?> saveLessonGroupResult() {
+        // TODO 레슨 그룹 저장 기능 구현
+        // TODO 경험치 부여, 평균 유사도, 평균 정확도 설정
+        // TODO 5개 다 완료했으면 레슨 그룹 종료 일시 설정, 레슨 그룹 완료 여부 true로 변경
+        return ResponseEntity.ok("");
     }
 }
