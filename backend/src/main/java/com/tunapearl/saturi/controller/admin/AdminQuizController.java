@@ -43,7 +43,7 @@ public class AdminQuizController {
         return new ResponseEntity<String>("퀴즈 등록 완료",HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/quiz/{quizId}")
+    @PutMapping(value = "/quiz/{quizId}")
     public ResponseEntity<?> updateQuiz(@PathVariable("quizId") Long quizId
             , @RequestBody QuizUpdateRequestDTO quizUpdateRequestDto) {
 
