@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class QuizUpdateRequestDto {
+public class QuizUpdateRequestDTO {
 
     @Positive
     private Long quizId;

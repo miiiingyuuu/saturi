@@ -1,10 +1,10 @@
 package com.tunapearl.saturi.controller.admin;
 
-import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
-import com.tunapearl.saturi.dto.admin.quiz.QuizUpdateRequestDto;
-import com.tunapearl.saturi.dto.quiz.QuizDetailReadResponseDto;
-import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
-import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDTO;
+import com.tunapearl.saturi.dto.admin.quiz.QuizUpdateRequestDTO;
+import com.tunapearl.saturi.dto.quiz.QuizDetailReadResponseDTO;
+import com.tunapearl.saturi.dto.quiz.QuizReadRequestDTO;
+import com.tunapearl.saturi.dto.quiz.QuizReadResponseDTO;
 import com.tunapearl.saturi.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,14 +23,22 @@ public class AdminQuizController {
     private final QuizService quizService;
 
     @GetMapping(value = "/quiz")
-    public ResponseEntity<?> getAllQuiz(@ModelAttribute("quizRequestDto") QuizReadRequestDto quizReadRequestDto) {
+    public ResponseEntity<?> getAllQuiz(@ModelAttribute("quizRequestDto") QuizReadRequestDTO quizReadRequestDto) {
         log.info("GET, get all quiz: {}", quizReadRequestDto);
-        List<QuizReadResponseDto> list = quizService.finaAll(quizReadRequestDto);
+        List<QuizReadResponseDTO> list = quizService.finaAll(quizReadRequestDto);
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping(value = "/quiz/{quizId}")
+    public ResponseEntity<?> getQuiz(@PathVariable(value = "quizId") Long quizId) {
+        log.info("GET, get quiz: {}", quizId);
+        QuizDetailReadResponseDTO quizDetailReadResponseDto = quizService.findOne(quizId);
+        return ResponseEntity.ok(quizDetailReadResponseDto);
+    }
+
+
     @PostMapping(value = "/quiz")
-    public ResponseEntity<?> registerQuiz(@RequestBody QuizRegisterRequestDto quizRegisterRequestDto) {
+    public ResponseEntity<?> registerQuiz(@RequestBody QuizRegisterRequestDTO quizRegisterRequestDto) {
         log.info("POST, register quiz: {}", quizRegisterRequestDto);
         Long quizId = quizService.saveQuiz(quizRegisterRequestDto);
         return new ResponseEntity<String>("퀴즈 등록 완료",HttpStatus.CREATED);
@@ -38,11 +46,11 @@ public class AdminQuizController {
 
     @PostMapping(value = "/quiz/{quizId}")
     public ResponseEntity<?> updateQuiz(@PathVariable("quizId") Long quizId
-            , @RequestBody QuizUpdateRequestDto quizUpdateRequestDto) {
+            , @RequestBody QuizUpdateRequestDTO quizUpdateRequestDto) {
 
         quizUpdateRequestDto.setQuizId(quizId);
         log.info("POST, update quiz: {}", quizUpdateRequestDto);
-        QuizDetailReadResponseDto responseDto = quizService.updateQuiz(quizUpdateRequestDto);
+        QuizDetailReadResponseDTO responseDto = quizService.updateQuiz(quizUpdateRequestDto);
         return ResponseEntity.ok(responseDto);
     }
 }

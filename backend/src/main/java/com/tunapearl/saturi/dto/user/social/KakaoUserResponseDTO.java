@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoUserResponse {
+public class KakaoUserResponseDTO {
     @Builder.Default
     private KakaoUserData kakao_account = KakaoUserData.builder().build();
 

@@ -3,11 +3,11 @@ package com.tunapearl.saturi.service;
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.quiz.QuizChoiceEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
-import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
-import com.tunapearl.saturi.dto.admin.quiz.QuizUpdateRequestDto;
-import com.tunapearl.saturi.dto.quiz.QuizDetailReadResponseDto;
-import com.tunapearl.saturi.dto.quiz.QuizReadRequestDto;
-import com.tunapearl.saturi.dto.quiz.QuizReadResponseDto;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDTO;
+import com.tunapearl.saturi.dto.admin.quiz.QuizUpdateRequestDTO;
+import com.tunapearl.saturi.dto.quiz.QuizDetailReadResponseDTO;
+import com.tunapearl.saturi.dto.quiz.QuizReadRequestDTO;
+import com.tunapearl.saturi.dto.quiz.QuizReadResponseDTO;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,18 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final LocationRepository locationRepository;
 
-    public Long saveQuiz(QuizRegisterRequestDto registerRequestDto){
+
+    public List<QuizReadResponseDTO> finaAll(QuizReadRequestDTO quizReadRequestDto){
+        List<QuizEntity> list = quizRepository.findAll(quizReadRequestDto);
+        return list.stream().map(this::convertReadDtoToEntity).collect(Collectors.toList());
+    }
+
+    public QuizDetailReadResponseDTO findOne(Long quizId) {
+        QuizEntity quiz = quizRepository.findById(quizId).orElseThrow(()->new RuntimeException("Quiz not found"));
+        return this.convertEntityToDetailDto(quiz);
+    }
+
+    public Long saveQuiz(QuizRegisterRequestDTO registerRequestDto){
         LocationEntity location = locationRepository.findById(registerRequestDto.getLocationId()).orElseThrow();
         QuizEntity quiz = QuizEntity.createQuiz(
                 location,
@@ -38,12 +50,7 @@ public class QuizService {
         return quiz.getQuizId();
     }
 
-    public List<QuizReadResponseDto> finaAll(QuizReadRequestDto quizReadRequestDto){
-        List<QuizEntity> list = quizRepository.findAll(quizReadRequestDto);
-        return list.stream().map(this::convertReadDtoToEntity).collect(Collectors.toList());
-    }
-
-    public QuizDetailReadResponseDto updateQuiz(QuizUpdateRequestDto updateDto) {
+    public QuizDetailReadResponseDTO updateQuiz(QuizUpdateRequestDTO updateDto) {
 
         // 퀴즈의 답 삭제
         quizRepository.deleteChoiceByQuizId(updateDto.getQuizId());
@@ -62,9 +69,8 @@ public class QuizService {
         return convertEntityToDetailDto(quiz);
     }
 
-
-    private QuizReadResponseDto convertReadDtoToEntity(QuizEntity quizEntity){
-        return QuizReadResponseDto.builder()
+    private QuizReadResponseDTO convertReadDtoToEntity(QuizEntity quizEntity){
+        return QuizReadResponseDTO.builder()
                 .quizId(quizEntity.getQuizId())
                 .locationId(quizEntity.getLocation().getLocationId())
                 .question(quizEntity.getQuestion())
@@ -73,10 +79,10 @@ public class QuizService {
                 .build();
     }
 
-    private QuizDetailReadResponseDto convertEntityToDetailDto(QuizEntity quizEntity){
-        List<QuizDetailReadResponseDto.Choice> choiceDtoList = new ArrayList<>();
+    private QuizDetailReadResponseDTO convertEntityToDetailDto(QuizEntity quizEntity){
+        List<QuizDetailReadResponseDTO.Choice> choiceDtoList = new ArrayList<>();
         for(QuizChoiceEntity entity: quizEntity.getQuizChoiceList()){
-            QuizDetailReadResponseDto.Choice choiceDto = QuizDetailReadResponseDto.Choice.builder()
+            QuizDetailReadResponseDTO.Choice choiceDto = QuizDetailReadResponseDTO.Choice.builder()
                     .choiceId(entity.getQuizChoicePK().getChoiceId())
                     .content(entity.getContent())
                     .isAnswer(entity.getIsAnswer())
@@ -84,7 +90,7 @@ public class QuizService {
             choiceDtoList.add(choiceDto);
         }
 
-        return QuizDetailReadResponseDto.builder()
+        return QuizDetailReadResponseDTO.builder()
                 .quizId(quizEntity.getQuizId())
                 .locationId(quizEntity.getLocation().getLocationId())
                 .question(quizEntity.getQuestion())

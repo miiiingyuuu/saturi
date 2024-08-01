@@ -1,11 +1,7 @@
 package com.tunapearl.saturi.domain.quiz;
 
-import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
