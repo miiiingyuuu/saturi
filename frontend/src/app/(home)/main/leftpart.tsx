@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import ButtonBase from '@mui/material/ButtonBase';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 
 interface LeftPartProps {
   middlePosition: number;
@@ -21,17 +20,20 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
           const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
           if (audioInputDevices.length > 0) {
             navigator.mediaDevices.getUserMedia({ audio: true })
-              .then((stream) => {
-                console.log('마이크 허용됨');
+              .then(() => {
+                // 마이크 허용됨
               })
               .catch((error) => {
+                // eslint-disable-next-line no-console
                 console.error('마이크 허용 오류:', error);
               });
           } else {
+            // eslint-disable-next-line no-console
             console.error('사용 가능한 오디오 입력 장치가 없습니다.');
           }
         })
         .catch(error => {
+          // eslint-disable-next-line no-console
           console.error('장치 나열 오류:', error);
         });
     }
@@ -59,9 +61,9 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
         region = 7;
         break;
       default:
-        console.log(" 에러")
+        // eslint-disable-next-line no-console
+        console.error("지역 설정 에러");
     }
-    console.log("hey2");
     router.push(`/lesson/${region}/${num}`);
   }
 
@@ -72,17 +74,14 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
         zIndex: (() => {
           if (middlePosition === 0) {
             return 0;
-          } if (middlePosition === 1) {
-            if (moveDirection === "left") {
-              console.log("left");
-              return 0;
-            } if (moveDirection === "right") {
-              console.log("right");
-              return 2;
-            }
-          } else if (middlePosition === 2) {
+          } 
+          if (middlePosition === 1) {
+            return moveDirection === "right" ? 2 : 0;
+          }
+          if (middlePosition === 2) {
             return 2;
           }
+          return 0;
         })()
       }}>
       <Box sx={{ position: 'absolute', margin: "25px", top: "7%", left: "70px", width: "25vw" }}>
