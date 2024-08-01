@@ -136,6 +136,13 @@ public class LessonService {
         UserEntity findUser = userService.findById(userId);
         // lessonGroupId로 레슨 그룹 객체 찾기
         LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
+
+        // 이미 레슨그룹결과가 있는지 확인
+        Optional<List<LessonGroupResultEntity>> getLessonGroupResult = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
+        if(getLessonGroupResult.isPresent()) {
+            return getLessonGroupResult.get().get(0).getLessonGroupResultId();
+        }
+
         // 유저, 레슨그룹, 레슨 그룹 시작 일시 설정, 완료 여부 false
         LessonGroupResultEntity lessonGroupResult = createLessonGroupResult(findUser, findLessonGroup);
         return lessonRepository.createLessonGroupResult(lessonGroupResult).orElse(null);

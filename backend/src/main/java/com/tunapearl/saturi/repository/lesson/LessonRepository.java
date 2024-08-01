@@ -108,4 +108,17 @@ public class LessonRepository {
         if(resultList.isEmpty()) return Optional.empty();
         return Optional.ofNullable(resultList);
     }
+
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdAndLessonGroupId(Long userId, Long lessonGroupId) {
+        List result = em.createQuery("select lgr from LessonGroupResultEntity lgr" +
+                        " join fetch lgr.user" +
+                        " join fetch lgr.lessonGroup " +
+                        " where lgr.user.userId = :userId" +
+                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId")
+                .setParameter("userId", userId)
+                .setParameter("lessonGroupId", lessonGroupId)
+                .getResultList();
+        if(result.isEmpty()) return Optional.empty();
+        return Optional.ofNullable(result);
+    }
 }

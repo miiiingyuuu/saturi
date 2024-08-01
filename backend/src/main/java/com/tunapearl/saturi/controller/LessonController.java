@@ -123,7 +123,7 @@ public class LessonController {
     @GetMapping("lesson/user/{lessonId}")
     public ResponseEntity<LessonResultByUserResponseDTO> findUserLessonResult(@RequestHeader("Authorization") String accessToken,
                                                   @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
-        // TODO 유저별 레슨 결과 조회
+        // TODO 테스트
         Long userId = jwtUtil.getUserId(accessToken);
         Boolean isAccessed = false;
         Optional<LessonInfoDTO> lessonInfo = lessonService.getLessonInfoForUser(userId, lessonId);
@@ -135,9 +135,11 @@ public class LessonController {
      * 레슨 저장(Django에서 받음)
      */
     @PostMapping("lesson")
-    public ResponseEntity<?> saveLessonResult() {
+    public ResponseEntity<LessonMsgResponseDTO> saveLessonResult(@RequestHeader("Authorization") String accessToken,
+                                                                 @RequestBody LessonSaveRequestDTO request) {
         // TODO 레슨 저장 기능 구현
-        return ResponseEntity.created(URI.create("/learn/lesson")).body("");
+
+        return ResponseEntity.created(URI.create("/learn/lesson")).body(new LessonMsgResponseDTO("ok"));
     }
 
     /**
