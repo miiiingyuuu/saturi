@@ -1,10 +1,7 @@
 package com.tunapearl.saturi.service;
 
 import com.tunapearl.saturi.domain.LocationEntity;
-import com.tunapearl.saturi.domain.game.GameRoomEntity;
-import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
-import com.tunapearl.saturi.domain.game.GameTipEntity;
-import com.tunapearl.saturi.domain.game.Status;
+import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
@@ -13,6 +10,7 @@ import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.game.GameTipRepository;
+import com.tunapearl.saturi.repository.redis.TopicRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +30,7 @@ public class GameService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final GameRoomParticipantRepository gameRoomParticipantRepository;
+    private final TopicRepository topicRepository;
 
     /**
      * 팁 추가
@@ -61,6 +60,7 @@ public class GameService {
         LocationEntity location=locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow();
         Optional<List<GameRoomEntity>> findRooms = gameRoomRepository.findByLocationAndStatus(location,Status.MATCHING);
         GameRoomEntity gameRoomEntity;
+        GameRoomTopic topic;
 
         if (findRooms.isPresent()) {
 
@@ -71,11 +71,16 @@ public class GameService {
             gameRoomEntity = new GameRoomEntity();
             gameRoomEntity.setStatus(Status.MATCHING);
             gameRoomEntity.setLocation(locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow());
+
+            //Topic생성해서 redis에 저장
+            topic= GameRoomTopic.create(gameRoomEntity.getRoomId());
+            log.info("created topicId : {}",topic.getTopicId());
+
+            gameRoomEntity.setTopicId(topic.getTopicId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
+            topicRepository.save(topic);
         }
 
-        //채팅방 매칭완료 4명 이하면 참여자로 넣어야햄,,,
-        //5명이 되면 넣으면서 gameRoom status=inProgress..?로
         UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
         GameRoomParticipantEntity gameRoomParticipantEntity = new GameRoomParticipantEntity(gameRoomEntity, user);
         gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
@@ -87,7 +92,9 @@ public class GameService {
             gameRoomRepository.updateGameRoom(gameRoomEntity);
         }
 
-        //채팅방Id 넘겨주자
-        return null;
+        //게임방토픽Id 넘겨주자
+        GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
+        responseDTO.setTopicId(gameRoomEntity.getTopicId());
+        return responseDTO;
     }
 }
