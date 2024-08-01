@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './koreaMap.css';
 
-function Icon() {
+function Icon(onRegionClick: (region: string)=> void) {
   const [selectedRegion, setSelectedRegion] = useState<SVGGElement | null>(null);
 
   useEffect(() => {

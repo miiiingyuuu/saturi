@@ -17,7 +17,7 @@ export default function RightPart() {
         <Typography variant="h1" sx={{ fontSize: 30, fontWeight: "bold" }}>게임 페이지</Typography>
         <br />
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-          <Image src="/MainPage/buttonFood.png" alt="button food" />            
+          <Image src="/MainPage/buttonFood.png" alt="button food" width={200} height={200} />            
         </Box>
         <Button variant="contained" onClick={GameStartButton} style={{ marginTop: '20px' }}>게임 시작</Button>
       </Box>

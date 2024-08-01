@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from 'react';
-import Button from "@mui/material/Button"
 import Image from "next/image"
 
 // 하위 컴포넌트들 
@@ -30,15 +29,15 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
   return (
     <div>
       {selectedRegion !== "_" && middleToWhere !== 2 && (
-        <Button type="button" className='buttonLeft' onClick={onLeftClick}>
-          <Image src="/MainPage/buttonLeft.png" alt="button" width={50} />
-        </Button>
+        <button type="button" className='buttonLeft' onClick={onLeftClick}>
+          <Image src="/MainPage/buttonLeft.png" alt="button" width={50} height={50} />
+        </button>
       )}
 
       {selectedRegion !== "_" && middleToWhere !== 0 && (
-        <Button type="button" className='buttonRight' onClick={onRightClick}>
-          <Image src="/MainPage/buttonRight.png" alt="button" width={50} />
-        </Button>
+        <button type="button" className='buttonRight' onClick={onRightClick}>
+          <Image src="/MainPage/buttonRight.png" alt="button" width={50} height={50} />
+        </button>
       )}
     </div>
   );
