@@ -122,13 +122,13 @@ export default function Header() {
               <Tooltip title="View Profile">
                 <IconButton
                   onClick={handleOpenMenu}
-                  size="large"
+                  size="small"
                   sx={{ ml: 2 }}
                   aria-controls={Boolean(anchorEl) ? 'account-menu' : undefined}
                   aria-haspopup="true"
                   aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
                 >
-                  <Avatar sx={{ width: 32, height: 32 }} src={profileImage || "/default-profile.png"} />
+                  <Avatar sx={{ width: 85, height: 85 }} src={profileImage || "/default-profile.png"} />
                 </IconButton>
               </Tooltip>
               <Menu
