@@ -228,6 +228,8 @@ public class LessonService {
     }
 
     public List<LessonClaimEntity> findAllLessonClaim() {
-        return lessonRepository.findAllLessonClaim().orElse(null);
+        List<LessonClaimEntity> lessonClaims = lessonRepository.findAllLessonClaim().orElse(null);
+        log.info("lesson Claims {}", lessonClaims);
+        return lessonClaims;
     }
 }

@@ -134,6 +134,8 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonClaimEntity>> findAllLessonClaim() {
-        return Optional.ofNullable(em.createQuery("select lc from LessonClaimEntity lc", LessonClaimEntity.class).getResultList());
+        return Optional.ofNullable(em.createQuery("select lc from LessonClaimEntity lc" +
+                " join fetch lc.lesson l" +
+                " join fetch lc.user u", LessonClaimEntity.class).getResultList());
     }
 }

@@ -7,6 +7,7 @@ import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.AdminMsgResponseDTO;
 import com.tunapearl.saturi.dto.admin.lesson.*;
+import com.tunapearl.saturi.dto.lesson.LessonClaimResponseDTO;
 import com.tunapearl.saturi.service.lesson.AdminLessonService;
 import com.tunapearl.saturi.service.lesson.GcsService;
 import com.tunapearl.saturi.service.lesson.LessonService;
@@ -133,9 +134,16 @@ public class AdminLessonController {
      * 레슨 신고 조회
      */
     @GetMapping("claim")
-    public ResponseEntity<List<LessonClaimEntity>> getLessonClaims() {
+    public ResponseEntity<List<LessonClaimResponseDTO>> getLessonClaims() {
         log.info("received request to get claims");
-        return ResponseEntity.ok(lessonService.findAllLessonClaim());
+        List<LessonClaimEntity> lessonClaims = lessonService.findAllLessonClaim();
+        List<LessonClaimResponseDTO> lessonClaimDTOs = new ArrayList<>();
+        for (LessonClaimEntity lessonClaim : lessonClaims) {
+            LessonClaimResponseDTO claimDTO = new LessonClaimResponseDTO(lessonClaim.getLessonClaimId(), lessonClaim.getLesson().getLessonId(),
+                    lessonClaim.getUser().getUserId(), lessonClaim.getContent(), lessonClaim.getClaimDt());
+            lessonClaimDTOs.add(claimDTO);
+        }
+        return ResponseEntity.ok(lessonClaimDTOs);
     }
 }
 
