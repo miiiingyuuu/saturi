@@ -15,6 +15,7 @@ import {
   Divider,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import Image from "next/image";
 
 export default function App() {
   const router = useRouter();
@@ -104,7 +105,7 @@ export default function App() {
           </Divider>
           <Grid container spacing={1} mt={2}>
             <Grid item xs={6}>
-              <img
+              <Image
                 src="/naverBtn.png"
                 alt="naverLogin"
                 onClick={() => goSocialLogin("naver")}
@@ -117,7 +118,7 @@ export default function App() {
               />
             </Grid>
             <Grid item xs={6}>
-              <img
+              <Image
                 src="/kakao_login_medium_narrow.png"
                 alt="kakaoLogin"
                 onClick={() => goSocialLogin("kakao")}
