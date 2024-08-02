@@ -1,8 +1,10 @@
 package com.tunapearl.saturi.service.game;
 
+import com.tunapearl.saturi.domain.game.ChatMessage;
 import com.tunapearl.saturi.domain.game.ChatRoom;
 import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -13,7 +15,9 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ChatService {
@@ -28,6 +32,7 @@ public class ChatService {
     private HashOperations<String, String, ChatRoom> opsHashChatRoom;
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
     private Map<String, ChannelTopic> topics;
+    private final ChatRoomRepository chatRoomRepository;
 
     @PostConstruct
     private void init() {
@@ -35,34 +40,10 @@ public class ChatService {
         topics = new HashMap<>();
     }
 
-    public List<ChatRoom> findAllRoom() {
-        return opsHashChatRoom.values(CHAT_ROOMS);
-    }
 
     public ChatRoom findRoomById(String id) {
         return opsHashChatRoom.get(CHAT_ROOMS, id);
     }
-
-    /**
-     * 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
-     */
-    public ChatRoom createChatRoom() {
-        ChatRoom chatRoom = ChatRoom.create();
-        opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
-        return chatRoom;
-    }
-//
-//    public String matchingGame(String roomId) {
-//
-//
-//        //enterChatRoom해서 리스너 달아야함
-//        enterChatRoom(roomId);
-//
-//        //매칭 로직
-//
-//        return null;
-//        //매칭된 방 TopicId 넘겨줄 것
-//    }
 
 
     /**
@@ -77,11 +58,26 @@ public class ChatService {
     }
 
     public ChannelTopic getTopic(String roomId) {
+
         return topics.get(roomId);
     }
 
-    public void playGame(String roomId) {
+    public void playGame(ChatMessage message) {
 
+        //정답처리, 로그 저장
+        //TopicId를 통해 roomId얻기
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
+
+        if (chatRoomOptional.isPresent()) {
+            ChatRoom chatRoom = chatRoomOptional.get();
+
+            log.info("ChatRoom found: {}", chatRoom.getRoomId());
+            log.info("Processing message: {}", message.getMessage());
+
+        } else {
+
+            log.info("ChatRoom with ID {} not found.",message.getRoomId());
+        }
 
     }
 

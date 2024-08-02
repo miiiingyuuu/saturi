@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.domain.quiz;
 
+import com.tunapearl.saturi.domain.user.UserEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -9,9 +10,6 @@ public class GameRoomQuizEntity {
 
     @Id @GeneratedValue
     private GameRoomQuizId gameRoomQuizId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-
 
     @Column(nullable = false)
     private LocalDateTime presentDt;

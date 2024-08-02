@@ -7,13 +7,9 @@ import lombok.Setter;
 @Setter
 public class RoomMessage {
 
-//    public enum MessageType {
-//        MATCHING;
-//    }
-    private String type = "ROOM";
-//    private MessageType chatType;
+    private String type = "ROOM";//개인방인지 게임방인지 구분하기 위함
     private Long locationId;
     private String roomId;//개인방Id
     private Long senderId;
-    private String matchedroomId;
+    private String matchedroomId;//게임방Id
 }

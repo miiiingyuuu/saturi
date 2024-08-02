@@ -13,11 +13,12 @@ import java.util.UUID;
 public class ChatRoom {
 
     @Id
-    private String roomId;
+    private String topicId;
+    private long roomId;
 
     public static ChatRoom create() {
         ChatRoom topic = new ChatRoom();
-        topic.roomId= UUID.randomUUID().toString();
+        topic.topicId= UUID.randomUUID().toString();
         return topic;
     }
 }
