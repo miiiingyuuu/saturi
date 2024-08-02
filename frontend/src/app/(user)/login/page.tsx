@@ -105,30 +105,40 @@ export default function App() {
           </Divider>
           <Grid container spacing={1} mt={2}>
             <Grid item xs={6}>
-              <Image
-                src="/naverBtn.png"
-                alt="naverLogin"
-                onClick={() => goSocialLogin("naver")}
-                style={{
-                  width: "100%",
-                  height: "56px",
-                  objectFit: "contain",
-                  cursor: "pointer",
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '56px',
+                  cursor: 'pointer',
+                  position: 'relative',
                 }}
-              />
+                onClick={() => goSocialLogin("naver")}
+              >
+                <Image
+                  src="/naverBtn.png"
+                  alt="naverLogin"
+                  layout="fill"  // 부모의 크기에 맞게 조절
+                  objectFit="contain"
+                />
+              </Box>
             </Grid>
             <Grid item xs={6}>
-              <Image
-                src="/kakao_login_medium_narrow.png"
-                alt="kakaoLogin"
-                onClick={() => goSocialLogin("kakao")}
-                style={{
-                  width: "100%",
-                  height: "56px",
-                  objectFit: "contain",
-                  cursor: "pointer",
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '56px',
+                  cursor: 'pointer',
+                  position: 'relative',
                 }}
-              />
+                onClick={() => goSocialLogin("kakao")}
+              >
+                <Image
+                  src="/kakao_login_medium_narrow.png"
+                  alt="kakaoLogin"
+                  layout="fill"  // 부모의 크기에 맞게 조절
+                  objectFit="contain"
+                />
+              </Box>
             </Grid>
           </Grid>
         </Box>
