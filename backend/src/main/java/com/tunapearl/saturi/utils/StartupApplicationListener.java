@@ -116,7 +116,6 @@ public class StartupApplicationListener {
         }
     }
 
-    //TODO 레슨 그룹 샘플 데이터 등록
     private void createLessonGroup() {
         List<LocationEntity> locations = locationService.findAll();
         List<LessonCategoryEntity> lessonCategories = lessonService.findAllLessonCategory();
