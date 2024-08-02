@@ -74,7 +74,7 @@ public class GameService {
 
             //Topic생성해서 redis에 저장
             topic= ChatRoom.create();
-            log.info("created topicId : {}",topic.getRoomId());
+            log.info("created roomId : {}",topic.getRoomId());
 
             gameRoomEntity.setTopicId(topic.getRoomId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
@@ -94,7 +94,7 @@ public class GameService {
 
         //게임방토픽Id 넘겨주자
         GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
-        responseDTO.setTopicId(gameRoomEntity.getTopicId());
+        responseDTO.setRoomId(gameRoomEntity.getTopicId());
         return responseDTO;
     }
 }

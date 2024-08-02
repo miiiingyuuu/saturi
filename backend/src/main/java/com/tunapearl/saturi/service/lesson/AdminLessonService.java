@@ -45,7 +45,7 @@ public class AdminLessonService {
     }
 
     @Transactional
-    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath) {
+    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath, String fileName) {
         List<LessonEntity> lessons = lessonService.findAllByLessonGroupId(lessonGroup.getLessonGroupId());
         if(lessons.size() >= 5) {
             throw new AlreadyMaxSizeException();
@@ -54,6 +54,7 @@ public class AdminLessonService {
         lesson.setLessonGroup(lessonGroup);
         lesson.setScript(script);
         lesson.setSampleVoicePath(filePath);
+        lesson.setSampleVoiceName(fileName);
         lesson.setLastUpdateDt(LocalDateTime.now());
         return adminLessonRepository.saveLesson(lesson);
     }
@@ -67,6 +68,8 @@ public class AdminLessonService {
     }
 
     public LessonEntity findById(Long lessonId) {
-        return adminLessonRepository.findById(lessonId).orElse(null);
+        LessonEntity findLesson = adminLessonRepository.findById(lessonId).orElse(null);
+        if(findLesson == null) throw new IllegalArgumentException("존재하지 않는 레슨입니다.");
+        return findLesson;
     }
 }

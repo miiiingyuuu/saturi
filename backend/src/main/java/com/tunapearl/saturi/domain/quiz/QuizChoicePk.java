@@ -7,11 +7,10 @@ import java.io.Serializable;
 
 @Embeddable
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 @Getter @Setter
 public class QuizChoicePk implements Serializable {
-
-    protected QuizChoicePk(){}
 
     private Long quizId;
     private Long choiceId;

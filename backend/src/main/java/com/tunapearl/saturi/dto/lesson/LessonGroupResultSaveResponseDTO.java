@@ -1,15 +1,17 @@
 package com.tunapearl.saturi.dto.lesson;
 
-import com.tunapearl.saturi.dto.user.UserInfoCurExpAndEarnExp;
+import com.tunapearl.saturi.dto.user.UserExpInfoCurExpAndEarnExp;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class LessonGroupResultSaveResponseDTO {
-    private UserInfoCurExpAndEarnExp userInfo;
+    private UserExpInfoCurExpAndEarnExp userInfo;
     private List<LessonResultForSaveGroupResultDTO> lessonResult;
     private LessonGroupResultForSaveLessonGroupDTO lessonGroupResult;
 }
