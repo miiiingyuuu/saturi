@@ -74,7 +74,7 @@ export default function App() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-
+  // 어케함 여기?? 물어보기
   // handleNext 에 axios 걸어서 하나씩 보내기
   const handleUpdateUser = () => {
     const genderId = gender?.id ?? null;

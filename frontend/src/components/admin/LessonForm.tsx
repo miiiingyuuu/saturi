@@ -10,15 +10,8 @@ import api from "@/lib/axios";
 import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import { getLessonGroup } from "@/utils/adminutils";
+import { LessonGroup } from "@/utils/props"
 
-// 레슨 그룹 타입 정의
-interface LessonGroup {
-  lessonGroupId: string;
-  locationName: string;
-  lessonCategoryName: string;
-  name: string;
-  lessons: object;
-}
 
 export default function LessonForm() {
   const [lessonGroup, setLessonGroup] = useState<LessonGroup | null>(null);
@@ -38,7 +31,12 @@ export default function LessonForm() {
     }
 
     api.post("/admin/lesson", formData, { headers: { "Content-Type": "multipart/form-data" } })
-      .then(response => console.log(response))
+      .then(response => {
+        alert("등록되었습니다.")
+        setSampleVoice(null)
+        setScript("")
+        setLessonGroupOptions(null)
+      })
       .catch(error => console.error('Error:', error));
   }
 
