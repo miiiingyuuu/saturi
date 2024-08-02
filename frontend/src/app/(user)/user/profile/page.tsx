@@ -1,4 +1,5 @@
 // app/profile/page.tsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -9,16 +10,6 @@ import { getProfile, getAllCookies } from "@/utils/profile";
 import { useTheme } from '@mui/material/styles';
 import { getCookie } from "cookies-next";
 
-// ProfileCookies 인터페이스 정의
-interface ProfileCookies {
-  accessToken?: string;
-  exp?: string;
-  nickname?: string;
-  email?: string;
-  ageRange?: string;
-  gender?: string;
-  locationName?: string;
-}
 
 export default function ProfileCard() {
   const theme = useTheme(); // MUI 테마 사용

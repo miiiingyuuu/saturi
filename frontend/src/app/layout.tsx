@@ -1,14 +1,13 @@
 "use client"
 
 import { Inter } from "next/font/google";
-import { ReactNode } from "react";
+import { ReactNode , useEffect } from "react";
 import "@/styles/globals.css";
 import CssBaseline from "@mui/material/CssBaseline";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { createTheme } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
-import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { authToken } from "@/utils/authutils";
 
@@ -27,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
       authToken(router)
     }
-  },[])
+  },[router])
 
   
   if (pathname.startsWith("/admin")) {

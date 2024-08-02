@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, MouseEvent } from "react";
-import { Card, CardHeader, CardContent, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField } from "@mui/material";
+import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField } from "@mui/material";
 
 export default function EditProfilePage() {
   // 상태 변수 선언
