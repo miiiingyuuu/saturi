@@ -8,17 +8,12 @@ export default function App() {
   const router = useRouter();
 
   useEffect(() => {
-    const accessToken = sessionStorage.getItem("accessToken");
-    const nickname = getCookie("nickname");
-
-    if (accessToken && nickname) {
+    if (sessionStorage.getItem("accessToken")) {
       router.push("/main");
-    } else if (accessToken && !nickname) {
-      router.push("/user/profile");
     } else {
       router.push("/start");
     }
   }, [router]);
-  
+
   return null;
 };
