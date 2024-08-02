@@ -38,3 +38,21 @@ export interface ILessonCategoryProps {
   lessonCategoryId: number
   name: string
 }
+
+
+export interface LessonGroup {
+  lessonGroupId: string;
+  locationName: string;
+  lessonCategoryName: string;
+  name: string;
+  lessons: object;
+}
+
+export interface LessonProps {
+  lessonId: number;
+  lessonGroupId: number;
+  lessonGroupName: string;
+  sampleVoicePath: string;
+  script: string;
+  lastUpdateDt: string;
+}
