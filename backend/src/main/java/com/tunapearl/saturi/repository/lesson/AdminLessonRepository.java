@@ -42,7 +42,8 @@ public class AdminLessonRepository {
     }
 
     public Optional<LessonEntity> findById(Long lessonId) {
-        return Optional.ofNullable(em.find(LessonEntity.class, lessonId));
+        LessonEntity lessonEntity = em.find(LessonEntity.class, lessonId);
+        return lessonEntity == null ? Optional.empty() : Optional.of(lessonEntity);
     }
 
     public Optional<List<LessonEntity>> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId) {

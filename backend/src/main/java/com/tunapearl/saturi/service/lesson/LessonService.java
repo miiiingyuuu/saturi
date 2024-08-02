@@ -68,7 +68,9 @@ public class LessonService {
     }
 
     public LessonEntity findById(Long lessonId) {
-        return lessonRepository.findById(lessonId).orElse(null);
+        LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
+        if(findLesson == null) throw new IllegalArgumentException("존재하지 않는 레슨입니다.");
+        return findLesson;
     }
 
     public Long getProgressByUserIdLocationAndCategory(Long userId, Long locationId, Long lessonCategoryId) {

@@ -18,7 +18,8 @@ public class LessonRepository {
     private final EntityManager em;
 
     public Optional<LessonEntity> findById(Long lessonId) {
-        return Optional.ofNullable(em.find(LessonEntity.class, lessonId));
+        LessonEntity lessonEntity = em.find(LessonEntity.class, lessonId);
+        return lessonEntity == null ? Optional.empty() : Optional.of(lessonEntity);
     }
 
     public Optional<LessonCategoryEntity> findByIdLessonCategory(Long lessonCategoryId) {
