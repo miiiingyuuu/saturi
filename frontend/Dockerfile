@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # 포트 노출
-EXPOSE 3010
+EXPOSE 3000
 
 # 실행 명령어 정의
 CMD ["npm", "start"]
