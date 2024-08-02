@@ -100,7 +100,7 @@ export function authToken(router: any) {
           insertCookie(response);
           if (getCookie("nickname") === "null") {
             alert("닉네임을 설정해주세요.")
-            router.push("/user/profile/update")
+            window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}/user/profile/update`
           }
         });
       }
@@ -119,7 +119,6 @@ export function authToken(router: any) {
             },
           )
           .then(response => {
-            console.log("헉! 토큰 재발급 완료")
             sessionStorage.setItem("accessToken", response.data.accessToken);
           })
           // 만약 여기서도 401 뜨면, 로그아웃 처리 하고 로그인으로 보내기
