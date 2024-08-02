@@ -15,8 +15,8 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class QuizRepository {
-
     private final EntityManager em;
+
     private final JPAQueryFactory queryFactory;
 
     public Long save(QuizEntity quiz){
@@ -36,6 +36,13 @@ public class QuizRepository {
         return res.isEmpty() ? Optional.empty() : Optional.of(res);
     }
 
+    public List<QuizEntity> findByLocationId(Long locationId, List<Integer> idList) {
+        List res = em.createQuery("select q from QuizEntity q where q.quizId IN :idList")
+                .setParameter("idList", idList)
+                .getResultList();
+        return res;
+    }
+
     public List<QuizEntity> findAll(QuizReadRequestDTO dto){
         QQuizEntity qQuiz = new QQuizEntity("q");
 
@@ -48,6 +55,10 @@ public class QuizRepository {
                         isObjectiveEq(qQuiz, dto.getIsObjective())
                 ).limit(1000)
                 .fetch();
+    }
+
+    public List<Integer> getAvailableQuizId(){
+        return em.createQuery("select q.quizId from QuizEntity q order by q.quizId asc").getResultList();
     }
 
     public void deleteQuizById(Long quizId){
@@ -80,7 +91,5 @@ public class QuizRepository {
         if(objectiveCond == null) return null;
         return quiz.isObjective.eq(objectiveCond);
     }
-
-
 
 }
