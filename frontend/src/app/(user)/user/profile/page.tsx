@@ -1,4 +1,5 @@
 // app/profile/page.tsx
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -9,16 +10,6 @@ import { getProfile, getAllCookies } from "@/utils/profile";
 import { useTheme } from '@mui/material/styles';
 import { getCookie } from "cookies-next";
 
-// ProfileCookies 인터페이스 정의
-interface ProfileCookies {
-  accessToken?: string;
-  exp?: string;
-  nickname?: string;
-  email?: string;
-  ageRange?: string;
-  gender?: string;
-  locationName?: string;
-}
 
 export default function ProfileCard() {
   const theme = useTheme(); // MUI 테마 사용
@@ -45,18 +36,81 @@ export default function ProfileCard() {
           profileImageURL: ImageURL
         }));
       }
-    }
+    };
 
     fetchProfileImage();
+
+    const getFormattedGender = (gender: string): string => {
+      switch (gender) {
+        case 'DEFAULT':
+          return '정보 입력 안함';
+        case 'FEMALE':
+          return '여자';
+        case 'MALE':
+          return '남자';
+        default:
+          return '정보 입력 안함';    
+      }
+    };
+
+    const getFormattedAgeRange = (ageRange: string): string => {
+      switch (ageRange) {
+        case 'DEFAULT':
+          return '정보 입력 안함';
+        case 'CHILD':
+          return '영유아';
+        case 'TEENAGER':
+          return '10대';
+        case 'TWENTEEN':
+          return '20대';
+        case 'THIRTEEN':
+          return '30대';
+        case 'FOURTEEN':
+          return '40대';
+        case 'FIFTEEN':
+          return '50대';
+        case 'SIXTEEN':
+          return '60대';
+        case 'SEVENTEEN':
+          return '70대';
+        case 'EIGHTEEN':
+          return '80대';
+        case 'NINETEEN':
+          return '90대';
+        default:
+          return '정보 입력 안함'; // 기본값 처리
+      }
+    };
+
+    const getFormattedLocationName = (locationName: string): string => {
+      switch (locationName) {
+        case 'default':
+          return '정보 입력 안함';
+        case 'gyungsang':
+          return '경상도';
+        case 'gyunggi':
+          return '경기도';
+        case 'gangwon':
+          return '강원도';
+        case 'chungcheong':
+          return '충청도';
+        case 'jeonra':
+          return '전라도';
+        case 'jeju':
+          return '제주도';
+        default:
+          return '정보 입력 안함';
+      }
+    }
 
     setProfile(prevProfile => ({
       ...prevProfile,
       exp: (cookies.exp as string) || '없음',
       nickname: (cookies.nickname as string) || '없음',
       email: (cookies.email as string) || '없음',
-      ageRange: (cookies.ageRange as string) === 'DEFAULT' ? '없음' : (cookies.ageRange as string) || '없음',
-      gender: (cookies.gender as string) === 'DEFAULT' ? '없음' : (cookies.gender as string) || '없음',
-      locationName: (cookies.locationName as string) === 'default' ? '없음' : (cookies.locationName as string) || '없음',
+      ageRange: getFormattedAgeRange(cookies.ageRange as string),
+      gender: getFormattedGender(cookies.gender as string),
+      locationName: getFormattedLocationName(cookies.locationName as string),
     }));
   }, []);
 
@@ -93,7 +147,7 @@ export default function ProfileCard() {
           </CardContent>
           <CardActions>
             <Link href="/user/profile/update" passHref>
-              <Button color="primary">프로필 수정</Button>
+              <Button variant="contained">프로필 수정</Button>
             </Link>
           </CardActions>
         </Card>

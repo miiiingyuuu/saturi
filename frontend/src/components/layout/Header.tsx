@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+
 "use client";
 
 import Link from "next/link";
@@ -14,7 +16,7 @@ import { getProfile, getAllCookies  } from "@/utils/profile";
 import useLogout from "@/hooks/useLogout";
 
 // 버튼 색
-const LoginButton = styled(Button)(({ theme }) => ({
+const LoginButton = styled(Button)(() => ({
   backgroundColor: '#99DE83',
   '&:hover': {
     backgroundColor: '#7AB367',
@@ -40,23 +42,14 @@ export default function Header() {
 
   // 로그인 이후에는 start 페이지로 가지 못하게 막기
   const handleLogoClick = () => {
-    const accessToken = sessionStorage.getItem("accessToken");
-    const currentPath = window.location.pathname;
-
-    if (accessToken) {
-        if (currentPath === '/main') {
-            window.location.href = '/main';
-        } else {
-            router.push('/main');
-        }
-    } else {
-        if (currentPath === '/start') {
-            window.location.href = '/start';
-        } else {
-            router.push('/start');
-        }
+    const accessToken = localStorage.getItem("accessToken");
+    const targetPath = accessToken ? '/main' : '/start';
+  
+    if (window.location.pathname !== targetPath) {
+      router.push(targetPath);
     }
   };
+  
 
   // DB의 사용자 정보를 백(쿠키)에 요청
   const updateUserInfo = () => {
@@ -87,7 +80,7 @@ export default function Header() {
 
   return (
     <header>
-      <div className="header" style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="header" style={{ display: 'flex', alignItems: 'center', marginLeft: '30px' }}>
         <Image
           src="/SSLogo.png"
           alt="SSLogo"
@@ -98,14 +91,15 @@ export default function Header() {
         />
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {loading ? (
-            <Avatar sx={{ width: 32, height: 32 }} />
+            <Avatar sx={{ width: 60, height: 60, mr: 6 }} />
           ) : !isLoggedIn ? (
             <Link href="/login">
               <LoginButton
                 variant="contained"
                 sx={{
                   fontWeight: 'bold',
-                  height: '50px',
+                  height: '40px',
+                  marginRight: '60px',
                 }}
               >
                 로그인
@@ -113,17 +107,17 @@ export default function Header() {
             </Link>
           ) : (   
             // 프로필 클릭 시 팝업되서 나오는 메뉴들
-            <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+            <Box>
               <Tooltip title="View Profile">
                 <IconButton
                   onClick={handleOpenMenu}
                   size="small"
                   sx={{ ml: 2 }}
-                  aria-controls={Boolean(anchorEl) ? 'account-menu' : undefined}
+                  aria-controls={anchorEl ? 'account-menu' : undefined}
                   aria-haspopup="true"
-                  aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
+                  aria-expanded={anchorEl ? 'true' : undefined}
                 >
-                  <Avatar sx={{ width: 85, height: 85 }} src={profileImage || "/default-profile.png"} />
+                  <Avatar sx={{ width: 85, height: 85, mr: 4 }} src={profileImage || "/default-profile.png"} />
                 </IconButton>
               </Tooltip>
               <Menu
