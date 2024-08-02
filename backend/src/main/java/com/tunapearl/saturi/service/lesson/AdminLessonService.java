@@ -67,6 +67,8 @@ public class AdminLessonService {
     }
 
     public LessonEntity findById(Long lessonId) {
-        return adminLessonRepository.findById(lessonId).orElse(null);
+        LessonEntity findLesson = adminLessonRepository.findById(lessonId).orElse(null);
+        if(findLesson == null) throw new IllegalArgumentException("존재하지 않는 레슨입니다.");
+        return findLesson;
     }
 }
