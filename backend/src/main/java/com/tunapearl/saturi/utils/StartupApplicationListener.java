@@ -54,6 +54,7 @@ public class StartupApplicationListener {
             "https://storage.cloud.google.com/saturi/%EB%B8%94%EB%A3%A8%EB%B2%A0%EB%A6%AC%EC%8A%A4%EB%AC%B4%EB%94%94.wav",
             "https://storage.cloud.google.com/saturi/%EC%96%B4%EC%96%B4%EC%96%B4.wav",
             "https://storage.cloud.google.com/saturi/%EC%9D%B4%EC%97%90%EC%9D%B4%EC%8A%B9.wav"};
+    private static final String[] LESSON_VOICE_FILE_NAME = {"가가가가", "블루베리스무디", "어느정도높이까지올라가는거에요", "어어어", "이에이승"};
 
 
     //TODO 퀴즈 샘플 데이터 등록 필요
@@ -137,11 +138,10 @@ public class StartupApplicationListener {
         }
     }
 
-    //TODO 레슨 샘플 데이터 등록 필요
     private void createLesson() {
         LessonGroupEntity lessonGroup = lessonService.findByIdLessonGroup(1L);
         for (int i = 0; i < 5; i++) {
-            adminLessonService.createLesson(lessonGroup, LESSON_SCRIPT[i], LESSON_PATH[i]);
+            adminLessonService.createLesson(lessonGroup, LESSON_SCRIPT[i], LESSON_PATH[i], LESSON_VOICE_FILE_NAME[i]);
         }
     }
 }

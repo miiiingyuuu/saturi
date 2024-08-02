@@ -50,7 +50,7 @@ public class AdminLessonController {
     }
 
     /**
-     * 퍼즐 목록 반환
+     * 레슨 그룹 조회
      */
     @GetMapping("/lesson-group")
     public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroup() {
@@ -67,7 +67,6 @@ public class AdminLessonController {
      * 레슨 등록(file 등록이 필요하여 form으로 전송해야함  enctype="multipart/form-data"
      */
     @PostMapping
-//    public ResponseEntity<AdminMsgResponseDTO> registerLesson(@RequestBody LessonRegisterRequestDTO request) throws IOException {
     public ResponseEntity<AdminMsgResponseDTO> registerLesson(@ModelAttribute LessonRegisterRequestDTO request) throws IOException {
         log.info("received request to register lesson {}", request);
         LessonGroupEntity findLessonGroup = lessonService.findByIdLessonGroup(request.getLessonGroupId());
@@ -76,9 +75,8 @@ public class AdminLessonController {
          * 임시로 파일을 생성해서 그걸 올리는데, 그걸 찾을 수 없다는 오류가 발생함
          * 그래서 그 방식을 그대로 구현함(내가 파일 로컬 폴더에 저장하고 그걸 올리고 파일 삭제)
          */
-//        gcsService.uploadFile("saturi", request.getSampleVoice().getOriginalFilename(), request.getSampleVoice());
         String filePath = attachFile.getStoreFileName();
-        Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript(), filePath);
+        Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript(), filePath, attachFile.getStoreFileName());
         return ResponseEntity.created(URI.create("/lesson")).body(new AdminMsgResponseDTO("ok"));
     }
 
@@ -92,7 +90,7 @@ public class AdminLessonController {
         List<LessonResponseDTO> allLessonDTO = new ArrayList<>();
         lessons.forEach((lesson) -> allLessonDTO.add(new LessonResponseDTO(
                 lesson.getLessonId(), lesson.getLessonGroup().getLessonGroupId(),
-                lesson.getLessonGroup().getName(), lesson.getSampleVoicePath(),
+                lesson.getLessonGroup().getName(), lesson.getSampleVoicePath(), lesson.getSampleVoiceName(),
                 lesson.getScript(), lesson.getLastUpdateDt())));
         return ResponseEntity.ok(allLessonDTO);
     }
@@ -107,7 +105,7 @@ public class AdminLessonController {
         LessonEntity findLesson = adminLessonService.findById(lessonId);
         return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
                 findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
-                findLesson.getSampleVoicePath(), findLesson.getScript(), findLesson.getLastUpdateDt()));
+                findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(), findLesson.getScript(), findLesson.getLastUpdateDt()));
     }
 
     /**

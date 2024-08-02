@@ -45,7 +45,7 @@ public class AdminLessonService {
     }
 
     @Transactional
-    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath) {
+    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath, String fileName) {
         List<LessonEntity> lessons = lessonService.findAllByLessonGroupId(lessonGroup.getLessonGroupId());
         if(lessons.size() >= 5) {
             throw new AlreadyMaxSizeException();
@@ -54,6 +54,7 @@ public class AdminLessonService {
         lesson.setLessonGroup(lessonGroup);
         lesson.setScript(script);
         lesson.setSampleVoicePath(filePath);
+        lesson.setSampleVoiceName(fileName);
         lesson.setLastUpdateDt(LocalDateTime.now());
         return adminLessonRepository.saveLesson(lesson);
     }
