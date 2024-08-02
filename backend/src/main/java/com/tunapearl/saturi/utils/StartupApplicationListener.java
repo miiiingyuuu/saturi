@@ -94,6 +94,8 @@ public class StartupApplicationListener {
                 "test6@email.com", "password1!", "testnickname6");
         UserRegisterRequestDTO userInfoAdmin = new UserRegisterRequestDTO(
                 "admin@email.com", "password1!", "admintest");
+        UserRegisterRequestDTO userInfoAdmin1 = new UserRegisterRequestDTO(
+                "adminback@email.com", "password1!", "adminbacktest");
 
         userService.registerUser(userInfoBasic1);
         userService.registerUser(userInfoBasic2);
@@ -102,6 +104,7 @@ public class StartupApplicationListener {
         userService.registerUser(userInfoBasic5);
         userService.registerUser(userInfoBasic6);
         userService.registerAdminUser(userInfoAdmin);
+        userService.registerAdminUser(userInfoAdmin1);
     }
 
     private void createTip() {
