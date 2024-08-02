@@ -49,10 +49,9 @@ public class LessonController {
      * 레슨 그룹, 그룹안에 들어가있는 레슨들 정보도 같이 보냄
      */
     @GetMapping("/lesson-group")
-    public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroupIdByLocationAndCategory(@RequestParam Long locationId,
-                                                                                              @RequestParam Long categoryId) {
-        log.info("received request to get lesson group id by location and category {}, {}", locationId, categoryId);
-        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(locationId, categoryId);
+    public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroupIdByLocationAndCategory(@ModelAttribute LocationIdAndCategoryIdDTO request) {
+        log.info("received request to get lesson group id by location and category {}, {}", request.getLocationId(), request.getCategoryId());
+        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(request.getLocationId(), request.getCategoryId());
         List<LessonGroupResponseDTO> result = lessonGroupByLocationAndCategory.stream()
                 .map(g -> new LessonGroupResponseDTO(g)).toList();
         return ResponseEntity.ok(result);
