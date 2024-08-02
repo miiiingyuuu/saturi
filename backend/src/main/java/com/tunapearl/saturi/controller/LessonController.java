@@ -63,11 +63,11 @@ public class LessonController {
         LessonEntity findLesson = lessonService.findById(lessonId);
         return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
                 findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
-                findLesson.getSampleVoicePath(), findLesson.getScript(), findLesson.getLastUpdateDt()));
+                findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(), findLesson.getScript(), findLesson.getLastUpdateDt()));
     }
 
     /**
-     * 현재 지역과 유형에 맞는 퍼즐의 유저별 정보 조회
+     * 현재 지역과 유형에 맞는 퍼즐의 유저별 정보 조회                                                
      * 진척도, 퍼즐별(진행률, 평균 정확도), 유저 정보(경험치, 순위)
      */
     @GetMapping("/lesson-group/progress")
