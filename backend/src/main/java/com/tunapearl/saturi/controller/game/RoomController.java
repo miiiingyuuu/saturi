@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/game")
-public class GameController {
+public class RoomController {
 
     private final GameService gameService;
     private final JWTUtil jwtUtil;
