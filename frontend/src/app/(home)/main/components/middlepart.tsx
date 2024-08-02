@@ -1,10 +1,5 @@
 import "../styles/background.css";
-
-interface MiddlePartProps {
-  middlePosition: number;
-  mainPageIndicator: string;
-  selectedRegion: string;
-}
+import { MiddlePartProps } from "@/utils/props";
 
 export default function MiddlePart({ middlePosition, mainPageIndicator }: MiddlePartProps) {
   return (

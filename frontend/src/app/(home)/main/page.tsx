@@ -11,6 +11,10 @@ import RightPart from './components/rightpart';
 import './styles/mainPage.css';
 import KoreaMap from './components/koreaMap';
 
+//Props
+import { ButtonPartProps } from '@/utils/props';
+import { MiddleMapProps } from '@/utils/props';
+
 ///////////////////////////////////////////////////////////////
 // Main Page 설명
 // Main Page는 
@@ -22,18 +26,7 @@ import KoreaMap from './components/koreaMap';
 // 이 page 안, App function 위에 있음.
 ///////////////////////////////////////////////////////////////
 
-interface ButtonPartProps {
-  onLeftClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onRightClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  middleToWhere: number;
-  selectedRegion: string;
-}
 
-interface MiddleMapProps {
-  left: string;
-  onRegionClick: (region: string) => void;
-  selectedRegion: string;
-}
 
 // 버튼 부분과 맵 파트
 function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }: ButtonPartProps) {

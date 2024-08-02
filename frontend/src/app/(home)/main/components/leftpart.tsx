@@ -4,12 +4,8 @@ import ButtonBase from '@mui/material/ButtonBase';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
+import { LeftPartProps } from "@/utils/props";
 
-interface LeftPartProps {
-  middlePosition: number;
-  moveDirection: string;
-  selectedRegion: string;
-}
 
 export default function LeftPart({ middlePosition, moveDirection, selectedRegion }: LeftPartProps) {
   const router = useRouter();
