@@ -1,18 +1,32 @@
-// app/profile/page.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, CardHeader, CardContent, CardActions, Divider, Avatar, Button, Table, TableHead, TableBody, TableRow, TableCell, LinearProgress, Typography } from "@mui/material";
+import Image from "next/image";
+import { 
+  Card, 
+  CardContent, 
+  CardActions,
+  CardHeader,
+  Button, 
+  Typography, 
+  Avatar,
+  Box,
+  Divider,
+  LinearProgress,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";  // 이 줄을 추가
 import { FaCrown, FaFire } from "react-icons/fa";
 import { getProfile, getAllCookies } from "@/utils/profile";
-import { useTheme } from '@mui/material/styles';
 import { getCookie } from "cookies-next";
 
-
-export default function ProfileCard() {
-  const theme = useTheme(); // MUI 테마 사용
+export default function ProfilePage() {
+  const theme = useTheme();  // 이 줄을 추가
   const [profile, setProfile] = useState({
     profileImageURL: '',
     exp: '',
@@ -115,7 +129,7 @@ export default function ProfileCard() {
   }, []);
 
   return (
-    <div>
+    <Box>
       {/* 프로필 */}
       <div className="flex justify-center items-center bg-gray-100">
         <Card style={{ width: '900px', marginTop: '50px' }}>
@@ -123,7 +137,7 @@ export default function ProfileCard() {
             avatar={
               <Avatar
                 alt="profile image"
-                src={profile.profileImageURL || "/default-profile.png"}
+                src={profile.profileImageURL ? `/main_profile/${profile.profileImageURL}` : "/default-profile.png"}
                 sx={{ width: 150, height: 150 }}
               />
             }
@@ -223,6 +237,6 @@ export default function ProfileCard() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </Box>
   );
 }
