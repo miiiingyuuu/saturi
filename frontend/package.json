@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "next dev -p ${PORT-3010}",
+    "build": "next build -p ${PORT-3010}",
+    "start": "next start -p ${PORT-3010}",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,md}"
   },
   "dependencies": {
