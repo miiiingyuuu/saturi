@@ -15,10 +15,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         //처음 Handshake를 위한 경로
-        registry.addEndpoint("/chat")//엔트포인트
+        registry.addEndpoint("/game")//엔트포인트
                 .setAllowedOrigins("*");
 
-        registry.addEndpoint("/chat")
+        registry.addEndpoint("/game")
                 .setAllowedOrigins("*")
                 .withSockJS();
     }

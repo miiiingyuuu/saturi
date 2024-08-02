@@ -12,7 +12,12 @@ public class RedisPublisher {
 
     private final RedisTemplate<String,Object> redisTemplate;
 
-    public void personalpublish(ChannelTopic topic, ChatMessage message){
+    public void personalPublish(ChannelTopic topic, ChatMessage message){
+
+        redisTemplate.convertAndSend(topic.getTopic(), message);
+    }
+
+    public void gamePublish(ChannelTopic topic, ChatMessage message){
 
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }
