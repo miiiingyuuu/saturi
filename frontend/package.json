@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010",
-    "build": "next build -p 3010",
+    "build": "next build",
     "start": "next start -p 3010",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,json,css,md}"
   },
