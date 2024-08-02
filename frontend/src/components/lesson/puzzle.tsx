@@ -1,6 +1,7 @@
 import { LinearProgress, Grid, Card } from "@mui/material";
 import { useState, useEffect } from "react";
 import PuzzlePiece from "./puzzlePiece";
+import Jigsaw from "./jigsaw"
 
 interface PuzzleProps {
   id: number | null;
@@ -12,7 +13,7 @@ interface PuzzleProps {
 export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect }: PuzzleProps) {
   // 퍼즐 조각 데이터 (실제 데이터 가져오는 로직으로 대체 가능)
   const tempEachLessonProgress = [
-    {
+    { 
       lessonGroupId: 1,
       lessonGroupName: "일상1",
       groupProgress: 100,
@@ -110,7 +111,10 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
         />
       </div>
       <Grid container spacing={2} className="grid grid-cols-3 items-center">
-        {tempEachLessonProgress.map((piece) => (
+        <Jigsaw
+            dataGroup = {tempEachLessonProgress}
+          />        
+        {/* {tempEachLessonProgress.map((piece) => (
           <Grid item xs={4} key={piece.lessonGroupId}>
             <Card
               className="cursor-pointer w-fit"
@@ -124,7 +128,7 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
               />
             </Card>
           </Grid>
-        ))}
+        ))} */}
       </Grid>
     </div>
   );
