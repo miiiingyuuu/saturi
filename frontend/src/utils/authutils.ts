@@ -124,14 +124,15 @@ export function authToken(router: any) {
           // 만약 여기서도 401 뜨면, 로그아웃 처리 하고 로그인으로 보내기
           // 문제 1) 어차피 안되는거 500도 초기로 돌려야되는거아님?
           .catch(() => {
-            frontLogOut().then(response => {
+            frontLogOut().then(() => {
               alert("장시간 이용이 없어 초기화면으로 돌아갑니다.");
-              router.push("/");
+              window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}`
             });
           });
       }
     });
 }
+
 
 // 회원 정보 수정
 export function updateUser(data: object) {
