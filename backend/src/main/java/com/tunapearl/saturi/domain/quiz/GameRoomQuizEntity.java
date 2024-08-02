@@ -10,7 +10,7 @@ public class GameRoomQuizEntity {
     @Id @GeneratedValue
     private GameRoomQuizId gameRoomQuizId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // @ManyToOne(fetch = FetchType.LAZY)
 
 
     @Column(nullable = false)
