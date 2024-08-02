@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class GameMatchingResponseDTO {
 
-    private String topicId;
+    private String roomId;
 }
