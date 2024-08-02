@@ -100,7 +100,7 @@ export function authToken(router: any) {
           insertCookie(response);
           if (getCookie("nickname") === "null") {
             alert("닉네임을 설정해주세요.")
-            window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}/user/profile/update`
+            router.push("/user/profile/update")
           }
         });
       }
