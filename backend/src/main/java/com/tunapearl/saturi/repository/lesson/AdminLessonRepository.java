@@ -1,8 +1,12 @@
 package com.tunapearl.saturi.repository.lesson;
 
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.domain.lesson.QLessonEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -15,6 +19,7 @@ import java.util.Optional;
 public class AdminLessonRepository {
 
     private final EntityManager em;
+    private final JPAQueryFactory queryFactory;
 
     public Long saveLesson(LessonEntity lesson) {
         em.persist(lesson);
@@ -41,8 +46,31 @@ public class AdminLessonRepository {
     }
 
     public Optional<List<LessonEntity>> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId) {
-        //FIXME querydsl로 지역, 유형으로 구분 동적 쿼리 생성
-        return Optional.ofNullable(em.createQuery("select l from LessonEntity l where l.isDeleted = false", LessonEntity.class)
-                .getResultList());
+        QLessonEntity qLesson = new QLessonEntity("l");
+
+        return Optional.ofNullable(queryFactory
+                .selectFrom(qLesson)
+                .where(
+                        lessonGroupIdEq(qLesson, lessonGroupId),
+                        locationIdEq(qLesson, locationId),
+                        lessonCategoryIdEq(qLesson, lessonCategoryId)
+                ).limit(1000)
+                .fetch()
+        );
+    }
+
+    private BooleanExpression lessonGroupIdEq(QLessonEntity lesson, Long lessonGroupIdCond) {
+        if(lessonGroupIdCond == null) return null;
+        return lesson.lessonGroup.lessonGroupId.eq(lessonGroupIdCond);
+    }
+
+    private BooleanExpression locationIdEq(QLessonEntity lesson, Long locationIdCond) {
+        if(locationIdCond == null) return null;
+        return lesson.lessonGroup.location.locationId.eq(locationIdCond);
+    }
+
+    private BooleanExpression lessonCategoryIdEq(QLessonEntity lesson, Long lessonCategoryId) {
+        if(lessonCategoryId == null) return null;
+        return lesson.lessonGroup.lessonCategory.lessonCategoryId.eq(lessonCategoryId);
     }
 }
