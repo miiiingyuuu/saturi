@@ -120,7 +120,7 @@ export function authToken(router: any) {
           .catch(() => {
             frontLogOut().then(response => {
               alert("장시간 이용이 없어 초기화면으로 돌아갑니다.");
-              router.push("/");
+              router.push("/start");
             });
           });
       }
