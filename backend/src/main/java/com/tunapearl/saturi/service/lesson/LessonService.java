@@ -121,6 +121,12 @@ public class LessonService {
         Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonId);
 
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.
+        // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
+        Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
+        if(lessonResults.isPresent()) {
+            // 이미 레슨결과가 존재
+//            lessonResults.orElse(null).sort(Comparator.comparing(lessonResults.orElse(null)))
+        }
         LessonResultEntity lessonResultSkipped = new LessonResultEntity();
         LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
         lessonResultSkipped.setIsSkipped(true);
@@ -180,14 +186,8 @@ public class LessonService {
 
 
         // 평균 정확도가 높은 순으로 정렬
-        Collections.sort(lessonResults.orElse(null), new Comparator<LessonResultEntity>() {
-
-            @Override
-            public int compare(LessonResultEntity o1, LessonResultEntity o2) {
-                return Long.compare((o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2,
-                        (o1.getAccentSimilarity() + o1.getPronunciationAccuracy()) / 2);
-            }
-        });
+        Collections.sort(lessonResults.orElse(null), (o1, o2) -> Long.compare((o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2,
+                                                                                    (o1.getAccentSimilarity() + o1.getPronunciationAccuracy()) / 2));
         // 평균 정확도가 높은 레슨결과를 가져옴
         LessonResultEntity lessonResult = lessonResults.orElse(null).get(0);
 
@@ -242,6 +242,12 @@ public class LessonService {
 
     public List<LessonEntity> findAllByLessonGroupId(Long lessonGroupId) {
         return lessonRepository.findAllByLessonGroupId(lessonGroupId).orElse(null);
+
+    }
+
+    //TODO 반환 타입 결정
+    public void saveLessonGroupResult(Long userId, Long lessonGroupResultId) {
+
 
     }
 }

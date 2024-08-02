@@ -1,8 +1,6 @@
 package com.tunapearl.saturi.controller;
 
-import com.sun.source.tree.LiteralTree;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
-import com.tunapearl.saturi.domain.lesson.LessonClaimEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
@@ -20,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,7 +123,6 @@ public class LessonController {
     @GetMapping("lesson/user/{lessonId}")
     public ResponseEntity<LessonResultByUserResponseDTO> findUserLessonResult(@RequestHeader("Authorization") String accessToken,
                                                                               @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
-        // TODO 테스트
         log.info("received request to find user lesson result {}", lessonId);
         Long userId = jwtUtil.getUserId(accessToken);
         Boolean isAccessed = false;
@@ -154,7 +150,7 @@ public class LessonController {
      * 이름이 저장이라서 헷갈리는데, 프론트에서 보냈던 레슨 저장 정보를 바탕으로 결과를 종합해서 리턴
      */
     @PutMapping("lesson-group-result/{lessonGroupResultId}")
-    public ResponseEntity<?> saveLessonGroupResult(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<LessonGroupResultSaveResponseDTO> saveLessonGroupResult(@RequestHeader("Authorization") String accessToken,
                                                    @PathVariable("lessonGroupResultId") Long lessonGroupResultId) throws UnAuthorizedException {
         log.info("received request to save lesson group result");
         // TODO 레슨 그룹 저장 기능 구현
@@ -163,7 +159,27 @@ public class LessonController {
         // TODO 출력에 경험치 얼마 줬는지 보내야함
         // TODO 복습한 레슨 결과라면 경험치 줄이기??
         Long userId = jwtUtil.getUserId(accessToken);
-        return ResponseEntity.ok("");
+        /**
+         * UserInfo
+         */
+        // 유저의 현재 경험치 받아오기
+        UserInfoResponseDTO user = userService.getUserProfile(userId);
+        Long currentExp = user.getExp();
+
+        // 유저가 획득한 경험치 받아오기(밑에 그룹결과 보고 판단)
+
+        // 경험치 부여된 후 경험치(위에꺼 두개 더하거나 받아오기)
+
+        /**
+         * lessonResult
+         */
+        lessonService.saveLessonGroupResult(userId, lessonGroupResultId);
+
+        /**
+         * lessonGroupResult
+         */
+
+        return ResponseEntity.ok(new LessonGroupResultSaveResponseDTO());
     }
 
     /**
