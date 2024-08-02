@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Repository
 @RequiredArgsConstructor
@@ -125,5 +126,24 @@ public class LessonRepository {
     public Optional<Long> saveLessonResult(LessonResultEntity lessonResult) {
         em.persist(lessonResult);
         return Optional.ofNullable(lessonResult.getLessonResultId());
+    }
+
+    public Optional<Long> saveLessonClaim(LessonClaimEntity lessonClaim) {
+        em.persist(lessonClaim);
+        return Optional.ofNullable(lessonClaim.getLessonClaimId());
+    }
+
+    public Optional<List<LessonClaimEntity>> findAllLessonClaim() {
+        return Optional.ofNullable(em.createQuery("select lc from LessonClaimEntity lc" +
+                " join fetch lc.lesson l" +
+                " join fetch lc.user u", LessonClaimEntity.class).getResultList());
+    }
+
+    public Optional<List<LessonEntity>> findAllByLessonGroupId(Long lessonGroupId) {
+        return Optional.ofNullable(em.createQuery("select l from LessonEntity l" +
+                " join fetch l.lessonGroup lg" +
+                " where l.lessonGroup.lessonGroupId = :lessonGroupId", LessonEntity.class)
+                .setParameter("lessonGroupId", lessonGroupId)
+                .getResultList());
     }
 }

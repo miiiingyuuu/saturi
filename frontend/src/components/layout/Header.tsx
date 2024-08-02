@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { getProfile, getAllCookies  } from "@/utils/profile";
-import { frontLogOut } from "@/utils/authutils";
+import useLogout from "@/hooks/useLogout";
 
 // 버튼 색
 const LoginButton = styled(Button)(() => ({
@@ -25,6 +25,7 @@ const LoginButton = styled(Button)(() => ({
 
 export default function Header() {
   const router = useRouter();
+  const logout = useLogout()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -76,12 +77,6 @@ export default function Header() {
   useEffect(() => {
     updateUserInfo();
   }, []);
-
-  const handleLogout = async () => {
-    await frontLogOut();
-    updateUserInfo();
-    router.push('/start')
-  };
 
   return (
     <header>
@@ -178,7 +173,10 @@ export default function Header() {
                   Dashboard
                 </MenuItem>
 
-                <MenuItem onClick={handleLogout}>
+                <MenuItem onClick={() => {
+                  logout()
+                  router.push("/start")
+                  }}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>

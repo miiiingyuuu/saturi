@@ -1,0 +1,13 @@
+4{
+  "type": "service_account",
+  "project_id": "aesthetic-frame-430503-d3",
+  "private_key_id": "abbeb208b89aa9e576ab70e313ea31d7cf91e0f8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCLrwr3rVTIA54z\nZ0vWHRdnzhiYbQH1RlmRQ8n68KWecHD0CsWbucKNLfmn5o6X4ueZsaZrgTYIz8p/\nwyT/RnMYABDchJOxXQZ9IOPhz2QYC8qjfI48l1aSnMk6969F8fBjKhtbL1+wKTMw\nwc6PKCe0P66LpOdymWVFZ/vCFUgn9rBlx3vAg6Z2PqgbzIvpL4hPKT8Z4irRUeoC\nBs3ryJu2Tt8R1CNfpMUJ9a1N0o/SjbU2N85ZFw7hW7EfYBB/MFFXaYnSJGYaEjmk\n/VwyYsAg1PV9/GyQPlVZ+9jDLS3Av13hsF5vSCxU4+uJNyJotq8lZ4RH2E+ciJYQ\nguc/bCdxAgMBAAECgf8AyS3/2FyHiQGbgFiCSRaTmSSGyVs89WyDttYOlRzVffgj\n1y7zS/xKCZZSoIYbYAJdZQtQ+vzHCqvhEICEBP5Hp1hU+x3z0AZfw7AnCUfQRkly\nGbgem6dDw+yvKHaq6bQqnz6VQwA5tdlwDmyKCkYS87Q8HMEfHnjJ4nAjr0G9CUlE\na693eXUi/QmSQezJW9kU52wZjW19XlUpIXw6I3cGcJRpPr4dYcl7UQeB/lorRhQo\nmYy3iyhAko2K5dr5Zv9o2e8wDhNh0GOY1a8rZQ9kJXZ+zYIBdcMEr91LuPBU30Y0\nsiweAaJaq4j9bFm+B3nM8xrCTVYyuFssAIexV4ECgYEAxAJMO2tT6MCiHdMUivcp\nFkKhhfvJ345hRoHAdW61z+IvXPtEnIfk9ghQP/N/LG+owQXcfkdNP0T2FzFiocbA\naFzOneqTnILoMOO5YE0DXgyFrnpTXYFPHy0dqRVgFWYTgTuwBOyD9Dc0Kmo8qS4W\nGfo4Zh4HKIYy0A1PnIoHINkCgYEAtm+MwsOxEf82BNItcdTTia2yZouJZSFnkKt4\nilBSBrIag7i7LMtOOlgv5vg6hsnGQgkJtOJGFd/aIf5Sm0rvcO6etHAje0wg+B0i\nXqKMtZ7uEaBGOPz92KolYNjnV4+vNBdGOwRdmWSS5oDEoFqdnF72lK8w+dp8WwZC\nqP3qHFkCgYAvr39sVUgsr/DA4MF2rXrJd5xkREVwper0hEyWRUDmOljbfiXLDySc\n1pjvdgXSgbfEffCOqDoa0mQscE9WnEvjF/EMai1PPmnOuxg2XYYcM1+yewAdF4Bw\nTUGSCSk/C35jSmogSIoxt9xxFTd80UF/QGjILzX+neduxk4//zSMwQKBgEKzTBqV\nY7L5xS1EDtt0fZbzy6sUTzqLWQsatiqTrTnHekw4iS6aclKAlZrznKpVMUhJd6QL\nqqYqvtz42Ajw/9QhWiMMcNyOe+ta84r4EUwB/HazS5lgXgsOQjZDd2mbHeqEq+e9\n8962V8MwxzL9jmxyh+LanqRrDlZVVp/kneiZAoGBAJGNLhe/M6hzlqS7eGdJYSMF\nh4ASIanFoHrUxx7HZAkyizevnBND8aJSEGJq0qS2OxLpwGXo/zy9HmER+UzVLFU5\nn5ezZAFUR2xy35Y4gg0PTpSJonqJRJpaANDL25k9Qm+jeVeU0+eUmEXP1pR8qh0V\nyN2CGdQ4Vk2G79h75hKH\n-----END PRIVATE KEY-----\n",
+  "client_email": "saturi-storage-access@aesthetic-frame-430503-d3.iam.gserviceaccount.com",
+  "client_id": "111830742792573343589",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/saturi-storage-access%40aesthetic-frame-430503-d3.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

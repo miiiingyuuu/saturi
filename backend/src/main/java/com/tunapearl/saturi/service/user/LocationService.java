@@ -30,4 +30,9 @@ public class LocationService {
     public LocationEntity findById(Long LocationId) {
         return locationRepository.findById(LocationId).get();
     }
+
+    @Transactional(readOnly = true)
+    public List<LocationEntity> findAll() {
+        return locationRepository.findAll().orElse(null);
+    }
 }

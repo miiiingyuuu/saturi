@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { HandleLoginProps } from "@/utils/props";
-import { deleteCookie, getCookies, setCookie } from "cookies-next";
+import { deleteCookie, getCookie, getCookies, setCookie } from "cookies-next";
 import { AxiosResponse } from "axios";
 
 // 쿠키 삽입
@@ -37,18 +37,24 @@ export function handleLogin({
     .then(response => {
       sessionStorage.setItem("accessToken", response.data.accessToken);
       sessionStorage.setItem("refreshToken", response.data.refreshToken);
-      router.push(`${goTo}`);
     })
     .then(() => {
-      api.get("user/auth/profile").then(response => insertCookie(response));
-      window.location.href = `${process.env.NEXT_PUBLIC_FRONTURL}/main`;
+      api.get("user/auth/profile")
+      .then(response => {
+        // 여기서 보내고 닉네임 설정 전까지 밖으로 안 내보내기
+        insertCookie(response);
+        router.push(`${goTo}`);
+        window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}${goTo}`
+      })
     })
     .catch(error => {
       if (error.response.status === 400) {
         alert("아이디 또는 비밀번호가 올바르지 않습니다.");
       }
     });
+
 }
+
 
 // 소셜 로그인
 export function goSocialLogin(provider: string) {
@@ -86,20 +92,21 @@ export async function frontLogOut() {
 // 토큰 유효성 확인
 // 페이지 옮길때마다 실행 (메인의 authutils에 달려있음)
 export function authToken(router: any) {
-  console.log("쉿! 유효성 검사중")
   api.get("/user/auth/token-check")
     .then(response => {
       if (response.status === 200) {
         api.get("user/auth/profile").then(response => {
           // 유효성 검사 후, 받아온 데이터를 쿠키에 저장
-          console.log("쉿! 유효성 검사 완료")
           insertCookie(response);
+          if (getCookie("nickname") === "null") {
+            alert("닉네임을 설정해주세요.")
+            window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}/user/profile/update`
+          }
         });
       }
     })
     .catch(err => {
       // 401 에러 발생 시
-      console.log("헉! 유효성 검사 실패")
       if (err.response.status === 401) {
         // 리프레시 토큰을 들고 토큰 리프레시 신청하러감
         api.post(
@@ -112,7 +119,6 @@ export function authToken(router: any) {
             },
           )
           .then(response => {
-            console.log("헉! 토큰 재발급 완료")
             sessionStorage.setItem("accessToken", response.data.accessToken);
           })
           // 만약 여기서도 401 뜨면, 로그아웃 처리 하고 로그인으로 보내기

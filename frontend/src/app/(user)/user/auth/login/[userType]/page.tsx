@@ -4,6 +4,7 @@ import api from "@/lib/axios";
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Backdrop, CircularProgress } from "@mui/material";
+import { authToken, insertCookie } from "@/utils/authutils";
 
 export default function App() {
   const pathname = usePathname();
@@ -23,6 +24,7 @@ export default function App() {
       .then(response => {
         sessionStorage.setItem("accessToken", response.data.accessToken);
         sessionStorage.setItem("refreshToken", response.data.refreshToken);
+        authToken(router)
         router.push("/");
       });
   }

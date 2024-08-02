@@ -14,8 +14,9 @@ interface LeftPartProps {
 export default function LeftPart({ middlePosition, moveDirection, selectedRegion }: LeftPartProps) {
   const router = useRouter();
 
+  //TODO: middlePosition 검사 변경
   useEffect(() => {
-    if (middlePosition === 2) {
+    if (middlePosition === 3) {
       navigator.mediaDevices.enumerateDevices()
         .then(devices => {
           const audioInputDevices = devices.filter(device => device.kind === 'audioinput');

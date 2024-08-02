@@ -14,5 +14,6 @@ public class UserUpdateRequestDTO {
     private Long locationId;
     private Gender gender;
     private AgeRange ageRange;
-    //TODO 쿼카 수정 추가
+    private Long birdId;
+    private Long isChanged;
 }
