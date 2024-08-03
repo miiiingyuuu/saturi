@@ -7,4 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserExpInfoDTO {
     private Long currentExp;
+    private Long userRank;
 }
