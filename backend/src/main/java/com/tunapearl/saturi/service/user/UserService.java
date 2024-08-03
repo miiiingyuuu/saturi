@@ -8,6 +8,7 @@ import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.BirdRepository;
 import com.tunapearl.saturi.repository.UserRepository;
+import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import com.tunapearl.saturi.repository.redis.EmailRepository;
 import com.tunapearl.saturi.service.RedisService;
 import com.tunapearl.saturi.service.lesson.LessonService;
@@ -53,6 +54,7 @@ public class UserService {
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9]+@(.+)$";
     // 비밀번호 정규표현식(8자 이상, 숫자 1, 특수문자(!@#$%^&+=) 1 포함)
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,}$";
+    private final LessonRepository lessonRepository;
 
     public List<UserEntity> findUsers() {
         return userRepository.findAll().get();
@@ -330,7 +332,7 @@ public class UserService {
     }
 
     public UserRecentLessonGroupDTO getUserRecentLessonGroup(Long userId) {
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
         if(lessonGroupResults == null) return null;
         lessonGroupResults.sort(Comparator.comparing(LessonGroupResultEntity::getStartDt).reversed());
 
@@ -344,7 +346,7 @@ public class UserService {
          */
         Long learnDays = 0L;
         // 유저 아이디로 모든 레슨 그룹 결과 조회
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
         if(lessonGroupResults == null) return null;
 
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
@@ -398,7 +400,7 @@ public class UserService {
     public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId) {
         List<UserStreakInfoDaysDTO> result = new ArrayList<>();
         // 유저 아이디로 모든 레슨 그룹 결과 조회
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
         if(lessonGroupResults == null) return null;
 
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
@@ -427,8 +429,12 @@ public class UserService {
 
     public UserTotalLessonInfoDTO getUserTotalLessonInfo(Long userId) {
         // 유저 아이디로 모든 레슨 그룹 결과 조회
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
         if(lessonGroupResults == null) return null;
+        int totalLessonGroupResultCnt = lessonGroupResults.size();
+        for (LessonGroupResultEntity lessonGroupResult : lessonGroupResults) {
+            if(!lessonGroupResult.getIsCompleted()) totalLessonGroupResultCnt--;
+        }
 
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
         Map<LessonGroupResultIdAndLessonId, Integer> lessonGroupResultIdAndLessonIdMap = new HashMap<>(); // 복습한 레슨은 거르기 용
@@ -443,7 +449,7 @@ public class UserService {
                 lessonResults.add(lr);
             }
         }
-        return new UserTotalLessonInfoDTO(lessonGroupResults.size(), lessonResults.size());
+        return new UserTotalLessonInfoDTO(totalLessonGroupResultCnt, lessonResults.size());
     }
 }
 

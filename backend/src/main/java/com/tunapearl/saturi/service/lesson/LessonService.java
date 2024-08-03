@@ -249,8 +249,8 @@ public class LessonService {
 
     }
 
-    public List<LessonGroupResultEntity> findLessonGroupResultAllByUserId(Long userId) {
-        return lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+    public List<LessonGroupResultEntity> findLessonGroupResultWithoutIsCompletedAllByUserId(Long userId) {
+        return lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
     }
 
     public List<LessonResultEntity> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
