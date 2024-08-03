@@ -11,6 +11,8 @@ import Person from '@mui/icons-material/Person';
 import Logout from '@mui/icons-material/Logout';
 import { getProfile, getAllCookies  } from "@/utils/profile";
 import { authToken, frontLogOut } from "@/utils/authutils";
+import Tier from "../profile/tier";
+
 
 export default function Header() {
   const router = useRouter();
@@ -21,6 +23,7 @@ export default function Header() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickName] = useState<string | null>(null);
+  const [profileExp, setProfileExp] = useState<number | null>(null);
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -45,6 +48,7 @@ export default function Header() {
       setProfileImage(imageUrl);
       const cookies = getAllCookies();
       setNickName(cookies.nickname || "");
+      setProfileExp(cookies.exp ? parseInt(cookies.exp, 10) : null); // Set profile experience
     } catch (error) {
       console.error("Failed to fetch user info:", error);
       setProfileImage("/default-profile.png");
@@ -80,6 +84,7 @@ export default function Header() {
         setIsLoggedIn(false);
         setProfileImage(null);
         setNickName(null);
+        setProfileExp(null); // Reset profile experience
       });
     }
   }, [pathname]);
@@ -89,6 +94,7 @@ export default function Header() {
     setIsLoggedIn(false);
     setProfileImage(null);
     setNickName(null);
+    setProfileExp(null); // Reset profile experience
     router.push('/start');
   };
 
@@ -177,29 +183,8 @@ export default function Header() {
                     width: '100%',
                     mt: 2
                   }}>
-                    <Box sx={{
-                      bgcolor: 'grey.200',  // 밝은 회색 배경
-                      borderRadius: 2,      // 모서리 둥글게
-                      padding: 2,           // 내부 여백
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      boxShadow: 1,         // 약간의 그림자 효과
-                    }}>
-                      <Box sx={{ 
-                        width: 40, 
-                        height: 40, 
-                        borderRadius: '50%', 
-                        bgcolor: 'purple', 
-                        display: 'flex', 
-                        justifyContent: 'center', 
-                        alignItems: 'center' 
-                      }}>
-                        <span style={{ color: 'yellow', fontSize: '24px' }}>♦</span>
-                      </Box>
-                      <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
-                        GOLD 3
-                      </Typography>
+                    <Box sx={{ width: "auto"}}>
+                      <Tier exp={profileExp || 0} isLoading={profileLoading} />
                     </Box>
                   </Box>
                 </Box>

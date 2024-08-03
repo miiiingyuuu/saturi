@@ -2,31 +2,28 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { 
-  Card, 
-  CardContent, 
-  CardActions,
-  CardHeader,
   Button, 
   Typography, 
   Avatar,
   Box,
   Divider,
   LinearProgress,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell
+  Grid,
+  Paper
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";  // 이 줄을 추가
-import { FaCrown, FaFire } from "react-icons/fa";
+import { useTheme } from "@mui/material/styles";
+import { FaCrown, FaFire, FaMapMarkerAlt, FaUserAlt, FaUsers } from "react-icons/fa";
 import { getProfile, getAllCookies } from "@/utils/profile";
 import { getCookie } from "cookies-next";
+import Image from 'next/image';
+import Tier from '@/components/profile/tier'
+import Rank from "@/components/profile/rank";
+import { getUserExpInfo } from "@/utils/profile";
 
 export default function ProfilePage() {
-  const theme = useTheme();  // 이 줄을 추가
+  const [isLoading, setIsLoading] = useState(true);
+  const [userRank, setUserRank] = useState<number | null>(null);
   const [profile, setProfile] = useState({
     profileImageURL: '',
     exp: '',
@@ -35,6 +32,7 @@ export default function ProfilePage() {
     ageRange: '',
     gender: '',
     locationName: '',
+    isLoading: '',
   });
 
   useEffect(() => {
@@ -52,7 +50,22 @@ export default function ProfilePage() {
       }
     };
 
+    // 랭킹 데이터 받아오기
+    const fetchUserExpInfo = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getUserExpInfo();
+        setUserRank(data.userRank);
+      } catch (error) {
+        console.error('Failed to fetch user exp info:', error);
+        setUserRank(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchProfileImage();
+    fetchUserExpInfo();
 
     const getFormattedGender = (gender: string): string => {
       switch (gender) {
@@ -117,6 +130,7 @@ export default function ProfilePage() {
       }
     }
 
+    // 프로필 세팅
     setProfile(prevProfile => ({
       ...prevProfile,
       exp: (cookies.exp as string) || '없음',
@@ -129,114 +143,109 @@ export default function ProfilePage() {
   }, []);
 
   return (
-    <Box>
-      {/* 프로필 */}
-      <div className="flex justify-center items-center bg-gray-100">
-        <Card style={{ width: '900px', marginTop: '50px' }}>
-          <CardHeader
-            avatar={
-              <Avatar
-                alt="profile image"
-                src={profile.profileImageURL ? `/main_profile/${profile.profileImageURL}` : "/default-profile.png"}
-                sx={{ width: 150, height: 150 }}
-              />
-            }
-            title={
-              <div>
+    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
+      <Grid container spacing={3}>
+        {/* 프로필 정보 */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item>
+                <Avatar
+                  alt="profile image"
+                  src={`/main_profile/${profile.profileImageURL}`}
+                  sx={{ width: 100, height: 100 }}
+                />
+              </Grid>
+              <Grid item xs>
                 <Typography variant="h6">{profile.nickname}</Typography>
                 <Typography variant="body2" color="textSecondary">{profile.email}</Typography>
-              </div>
-            }
-          />
-          <Divider />
-          <CardContent>
-            <Typography variant="subtitle1">사용하는 사투리</Typography>
-            <Typography variant="body2" color="textSecondary">{profile.locationName}</Typography>
+              </Grid>
+            </Grid>
             <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1">성별</Typography>
-            <Typography variant="body2" color="textSecondary">{profile.gender}</Typography>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1">연령대</Typography>
-            <Typography variant="body2" color="textSecondary">{profile.ageRange}</Typography>
-          </CardContent>
-          <CardActions>
-            <Link href="/user/profile/update" passHref>
-              <Button variant="contained">프로필 수정</Button>
-            </Link>
-          </CardActions>
-        </Card>
-      </div>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <Box display="flex" alignItems="center">
+                  <FaMapMarkerAlt />
+                  <Typography variant="body2" sx={{ ml: 1 }}>{profile.locationName}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box display="flex" alignItems="center">
+                  <FaUserAlt />
+                  <Typography variant="body2" sx={{ ml: 1 }}>{profile.gender}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box display="flex" alignItems="center">
+                  <FaUsers />
+                  <Typography variant="body2" sx={{ ml: 1 }}>{profile.ageRange}</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+            <Box sx={{ mt: 2 }}>
+              <Link href="/user/profile/update" passHref>
+                <Button variant="contained" fullWidth>프로필 수정</Button>
+              </Link>
+            </Box>
+          </Paper>
+        </Grid>
 
-      {/* 대쉬보드 */}
-      <div className="flex justify-center items-center bg-gray-100 h-screen">
-        <Card style={{ width: '900px', marginTop: '20px' }}>
-          <CardHeader
-            title={<Typography variant="h5" component="div">학습 대시보드</Typography>}
-          />
-          <CardContent>
-            <div className="gap-4 grid grid-cols-1 sm:grid-cols-12">
-              {/* 전체 19위 섹션 */}
-              <div className="col-span-1 sm:col-span-4" style={{ backgroundColor: theme.palette.primary.main, borderRadius: '8px', padding: '16px', color: 'white' }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <FaCrown color="gold" />
-                  <Typography variant="h6" component="p">전체 19위</Typography>
-                </div>
-                <LinearProgress variant="determinate" value={59.01} color="secondary" />
-                <Typography variant="body2" component="p" sx={{ mt: 2 }}>59.01%</Typography>
-                <Typography variant="body2" component="p">4일째 접속중!</Typography>
-              </div>
+        {/* 티어, 경험치,  순위 */}
+        <Grid item xs={12} md={6}>
+          <Rank userRank={userRank} isLoading={isLoading} />
+          <Box sx={{ mt: 2}}>
+            <Tier exp={parseInt(profile.exp)} isLoading={false} />
+          </Box>
+        </Grid>
 
-              {/* 최근 푼 문제 섹션 */}
-              <div className="col-span-1 sm:col-span-8" style={{ backgroundColor: theme.palette.success.main, borderRadius: '8px', padding: '16px', color: 'white' }}>
-                <Typography variant="h6" component="h4" sx={{ mb: 2 }}>최근 푼 문제</Typography>
-                <div className="flex items-center gap-4">
-                  <Avatar>GO</Avatar>
-                  <div>
-                    <Typography variant="body2" component="p">경상도 사투리 - 휘미</Typography>
-                    <LinearProgress variant="determinate" value={75.93} color="success" />
-                    <Typography variant="body2" component="p" sx={{ mt: 1 }}>평균 정확도: 75.93%</Typography>
-                  </div>
-                </div>
-              </div>
+        {/* 최근 푼 문제 */}
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
+            <Box display="flex" alignItems="center">
+              <Avatar sx={{ bgcolor: 'green', mr: 2 }}>GO</Avatar>
+              <Box flexGrow={1}>
+                <Typography variant="body1">경상도 사투리 - 입상</Typography>
+                <LinearProgress variant="determinate" value={75.93} />
+                <Typography variant="body2" sx={{ mt: 1 }}>평균 정확도: 75.93%</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
 
-              {/* 주간 학습 섹션 */}
-              <div className="col-span-1 sm:col-span-12" style={{ backgroundColor: theme.palette.error.main, borderRadius: '8px', padding: '16px', color: 'white' }}>
-                <Typography variant="h6" component="h4" sx={{ mb: 2 }}>주간 학습</Typography>
-                <div className="flex gap-2 flex-wrap">
-                  {['월', '화', '수', '목', '금', '토', '일'].map((day, index) => (
-                    <Button key={day} variant="contained" size="small">
-                      {day}
-                      {index < 4 && <FaFire className="ml-1" />}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+        {/* 주간 스트릭 */}
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>주간 스트릭</Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography variant="body2">24년 8월 1주차</Typography>
+              <Typography variant="body2">4일 연속 학습 중!</Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" mt={2}>
+              {['월', '화', '수', '목', '금', '토', '일'].map((day, index) => (
+                <Box key={day} textAlign="center">
+                  <Typography variant="body2">{day}</Typography>
+                  <FaFire color={index < 4 ? "orange" : "gray"} />
+                </Box>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
 
-              {/* 연간 학습 섹션 */}
-              <div className="col-span-1 sm:col-span-12" style={{ backgroundColor: theme.palette.primary.dark, borderRadius: '8px', padding: '16px', color: 'white' }}>
-                <Typography variant="h6" component="h4" sx={{ mb: 2 }}>연간 학습</Typography>
-                <Table sx={{ color: 'white' }}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Jan</TableCell>
-                      <TableCell>Feb</TableCell>
-                      {/* ... 나머지 월 */}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>{/* Jan 1주차 데이터 */}</TableCell>
-                      <TableCell>{/* Feb 1주차 데이터 */}</TableCell>
-                      {/* ... 나머지 월 */}
-                    </TableRow>
-                    {/* ... 나머지 주차 */}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        {/* 연간 스트릭 */}
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>연간 스트릭</Typography>
+            {/* 여기에 연간 스트릭 차트를 구현해야 합니다. 
+                복잡한 차트이므로 별도의 라이브러리(예: recharts)를 사용하는 것이 좋습니다. */}
+            <Box height={200} bgcolor="lightgray">
+              <Typography variant="body2" align="center">
+                연간 스트릭 차트 (구현 필요)
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 }
