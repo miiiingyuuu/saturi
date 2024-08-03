@@ -1,9 +1,13 @@
 from django.db import models
 
-class AudioFile(models.Model):
-    title = models.CharField(max_length=100)
-    audio = models.FileField(upload_to='audios/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+class CommingData(models.Model):
+    answerVoiceFileName = models.TextField()
+    userVoiceFileName = models.TextField()
 
-    def __str__(self):
-        return self.title
+
+class SendingData(models.Model):
+    voiceSimilarity = models.DecimalField(max_digits=4, decimal_places=2)
+    scriptSimilarity = models.DecimalField(max_digits=4, decimal_places=2)
+    answerVoicePitch = models.JSONField()
+    userVoicePitch = models.JSONField()
+    userScript = models.TextField()
