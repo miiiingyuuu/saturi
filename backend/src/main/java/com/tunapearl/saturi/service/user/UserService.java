@@ -22,8 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.Collator;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -372,9 +374,25 @@ public class UserService {
         /**
          * 이번 주 학습한 요일 구하기
          */
-        // 챗쌤이 써준 로직 적용
+        List<Integer> daysOfTheWeek = new ArrayList<>();
+        LocalDate today = LocalDate.now();
 
-        return new UserContinuousLearnDayDTO();
+        // 이번 주 첫째날 구하기
+        LocalDate startOfWeek = today.with(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek());
+        for (LessonResultEntity lessonResult : lessonResults) {
+            LocalDate learnDate = lessonResult.getLessonDt().toLocalDate();
+
+            // 이번주에 해당하는지
+            if(!learnDate.isBefore(startOfWeek) && !learnDate.isAfter(startOfWeek.plusDays(6))) {
+                DayOfWeek dayOfWeek = learnDate.getDayOfWeek();
+                int dayValue = dayOfWeek.getValue() % 7; // 월요일이 0
+
+                daysOfTheWeek.add(dayValue);
+            } else {
+                break; // 최근 순으로 조회하기 때문에, 이번주에 해당되지 않으면 바로 break 해도됨
+            }
+        }
+        return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek);
     }
 }
 

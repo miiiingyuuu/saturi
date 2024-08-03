@@ -9,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 public class UserContinuousLearnDayDTO {
     private Long learnDays;
-    private List<Long> daysOfTheWeek;
+    private List<Integer> daysOfTheWeek;
 }
