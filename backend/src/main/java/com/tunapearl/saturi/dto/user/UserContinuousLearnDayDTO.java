@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class userContinuousLearnDayDTO {
+public class UserContinuousLearnDayDTO {
     private Long learnDays;
     private List<Long> daysOfTheWeek;
 }

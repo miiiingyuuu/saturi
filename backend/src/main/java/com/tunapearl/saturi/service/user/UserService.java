@@ -1,5 +1,7 @@
 package com.tunapearl.saturi.service.user;
 
+import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
+import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import com.tunapearl.saturi.domain.user.*;
 import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
@@ -7,6 +9,7 @@ import com.tunapearl.saturi.repository.BirdRepository;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.redis.EmailRepository;
 import com.tunapearl.saturi.service.RedisService;
+import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import com.tunapearl.saturi.utils.PasswordEncoder;
 import jakarta.mail.MessagingException;
@@ -19,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -47,6 +48,7 @@ public class UserService {
     // 비밀번호 정규표현식(8자 이상, 숫자 1, 특수문자(!@#$%^&+=) 1 포함)
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,}$";
     private final BirdRepository birdRepository;
+    private final LessonService lessonService;
 
     public List<UserEntity> findUsers() {
         return userRepository.findAll().get();
@@ -315,4 +317,62 @@ public class UserService {
         }
         return null;
     }
+
+    public UserExpInfoDTO getUserExpInfo(Long userId) {
+        UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
+        Long currentExp = findUser.getExp();
+        Long UserRank = getUserRank(userId);
+        return new UserExpInfoDTO(currentExp, UserRank);
+    }
+
+    public UserRecentLessonGroupDTO getUserRecentLessonGroup(Long userId) {
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+        lessonGroupResults.sort(Comparator.comparing(LessonGroupResultEntity::getStartDt).reversed());
+
+        LessonGroupResultEntity recentLessonGroup = lessonGroupResults.get(0);
+        return new UserRecentLessonGroupDTO(recentLessonGroup);
+    }
+
+    public UserContinuousLearnDayDTO getUserContinuousLearnDay(Long userId) {
+        /**
+         * 연속 학습 일 수 구하기
+         */
+         // 유저 아이디로 모든 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
+        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
+            lessonResults.addAll(findLessonResult);
+        }
+         // 레슨 학습 일시를 최근 순으로 정렬한 뒤, 오늘 학습 했으면 오늘 기준으로 계산하고,
+         // 오늘 안했으면 어제 했는지 체크하고 어제 했으면 어제 기준으로 확인
+         // 오늘, 어제 둘 다 안했으면 0일로 리턴
+
+        /**
+         * 이번 주 학습한 요일 구하기
+         */
+         // 챗쌤이 써준 로직 적용
+
+        return new UserContinuousLearnDayDTO();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -10,7 +10,7 @@ import java.util.List;
 public class UserDashboardResponseDTO {
     private UserExpInfoDTO userExpInfo;
     private UserRecentLessonGroupDTO recentLessonGroup;
-    private userContinuousLearnDayDTO continuousLearnDay;
+    private UserContinuousLearnDayDTO continuousLearnDay;
     private List<UserStreakInfoDaysDTO> streakInfo;
     private UserTotalLessonInfoDTO totalLessonInfo;
 }

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -200,5 +201,19 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @GetMapping("/auth/dashboard")
+    public ResponseEntity<UserDashboardResponseDTO> getUserDashboard(@RequestHeader("Authorization") String authorization) throws UnAuthorizedException {
+        log.info("Received normal user dashboard request for {}", authorization);
+        Long userId = jwtUtil.getUserId(authorization);
+        UserExpInfoDTO userExpInfo = userService.getUserExpInfo(userId);
+        UserRecentLessonGroupDTO recentLessonGroup = userService.getUserRecentLessonGroup(userId);
+        UserContinuousLearnDayDTO continuousLearnDay = userService.getUserContinuousLearnDay(userId);
+        List<UserStreakInfoDaysDTO> streakInfoDays = userService.getUserStreakInfoDays(userId);
+        UserTotalLessonInfoDTO totalLessonInfo = userService.getUserTotalLessonInfo(userId);
+
+        return ResponseEntity.ok().body(new UserDashboardResponseDTO(userExpInfo, recentLessonGroup,
+                continuousLearnDay, streakInfoDays, totalLessonInfo));
     }
 }

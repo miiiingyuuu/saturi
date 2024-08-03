@@ -79,10 +79,8 @@ public class LessonService {
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
         // 조회된 그룹 결과를 그룹 아이디로 조회하며 지역과 대화유형이 맞는 개수를 셈
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
-            log.info("뭐가 나올까 {}, {}", lgResult.getAvgAccuracy(), lgResult.getAvgSimilarity());
             LocationEntity location = lgResult.getLessonGroup().getLocation();
             LessonCategoryEntity lessonCategory = lgResult.getLessonGroup().getLessonCategory();
-            log.info("location and lessonCategory {}, {}", location.getLocationId(), lessonCategory.getLessonCategoryId());
             if(location.getLocationId().equals(locationId) && lessonCategory.getLessonCategoryId().equals(lessonCategoryId)) {
                 completedLessonGroupCnt++;
             }
@@ -124,6 +122,7 @@ public class LessonService {
         // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
         Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
         if(lessonResults.isPresent()) {
+            //TODO 이어서
             // 이미 레슨결과가 존재
 //            lessonResults.orElse(null).sort(Comparator.comparing(lessonResults.orElse(null)))
         }
@@ -249,5 +248,13 @@ public class LessonService {
     public void saveLessonGroupResult(Long userId, Long lessonGroupResultId) {
 
 
+    }
+
+    public List<LessonGroupResultEntity> findLessonGroupResultAllByUserId(Long userId) {
+        return lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+    }
+
+    public List<LessonResultEntity> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
+        return lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
     }
 }
