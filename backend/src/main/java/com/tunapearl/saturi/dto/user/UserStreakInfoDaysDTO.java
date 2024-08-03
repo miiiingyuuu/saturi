@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserStreakInfoDaysDTO {
     private UserStreakDateDTO streakDate;
-    private Long solvedNum;
+    private Integer solvedNum;
 }

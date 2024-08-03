@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserStreakDateDTO {
-    private Long Year;
-    private Long Month;
-    private Long Day;
+    private int year;
+    private int month;
+    private int day;
 }

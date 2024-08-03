@@ -3,6 +3,7 @@ package com.tunapearl.saturi.service.user;
 import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
 import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import com.tunapearl.saturi.domain.user.*;
+import com.tunapearl.saturi.dto.lesson.LessonGroupResultIdAndLessonId;
 import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.BirdRepository;
@@ -21,7 +22,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.Collator;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -393,6 +393,57 @@ public class UserService {
             }
         }
         return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek);
+    }
+
+    public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId) {
+        List<UserStreakInfoDaysDTO> result = new ArrayList<>();
+        // 유저 아이디로 모든 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+
+        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
+        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
+            lessonResults.addAll(findLessonResult);
+        }
+
+        // 레슨 학습 일시를 최근 순으로 정렬, 올 해가 아니면 break
+        Map<LocalDate, Integer> streakDays = new HashMap<>();
+        lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
+        for (LessonResultEntity lessonResult : lessonResults) {
+            int year = lessonResult.getLessonDt().getYear();
+            if(LocalDate.now().getYear() != year) break;
+            LocalDate currentDate = lessonResult.getLessonDt().toLocalDate();
+            streakDays.put(currentDate, streakDays.getOrDefault(currentDate, 0) + 1);
+        }
+        for (LocalDate d : streakDays.keySet()) {
+            UserStreakDateDTO userStreakDate = new UserStreakDateDTO(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+            Integer solvedNum = streakDays.get(d);
+            result.add(new UserStreakInfoDaysDTO(userStreakDate, solvedNum));
+        }
+        return result;
+    }
+
+    public UserTotalLessonInfoDTO getUserTotalLessonInfo(Long userId) {
+        // 유저 아이디로 모든 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+
+        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
+        Map<LessonGroupResultIdAndLessonId, Integer> lessonGroupResultIdAndLessonIdMap = new HashMap<>(); // 복습한 레슨은 거르기 용
+        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
+            for (LessonResultEntity lr : findLessonResult) {
+                LessonGroupResultIdAndLessonId lesson = new LessonGroupResultIdAndLessonId(
+                        lr.getLessonGroupResult().getLessonGroupResultId(), lr.getLesson().getLessonId());
+                if(lessonGroupResultIdAndLessonIdMap.containsKey(lesson)) continue;
+                lessonGroupResultIdAndLessonIdMap.put(lesson, 1);
+                lessonResults.add(lr);
+            }
+        }
+        return new UserTotalLessonInfoDTO(lessonGroupResults.size(), lessonResults.size());
     }
 }
 
