@@ -43,6 +43,8 @@ public class UserService {
     private final TokenService tokenService;
     private final LocationService locationService;
     private final BirdService birdService;
+    private final BirdRepository birdRepository;
+    private final LessonService lessonService;
 
     /**
      * 정규표현식
@@ -51,8 +53,6 @@ public class UserService {
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9]+@(.+)$";
     // 비밀번호 정규표현식(8자 이상, 숫자 1, 특수문자(!@#$%^&+=) 1 포함)
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,}$";
-    private final BirdRepository birdRepository;
-    private final LessonService lessonService;
 
     public List<UserEntity> findUsers() {
         return userRepository.findAll().get();

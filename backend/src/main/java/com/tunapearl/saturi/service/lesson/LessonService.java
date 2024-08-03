@@ -24,7 +24,6 @@ import java.util.*;
 public class LessonService {
 
     private final LessonRepository lessonRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
 
     public LessonCategoryEntity findByIdLessonCategory(Long lessonCategoryId) {
@@ -145,7 +144,7 @@ public class LessonService {
 
     public Long createLessonGroupResult(Long userId, Long lessonGroupId) {
         // userId로 유저 객체 찾기
-        UserEntity findUser = userService.findById(userId);
+        UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
         // lessonGroupId로 레슨 그룹 객체 찾기
         LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
 
