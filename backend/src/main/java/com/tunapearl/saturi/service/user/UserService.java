@@ -21,6 +21,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Collator;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -338,23 +340,39 @@ public class UserService {
         /**
          * 연속 학습 일 수 구하기
          */
-         // 유저 아이디로 모든 레슨 그룹 결과 조회
+        Long learnDays = 0L;
+        // 유저 아이디로 모든 레슨 그룹 결과 조회
         List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultAllByUserId(userId);
         if(lessonGroupResults == null) return null;
+
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
         List<LessonResultEntity> lessonResults = new ArrayList<>();
         for (LessonGroupResultEntity lgr : lessonGroupResults) {
             List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
             lessonResults.addAll(findLessonResult);
         }
-         // 레슨 학습 일시를 최근 순으로 정렬한 뒤, 오늘 학습 했으면 오늘 기준으로 계산하고,
-         // 오늘 안했으면 어제 했는지 체크하고 어제 했으면 어제 기준으로 확인
-         // 오늘, 어제 둘 다 안했으면 0일로 리턴
+
+        // 레슨 학습 일시를 최근 순으로 정렬한 뒤, 오늘 학습 했으면 오늘 기준으로 계산하고, 어제 학습했으면 어제 기준으로 계산
+        lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
+        LessonResultEntity mostRecentLessonResult = lessonResults.get(0);
+        if(mostRecentLessonResult.getLessonDt().toLocalDate().equals(LocalDate.now()) || // 오늘 학습 했는지
+            mostRecentLessonResult.getLessonDt().toLocalDate().equals(LocalDate.now().minusDays(1))) { // 혹은 어제 학습했는지
+            learnDays++;
+            LocalDate currentDate = mostRecentLessonResult.getLessonDt().toLocalDate();
+            for (int i = 0; i < lessonResults.size(); i++) {
+                if(i == 0) continue;
+                if(lessonResults.get(i).getLessonDt().toLocalDate().equals(currentDate.minusDays(1))) {
+                    learnDays++;
+                    currentDate = lessonResults.get(i).getLessonDt().toLocalDate();
+                }
+            }
+        }
+        // 오늘, 어제 둘 다 안했으면 0일로 리턴
 
         /**
          * 이번 주 학습한 요일 구하기
          */
-         // 챗쌤이 써준 로직 적용
+        // 챗쌤이 써준 로직 적용
 
         return new UserContinuousLearnDayDTO();
     }
