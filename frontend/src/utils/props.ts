@@ -56,3 +56,11 @@ export interface LessonProps {
   script: string;
   lastUpdateDt: string;
 }
+
+export interface QuizProps {
+  quizId: number
+  locationId: number
+  question: string
+  creationDt: string
+  isObjective: boolean
+}
