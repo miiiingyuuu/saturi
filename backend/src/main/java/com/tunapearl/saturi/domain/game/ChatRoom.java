@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.util.UUID;
 
-@RedisHash("ChatRoom")
+@RedisHash("ChannelTopic")
 @Getter
 @Setter
 public class ChatRoom {

@@ -17,13 +17,6 @@ public class GameLogEntity {
     @Column(name="game_log_id")
     private long gameLogId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private GameRoomQuizEntity gameRoomQuiz;
 
 
 

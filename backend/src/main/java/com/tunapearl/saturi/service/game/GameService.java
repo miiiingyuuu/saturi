@@ -79,6 +79,8 @@ public class GameService {
             gameRoomEntity.setTopicId(topic.getTopicId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
             topic.setRoomId(gameRoomEntity.getRoomId());
+
+
             chatRoomRepository.save(topic);
         }
 

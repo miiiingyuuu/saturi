@@ -15,6 +15,8 @@ public class PersonChatRoom {
     @Id
     private String personchatroomId;
 
+    private long userId;
+
     public static PersonChatRoom create(long userId) {
         PersonChatRoom topic = new PersonChatRoom();
         topic.personchatroomId = UUID.randomUUID().toString();

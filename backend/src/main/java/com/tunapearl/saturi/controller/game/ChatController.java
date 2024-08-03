@@ -40,13 +40,16 @@ public class ChatController {
         Long userId = jwtUtil.getUserId(authorization);
         message.setSenderId(userId);
 
-        chatService.enterChatRoom(message.getRoomId());
+        //일단 개인방에 리스너 달구
+        chatService.enterPersonRoom(message.getRoomId());
 
+        log.info("리스너 달았다");
+        //게임방 주세요.
         GameMatchingResponseDTO responseDTO=gameService.matching(new GameMatchingRequestDTO(message.getLocationId(),userId));
         message.setMatchedroomId(responseDTO.getRoomId());
 
         //게임방 Id 던져줌
-        redisPublisher.personalPublish(chatService.getTopic(message.getRoomId()), message);
+        redisPublisher.personalPublish(chatService.getPersonTopic(message.getRoomId()), message);
     }
 
 
@@ -59,7 +62,7 @@ public class ChatController {
 
         if (ChatMessage.MessageType.ENTER.equals(message.getChatType())) {//입장
 
-            chatService.enterChatRoom(message.getRoomId());
+            chatService.enterGameRoom(message.getRoomId());
             message.setMessage(message.getSenderId() + "님이 입장하셨습니다.");
 
         } else if (ChatMessage.MessageType.QUIZ.equals(message.getChatType())) {
@@ -69,10 +72,10 @@ public class ChatController {
         } else if (ChatMessage.MessageType.CHAT.equals(message.getChatType())) {//채팅
 
 
-            //문제 id받아와야함
+            //문제 id받아와야함, 정답유무 판단
             chatService.playGame(message);
 
-            redisPublisher.gamePublish(chatService.getTopic(message.getRoomId()), message);
+//            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
         }
 
         else if (ChatMessage.MessageType.EXIT.equals(message.getChatType())) {//퇴장
@@ -81,7 +84,7 @@ public class ChatController {
             message.setMessage(message.getSenderId() + "님이 퇴장하셨습니다.");
         }
 
-        redisPublisher.gamePublish(chatService.getTopic(message.getRoomId()), message);
+        redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
 
     }
 }
