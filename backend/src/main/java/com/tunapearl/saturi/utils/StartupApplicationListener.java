@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.dto.lesson.LessonSaveRequestDTO;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.service.game.GameService;
@@ -19,6 +20,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -72,19 +74,10 @@ public class StartupApplicationListener {
         // 3. 게임 팁 추가
         createTip();
 
-        // 4. 학습 유형 추가
-        createLessonCategory();
-
-        // 5. 학습 그룹 추가(4번 추가 이후)
-        createLessonGroup();
-
-        // 6. 학습 추가(5번 추가 이후)
-        createLesson();
-
-
-        // 7. 레슨 그룹 결과 생성(5, 6 이후)
-        createLessonGroupResult();
+        // 4. 학습 관련 추가
+        createLessonSamples();
     }
+
 
     private void createLocation() {
         for (String name : LOCATION_NAMES) {
@@ -139,6 +132,27 @@ public class StartupApplicationListener {
             gameService.registTip(Tips[i]);
         }
     }
+
+    /**
+     * 학습 관련 샘플 데이터 추가
+     */
+    private void createLessonSamples() {
+        // 4. 학습 유형 추가
+        createLessonCategory();
+
+        // 5. 학습 그룹 추가(4번 추가 이후)
+        createLessonGroup();
+
+        // 6. 학습 추가(5번 추가 이후)
+        createLesson();
+
+        // 7. 레슨 그룹 결과 생성(6번 추가 이후)
+        createLessonGroupResult();
+
+        // 8. 레슨 결과 생성(7번 추가 이후)
+        createLessonResult();
+    }
+
     private void createLessonCategory() {
         for (int i = 0; i < LESSON_CATEGORIES.length; i++) {
             LessonCategoryEntity lessonCategory = adminLessonService.createLessonCategory(LESSON_CATEGORIES[i]);
@@ -178,6 +192,14 @@ public class StartupApplicationListener {
     }
 
     /**
-     *
+     * lessonResult 생성
      */
+    private void createLessonResult() {
+        for (int i = 1; i <= 5; i++) {
+            LessonSaveRequestDTO lessonSaveRequest = new LessonSaveRequestDTO((long)i, 1L, 77L, 77L, "test file path", "test file name", "[0, 1, 2, 3, 4]", "[55, 33, 22, 11, 44]", "나는 바보입니다");
+            lessonService.saveLessonSample(lessonSaveRequest, LocalDateTime.now().minusDays(i-1));
+        }
+    }
+
+    //TODO lessonGroupResult 저장
 }

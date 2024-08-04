@@ -203,6 +203,9 @@ public class UserController {
         }
     }
 
+    /**
+     * 유저 대시보드 조회
+     */
     @GetMapping("/auth/dashboard")
     public ResponseEntity<UserDashboardResponseDTO> getUserDashboard(@RequestHeader("Authorization") String authorization) throws UnAuthorizedException {
         log.info("Received normal user dashboard request for {}", authorization);
