@@ -12,14 +12,14 @@ import {
   Grid,
   Paper
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { FaCrown, FaFire, FaMapMarkerAlt, FaUserAlt, FaUsers } from "react-icons/fa";
+import { FaFire, FaMapMarkerAlt, FaUserAlt, FaUsers } from "react-icons/fa";
 import { getProfile, getAllCookies } from "@/utils/profile";
 import { getCookie } from "cookies-next";
 import Image from 'next/image';
 import Tier from '@/components/profile/tier'
 import Rank from "@/components/profile/rank";
 import { getUserRank } from "@/utils/profile";
+import sampleData from '@/mocks/dashboard_sample.json';
 
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);

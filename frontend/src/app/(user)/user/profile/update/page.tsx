@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField, Dialog, DialogTitle, DialogContent, Grid, CircularProgress } from "@mui/material";
 import api from "@/lib/axios";
 
@@ -10,15 +11,25 @@ type AgeRange = 'DEFAULT' | 'CHILD' | 'TEENAGER' | 'TWENTEEN' | 'THIRTEEN' | 'FO
 type LocationId = 1 | 2 | 3 | 4 | 5 | 6 | 7; // 1: default, 2: gyungsang, 3: gyunggi, etc.
 
 // 프로필 데이터 받아오기
-interface Profile {
+interface UserProfile {
+  nickname: string;
+  email: string;
+  locationId: LocationId;
+  gender: Gender;
+  ageRange: AgeRange;
+  birdId: number;
+}
+
+interface ProfileUpdateData {
   nickname: string;
   locationId: LocationId;
   gender: Gender;
   ageRange: AgeRange;
   birdId: number;
-  email?: string;
+  isChanged: number;
 }
 
+// 선택지들
 const profileImages = [
   { id: 1, src: '/main_profile/1.png' },
   { id: 2, src: '/main_profile/2.png' },
@@ -82,104 +93,72 @@ const getFormattedLocationId = (locationId: number): string => {
 
 // 프로필 수정 로직
 export default function EditProfilePage() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [originalProfile, setOriginalProfile] = useState<Profile | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [originalNickname, setOriginalNickname] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+
   const [dialectAnchorEl, setDialectAnchorEl] = useState<null | HTMLElement>(null);
   const [genderAnchorEl, setGenderAnchorEl] = useState<null | HTMLElement>(null);
-  const [ageGroupAnchorEl, setAgeGroupAnchorEl] = useState<null | HTMLElement>(null);
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [ageRangeAnchorEl, setAgeRangeAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     // 프로필 가져오기
-    const fetchProfile = async () => {
+    const fetchUserProfile = async () => {
       try {
         setIsLoading(true);
         const accessToken = sessionStorage.getItem('accessToken');
         if (!accessToken) {
           throw new Error('Access token not found');
         }
-        const response = await api.get<Profile>('/user/auth/profile', {
+
+        const response = await api.get<UserProfile>('/user/auth/profile', {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
         });
-        setProfile(response.data);
-        setOriginalProfile(response.data);
+
+        setUserProfile(response.data);
+        setOriginalNickname(response.data.nickname);
       } catch (error) {
-        console.error('프로필 정보 가져오는데 실패함', error);
-        setError('프로필 정보를 불러오는데 실패함');
+        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
+        setError('프로필 정보를 불러오는데 실패했습니다.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProfile();
+    fetchUserProfile();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (profile) {
-      setProfile({ ...profile, [e.target.name]: e.target.value });
-    }
-  };
-
-  // 수정 요청
-  const handleSave = async () => {
-    if (!profile || !originalProfile) return;
-
-    try {
-      const accessToken = sessionStorage.getItem('accessToken');
-      if (!accessToken) {
-        throw new Error('Access token not found');
-      }
-
-      const isChanged = profile.nickname !== originalProfile.nickname ? 1 : 0;
-      
-      // 서버에 전송할 데이터 구조 조정
-      const response = await api.put('/user/auth', 
-        {
-          ...profile,
-          isChanged,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
-      );
-
-      if (response.status === 200) {
-        alert('프로필이 성공적으로 수정되었습니다.');
-        setOriginalProfile(profile);
-      }
-    } catch (error) {
-      console.error('프로필 수정 중 오류가 발생했습니다:', error);
-      alert('프로필 수정에 실패했습니다.');
-    }
-  };
-
   // Menu 관련 함수 선언들
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, type: 'dialect' | 'gender' | 'ageGroup') => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (userProfile) {
+      setUserProfile({ ...userProfile, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, type: 'dialect' | 'gender' | 'ageRange') => {
     if (type === 'dialect') setDialectAnchorEl(event.currentTarget);
     else if (type === 'gender') setGenderAnchorEl(event.currentTarget);
-    else setAgeGroupAnchorEl(event.currentTarget);
+    else setAgeRangeAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = (type: 'dialect' | 'gender' | 'ageGroup', ) => {
+  const handleMenuClose = (type: 'dialect' | 'gender' | 'ageRange') => {
     if (type === 'dialect') setDialectAnchorEl(null);
     else if (type === 'gender') setGenderAnchorEl(null);
-    else setAgeGroupAnchorEl(null);
+    else setAgeRangeAnchorEl(null);
   };
 
-  const handleSelect = (type: 'dialect' | 'gender' | 'ageGroup', value: LocationId | Gender | AgeRange) => {
-    if (profile) {
+  const handleSelect = (type: 'dialect' | 'gender' | 'ageRange', value: LocationId | Gender | AgeRange) => {
+    if (userProfile) {
       if (type === 'dialect') {
-        setProfile({ ...profile, locationId: value as LocationId });
+        setUserProfile({ ...userProfile, locationId: value as LocationId });
       } else if (type === 'gender') {
-        setProfile({ ...profile, gender: value as Gender });
+        setUserProfile({ ...userProfile, gender: value as Gender });
       } else {
-        setProfile({ ...profile, ageRange: value as AgeRange });
+        setUserProfile({ ...userProfile, ageRange: value as AgeRange });
       }
     }
     handleMenuClose(type);
@@ -190,17 +169,57 @@ export default function EditProfilePage() {
   };
 
   const handleImageSelect = (birdId: number) => {
-    if (profile) {
-      setProfile({ ...profile, birdId });
+    if (userProfile) {
+      setUserProfile({ ...userProfile, birdId });
     }
     setIsImageDialogOpen(false);
   };
+
+  const router = useRouter();
+
+  // 수정 요청
+  const handleSave = async () => {
+    if (!userProfile) return;
+
+    try {
+      const accessToken = sessionStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('Access token not found');
+      }
+
+      const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
+      
+      const updateData: ProfileUpdateData = {
+        nickname: userProfile.nickname,
+        locationId: userProfile.locationId,
+        gender: userProfile.gender,
+        ageRange: userProfile.ageRange,
+        birdId: userProfile.birdId,
+        isChanged
+      };
+      // console.log('data', updateData)
+      const response = await api.put('/user/auth', updateData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      if (response.status === 200) {
+        alert('프로필이 성공적으로 수정되었습니다.');
+        setOriginalNickname(userProfile.nickname);
+        router.push('/user/profile');
+      }
+    } catch (error) {
+      console.error('프로필 수정 중 오류가 발생했습니다:', error);
+      alert('프로필 수정에 실패했습니다.');
+    }
+  };  
 
   if (isLoading) {
     return <CircularProgress />;
   }
 
-  if (error || !profile) {
+  if (error || !userProfile) {
     return <div>{error || '프로필을 불러올 수 없습니다.'}</div>;
   }
 
@@ -211,7 +230,7 @@ export default function EditProfilePage() {
           avatar={
             <Avatar
               alt="profile image"
-              src={`/main_profile/${profile.birdId}.png`}
+              src={`/main_profile/${userProfile.birdId}.png`}
               sx={{ width: 150, height: 150 }}
               onClick={handleImageClick}
             />
@@ -221,7 +240,7 @@ export default function EditProfilePage() {
               <TextField
                 label="닉네임"
                 name="nickname"
-                value={profile.nickname}
+                value={userProfile.nickname}
                 onChange={handleInputChange}
                 variant="outlined"
                 fullWidth
@@ -229,10 +248,10 @@ export default function EditProfilePage() {
               />
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
-              <p className="text-default-500">{profile.email}</p>
+              <p className="text-default-500">{userProfile.email}</p>
               <Divider sx={{ my: 2 }} />
               <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'dialect')}>
-                사용하는 사투리: {getFormattedLocationId(profile.locationId)}
+                사용하는 사투리: {getFormattedLocationId(userProfile.locationId)}
               </Button>
               <Menu
                 anchorEl={dialectAnchorEl}
@@ -247,7 +266,7 @@ export default function EditProfilePage() {
               </Menu>
               <Divider sx={{ my: 2 }} />
               <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'gender')}>
-                성별: {getFormattedGender(profile.gender)}
+                성별: {getFormattedGender(userProfile.gender)}
               </Button>
               <Menu
                 anchorEl={genderAnchorEl}
@@ -261,16 +280,16 @@ export default function EditProfilePage() {
                 ))}
               </Menu>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'ageGroup')}>
-                연령대: {getFormattedAgeRange(profile.ageRange)}
+              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'ageRange')}>
+                연령대: {getFormattedAgeRange(userProfile.ageRange)}
               </Button>
               <Menu
-                anchorEl={ageGroupAnchorEl}
-                open={Boolean(ageGroupAnchorEl)}
-                onClose={() => handleMenuClose('ageGroup')}
+                anchorEl={ageRangeAnchorEl}
+                open={Boolean(ageRangeAnchorEl)}
+                onClose={() => handleMenuClose('ageRange')}
               >
                 {['DEFAULT', 'CHILD', 'TEENAGER', 'TWENTEEN', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'].map((age) => (
-                <MenuItem key={age} onClick={() => handleSelect('ageGroup', age as AgeRange)}>
+                <MenuItem key={age} onClick={() => handleSelect('ageRange', age as AgeRange)}>
                   {getFormattedAgeRange(age)}
                 </MenuItem>
               ))}
@@ -286,7 +305,7 @@ export default function EditProfilePage() {
             <Button variant="contained" color="primary" onClick={handleSave}>
               수정 완료
             </Button>
-            <Link href="/accounts/changepassword" underline="none">
+            <Link href="/user/auth/changepassword" underline="none">
               <Button variant="contained" color="secondary">
                 비밀번호 변경
               </Button>
