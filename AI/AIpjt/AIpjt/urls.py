@@ -21,5 +21,5 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('audio/', include('AIapp.urls')),
+    path('saturi-ai/audio/', include('AIapp.urls')),
 ]
