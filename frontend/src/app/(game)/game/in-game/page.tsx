@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Box, TextField, Button, List, ListItem, ListItemText, Paper, Typography, Card } from '@mui/material';
+import { Box, TextField, Button, List, ListItem, ListItemText, Paper, Typography, Card, LinearProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
 export default function ChatApp() {
@@ -110,6 +110,41 @@ export default function ChatApp() {
           </Button>
         </Box>
       </Box>
+
+      <Box
+        sx={{
+          display: "grid",
+          placeItems: "center",
+          margin: "10px",
+        }}>
+        <Card
+          sx = {{
+            width: "200px",
+            height: "350px",
+          }}>
+          <Card sx={{margin: "10px"}}>
+            <Typography> 당신은 1등입니다! </Typography>
+          </Card>
+          <LinearProgress variant="determinate" value={20} />
+          <br/>
+          <LinearProgress variant="determinate" value={20} />
+          <br/>
+          <LinearProgress variant="determinate" value={50} />
+          <br/>
+          <LinearProgress variant="determinate" value={20} />
+          <br/>
+          <LinearProgress variant="determinate" value={35} />
+          <br/>
+          <hr/>
+          플레이타임: 
+        </Card>
+        <Button variant="contained" sx={{ marginTop: "10px" }}>
+          다음
+        </Button>
+      </Box>
+      
+
+      
     </Box>
   );
 };
