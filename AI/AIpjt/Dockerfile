@@ -1,12 +1,15 @@
 # ./Dockerfile 
 FROM python:3
 
-## Install packages
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+ENV PYTHONUNBUFFERED 1
 
-## Copy all src files
-COPY . .
+RUN apt-get -y update && apt-get -y install vim && apt-get clean
+RUN mkdir /project
+ADD . /project
+
+WORKDIR /project
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 ## Run the application on the port 8080
 EXPOSE 8000
