@@ -122,7 +122,7 @@ public class LessonRepository {
                         " join fetch lr.lesson" +
                         " join fetch lr.lessonGroupResult" +
                         " where lr.lesson.lessonId = :lessonId and" +
-                        " lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId")
+                        " lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
                 .setParameter("lessonId", lessonId)
                 .setParameter("lessonGroupResultId", lessonGroupResultId)
                 .getResultList();
@@ -135,7 +135,7 @@ public class LessonRepository {
                         " join fetch lgr.user" +
                         " join fetch lgr.lessonGroup " +
                         " where lgr.user.userId = :userId" +
-                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId")
+                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId", LessonGroupResultEntity.class)
                 .setParameter("userId", userId)
                 .setParameter("lessonGroupId", lessonGroupId)
                 .getResultList();
@@ -177,5 +177,21 @@ public class LessonRepository {
     public Optional<Long> saveLessonRecordGraph(LessonRecordGraphEntity lessonRecordGraph) {
         em.persist(lessonRecordGraph);
         return Optional.ofNullable(lessonRecordGraph.getLessonRecordGraphId());
+    }
+
+    public Optional<List<LessonGroupEntity>> findLessonGroupByLocationId(Long locationId) {
+        List<LessonGroupEntity> lessonGroups = em.createQuery("select lg from LessonGroupEntity lg where lg.location.locationId = :locationId", LessonGroupEntity.class)
+                .setParameter("locationId", locationId)
+                .getResultList();
+
+        return lessonGroups.isEmpty() ? Optional.empty() : Optional.of(lessonGroups);
+    }
+
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByLessonGroupId(Long lessonGroupId) {
+        List<LessonGroupResultEntity> lessonGroupResults = em.createQuery("select lgr from LessonGroupResultEntity lgr where lgr.lessonGroup.lessonGroupId = :lessonGroupId", LessonGroupResultEntity.class)
+                .setParameter("lessonGroupId", lessonGroupId)
+                .getResultList();
+
+        return lessonGroupResults.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResults);
     }
 }
