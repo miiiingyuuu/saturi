@@ -50,15 +50,17 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
 }
 
 function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: MiddleMapProps) {
+  // 반응형 부분 
   const isDesktop = useMediaQuery('(min-width:768px)');
-
   if (!isDesktop && middleToWhere !== 1) {
-    return null;
+    return null;    
   }
   
   return (
     <Box className="middleMap" style={{ left: left === "null" ? undefined : left, top: "45vh" }}>
-      <Typography variant="h4" sx={{ textAlign: "center", fontWeight: "bold" }}> {selectedRegion} </Typography>
+      <Typography 
+        variant="h4" 
+        sx={{ textAlign: "center", fontWeight: "bold", visibility: selectedRegion === "_" ? "hidden" : "visible" }}> {selectedRegion} </Typography>
       <Box style={{ width: '100%', height: '100%' }}>
         <KoreaMap onRegionClick={onRegionClick} />
       </Box>
@@ -66,15 +68,19 @@ function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: Middl
   );
 }
 
-// 컴포넌트 
+// ///////////////
+// 컴포넌트     //
+// /////////////// 
 export default function App() {
   const [mapLeft, setMapLeft] = useState<string>('50%'); // 초기 left 값을 50%로 설정
-  const [middleToWhere, setMiddleToWhere] = useState<number>(1); // 0, 1, 2 이 세 가지 값을 사용
-  const moveDirection = useRef<string>("null");
+  const [middleToWhere, setMiddleToWhere] = useState<number>(1); // 맵의 위치가 어디에 있는지. 0, 1, 2 이 세 가지 값을 사용
+  const moveDirection = useRef<string>("null"); // 이동 방향. left or right. 
   const [mainPageIndicator, setMainPageIndicator] = useState<string>("지역을 선택하세요");
-  const currentMainPageRef = useRef<number>(1);
   const [selectedRegion, setSelectedRegion] = useState<string>("_");
+  const currentMainPageRef = useRef<number>(1);
+  
 
+  // 지역 선택 시 
   const handleRegionClick = (region: string) => {
     setSelectedRegion(region);
     if (region !== "null") {
@@ -82,6 +88,7 @@ export default function App() {
     }
   };
 
+  // 왼쪽 버튼 클릭 시
   const handleLeftClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     moveDirection.current = "left";
@@ -96,6 +103,7 @@ export default function App() {
     }
   };
 
+  // 오른쪽 버튼 클릭 시 
   const handleRightClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     moveDirection.current = "right";
@@ -112,7 +120,7 @@ export default function App() {
 
   return (
     <Box style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
-      <Box style={{ position: 'relative', width: '100%', height: '95vh' }}>
+      <Box style={{ position: 'relative', width: '100%', height: '920px' }}>
         <LeftPart
           middlePosition={middleToWhere}
           moveDirection={moveDirection.current}

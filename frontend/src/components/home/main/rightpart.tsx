@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation';
-import { Button, Box, Card, Typography } from "@mui/material";
+import { Button, Box, Card, Typography, useMediaQuery } from "@mui/material";
 import Image from "next/image"
 
 export default function RightPart() {
@@ -9,22 +9,44 @@ export default function RightPart() {
     router.push("/game");
   }
 
-  return (
-    <Box className="rightpart" style={{ height: '100vh' }}>
+  const isDesktop = useMediaQuery('(min-width:768px)');
+  if (!isDesktop) {
+    return (
+      <Box className="rightpart" style={{ height: '100%' }}>
       <Box sx={{ display: 'grid', placeItems: 'center', height: '85vh' }}>
-        <Card sx={{ width: "65vw", height:"75vh", border: '2px solid black', borderRadius: 5, top:"-50%", backgroundColor: "whitesmoke" }} />
-      </Box>
+        <Card sx={{ width: "65vw", height:"75vh", display: 'grid', placeItems: 'center', border: '2px solid black', borderRadius: 5, top:"-50%", backgroundColor: "whitesmoke" }}>
+          <Box sx={{ position: 'absolute', top: "7%", width: "20%", display:"flex", flexDirection: "column",  alignItems: "center" }}>
+            <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold", width:"200px", textAlign:"center" }}>게임 페이지</Typography>
+            <br />
+            <Box sx={{  }}>
+              <Card sx={{ width:"100%", height: "39vh", display: 'grid', placeItems: 'center' }}>
+                <Image src="/MainPage/myLevel.png" alt="button food" width={200} height={200} />
+              </Card>                  
+            </Box>
+            <Button variant="contained" onClick={GameStartButton} sx={{ marginTop: "20px", width: "200px", height: "5vh", fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }  }}>게임 시작</Button>
+          </Box>
+        </Card>
+      </Box>            
+    </Box>
+    )  
+  }
 
-      <Box sx={{ position: 'absolute', margin: "25px", top: "7%", right: "20%", width: "25vw", display:"flex", flexDirection: "column",  alignItems: "center" }}>
-        <Typography variant="h1" sx={{ fontSize: 39, fontWeight: "bold" }}>게임 페이지</Typography>
-        <br />
-        <Box sx={{  }}>
-          <Card sx={{ width:"15vw", height: "39vh", display: 'grid', placeItems: 'center' }}>
-            <Image src="/MainPage/myLevel.png" alt="button food" width={200} height={200} />
-          </Card>                  
-        </Box>
-        <Button variant="contained" onClick={GameStartButton} sx={{ marginTop: "20px", width: "15vw", height: "5vh", fontSize: "25px"  }}>게임 시작</Button>
-      </Box>
+  return (
+    <Box className="rightpart" style={{ height: '100%' }}>
+      <Box sx={{ display: 'grid', placeItems: 'center', height: '85vh' }}>
+        <Card sx={{ width: "65vw", height:"75vh", border: '2px solid black', borderRadius: 5, top:"-50%", backgroundColor: "whitesmoke" }}>
+          <Box sx={{ position: 'absolute', top: "7%", right: "22%", width: "20%", display:"flex", flexDirection: "column",  alignItems: "center" }}>
+            <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold" }}>게임 페이지</Typography>
+            <br />
+            <Box sx={{  }}>
+              <Card sx={{ width:"100%", height: "39vh", display: 'grid', placeItems: 'center' }}>
+                <Image src="/MainPage/myLevel.png" alt="button food" width={200} height={200} />
+              </Card>                  
+            </Box>
+            <Button variant="contained" onClick={GameStartButton} sx={{ marginTop: "20px", width: "200px", height: "5vh", fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }  }}>게임 시작</Button>
+          </Box>
+        </Card>
+      </Box>            
     </Box>
   );
 }

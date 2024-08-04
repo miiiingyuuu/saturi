@@ -37,7 +37,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
         className="blink" 
         style={{
           position: 'absolute',
-          top: '85%',
+          top: '65%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           textShadow: "1px 1px 0px whitesmoke",
