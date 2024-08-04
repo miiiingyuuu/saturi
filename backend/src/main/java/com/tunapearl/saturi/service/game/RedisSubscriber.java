@@ -41,7 +41,7 @@ public class RedisSubscriber implements MessageListener {
                 // ChatMessage 객체로 맵핑
                 ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
                 // WebSocket 구독자에게 채팅 메시지 전송
-                messagingTemplate.convertAndSend("/sub/chat-request/" + chatMessage.getRoomId(), chatMessage);
+                messagingTemplate.convertAndSend("/sub/chat/" + chatMessage.getRoomId(), chatMessage);
             } else {
                 log.error("Unknown message type: " + messageType);
             }

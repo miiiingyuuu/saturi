@@ -37,50 +37,54 @@ public class ChatController {
     @MessageMapping("/room-request")
     public void matchingGame(@Header("Authorization") String authorization, @ModelAttribute RoomMessage message) throws UnAuthorizedException {
 
-        //TODO: AccessToken으로 id가져올 것
         Long userId = jwtUtil.getUserId(authorization);
         message.setSenderId(userId);
 
-        chatService.enterChatRoom(message.getRoomId());
+        //일단 개인방에 리스너 달구
+        chatService.enterPersonRoom(message.getRoomId());
 
+        log.info("리스너 달았다");
+        //게임방 주세요.
         GameMatchingResponseDTO responseDTO=gameService.matching(new GameMatchingRequestDTO(message.getLocationId(),userId));
         message.setMatchedroomId(responseDTO.getRoomId());
 
-        redisPublisher.personalPublish(chatService.getTopic(message.getRoomId()), message);
+        //게임방 Id 던져줌
+        redisPublisher.personalPublish(chatService.getPersonTopic(message.getRoomId()), message);
     }
 
 
-    //'/pub/game/chat'로 들어오는 메시징 처리
+    //'/pub/chat'로 들어오는 메시징 처리
     @MessageMapping("/chat")
-    public void progressGame(@ModelAttribute ChatMessage message) throws UnAuthorizedException {
+    public void progressGame(@Header("Authorization") String authorization, @ModelAttribute ChatMessage message) throws UnAuthorizedException {
 
-        //TODO: AccessToken으로 id가져올 것
-//        Long userId = jwtUtil.getUserId(authorization);
-//        gameMatchingRequestDTO.setUserId(userId);
+        Long userId = jwtUtil.getUserId(authorization);
+        message.setSenderId(userId);
 
-        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {//입장
+        if (ChatMessage.MessageType.ENTER.equals(message.getChatType())) {//입장
 
-            chatService.enterChatRoom(message.getRoomId());
-            message.setMessage(message.getSenderId() + "님이 게임에 들어왔습니다.");
-        } else if (ChatMessage.MessageType.QUIZ.equals(message.getType())) {
+            chatService.enterGameRoom(message.getRoomId());
+            message.setMessage(message.getSenderId() + "님이 입장하셨습니다.");
 
-            //TODO:문제 조회하는 로직 필요
-            message.setMessage("문제줄게;;");
-        } else if (ChatMessage.MessageType.CHAT.equals(message.getType())) {//채팅
+        } else if (ChatMessage.MessageType.QUIZ.equals(message.getChatType())) {
 
-            //정답처리, 로그 저장
-            //문제 id받아와야함
-
-            chatService.playGame(message.getRoomId());
-            redisPublisher.gamePublish(chatService.getTopic(message.getRoomId()), message);
-
-        } else if (ChatMessage.MessageType.EXIT.equals(message.getType())) {//퇴장
+            //TODO:문제를 10개를 던져주죠
+            message.setMessage("게임리스트를 줄거얌");
+        } else if (ChatMessage.MessageType.CHAT.equals(message.getChatType())) {//채팅
 
 
-            message.setMessage(message.getSenderId() + "님이 게임에서 나감.");
+            //문제 id받아와야함, 정답유무 판단
+            chatService.playGame(message);
+
+//            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
         }
 
-//        redisPublisher.gamePublish(chatService.getTopic(message.getRoomId()), message);//topicId로, message를 전송한다.
+        else if (ChatMessage.MessageType.EXIT.equals(message.getChatType())) {//퇴장
+
+
+            message.setMessage(message.getSenderId() + "님이 퇴장하셨습니다.");
+        }
+
+        redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
 
     }
 }

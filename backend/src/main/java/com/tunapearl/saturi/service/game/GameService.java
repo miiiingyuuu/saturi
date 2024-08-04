@@ -10,7 +10,7 @@ import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.game.GameTipRepository;
-import com.tunapearl.saturi.repository.redis.TopicRepository;
+import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class GameService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final GameRoomParticipantRepository gameRoomParticipantRepository;
-    private final TopicRepository topicRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     /**
      * 팁 추가
@@ -76,9 +76,12 @@ public class GameService {
             topic= ChatRoom.create();
             log.info("created roomId : {}",topic.getRoomId());
 
-            gameRoomEntity.setTopicId(topic.getRoomId());
+            gameRoomEntity.setTopicId(topic.getTopicId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
-            topicRepository.save(topic);
+            topic.setRoomId(gameRoomEntity.getRoomId());
+
+
+            chatRoomRepository.save(topic);
         }
 
         UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
