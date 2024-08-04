@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LessonIdAndValueDTO {
+public class LessonIdAndValueDTO{
     private Long lessonId;
     private Long value;
 }

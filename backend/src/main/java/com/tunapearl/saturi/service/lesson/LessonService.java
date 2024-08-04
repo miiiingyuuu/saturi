@@ -321,4 +321,8 @@ public class LessonService {
         return lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
     }
 
+    public List<LessonResultEntity> findAllLessonResult() {
+        return lessonRepository.findAllLessonResult().orElse(null);
+
+    }
 }

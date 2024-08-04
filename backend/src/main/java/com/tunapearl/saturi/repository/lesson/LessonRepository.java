@@ -194,4 +194,11 @@ public class LessonRepository {
 
         return lessonGroupResults.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResults);
     }
+
+    public Optional<List<LessonResultEntity>> findAllLessonResult() {
+        List<LessonResultEntity> lessonResults = em.createQuery("select lr from LessonResultEntity lr", LessonResultEntity.class)
+                .getResultList();
+
+        return lessonResults.isEmpty() ? Optional.empty() : Optional.of(lessonResults);
+    }
 }

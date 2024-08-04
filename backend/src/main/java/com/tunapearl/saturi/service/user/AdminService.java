@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.service.user;
 
+import com.tunapearl.saturi.domain.lesson.LessonClaimEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
 import com.tunapearl.saturi.domain.user.Role;
@@ -48,5 +49,9 @@ public class AdminService {
 
     public List<LessonGroupResultEntity> findLessonGroupResultByLessonGroupId(Long lessonGroupId) {
         return lessonRepository.findLessonGroupResultByLessonGroupId(lessonGroupId).orElse(null);
+    }
+
+    public List<LessonClaimEntity> findAllLessonClaim() {
+        return lessonRepository.findAllLessonClaim().orElse(null);
     }
 }
