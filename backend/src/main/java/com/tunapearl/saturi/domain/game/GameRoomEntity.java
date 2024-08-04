@@ -1,6 +1,8 @@
 package com.tunapearl.saturi.domain.game;
 
 import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.quiz.GameRoomQuizEntity;
+import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -8,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
@@ -40,4 +43,16 @@ public class GameRoomEntity {
 
     @OneToMany(mappedBy = "gameRoom")
     private List<GameRoomParticipantEntity> participants;
+
+    @OneToMany(mappedBy = "room")
+    private List<GameRoomQuizEntity>  grQuizEntityList = new ArrayList<>();
+
+
+    /*
+    * 연관관계 편의 메서드
+    */
+    public void addQuiz(GameRoomQuizEntity quiz){
+        grQuizEntityList.add(quiz);
+        quiz.setGameRoom(this);
+    }
 }
