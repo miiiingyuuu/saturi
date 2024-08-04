@@ -25,13 +25,13 @@ public class LessonResultEntity {
     @JoinColumn(name = "lesson_group_result_id")
     private LessonGroupResultEntity lessonGroupResult;
 
-//    @OneToOne(fetch = LAZY)
-//    @JoinColumn(name = "lesson_record_file_id")
-//    private LessonRecordFileEntity lessonRecordFile;
-//
-//    @OneToOne(fetch = LAZY)
-//    @JoinColumn(name = "lesson_record_graph_id")
-//    private LessonRecordGraphEntity lessonRecordGraph;
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "lesson_record_file_id")
+    private LessonRecordFileEntity lessonRecordFile;
+
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "lesson_record_graph_id")
+    private LessonRecordGraphEntity lessonRecordGraph;
 
     private Long accentSimilarity; // 억양 유사도
 
