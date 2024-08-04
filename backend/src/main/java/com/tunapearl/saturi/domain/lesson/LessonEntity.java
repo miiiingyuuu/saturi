@@ -23,6 +23,8 @@ public class LessonEntity {
 
     private String sampleVoicePath;
 
+    private String sampleVoiceName;
+
     private String script;
 
     private LocalDateTime lastUpdateDt;

@@ -5,6 +5,8 @@ import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
 import com.tunapearl.saturi.dto.lesson.LessonInfoDTO;
+import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
+import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import com.tunapearl.saturi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -25,6 +25,7 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     public LessonCategoryEntity findByIdLessonCategory(Long lessonCategoryId) {
         return lessonRepository.findByIdLessonCategory(lessonCategoryId).orElse(null);
@@ -42,12 +43,16 @@ public class LessonService {
         return lessonRepository.findAllLessonGroup().orElse(null);
     }
 
-    // FIXME 레슨 수정을 수정
-    public void updateLesson(Long lessonId, Long lessonGroupId, String script) {
+    public void updateLesson(Long lessonId, Long lessonGroupId, String script, String filePath) {
+        List<LessonEntity> allByLessonGroupId = findAllByLessonGroupId(lessonGroupId);
+        if(allByLessonGroupId.size() >= 5) {
+            throw new AlreadyMaxSizeException();
+        }
         LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
         LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
         lesson.setLessonGroup(findLessonGroup);
         lesson.setScript(script);
+        lesson.setSampleVoicePath(filePath);
         lesson.setLastUpdateDt(LocalDateTime.now());
     }
 
@@ -63,7 +68,9 @@ public class LessonService {
     }
 
     public LessonEntity findById(Long lessonId) {
-        return lessonRepository.findById(lessonId).orElse(null);
+        LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
+        if(findLesson == null) throw new IllegalArgumentException("존재하지 않는 레슨입니다.");
+        return findLesson;
     }
 
     public Long getProgressByUserIdLocationAndCategory(Long userId, Long locationId, Long lessonCategoryId) {
@@ -98,7 +105,7 @@ public class LessonService {
             // avgAccuracy
             Long avgAccuracy = (lgResult.getAvgAccuracy() + lgResult.getAvgSimilarity()) / 2L;
 
-            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, groupProcess, avgAccuracy);
+            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgResult.getLessonGroup().getName(), groupProcess, avgAccuracy);
             result.add(dto);
         }
         return result;
@@ -114,6 +121,12 @@ public class LessonService {
         Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonId);
 
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.
+        // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
+        Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
+        if(lessonResults.isPresent()) {
+            // 이미 레슨결과가 존재
+//            lessonResults.orElse(null).sort(Comparator.comparing(lessonResults.orElse(null)))
+        }
         LessonResultEntity lessonResultSkipped = new LessonResultEntity();
         LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
         lessonResultSkipped.setIsSkipped(true);
@@ -171,8 +184,14 @@ public class LessonService {
         // 결과가 없으면 null 반환
         if(lessonResults.isEmpty()) return Optional.empty();
 
-        // 결과가 있는데 건너뛰기 한거면 건너뛰기로 데이터 반환
+
+        // 평균 정확도가 높은 순으로 정렬
+        Collections.sort(lessonResults.orElse(null), (o1, o2) -> Long.compare((o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2,
+                                                                                    (o1.getAccentSimilarity() + o1.getPronunciationAccuracy()) / 2));
+        // 평균 정확도가 높은 레슨결과를 가져옴
         LessonResultEntity lessonResult = lessonResults.orElse(null).get(0);
+
+        // 결과가 있는데 건너뛰기 한거면 건너뛰기로 데이터 반환
         if(lessonResult.getIsSkipped()) {
             return Optional.ofNullable(new LessonInfoDTO(true, null, null));
         }
@@ -202,5 +221,33 @@ public class LessonService {
         lessonResult.setLessonDt(LocalDateTime.now());
         lessonResult.setIsSkipped(false);
         return lessonResult;
+    }
+
+    public Long saveClaim(Long userId, Long lessonId, String content) {
+        LessonClaimEntity lessonClaim = new LessonClaimEntity();
+        UserEntity user = userRepository.findByUserId(userId).orElse(null);
+        LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
+        lessonClaim.setUser(user);
+        lessonClaim.setLesson(lesson);
+        lessonClaim.setContent(content);
+        lessonClaim.setClaimDt(LocalDateTime.now());
+        return lessonRepository.saveLessonClaim(lessonClaim).orElse(null);
+    }
+
+    public List<LessonClaimEntity> findAllLessonClaim() {
+        List<LessonClaimEntity> lessonClaims = lessonRepository.findAllLessonClaim().orElse(null);
+        log.info("lesson Claims {}", lessonClaims);
+        return lessonClaims;
+    }
+
+    public List<LessonEntity> findAllByLessonGroupId(Long lessonGroupId) {
+        return lessonRepository.findAllByLessonGroupId(lessonGroupId).orElse(null);
+
+    }
+
+    //TODO 반환 타입 결정
+    public void saveLessonGroupResult(Long userId, Long lessonGroupResultId) {
+
+
     }
 }

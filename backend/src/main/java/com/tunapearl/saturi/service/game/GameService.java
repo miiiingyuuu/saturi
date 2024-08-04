@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.service;
+package com.tunapearl.saturi.service.game;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.game.*;
@@ -60,7 +60,7 @@ public class GameService {
         LocationEntity location=locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow();
         Optional<List<GameRoomEntity>> findRooms = gameRoomRepository.findByLocationAndStatus(location,Status.MATCHING);
         GameRoomEntity gameRoomEntity;
-        GameRoomTopic topic;
+        ChatRoom topic;
 
         if (findRooms.isPresent()) {
 
@@ -73,10 +73,10 @@ public class GameService {
             gameRoomEntity.setLocation(locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow());
 
             //Topic생성해서 redis에 저장
-            topic= GameRoomTopic.create(gameRoomEntity.getRoomId());
-            log.info("created topicId : {}",topic.getTopicId());
+            topic= ChatRoom.create();
+            log.info("created roomId : {}",topic.getRoomId());
 
-            gameRoomEntity.setTopicId(topic.getTopicId());
+            gameRoomEntity.setTopicId(topic.getRoomId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
             topicRepository.save(topic);
         }
@@ -94,7 +94,7 @@ public class GameService {
 
         //게임방토픽Id 넘겨주자
         GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
-        responseDTO.setTopicId(gameRoomEntity.getTopicId());
+        responseDTO.setRoomId(gameRoomEntity.getTopicId());
         return responseDTO;
     }
 }

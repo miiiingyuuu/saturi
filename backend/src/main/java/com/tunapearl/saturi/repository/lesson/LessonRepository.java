@@ -1,5 +1,8 @@
 package com.tunapearl.saturi.repository.lesson;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -9,15 +12,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Repository
 @RequiredArgsConstructor
 public class LessonRepository {
 
     private final EntityManager em;
+    private final JPAQueryFactory queryFactory;
 
     public Optional<LessonEntity> findById(Long lessonId) {
-        return Optional.ofNullable(em.find(LessonEntity.class, lessonId));
+        LessonEntity lessonEntity = em.find(LessonEntity.class, lessonId);
+        return lessonEntity == null ? Optional.empty() : Optional.of(lessonEntity);
     }
 
     public Optional<LessonCategoryEntity> findByIdLessonCategory(Long lessonCategoryId) {
@@ -42,15 +48,28 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonGroupEntity>> findLessonGroupByLocationAndCategory(Long locationId, Long categoryId) {
-        return Optional.ofNullable(em.createQuery("select distinct g from LessonGroupEntity g " +
-                                " join fetch g.location lo" +
-                                " join fetch g.lessonCategory lc" +
-                                " left join fetch g.lessons l" +
-                                    " where g.location.locationId = :locationId" +
-                                    " and g.lessonCategory.lessonCategoryId = :categoryId", LessonGroupEntity.class)
-                .setParameter("locationId", locationId)
-                .setParameter("categoryId", categoryId)
-                .getResultList());
+        QLessonGroupEntity qLessonGroup = new QLessonGroupEntity("lg");
+
+        return Optional.ofNullable(queryFactory
+                .selectFrom(qLessonGroup)
+                        .join(qLessonGroup.location).fetchJoin()
+                        .join(qLessonGroup.lessonCategory).fetchJoin()
+                        .leftJoin(qLessonGroup.lessons).fetchJoin()
+                .where(
+                        locationIdEq(qLessonGroup, locationId),
+                        lessonCategoryIdEq(qLessonGroup, categoryId)
+                ).limit(1000)
+                .fetch());
+    }
+
+    private BooleanExpression locationIdEq(QLessonGroupEntity lessonGroup, Long locationIdCond) {
+        if(locationIdCond == null) return null;
+        return lessonGroup.location.locationId.eq(locationIdCond);
+    }
+
+    private BooleanExpression lessonCategoryIdEq(QLessonGroupEntity lessonGroup, Long lessonCategoryId) {
+        if(lessonCategoryId == null) return null;
+        return lessonGroup.lessonCategory.lessonCategoryId.eq(lessonCategoryId);
     }
 
     public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserId(Long userId) {
@@ -125,5 +144,24 @@ public class LessonRepository {
     public Optional<Long> saveLessonResult(LessonResultEntity lessonResult) {
         em.persist(lessonResult);
         return Optional.ofNullable(lessonResult.getLessonResultId());
+    }
+
+    public Optional<Long> saveLessonClaim(LessonClaimEntity lessonClaim) {
+        em.persist(lessonClaim);
+        return Optional.ofNullable(lessonClaim.getLessonClaimId());
+    }
+
+    public Optional<List<LessonClaimEntity>> findAllLessonClaim() {
+        return Optional.ofNullable(em.createQuery("select lc from LessonClaimEntity lc" +
+                " join fetch lc.lesson l" +
+                " join fetch lc.user u", LessonClaimEntity.class).getResultList());
+    }
+
+    public Optional<List<LessonEntity>> findAllByLessonGroupId(Long lessonGroupId) {
+        return Optional.ofNullable(em.createQuery("select l from LessonEntity l" +
+                " join fetch l.lessonGroup lg" +
+                " where l.lessonGroup.lessonGroupId = :lessonGroupId", LessonEntity.class)
+                .setParameter("lessonGroupId", lessonGroupId)
+                .getResultList());
     }
 }

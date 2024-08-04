@@ -69,7 +69,7 @@ const Tier: React.FC<TierProps> = ({ exp, isLoading }) => {
             {isLoading ? "Loading 중..." : `${tier.charAt(0).toUpperCase() + tier.slice(1)} Tier`}
           </Typography>
           <Typography variant="h6">
-            {isLoading ? "Loading 중..." : `EXP: ${exp} %`}
+            {isLoading ? "Loading 중..." : `${exp} EXP`}
           </Typography>
         </Box>
       </Box>

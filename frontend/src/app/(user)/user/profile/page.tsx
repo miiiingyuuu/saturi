@@ -19,7 +19,7 @@ import { getCookie } from "cookies-next";
 import Image from 'next/image';
 import Tier from '@/components/profile/tier'
 import Rank from "@/components/profile/rank";
-import { getUserExpInfo } from "@/utils/profile";
+import { getUserRank } from "@/utils/profile";
 
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +31,7 @@ export default function ProfilePage() {
     email: '',
     ageRange: '',
     gender: '',
-    locationName: '',
+    locationId: '',
     isLoading: '',
   });
 
@@ -51,11 +51,11 @@ export default function ProfilePage() {
     };
 
     // 랭킹 데이터 받아오기
-    const fetchUserExpInfo = async () => {
+    const fetchUserRank = async () => {
       try {
         setIsLoading(true);
-        const data = await getUserExpInfo();
-        setUserRank(data.userRank);
+        const rank = await getUserRank();
+        setUserRank(rank);
       } catch (error) {
         console.error('Failed to fetch user exp info:', error);
         setUserRank(null);
@@ -65,7 +65,7 @@ export default function ProfilePage() {
     };
 
     fetchProfileImage();
-    fetchUserExpInfo();
+    fetchUserRank();
 
     const getFormattedGender = (gender: string): string => {
       switch (gender) {
@@ -109,8 +109,8 @@ export default function ProfilePage() {
       }
     };
 
-    const getFormattedLocationName = (locationName: string): string => {
-      switch (locationName) {
+    const getFormattedLocationId = (locationId: string): string => {
+      switch (locationId) {
         case 'default':
           return '정보 입력 안함';
         case 'gyungsang':
@@ -128,7 +128,7 @@ export default function ProfilePage() {
         default:
           return '정보 입력 안함';
       }
-    }
+    };
 
     // 프로필 세팅
     setProfile(prevProfile => ({
@@ -138,7 +138,7 @@ export default function ProfilePage() {
       email: (cookies.email as string) || '없음',
       ageRange: getFormattedAgeRange(cookies.ageRange as string),
       gender: getFormattedGender(cookies.gender as string),
-      locationName: getFormattedLocationName(cookies.locationName as string),
+      locationId: getFormattedLocationId(cookies.locationId as string),
     }));
   }, []);
 
@@ -166,7 +166,7 @@ export default function ProfilePage() {
               <Grid item xs={12} sm={4}>
                 <Box display="flex" alignItems="center">
                   <FaMapMarkerAlt />
-                  <Typography variant="body2" sx={{ ml: 1 }}>{profile.locationName}</Typography>
+                  <Typography variant="body2" sx={{ ml: 1 }}>{profile.locationId}</Typography>
                 </Box>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -192,7 +192,9 @@ export default function ProfilePage() {
 
         {/* 티어, 경험치,  순위 */}
         <Grid item xs={12} md={6}>
-          <Rank userRank={userRank} isLoading={isLoading} />
+          <Box sx={{ mt: 2}}>
+            <Rank userRank={userRank} isLoading={isLoading} />
+          </Box>
           <Box sx={{ mt: 2}}>
             <Tier exp={parseInt(profile.exp)} isLoading={false} />
           </Box>

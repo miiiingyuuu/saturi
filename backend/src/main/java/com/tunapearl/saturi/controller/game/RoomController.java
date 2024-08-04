@@ -1,13 +1,11 @@
 package com.tunapearl.saturi.controller.game;
 
-import com.tunapearl.saturi.domain.game.GameRoomTopic;
-import com.tunapearl.saturi.domain.game.PersonTopic;
+import com.tunapearl.saturi.domain.game.PersonChatRoom;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
-import com.tunapearl.saturi.dto.user.UserMsgResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
-import com.tunapearl.saturi.service.GameService;
+import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/game")
-public class GameController {
+public class RoomController {
 
     private final GameService gameService;
     private final JWTUtil jwtUtil;
@@ -31,10 +29,11 @@ public class GameController {
 
         long userId = jwtUtil.getUserId(authorization);
         request.setUserId(userId);
-        //TODO: 개인방 TopicId준다.
-        PersonTopic topic= PersonTopic.create(userId);
+        //TODO: DB에 방 올려야함
+        
+        PersonChatRoom topic= PersonChatRoom.create(userId);
         GameMatchingResponseDTO responseDTO=new GameMatchingResponseDTO();
-        responseDTO.setTopicId(topic.getPersonTopicId());
+        responseDTO.setRoomId(topic.getPersonchatroomId());
         return ResponseEntity.ok().body(responseDTO);
     }
 

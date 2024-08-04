@@ -12,6 +12,7 @@ public class LessonResponseDTO {
     private Long lessonGroupId;
     private String lessonGroupName;
     private String sampleVoicePath;
+    private String sampleVoiceName;
     private String script;
     private LocalDateTime lastUpdateDt;
 }
