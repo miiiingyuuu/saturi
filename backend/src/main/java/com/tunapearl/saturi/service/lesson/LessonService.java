@@ -120,11 +120,12 @@ public class LessonService {
 
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.
         // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
-        Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
-        if(lessonResults.isPresent()) {
-            //TODO 이어서
+        Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
+        if(lessonResultsOpt.isPresent()) {
             // 이미 레슨결과가 존재
-//            lessonResults.orElse(null).sort(Comparator.comparing(lessonResults.orElse(null)))
+            List<LessonResultEntity> lessonResults = lessonResultsOpt.orElse(null);
+            lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
+            return lessonResults.get(0).getLessonResultId();
         }
         LessonResultEntity lessonResultSkipped = new LessonResultEntity();
         LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
