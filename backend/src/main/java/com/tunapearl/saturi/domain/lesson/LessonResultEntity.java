@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.*;
+
 @Entity
 @Getter @Setter
 @Table(name = "lesson_result")
@@ -15,17 +17,21 @@ public class LessonResultEntity {
     @Column(name = "lesson_result_id")
     private Long lessonResultId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "lesson_id")
     private LessonEntity lesson;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "lesson_group_result_id")
     private LessonGroupResultEntity lessonGroupResult;
 
-    private String userVoicePath;
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "lesson_record_file_id")
+    private LessonRecordFileEntity lessonRecordFile;
 
-    private String userVoiceScript;
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "lesson_record_graph_id")
+    private LessonRecordGraphEntity lessonRecordGraph;
 
     private Long accentSimilarity; // 억양 유사도
 

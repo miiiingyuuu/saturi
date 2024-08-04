@@ -6,18 +6,20 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter
-@Table(name = "lesson_record_graph")
-public class LessonRecordGraphEntity {
+@Table(name = "lesson_record_file")
+public class LessonRecordFileEntity {
 
     @Id @GeneratedValue
-    @Column(name = "lesson_record_graph_id")
-    private Long lessonRecordGraphId;
+    @Column(name = "lesson_record_file_id")
+    private Long lessonRecordFileId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_result_id")
     private LessonResultEntity lessonResult;
 
-    private String graphX;
+    private String userVoiceFileName;
 
-    private String graphY;
+    private String userVoiceFilePath;
+
+    private String userVoiceScript;
 }

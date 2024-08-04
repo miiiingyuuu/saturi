@@ -140,8 +140,7 @@ public class LessonController {
 
         log.info("received request to save lesson result {}", request.getLessonId());
         Long userId = jwtUtil.getUserId(accessToken);
-        Long savelessonId = lessonService.saveLesson(userId, request.getLessonId(), request.getLessonGroupResultId(), request.getFilePath(),
-                request.getAccentSimilarity(), request.getPronunciationAccuracy(), request.getScript());
+        Long savelessonId = lessonService.saveLesson(request);
         return ResponseEntity.created(URI.create("/learn/lesson")).body(new LessonMsgResponseDTO("ok"));
     }
 

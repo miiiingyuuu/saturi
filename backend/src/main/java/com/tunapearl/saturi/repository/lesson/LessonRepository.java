@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
+import com.tunapearl.saturi.dto.lesson.LessonSaveRequestDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -166,5 +167,15 @@ public class LessonRepository {
                 .setParameter("lessonGroupId", lessonGroupId)
                 .getResultList();
         return lessonGroups.isEmpty() ? Optional.empty() : Optional.of(lessonGroups);
+    }
+
+    public Optional<Long> saveLessonRecordFile(LessonRecordFileEntity lessonRecordFile) {
+        em.persist(lessonRecordFile);
+        return Optional.ofNullable(lessonRecordFile.getLessonRecordFileId());
+    }
+
+    public Optional<Long> saveLessonRecordGraph(LessonRecordGraphEntity lessonRecordGraph) {
+        em.persist(lessonRecordGraph);
+        return Optional.ofNullable(lessonRecordGraph.getLessonRecordGraphId());
     }
 }

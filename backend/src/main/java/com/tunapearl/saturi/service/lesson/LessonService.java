@@ -5,6 +5,7 @@ import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
 import com.tunapearl.saturi.dto.lesson.LessonInfoDTO;
+import com.tunapearl.saturi.dto.lesson.LessonSaveRequestDTO;
 import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
@@ -196,29 +197,50 @@ public class LessonService {
         return Optional.ofNullable(new LessonInfoDTO(false, lessonResult.getAccentSimilarity(), lessonResult.getPronunciationAccuracy()));
     }
 
-    public Long saveLesson(Long userId, Long lessonId, Long lessonGroupResultId, String filePath, Long accentSimilarity, Long pronunciationAccuracy, String script) {
+    public Long saveLesson(LessonSaveRequestDTO request) {
         // 레슨 아이디로 레슨 객체 조회
-        LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
+        LessonEntity findLesson = lessonRepository.findById(request.getLessonId()).orElse(null);
 
         // 레슨그룹결과아이디로 레슨그룹결과 객체 조회
-        LessonGroupResultEntity findLessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
+        LessonGroupResultEntity findLessonGroupResult = lessonRepository.findLessonGroupResultById(request.getLessonGroupResultId()).orElse(null);
 
         // 레슨 아이디, 레슨그룹결과 아이디, 기타 정보 저장(건너뛰기 false, 레슨 학습 일시, 나머지)
-        LessonResultEntity lessonResult = createLessonResult(findLesson, findLessonGroupResult, filePath, script, accentSimilarity, pronunciationAccuracy);
-        return lessonRepository.saveLessonResult(lessonResult).orElse(null);
+        LessonResultEntity lessonResult = createLessonResult(findLesson, findLessonGroupResult, request);
+        Long lessonResultId = lessonRepository.saveLessonResult(lessonResult).orElse(null);
+        // 녹음 파일 관련, 파형 관련 추가
+        LessonRecordFileEntity lessonRecordFile = createLessonRecordFile(lessonResult, request);
+        Long lessonRecordFileId = lessonRepository.saveLessonRecordFile(lessonRecordFile).orElse(null);
+        LessonRecordGraphEntity lessonRecordGraph = createLessonRecordGraph(lessonResult, request);
+        Long lessonRecordGraphId = lessonRepository.saveLessonRecordGraph(lessonRecordGraph).orElse(null);
+        return lessonResultId;
     }
 
-    private LessonResultEntity createLessonResult(LessonEntity lesson, LessonGroupResultEntity lessonGroupResult, String filePath, String script, Long accentSimilarity, Long pronunciationAccuracy) {
+    private LessonResultEntity createLessonResult(LessonEntity lesson, LessonGroupResultEntity lessonGroupResult, LessonSaveRequestDTO request) {
         LessonResultEntity lessonResult = new LessonResultEntity();
         lessonResult.setLesson(lesson);
         lessonResult.setLessonGroupResult(lessonGroupResult);
-        lessonResult.setUserVoicePath(filePath);
-        lessonResult.setUserVoiceScript(script);
-        lessonResult.setAccentSimilarity(accentSimilarity);
-        lessonResult.setPronunciationAccuracy(pronunciationAccuracy);
+        lessonResult.setAccentSimilarity(request.getAccentSimilarity());
+        lessonResult.setPronunciationAccuracy(request.getPronunciationAccuracy());
         lessonResult.setLessonDt(LocalDateTime.now());
         lessonResult.setIsSkipped(false);
         return lessonResult;
+    }
+
+    private LessonRecordFileEntity createLessonRecordFile(LessonResultEntity lessonResult, LessonSaveRequestDTO request) {
+        LessonRecordFileEntity lessonRecordFile = new LessonRecordFileEntity();
+        lessonRecordFile.setLessonResult(lessonResult);
+        lessonRecordFile.setUserVoiceFileName(request.getFileName());
+        lessonRecordFile.setUserVoiceFilePath(request.getFilePath());
+        lessonRecordFile.setUserVoiceScript(request.getScript());
+        return lessonRecordFile;
+    }
+
+    private LessonRecordGraphEntity createLessonRecordGraph(LessonResultEntity lessonResult, LessonSaveRequestDTO request) {
+        LessonRecordGraphEntity lessonRecordGraph = new LessonRecordGraphEntity();
+        lessonRecordGraph.setLessonResult(lessonResult);
+        lessonRecordGraph.setGraphX(request.getGraphInfoX());
+        lessonRecordGraph.setGraphY(request.getGraphInfoY());
+        return lessonRecordGraph;
     }
 
     public Long saveClaim(Long userId, Long lessonId, String content) {
