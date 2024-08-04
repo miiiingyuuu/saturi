@@ -1,8 +1,14 @@
 package com.tunapearl.saturi.controller.admin;
 
+import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
 import com.tunapearl.saturi.dto.admin.statistics.AvgSimilarityAndAccuracyByLocationIdResponseDTO;
+import com.tunapearl.saturi.dto.admin.statistics.LocationIdAndUserNumDTO;
 import com.tunapearl.saturi.dto.admin.statistics.UserLocationResponseDTO;
+import com.tunapearl.saturi.service.lesson.LessonService;
+import com.tunapearl.saturi.service.user.AdminService;
+import com.tunapearl.saturi.service.user.LocationService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -19,11 +26,33 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AdminStatisticsController {
 
+    private final AdminService adminService;
+    private final LocationService locationService;
+
     @GetMapping("/user-location")
     public ResponseEntity<UserLocationResponseDTO> getUserLocation() {
         log.info("received request to get user-location statistics");
-        // TODO 출신 지역별 사용자 현황 조회
-        return ResponseEntity.ok(null);
+        List<LocationEntity> locations = locationService.findAll();
+        int locationNum = locations.size();
+        Long[] userNums = new Long[locationNum + 1]; // not zero index
+        List<UserEntity> users = adminService.getAllUsersSortedByExp(); //FIXME admin 제외한걸로
+        for (UserEntity user : users) {
+            userNums[user.getLocation().getLocationId().intValue()]++;
+        }
+        List<LocationIdAndUserNumDTO> absoluteValue = new ArrayList<>();
+        for(int i = 1; i < locationNum + 1; i++) {
+            LocationIdAndUserNumDTO locationIdAndUserNum = new LocationIdAndUserNumDTO((long)i, userNums[i]);
+            absoluteValue.add(locationIdAndUserNum);
+        }
+
+        List<LocationIdAndUserNumDTO> relativeValue = new ArrayList<>();
+        int userNum = users.size();
+        for(int i = 1; i < locationNum + 1; i++) {
+            LocationIdAndUserNumDTO locationIdAndUserNum = new LocationIdAndUserNumDTO((long)i, userNums[i] * 100 / userNum);
+            relativeValue.add(locationIdAndUserNum);
+        }
+
+        return ResponseEntity.ok(new UserLocationResponseDTO(relativeValue, absoluteValue));
     }
 
     @GetMapping("/avg-similarity")
