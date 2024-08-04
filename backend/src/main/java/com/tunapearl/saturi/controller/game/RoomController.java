@@ -1,12 +1,13 @@
 package com.tunapearl.saturi.controller.game;
 
-import com.tunapearl.saturi.domain.game.PersonChatRoom;
+import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
-import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.repository.redis.PersonChatRoomRepository;
+import com.tunapearl.saturi.service.QuizService;
 import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,9 @@ public class RoomController {
     private final JWTUtil jwtUtil;
     private final PersonChatRoomRepository personChatRoomRepository;
 
+    //test용임
+    private final QuizService quizService;
+
     /**
      * 개인방 생성
      */
@@ -33,11 +37,11 @@ public class RoomController {
         long userId = jwtUtil.getUserId(authorization);
         request.setUserId(userId);
 
-        PersonChatRoom topic= PersonChatRoom.create(userId);
+        PersonChatRoom topic = PersonChatRoom.create(userId);
         topic.setUserId(userId);
         personChatRoomRepository.save(topic);
-        
-        GameMatchingResponseDTO responseDTO=new GameMatchingResponseDTO();
+
+        GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
         responseDTO.setRoomId(topic.getPersonchatroomId());
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -62,8 +66,15 @@ public class RoomController {
 
         try {
             return ResponseEntity.ok().body(gameService.getTip());
-        }catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error getting gameTip", e);
         }
+    }
+
+    @PostMapping("/quiz")
+    public ResponseEntity<?> registQuiz(@RequestBody QuizRegisterRequestDTO registerRequestDto) {
+
+        quizService.saveQuiz(registerRequestDto);
+        return null;
     }
 }

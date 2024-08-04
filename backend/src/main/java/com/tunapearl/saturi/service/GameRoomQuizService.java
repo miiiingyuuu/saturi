@@ -33,6 +33,4 @@ public class GameRoomQuizService {
             grQuizRepository.save(grQuiz);
         }
     }
-
-
 }

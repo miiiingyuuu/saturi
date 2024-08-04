@@ -1,11 +1,11 @@
-package com.tunapearl.saturi.domain.game;
+package com.tunapearl.saturi.domain.game.person;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RoomMessage {
+public class PersonChatMessage {
 
     private String type = "ROOM";//개인방인지 게임방인지 구분하기 위함
     private Long locationId;

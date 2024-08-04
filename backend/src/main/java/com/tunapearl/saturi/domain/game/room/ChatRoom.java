@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.domain.game;
+package com.tunapearl.saturi.domain.game.room;
 
 import org.springframework.data.annotation.Id;
 import lombok.Getter;

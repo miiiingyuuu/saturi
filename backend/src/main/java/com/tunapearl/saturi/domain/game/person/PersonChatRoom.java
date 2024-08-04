@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.domain.game;
+package com.tunapearl.saturi.domain.game.person;
 
 import lombok.Getter;
 import lombok.Setter;
