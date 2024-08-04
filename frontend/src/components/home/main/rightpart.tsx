@@ -1,9 +1,6 @@
 import { useRouter } from 'next/navigation';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Card from "@mui/material/Card";
+import { Button, Box, Card, Typography } from "@mui/material";
 import Image from "next/image"
-import Typography from '@mui/material/Typography';
 
 export default function RightPart() {
   const router = useRouter();
@@ -13,7 +10,7 @@ export default function RightPart() {
   }
 
   return (
-    <div className="rightpart" style={{ height: '100vh' }}>
+    <Box className="rightpart" style={{ height: '100vh' }}>
       <Box sx={{ display: 'grid', placeItems: 'center', height: '85vh' }}>
         <Card sx={{ width: "65vw", height:"75vh", border: '2px solid black', borderRadius: 5, top:"-50%", backgroundColor: "whitesmoke" }} />
       </Box>
@@ -28,6 +25,6 @@ export default function RightPart() {
         </Box>
         <Button variant="contained" onClick={GameStartButton} sx={{ marginTop: "20px", width: "15vw", height: "5vh", fontSize: "25px"  }}>게임 시작</Button>
       </Box>
-    </div>
+    </Box>
   );
 }

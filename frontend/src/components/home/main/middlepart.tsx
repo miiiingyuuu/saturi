@@ -1,9 +1,10 @@
 import "../../../styles/home/main/background.css";
 import { MiddlePartProps } from "@/utils/props";
+import { Box, Typography } from "@mui/material";
 
 export default function MiddlePart({ middlePosition, mainPageIndicator }: MiddlePartProps) {
   return (
-    <div 
+    <Box 
       className="middlepart" 
       style={{
         left: (() => {
@@ -16,7 +17,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           } return "0%";              
         })()
       }}>
-      <div className="area">
+      <Box className="area">
         <ul className="circles">
           <li/>
           <li/>
@@ -30,8 +31,9 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           <li/>
         </ul>
 
-      </div>
-      <h1 
+      </Box>
+      <Typography 
+        variant = "h1"
         className="blink" 
         style={{
           position: 'absolute',
@@ -39,7 +41,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           left: '50%',
           transform: 'translate(-50%, -50%)',
           fontSize: 25,
-        }}> {mainPageIndicator} </h1>
-    </div>
+        }}> {mainPageIndicator} </Typography>
+    </Box>
   );
 }
