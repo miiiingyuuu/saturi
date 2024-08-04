@@ -8,22 +8,61 @@ import {
   Avatar,
   Box,
   Divider,
-  LinearProgress,
   Grid,
   Paper
 } from "@mui/material";
-import { FaFire, FaMapMarkerAlt, FaUserAlt, FaUsers } from "react-icons/fa";
+import { FaMapMarkerAlt, FaUserAlt, FaUsers } from "react-icons/fa";
 import { getProfile, getAllCookies } from "@/utils/profile";
 import { getCookie } from "cookies-next";
-import Image from 'next/image';
 import Tier from '@/components/profile/tier'
 import Rank from "@/components/profile/rank";
 import { getUserRank } from "@/utils/profile";
 import sampleData from '@/mocks/dashboard_sample.json';
+import RecentProblem from "@/components/profile/recentProblem";
+import WeeklyStreak from "@/components/profile/weeklyStreak";
+import YearlyStreak from "@/components/profile/yearlyStreak";
+import api from "@/lib/axios";
+
+
+// Dashboard type 선언
+interface DashboardData {
+  userExpInfo: {
+    currentExp: number;
+    userRank: number;
+  };
+  recentLessonGroup: {
+    lessonGroupId: number;
+    lessonGroupName: string;
+    locationId: number;
+    categoryId: number;
+    avgSimilarity: number | null;
+    avgAccuracy: number | null;
+    startDt: string;
+    endDt: string | null;
+    isCompleted: boolean;
+  };
+  continuousLearnDay: {
+    learnDays: number;
+    daysOfTheWeek: number[];
+  };
+  streakInfo: Array<{
+    streakDate: {
+      year: number;
+      month: number;
+      day: number;
+    };
+    solvedNum: number;
+  }>;
+  totalLessonInfo: {
+    totalLessonGroup: number;
+    totalLesson: number;
+  };
+}
 
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [userRank, setUserRank] = useState<number | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [profile, setProfile] = useState({
     profileImageURL: '',
     exp: '',
@@ -140,6 +179,31 @@ export default function ProfilePage() {
       gender: getFormattedGender(cookies.gender as string),
       locationId: getFormattedLocationId(cookies.locationId as string),
     }));
+
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        const accessToken = sessionStorage.getItem('accessToken');
+        if (!accessToken) {
+          throw new Error('Access token not found');
+        }
+
+        // 실제 API 호출 (현재는 주석 처리)
+        // const response = await api.get('/user/auth/dashboard', {
+        //   headers: { Authorization: `Bearer ${accessToken}` }
+        // });
+        // setDashboardData(response.data);
+
+        // 샘플 데이터 사용
+        setDashboardData(sampleData as DashboardData);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   return (
@@ -203,48 +267,21 @@ export default function ProfilePage() {
         {/* 최근 푼 문제 */}
         <Grid item xs={12}>
           <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
-            <Box display="flex" alignItems="center">
-              <Avatar sx={{ bgcolor: 'green', mr: 2 }}>GO</Avatar>
-              <Box flexGrow={1}>
-                <Typography variant="body1">경상도 사투리 - 입상</Typography>
-                <LinearProgress variant="determinate" value={75.93} />
-                <Typography variant="body2" sx={{ mt: 1 }}>평균 정확도: 75.93%</Typography>
-              </Box>
-            </Box>
+            <RecentProblem data={dashboardData?.recentLessonGroup || null} isLoading={isLoading} />
           </Paper>
         </Grid>
 
         {/* 주간 스트릭 */}
         <Grid item xs={12}>
           <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>주간 스트릭</Typography>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="body2">24년 8월 1주차</Typography>
-              <Typography variant="body2">4일 연속 학습 중!</Typography>
-            </Box>
-            <Box display="flex" justifyContent="space-between" mt={2}>
-              {['월', '화', '수', '목', '금', '토', '일'].map((day, index) => (
-                <Box key={day} textAlign="center">
-                  <Typography variant="body2">{day}</Typography>
-                  <FaFire color={index < 4 ? "orange" : "gray"} />
-                </Box>
-              ))}
-            </Box>
+            <WeeklyStreak data={dashboardData?.continuousLearnDay || null} isLoading={isLoading} />
           </Paper>
         </Grid>
 
         {/* 연간 스트릭 */}
         <Grid item xs={12}>
           <Paper elevation={3} sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>연간 스트릭</Typography>
-            {/* 여기에 연간 스트릭 차트를 구현해야 합니다. 
-                복잡한 차트이므로 별도의 라이브러리(예: recharts)를 사용하는 것이 좋습니다. */}
-            <Box height={200} bgcolor="lightgray">
-              <Typography variant="body2" align="center">
-                연간 스트릭 차트 (구현 필요)
-              </Typography>
-            </Box>
+            <YearlyStreak data={dashboardData?.streakInfo || null} isLoading={isLoading} />
           </Paper>
         </Grid>
       </Grid>

@@ -22,19 +22,28 @@ const getTierFromExp = (exp: number) => {
   return 'diamond';
 };
 
+type TierKey = keyof typeof tierImages;
+
 interface TierProps {
-  exp: number | null;
+  exp: number;
   isLoading: boolean;
+}
+
+const formatTierName = (tier : TierKey): string => {
+  return tier.charAt(0).toUpperCase() + tier.slice(1) + ' Tier';
 }
 
 const Tier: React.FC<TierProps> = ({ exp, isLoading }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const tier = exp !== null && !isNaN(exp) ? getTierFromExp(exp) : 'bronze';
-  const imageSrc = tierImages[tier];
 
   useEffect(() => {
     setImageLoaded(false);
-  }, [imageSrc]);
+  }, [exp]);
+
+  const tierKey = getTierFromExp(exp);
+  const imageSrc = tierImages[tierKey];
+  const tierName = formatTierName(tierKey);
 
   return (
     <Paper elevation={3} sx={{ p: 2, bgcolor: 'primary.main', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -66,10 +75,10 @@ const Tier: React.FC<TierProps> = ({ exp, isLoading }) => {
         {/* 티어 이름과 경험치 */}
         <Box>
           <Typography variant="h5" sx={{ mb: 0.5 }}>
-            {isLoading ? "Loading 중..." : `${tier.charAt(0).toUpperCase() + tier.slice(1)} Tier`}
+            {tierName}
           </Typography>
           <Typography variant="h6">
-            {isLoading ? "Loading 중..." : `${exp} EXP`}
+            {`${exp} EXP`}
           </Typography>
         </Box>
       </Box>
