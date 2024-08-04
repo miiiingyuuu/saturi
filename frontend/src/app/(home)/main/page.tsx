@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image"
-import { Box, Button } from "@mui/material"
+import { Box, Button, Typography, useMediaQuery  } from "@mui/material"
 
 // Props
 import { ButtonPartProps, MiddleMapProps } from '@/utils/props';
@@ -49,10 +49,16 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
   );
 }
 
-function MiddleMap({ left, onRegionClick, selectedRegion }: MiddleMapProps) {
+function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: MiddleMapProps) {
+  const isDesktop = useMediaQuery('(min-width:768px)');
+
+  if (!isDesktop && middleToWhere !== 1) {
+    return null;
+  }
+  
   return (
-    <Box className="middleMap" style={{ left: left === "null" ? undefined : left, top: "39vh" }}>
-      <h1 style={{ textAlign: "center" }}> {selectedRegion}</h1>
+    <Box className="middleMap" style={{ left: left === "null" ? undefined : left, top: "45vh" }}>
+      <Typography variant="h4" sx={{ textAlign: "center", fontWeight: "bold" }}> {selectedRegion} </Typography>
       <Box style={{ width: '100%', height: '100%' }}>
         <KoreaMap onRegionClick={onRegionClick} />
       </Box>
@@ -128,6 +134,7 @@ export default function App() {
           left={mapLeft}
           onRegionClick={handleRegionClick}
           selectedRegion={selectedRegion}
+          middleToWhere = {middleToWhere}
         />        
       </Box>
     </Box>

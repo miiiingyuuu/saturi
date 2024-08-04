@@ -65,4 +65,5 @@ export interface MiddleMapProps {
   left: string;
   onRegionClick: (region: string) => void;
   selectedRegion: string;
+  middleToWhere: number;
 }

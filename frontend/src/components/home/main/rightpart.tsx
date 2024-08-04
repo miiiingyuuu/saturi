@@ -28,3 +28,23 @@ export default function RightPart() {
     </Box>
   );
 }
+
+
+{/* <Box sx={{ flexGrow: 1, height: '100vh' }}>
+      <Grid container spacing={2} sx={{ height: '100%' }}>
+        <Grid item xs={2}/>
+        <Grid item xs={8} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '85vh' }}>
+            <Card sx={{ width: "100%", height: "75vh", border: '2px solid black', borderRadius: 5, backgroundColor: "whitesmoke" }} />
+          </Box>
+          <Box sx={{ marginTop: 'auto', marginBottom: 2, width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography variant="h1" sx={{ fontSize: 39, fontWeight: "bold" }}>게임 페이지</Typography>
+            <Card sx={{ width: "100%", maxWidth: 300, height: "auto", display: 'grid', placeItems: 'center', marginTop: 2 }}>
+              <Image src="/MainPage/myLevel.png" alt="button food" width={200} height={200} />
+            </Card>
+            <Button variant="contained" onClick={GameStartButton} sx={{ marginTop: 2, width: "100%", maxWidth: 300, height: "auto", fontSize: "25px" }}>게임 시작</Button>
+          </Box>
+        </Grid>
+        <Grid item xs={2}/>
+      </Grid>
+    </Box> */}
