@@ -45,14 +45,14 @@ public class GameRoomEntity {
     private List<GameRoomParticipantEntity> participants;
 
     @OneToMany(mappedBy = "room")
-    private List<GameRoomQuizEntity>  quizEntityList = new ArrayList<>();
+    private List<GameRoomQuizEntity>  grQuizEntityList = new ArrayList<>();
 
 
     /*
     * 연관관계 편의 메서드
     */
     public void addQuiz(GameRoomQuizEntity quiz){
-        quizEntityList.add(quiz);
+        grQuizEntityList.add(quiz);
         quiz.setGameRoom(this);
     }
 }

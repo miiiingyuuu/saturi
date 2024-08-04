@@ -36,7 +36,7 @@ public class QuizRepository {
         return res.isEmpty() ? Optional.empty() : Optional.of(res);
     }
 
-    public List<QuizEntity> findByLocationId(Long locationId, List<Integer> idList) {
+    public List<QuizEntity> findByIdList(List<Long> idList) {
         List res = em.createQuery("select q from QuizEntity q where q.quizId IN :idList")
                 .setParameter("idList", idList)
                 .getResultList();
@@ -57,7 +57,7 @@ public class QuizRepository {
                 .fetch();
     }
 
-    public List<Integer> getAvailableQuizId(){
+    public List<Long> getAvailableQuizId(){
         return em.createQuery("select q.quizId from QuizEntity q order by q.quizId asc").getResultList();
     }
 

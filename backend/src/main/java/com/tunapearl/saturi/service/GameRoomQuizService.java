@@ -23,19 +23,16 @@ public class GameRoomQuizService {
     private final QuizRepository quizRepository;
     private final GameRoomRepository roomRepository;
 
-    public void poseQuiz(Long roomId, QuizEntity quiz) {
+    public void poseTenQuiz(Long roomId, List<Long> quisIdList){
+        GameRoomEntity room = roomRepository.findById(roomId).orElseThrow(()
+                -> new RuntimeException(String.format("존재하지 않는 게임방 ID 입니다: %d", roomId)));
+        List<QuizEntity> quizList = quizRepository.findByIdList(quisIdList);
 
+        for(int i = 0; i < quizList.size(); i++){
+            GameRoomQuizEntity grQuiz = GameRoomQuizEntity.create(room, quizList.get(i), Long.valueOf(i+1));
+            grQuizRepository.save(grQuiz);
+        }
     }
 
-    public void poseTenQuiz(Long roomId, List<Integer> quisIdList){
 
-//        GameRoomEntity room = roomRepository.
-//        List<QuizEntity> quizList = quizRepository.findByLocationId()
-
-    }
-
-
-    private GameRoomQuizEntity convertQuizToGRQuiz(QuizEntity quiz){
-        return null;
-    }
 }

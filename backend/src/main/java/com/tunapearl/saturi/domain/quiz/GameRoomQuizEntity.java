@@ -43,14 +43,16 @@ public class GameRoomQuizEntity {
 
     public static GameRoomQuizEntity create(GameRoomEntity room, QuizEntity quiz, Long sequence){
         GameRoomQuizEntity grQuiz = new GameRoomQuizEntity();
-        grQuiz.gameRoomQuizId = new GameRoomQuizId();
 
+        // 어떤 방에서 출제됐는지 설정
         grQuiz.gameRoomQuizId.setRoomId(room.getRoomId());
-        grQuiz.room = room;
+        room.addQuiz(grQuiz);
 
+        // 어떤 퀴즈가 출제됐는지 설정
         grQuiz.gameRoomQuizId.setQuizId(quiz.getQuizId());
         grQuiz.quiz = quiz;
 
+        // 출제 시간, 순서
         grQuiz.presentDt = LocalDateTime.now();
         grQuiz.sequence = sequence;
         return grQuiz;
