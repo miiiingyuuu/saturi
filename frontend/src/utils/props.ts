@@ -64,3 +64,8 @@ export interface QuizProps {
   creationDt: string
   isObjective: boolean
 }
+
+export interface TipsProps {
+  tipId: number
+  content: string
+}
