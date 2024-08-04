@@ -55,20 +55,35 @@ public class StartupApplicationListener {
             "https://storage.cloud.google.com/saturi/%EC%96%B4%EC%96%B4%EC%96%B4.wav",
             "https://storage.cloud.google.com/saturi/%EC%9D%B4%EC%97%90%EC%9D%B4%EC%8A%B9.wav"};
     private static final String[] LESSON_VOICE_FILE_NAME = {"가가가가", "블루베리스무디", "어느정도높이까지올라가는거에요", "어어어", "이에이승"};
-
+    private static final Long LESSON_TEST_USER_ID = 7L;
 
     //TODO 퀴즈 샘플 데이터 등록 필요
 
     @EventListener
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        createLocation(); // 지역 샘플 추가(
+        // 1. 지역, 사투리무새 추가
+        createLocation();
         createBird();
+
+        // 2. 유저 추가(1번 추가 이후)
         createUser();
+
+        // 3. 게임 팁 추가
         createTip();
+
+        // 4. 학습 유형 추가
         createLessonCategory();
+
+        // 5. 학습 그룹 추가(4번 추가 이후)
         createLessonGroup();
+
+        // 6. 학습 추가(5번 추가 이후)
         createLesson();
+
+
+        // 7. 레슨 그룹 결과 생성(5, 6 이후)
+        createLessonGroupResult();
     }
 
     private void createLocation() {
@@ -84,6 +99,7 @@ public class StartupApplicationListener {
     }
 
     private void createUser() {
+        // 회원 test 계정
         UserRegisterRequestDTO userInfoBasic1 = new UserRegisterRequestDTO(
                 "test1@email.com", "password1!", "testnickname1");
         UserRegisterRequestDTO userInfoBasic2 = new UserRegisterRequestDTO(
@@ -96,6 +112,12 @@ public class StartupApplicationListener {
                 "test5@email.com", "password1!", "testnickname5");
         UserRegisterRequestDTO userInfoBasic6 = new UserRegisterRequestDTO(
                 "test6@email.com", "password1!", "testnickname6");
+
+        // lesson test 계정
+        UserRegisterRequestDTO userInfoLesson = new UserRegisterRequestDTO(
+                "lesson@email.com", "password1!", "lessonTester");
+
+        // admin test 계정
         UserRegisterRequestDTO userInfoAdmin = new UserRegisterRequestDTO(
                 "admin@email.com", "password1!", "admintest");
         UserRegisterRequestDTO userInfoAdmin1 = new UserRegisterRequestDTO(
@@ -107,6 +129,7 @@ public class StartupApplicationListener {
         userService.registerUser(userInfoBasic4);
         userService.registerUser(userInfoBasic5);
         userService.registerUser(userInfoBasic6);
+        userService.registerUser(userInfoLesson); // userId 7번(순서 바뀌면 LESSON_TEST_USER_ID 수정 필요)
         userService.registerAdminUser(userInfoAdmin);
         userService.registerAdminUser(userInfoAdmin1);
     }
@@ -138,10 +161,23 @@ public class StartupApplicationListener {
         }
     }
 
+    /**
+     * 레슨 test data (lessonGroupId1에 5문제)
+     */
     private void createLesson() {
         LessonGroupEntity lessonGroup = lessonService.findByIdLessonGroup(1L);
         for (int i = 0; i < 5; i++) {
             adminLessonService.createLesson(lessonGroup, LESSON_SCRIPT[i], LESSON_PATH[i], LESSON_VOICE_FILE_NAME[i]);
         }
     }
+    /**
+     * lessonGroupResult 테이블 생성
+     */
+    private void createLessonGroupResult() {
+        Long lessonGroupResultId = lessonService.createLessonGroupResult(LESSON_TEST_USER_ID, 1L);// userId 7, lessonGroupId 1
+    }
+
+    /**
+     *
+     */
 }
