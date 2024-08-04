@@ -4,12 +4,12 @@ import { useState, useRef } from 'react';
 import Image from "next/image"
 
 // 하위 컴포넌트들 
-import LeftPart from './components/leftpart';
-import MiddlePart from './components/middlepart';
-import RightPart from './components/rightpart';
+import LeftPart from '../../../components/home/main/leftpart';
+import MiddlePart from '../../../components/home/main/middlepart';
+import RightPart from '../../../components/home/main/rightpart';
 
-import './styles/mainPage.css';
-import KoreaMap from './components/koreaMap';
+import '../../../styles/home/main/mainPage.css';
+import KoreaMap from '../../../components/home/main/koreaMap';
 
 //Props
 import { ButtonPartProps } from '@/utils/props';

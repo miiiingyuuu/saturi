@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import '../styles/koreaMap.css';
+import '../../../styles/home/main/koreaMap.css';
 
 // 이걸 여기에서 삭제하면 eslint 에러 발생해서 여기 그대로 둠. 
 interface IconProps {

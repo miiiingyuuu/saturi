@@ -1,4 +1,4 @@
-import "../styles/background.css";
+import "../../../styles/home/main/background.css";
 import { MiddlePartProps } from "@/utils/props";
 
 export default function MiddlePart({ middlePosition, mainPageIndicator }: MiddlePartProps) {
@@ -18,16 +18,16 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
       }}>
       <div className="area">
         <ul className="circles">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
+          <li/>
+          <li/>
+          <li/>
+          <li/>
+          <li/>
+          <li/>
+          <li/>
+          <li/>
+          <li/>
+          <li/>
         </ul>
 
       </div>
