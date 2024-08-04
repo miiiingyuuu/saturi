@@ -97,7 +97,6 @@ public class LessonController {
     @PutMapping("/lesson/{lessonId}")
     public ResponseEntity<LessonMsgResponseDTO> skipLesson(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable("lessonId") Long lessonId) throws UnAuthorizedException {
-        //FIXME 이미 학습했던 레슨이라면 무시하도록 변경
         log.info("received request to skip Lesson {}", lessonId);
         Long userId = jwtUtil.getUserId(accessToken);
         Long lessonResultId = lessonService.skipLesson(userId, lessonId);
