@@ -50,8 +50,10 @@ public class ChatController {
         redisPublisher.personalPublish(chatService.getPersonTopic(message.getRoomId()), message);
     }
 
-
-    //'/pub/chat'로 들어오는 메시징 처리
+    /**
+     * 게임방 매칭용
+     */
+    //'/pub/game/chat'로 들어오는 메시징 처리
     @MessageMapping("/chat")
     public void progressGame(@Header("Authorization") String authorization, @ModelAttribute ChatMessage message) throws UnAuthorizedException {
 

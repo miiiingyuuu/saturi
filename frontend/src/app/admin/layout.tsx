@@ -20,6 +20,10 @@ import listItems from "@/components/admin-layout/listItems";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import HomeIcon from "@mui/icons-material/Home";
+import ListItemText from "@mui/material/ListItemText";
 
 
 const drawerWidth: number = 240;
@@ -159,6 +163,14 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
                 </IconButton>
               </Toolbar>
               <Divider />
+              <List component="nav">
+                <ListItemButton onClick={() => router.push("/admin")}>
+                  <ListItemIcon>
+                    <HomeIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="메인"/>
+                </ListItemButton>
+              </List>
               <List component="nav">{listItems}</List>
             </Drawer>
           </>

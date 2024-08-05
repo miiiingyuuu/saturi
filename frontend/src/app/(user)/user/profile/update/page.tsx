@@ -1,80 +1,227 @@
 "use client";
 
-import React, { useState, useMemo, MouseEvent } from "react";
-import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField, Dialog, DialogTitle, DialogContent, Grid, CircularProgress } from "@mui/material";
+import api from "@/lib/axios";
 
+// type 선언
+type Gender = 'DEFAULT' | 'MALE' | 'FEMALE';
+type AgeRange = 'DEFAULT' | 'CHILD' | 'TEENAGER' | 'TWENTEEN' | 'THIRTEEN' | 'FOURTEEN' | 'FIFTEEN' | 'SIXTEEN' | 'SEVENTEEN' | 'EIGHTEEN' | 'NINETEEN';
+type LocationId = 1 | 2 | 3 | 4 | 5 | 6 | 7; // 1: default, 2: gyungsang, 3: gyunggi, etc.
+
+// 프로필 데이터 받아오기
+interface UserProfile {
+  nickname: string;
+  email: string;
+  locationId: LocationId;
+  gender: Gender;
+  ageRange: AgeRange;
+  birdId: number;
+}
+
+interface ProfileUpdateData {
+  nickname: string;
+  locationId: LocationId;
+  gender: Gender;
+  ageRange: AgeRange;
+  birdId: number;
+  isChanged: number;
+}
+
+// 선택지들
+const profileImages = [
+  { id: 1, src: '/main_profile/1.png' },
+  { id: 2, src: '/main_profile/2.png' },
+  { id: 3, src: '/main_profile/3.png' },
+  { id: 4, src: '/main_profile/4.png' },
+  { id: 5, src: '/main_profile/5.png' },
+  { id: 6, src: '/main_profile/6.png' },
+  { id: 7, src: '/main_profile/7.png' },
+  { id: 8, src: '/main_profile/8.png' },
+  { id: 9, src: '/main_profile/9.png' },
+  { id: 10, src: '/main_profile/10.png' },
+  { id: 11, src: '/main_profile/11.png' },
+  { id: 12, src: '/main_profile/12.png' },
+  { id: 13, src: '/main_profile/13.png' },
+  { id: 14, src: '/main_profile/14.png' },
+  { id: 15, src: '/main_profile/15.png' },
+  { id: 16, src: '/main_profile/16.png' },
+  { id: 17, src: '/main_profile/17.png' },
+  { id: 18, src: '/main_profile/18.png' },
+];
+
+
+const getFormattedGender = (gender: string): string => {
+  switch (gender) {
+    case 'DEFAULT': return '정보 입력 안함';
+    case 'FEMALE': return '여자';
+    case 'MALE': return '남자';
+    default: return '정보 입력 안함';    
+  }
+};
+
+const getFormattedAgeRange = (ageRange: string): string => {
+  switch (ageRange) {
+    case 'DEFAULT': return '정보 입력 안함';
+    case 'CHILD': return '영유아';
+    case 'TEENAGER': return '10대';
+    case 'TWENTEEN': return '20대';
+    case 'THIRTEEN': return '30대';
+    case 'FOURTEEN': return '40대';
+    case 'FIFTEEN': return '50대';
+    case 'SIXTEEN': return '60대';
+    case 'SEVENTEEN': return '70대';
+    case 'EIGHTEEN': return '80대';
+    case 'NINETEEN': return '90대';
+    default: return '정보 입력 안함';
+  }
+};
+
+const getFormattedLocationId = (locationId: number): string => {
+  switch (locationId) {
+    case 1: return '정보 입력 안함';
+    case 2: return '경상도';
+    case 3: return '경기도';
+    case 4: return '강원도';
+    case 5: return '충청도';
+    case 6: return '전라도';
+    case 7: return '제주도';
+    default: return '정보 입력 안함';
+  }
+};
+
+// 프로필 수정 로직
 export default function EditProfilePage() {
-  // 상태 변수 선언
-  const [nickname, setNickname] = useState('');
-  const [email] = useState('email@gmail.com');
-  const [dialectKeys, setDialectKeys] = useState(new Set<string>(["경상도"]));
-  const [genderKeys, setGenderKeys] = useState(new Set<string>(["남성"]));
-  const [ageGroupKeys, setAgeGroupKeys] = useState(new Set<string>(["20대-30대"]));
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [originalNickname, setOriginalNickname] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
-  // 선택된 값을 문자열로 변환하여 저장
-  const dialect = useMemo(
-    () => Array.from(dialectKeys).join(", ").replaceAll("_", " "),
-    [dialectKeys]
-  );
-
-  const gender = useMemo(
-    () => Array.from(genderKeys).join(", ").replaceAll("_", " "),
-    [genderKeys]
-  );
-
-  const ageGroup = useMemo(
-    () => Array.from(ageGroupKeys).join(", ").replaceAll("_", " "),
-    [ageGroupKeys]
-  );
-
-  // 수정 완료 버튼 클릭 시 호출되는 함수
-  const handleSave = () => {
-    alert('수정된 내용을 저장했습니다.');
-  };
-
-  // 드롭다운 메뉴 상태 변수
   const [dialectAnchorEl, setDialectAnchorEl] = useState<null | HTMLElement>(null);
   const [genderAnchorEl, setGenderAnchorEl] = useState<null | HTMLElement>(null);
-  const [ageGroupAnchorEl, setAgeGroupAnchorEl] = useState<null | HTMLElement>(null);
+  const [ageRangeAnchorEl, setAgeRangeAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleDialectClick = (event: MouseEvent<HTMLElement>) => {
-    setDialectAnchorEl(event.currentTarget);
+  useEffect(() => {
+    // 프로필 가져오기
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        const accessToken = sessionStorage.getItem('accessToken');
+        if (!accessToken) {
+          throw new Error('Access token not found');
+        }
+
+        const response = await api.get<UserProfile>('/user/auth/profile', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+
+        setUserProfile(response.data);
+        setOriginalNickname(response.data.nickname);
+      } catch (error) {
+        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
+        setError('프로필 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  // Menu 관련 함수 선언들
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (userProfile) {
+      setUserProfile({ ...userProfile, [e.target.name]: e.target.value });
+    }
   };
 
-  const handleGenderClick = (event: MouseEvent<HTMLElement>) => {
-    setGenderAnchorEl(event.currentTarget);
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, type: 'dialect' | 'gender' | 'ageRange') => {
+    if (type === 'dialect') setDialectAnchorEl(event.currentTarget);
+    else if (type === 'gender') setGenderAnchorEl(event.currentTarget);
+    else setAgeRangeAnchorEl(event.currentTarget);
   };
 
-  const handleAgeGroupClick = (event: MouseEvent<HTMLElement>) => {
-    setAgeGroupAnchorEl(event.currentTarget);
+  const handleMenuClose = (type: 'dialect' | 'gender' | 'ageRange') => {
+    if (type === 'dialect') setDialectAnchorEl(null);
+    else if (type === 'gender') setGenderAnchorEl(null);
+    else setAgeRangeAnchorEl(null);
   };
 
-  const handleDialectClose = () => {
-    setDialectAnchorEl(null);
+  const handleSelect = (type: 'dialect' | 'gender' | 'ageRange', value: LocationId | Gender | AgeRange) => {
+    if (userProfile) {
+      if (type === 'dialect') {
+        setUserProfile({ ...userProfile, locationId: value as LocationId });
+      } else if (type === 'gender') {
+        setUserProfile({ ...userProfile, gender: value as Gender });
+      } else {
+        setUserProfile({ ...userProfile, ageRange: value as AgeRange });
+      }
+    }
+    handleMenuClose(type);
   };
 
-  const handleGenderClose = () => {
-    setGenderAnchorEl(null);
+  const handleImageClick = () => {
+    setIsImageDialogOpen(true);
   };
 
-  const handleAgeGroupClose = () => {
-    setAgeGroupAnchorEl(null);
+  const handleImageSelect = (birdId: number) => {
+    if (userProfile) {
+      setUserProfile({ ...userProfile, birdId });
+    }
+    setIsImageDialogOpen(false);
   };
 
-  const handleDialectSelect = (key: string) => {
-    setDialectKeys(new Set([key]));
-    handleDialectClose();
-  };
+  const router = useRouter();
 
-  const handleGenderSelect = (key: string) => {
-    setGenderKeys(new Set([key]));
-    handleGenderClose();
-  };
+  // 수정 요청
+  const handleSave = async () => {
+    if (!userProfile) return;
 
-  const handleAgeGroupSelect = (key: string) => {
-    setAgeGroupKeys(new Set([key]));
-    handleAgeGroupClose();
-  };
+    try {
+      const accessToken = sessionStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('Access token not found');
+      }
+
+      const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
+      
+      const updateData: ProfileUpdateData = {
+        nickname: userProfile.nickname,
+        locationId: userProfile.locationId,
+        gender: userProfile.gender,
+        ageRange: userProfile.ageRange,
+        birdId: userProfile.birdId,
+        isChanged
+      };
+      // console.log('data', updateData)
+      const response = await api.put('/user/auth', updateData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      if (response.status === 200) {
+        alert('프로필이 성공적으로 수정되었습니다.');
+        setOriginalNickname(userProfile.nickname);
+        router.push('/user/profile');
+      }
+    } catch (error) {
+      console.error('프로필 수정 중 오류가 발생했습니다:', error);
+      alert('프로필 수정에 실패했습니다.');
+    }
+  };  
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  if (error || !userProfile) {
+    return <div>{error || '프로필을 불러올 수 없습니다.'}</div>;
+  }
 
   return (
     <div className="flex justify-center items-center bg-gray-100 h-screen">
@@ -83,88 +230,105 @@ export default function EditProfilePage() {
           avatar={
             <Avatar
               alt="profile image"
-              src="https://via.placeholder.com/150"
+              src={`/main_profile/${userProfile.birdId}.png`}
               sx={{ width: 150, height: 150 }}
+              onClick={handleImageClick}
             />
           }
           title={
             <div className="flex flex-col">
               <TextField
                 label="닉네임"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
+                name="nickname"
+                value={userProfile.nickname}
+                onChange={handleInputChange}
                 variant="outlined"
                 fullWidth
                 margin="normal"
               />
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
-              <p className="text-default-500">{email}</p>
+              <p className="text-default-500">{userProfile.email}</p>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={handleDialectClick}>
-                사용하는 사투리: {dialect}
+              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'dialect')}>
+                사용하는 사투리: {getFormattedLocationId(userProfile.locationId)}
               </Button>
               <Menu
                 anchorEl={dialectAnchorEl}
                 open={Boolean(dialectAnchorEl)}
-                onClose={handleDialectClose}
+                onClose={() => handleMenuClose('dialect')}
               >
-                <MenuItem onClick={() => handleDialectSelect("경기도")}>경기도</MenuItem>
-                <MenuItem onClick={() => handleDialectSelect("경상도")}>경상도</MenuItem>
-                <MenuItem onClick={() => handleDialectSelect("전라도")}>전라도</MenuItem>
-                <MenuItem onClick={() => handleDialectSelect("충청도")}>충청도</MenuItem>
-                <MenuItem onClick={() => handleDialectSelect("강원도")}>강원도</MenuItem>
-                <MenuItem onClick={() => handleDialectSelect("제주도")}>제주도</MenuItem>
-                <MenuItem onClick={() => handleDialectSelect("알려주고 싶지 않아요")}>알려주고 싶지 않아요</MenuItem>
+                {[1, 2, 3, 4, 5, 6, 7].map((id) => (
+                <MenuItem key={id} onClick={() => handleSelect('dialect', id as LocationId)}>
+                  {getFormattedLocationId(id)}
+                </MenuItem>
+                ))}
               </Menu>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={handleGenderClick}>
-                성별: {gender}
+              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'gender')}>
+                성별: {getFormattedGender(userProfile.gender)}
               </Button>
               <Menu
                 anchorEl={genderAnchorEl}
                 open={Boolean(genderAnchorEl)}
-                onClose={handleGenderClose}
+                onClose={() => handleMenuClose('gender')}
               >
-                <MenuItem onClick={() => handleGenderSelect("남성")}>남성</MenuItem>
-                <MenuItem onClick={() => handleGenderSelect("여성")}>여성</MenuItem>
-                <MenuItem onClick={() => handleGenderSelect("알려주고 싶지 않아요")}>알려주고 싶지 않아요</MenuItem>
+                {['DEFAULT', 'MALE', 'FEMALE'].map((gender) => (
+                  <MenuItem key={gender} onClick={() => handleSelect('gender', gender as Gender)}>
+                    {getFormattedGender(gender)}
+                  </MenuItem>
+                ))}
               </Menu>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={handleAgeGroupClick}>
-                연령대: {ageGroup}
+              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'ageRange')}>
+                연령대: {getFormattedAgeRange(userProfile.ageRange)}
               </Button>
               <Menu
-                anchorEl={ageGroupAnchorEl}
-                open={Boolean(ageGroupAnchorEl)}
-                onClose={handleAgeGroupClose}
+                anchorEl={ageRangeAnchorEl}
+                open={Boolean(ageRangeAnchorEl)}
+                onClose={() => handleMenuClose('ageRange')}
               >
-                <MenuItem onClick={() => handleAgeGroupSelect("10대-20대")}>10대-20대</MenuItem>
-                <MenuItem onClick={() => handleAgeGroupSelect("30대-40대")}>30대-40대</MenuItem>
-                <MenuItem onClick={() => handleAgeGroupSelect("50대-60대")}>50대-60대</MenuItem>
-                <MenuItem onClick={() => handleAgeGroupSelect("70대 이상")}>70대 이상</MenuItem>
-                <MenuItem onClick={() => handleAgeGroupSelect("알려주고 싶지 않아요")}>알려주고 싶지 않아요</MenuItem>
+                {['DEFAULT', 'CHILD', 'TEENAGER', 'TWENTEEN', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'].map((age) => (
+                <MenuItem key={age} onClick={() => handleSelect('ageRange', age as AgeRange)}>
+                  {getFormattedAgeRange(age)}
+                </MenuItem>
+              ))}
               </Menu>
             </div>
           }
         />
         <CardActions sx={{ justifyContent: 'space-between' }}>
-          <Link href="/accounts/profile" underline="none">
+          <Link href="/user/profile" underline="none">
             <Button variant="contained">뒤로가기</Button>
           </Link>
           <div className="flex space-x-4">
-            <Link href="/accounts/profile" underline="none">
-              <Button variant="contained" color="primary" onClick={handleSave}>
-                수정 완료
-              </Button>
-            </Link>
-            <Link href="/accounts/changepassword" underline="none">
+            <Button variant="contained" color="primary" onClick={handleSave}>
+              수정 완료
+            </Button>
+            <Link href="/user/auth/changepassword" underline="none">
               <Button variant="contained" color="secondary">
                 비밀번호 변경
               </Button>
             </Link>
           </div>
         </CardActions>
+        <Dialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)}>
+        <DialogTitle textAlign={ 'center' }>프로필 이미지를 선택하세요!</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            {profileImages.map((img) => (
+              <Grid item key={img.id} xs={4}>
+                <Avatar
+                  src={img.src}
+                  alt={`Profile ${img.id}`}
+                  sx={{ width: 100, height: 100, cursor: 'pointer' }}
+                  onClick={() => handleImageSelect(img.id)}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </DialogContent>
+      </Dialog>
       </Card>
     </div>
   );
