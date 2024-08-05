@@ -1,11 +1,8 @@
 package com.tunapearl.saturi.repository.game;
 
-import com.tunapearl.saturi.domain.quiz.GameRoomQuizEntity;
-import com.tunapearl.saturi.domain.quiz.QuizEntity;
-import com.tunapearl.saturi.domain.user.UserEntity;
+import com.tunapearl.saturi.domain.game.GameRoomQuizEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
