@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import "./styles.css";
+import { Box } from '@mui/material';
 
 // 색
 const SignupButton = styled(Button)(({ theme }) => ({
@@ -39,10 +40,10 @@ export default function Start() {
   };
 
   return (
-    <div className="container">   
+    <Box className="container">   
       {/* Start 1 */}
       <main className="main">
-        <div className="content">
+        <Box className="content">
           <h1 className="title">실시간 음성 분석, 채팅으로</h1>
           <h3 className="title">사투리를 재미있게 배워보세요.</h3>
           <p className="description">
@@ -65,11 +66,11 @@ export default function Start() {
               회원 가입
             </SignupButton>
           </Link>
-        </div>
+        </Box>
       </main>
 
       {/* Start 2 */}
-      <div className="intro">
+      <Box className="intro">
         <h2>대한민국 전국 사투리를 한 곳에</h2>
         <p>
           경상도, 전라도, 강원도 등 각 지역별로 존재하는 다양한 사투리를 경험해 보세요.
@@ -77,10 +78,10 @@ export default function Start() {
         <p>
           사투리 학습과 채팅을 이용한 게임이 준비되어 있습니다.
         </p>
-      </div>
+      </Box>
 
       {/* Start 3 */}
-      <div className="intro">
+      <Box className="intro">
         <h2>발음 정확도, 억양 유사도를 통한 사투리 학습</h2>
         <p>
           원하는 지역의 학습을 고른 뒤, 해당 음성을 듣고 따라하여 유사도를 얻을 수 있습니다.
@@ -91,10 +92,10 @@ export default function Start() {
         <p>
           실시간 채팅으로 여러 플레이어들과 사투리 맞추기를 겨뤄보세요.
         </p>
-      </div>
+      </Box>
 
       {/* Start 4 */}
-      <div className="intro">
+      <Box className="intro">
         <h2>다양한 컨텐츠를 통해 키우는 나만의 쿼카</h2>
         <p>
           사투리 학습, 실시간 채팅을 통한 경험치로 쿼카를 키워보세요.
@@ -102,9 +103,9 @@ export default function Start() {
         <p>
           데일리 스트릭, 학습, 게임을 통해 귀여운 쿼카를 키울 수 있습니다.
         </p>
-      </div>
+      </Box>
 
-      <div className="bottom">
+      <Box className="bottom">
         <Image src="/SSLogo.png" width={255} height={170} alt="SSLogo" />
         <div>바로 시작 해보세요</div>
         <Link href="/login">
@@ -124,10 +125,10 @@ export default function Start() {
               회원 가입
             </SignupButton>
           </Link>
-      </div>
+      </Box>
 
       {/* FAQ */}
-      <div className="faq">
+      <Box className="faq">
         <h2>자주 묻는 질문</h2>
         {/* 아코디언 1 */}
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
@@ -204,7 +205,7 @@ export default function Start() {
             </Typography>
           </AccordionDetails>
         </Accordion>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
