@@ -26,7 +26,8 @@ export default function useLogout() {
     }
     await deleteCookies();
     // 쿠키 삭제 후 리다이렉션
-    await router.push("/");
+    window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}`
+
   }, [router]);
 }
 

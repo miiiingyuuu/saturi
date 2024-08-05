@@ -45,7 +45,7 @@ export default function LessonGroupForm() {
       const cat = await getLessonCategory();
       setLessonCategoryOptions(cat);
     }
-
+    
     fetchData();
   }, []);
 

@@ -51,18 +51,11 @@ public class ChatService {
         opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
         return chatRoom;
     }
-//
-//    public String matchingGame(String roomId) {
-//
-//
-//        //enterChatRoom해서 리스너 달아야함
-//        enterChatRoom(roomId);
-//
-//        //매칭 로직
-//
-//        return null;
-//        //매칭된 방 TopicId 넘겨줄 것
-//    }
+
+    public void matchingGame(String roomId) {
+
+
+    }
 
 
     /**

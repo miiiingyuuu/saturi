@@ -74,7 +74,7 @@ public class GameService {
 
             //Topic생성해서 redis에 저장
             topic= ChatRoom.create();
-            log.info("created roomId : {}",topic.getRoomId());
+            log.info("created topicId : {}",topic.getRoomId());
 
             gameRoomEntity.setTopicId(topic.getRoomId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);

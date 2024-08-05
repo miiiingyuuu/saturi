@@ -33,7 +33,7 @@ public class RoomController {
         
         PersonChatRoom topic= PersonChatRoom.create(userId);
         GameMatchingResponseDTO responseDTO=new GameMatchingResponseDTO();
-        responseDTO.setRoomId(topic.getPersonchatroomId());
+        responseDTO.setTopicId(topic.getPersonchatroomId());
         return ResponseEntity.ok().body(responseDTO);
     }
 

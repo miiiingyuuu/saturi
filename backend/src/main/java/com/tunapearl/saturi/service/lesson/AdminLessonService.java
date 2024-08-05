@@ -45,7 +45,7 @@ public class AdminLessonService {
     }
 
     @Transactional
-    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath, String fileName) {
+    public Long createLesson(LessonGroupEntity lessonGroup, String script, String filePath) {
         List<LessonEntity> lessons = lessonService.findAllByLessonGroupId(lessonGroup.getLessonGroupId());
         if(lessons.size() >= 5) {
             throw new AlreadyMaxSizeException();
