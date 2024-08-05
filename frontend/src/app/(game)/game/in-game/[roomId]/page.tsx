@@ -4,6 +4,7 @@ import useConnect from "@/hooks/useConnect"
 import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import api from "@/lib/axios";
+import { IMessage } from "@stomp/stompjs";
 
 export default function App(roomId: any) {
   const clientRef = useConnect(roomId)

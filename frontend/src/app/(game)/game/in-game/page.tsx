@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, List, ListItem, ListItemText, Paper, Typography, Card, LinearProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import { handleValueChange } from "@/utils/utils"
 
 export default function ChatApp() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState('');
 
   const handleSend = () => {
@@ -13,10 +14,6 @@ export default function ChatApp() {
       setMessages([...messages, input]);
       setInput('');
     }
-  };
-
-  const handleInputChange = (event) => {
-    setInput(event.target.value);
   };
 
   return (
@@ -96,7 +93,7 @@ export default function ChatApp() {
             variant="outlined"
             fullWidth
             value={input}
-            onChange={handleInputChange}
+            onChange={event => handleValueChange(event, setInput)}
             placeholder="Type your message..."
           />
           <Button

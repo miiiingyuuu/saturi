@@ -12,12 +12,14 @@ import Logout from '@mui/icons-material/Logout';
 import { getProfile, getAllCookies  } from "@/utils/profile";
 import { authToken } from "@/utils/authutils";
 import useLogout from "@/hooks/useLogout";
+import Tier from "@/components/profile/tier";
+import { Settings } from "@mui/icons-material";
 
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [authChecking, setAuthChecking] = useState(true);
+  const [isAuthChecked, setIsAuthChecked] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export default function Header() {
           router.push('/start');
         }
       }
-      setAuthChecking(false);
+      setIsAuthChecked(false);
     };
 
     checkAuth();
@@ -91,7 +93,7 @@ export default function Header() {
           onClick={handleLogoClick}
         />
         <div className="flex items-center">
-          {authChecking ? (
+          {isAuthChecked ? (
             <CircularProgress size={24} />
           ) : !isLoggedIn ? (
             <Link href="/login">
@@ -165,7 +167,10 @@ export default function Header() {
                   </Box>
                 </Box>
                 <Divider />
-                <MenuItem onClick={handleProfileClick}>
+                <MenuItem
+                  onClick={() => {
+                  router.push("/user/profile")
+                }}>
                   {/* <ListItemIcon> */}
                     <Person fontSize="large" />
                   {/* </ListItemIcon> */}
@@ -179,9 +184,10 @@ export default function Header() {
                   Dashboard
                 </MenuItem>
 
-                <MenuItem onClick={() => {
+                <MenuItem
+                  onClick={() => {
                   logout()
-                  router.push("/start")
+                    .then(() => router.push("/start"))
                   }}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
