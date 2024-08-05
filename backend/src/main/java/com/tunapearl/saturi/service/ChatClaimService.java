@@ -49,8 +49,8 @@ public class ChatClaimService {
     /*
     * 유저 채팅 신고 삭제(DB에 남기고 봤다는 표시만 함)
     */
-    public void removeClaim(ClaimDeleteRequestDto request) {
-        chatClaimRepository.removeById(request);
+    public void removeClaim(Long chatClaimId) {
+        chatClaimRepository.removeById(chatClaimId);
     }
 
     /*

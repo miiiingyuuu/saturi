@@ -62,10 +62,10 @@ public class AdminChatClaimController {
     * 채팅 신고 삭제
     * TODO: ClaimDeleteRequest 제거하고 PathVariable로 변경
     */
-    @DeleteMapping("/user")
-    public ResponseEntity<?> deleteChatClaim(@ModelAttribute ClaimDeleteRequestDto request) {
-        log.info("Received delete claim request for {}", request);
-        chatClaimService.removeClaim(request);
+    @DeleteMapping("/user/{chatClaimId}")
+    public ResponseEntity<?> deleteChatClaim(@PathVariable Long chatClaimId) {
+        log.info("Received delete claim request for {}", chatClaimId);
+        chatClaimService.removeClaim(chatClaimId);
         return ResponseEntity.ok("Delete claim successful");
     }
 }
