@@ -1,4 +1,3 @@
-// components/Start.tsx
 "use client";
 
 import * as React from 'react';
@@ -10,7 +9,6 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import "./styles.css";
@@ -50,21 +48,12 @@ export default function Start() {
             사투리를 배워볼 준비가 되셨나요? 서비스를 이용하기 위해 회원가입 하세요.
           </p>
           <Link href="/login">
-            <SignupButton 
+            <Button 
               variant="contained"
-              sx={{
-                fontSize: {
-                  sm: '25px',
-                },
-                fontWeight: 'bold',
-                width: 450, // 픽셀 단위
-                height: 70,
-                margin: '10px 20px', // 상하 10px, 좌우 20px
-                padding: '5px 15px', // 내부 패딩
-              }}
+              className="text-2xl font-bold w-[450px] h-[70px] m-[10px_20px] p-[5px_15px]"
             >
               회원 가입
-            </SignupButton>
+            </Button>
           </Link>
         </Box>
       </main>
@@ -75,7 +64,7 @@ export default function Start() {
         <p>
           경상도, 전라도, 강원도 등 각 지역별로 존재하는 다양한 사투리를 경험해 보세요.
         </p>
-        <p>
+        <p className="text-xl font-bold">
           사투리 학습과 채팅을 이용한 게임이 준비되어 있습니다.
         </p>
       </Box>
@@ -86,10 +75,10 @@ export default function Start() {
         <p>
           원하는 지역의 학습을 고른 뒤, 해당 음성을 듣고 따라하여 유사도를 얻을 수 있습니다.
         </p>
-        <p>
+        <p className="text-xl font-bold">
           각 지역별로 준비된 음성파일로 쉽게 따라할 수 있습니다.
         </p>
-        <p>
+        <p className="text-xl font-bold">
           실시간 채팅으로 여러 플레이어들과 사투리 맞추기를 겨뤄보세요.
         </p>
       </Box>
@@ -100,7 +89,7 @@ export default function Start() {
         <p>
           사투리 학습, 실시간 채팅을 통한 경험치로 쿼카를 키워보세요.
         </p>
-        <p>
+        <p className="text-xl font-bold">
           데일리 스트릭, 학습, 게임을 통해 귀여운 쿼카를 키울 수 있습니다.
         </p>
       </Box>
@@ -137,10 +126,10 @@ export default function Start() {
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>사투리가 서툴러유는 무엇인가요?</Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>사투리가 서툴러유는 무엇인가요?</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>
               사투리가 서툴러유는 실시간 녹음을 통해 발음 정확도와 억양 유사도를 분석하여 사투리와 얼마나 유사한지 보여줍니다. 또한 실시간 채팅 게임을 통해 다른 사람들과 경쟁을 해보세요.
             </Typography>
           </AccordionDetails>
@@ -149,13 +138,13 @@ export default function Start() {
         <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2bh-content"
+            aria-controls="panel2bh-content"sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem' }}
             id="panel2bh-header"
           >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>사투리란 무엇인가요?</Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>사투리란 무엇인가요?</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>
               사투리는 특정 지역에서 사용되는 독특한 언어적 표현이나 억양을 의미합니다. 표준어와는 다르게 지역마다 고유한 어휘, 발음, 문법이 존재하며, 이는 그 지역의 문화와 역사를 반영합니다.
             </Typography>
           </AccordionDetails>
@@ -167,10 +156,10 @@ export default function Start() {
             aria-controls="panel3bh-content"
             id="panel3bh-header"
           >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>왜 사투리를 배워야 하나요?</Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>왜 사투리를 배워야 하나요?</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>
               사투리를 배우면 지역의 문화와 사람들을 더 깊이 이해할 수 있습니다. 또한, 사투리는 지역 정체성의 중요한 부분이므로 이를 배우는 것은 지역 사회에 대한 존중과 소속감을 높일 수 있습니다.
             </Typography>
           </AccordionDetails>
@@ -182,10 +171,10 @@ export default function Start() {
             aria-controls="panel4bh-content"
             id="panel4bh-header"
           >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>게임은 어떻게 진행되나요?</Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>게임은 어떻게 진행되나요?</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>
               게임 탭에서 게임시작 버튼을 클릭하여 큐를 돌린 5명의 유저가 게임을 진행합니다. 주관식 혹은 객관식으로 이루어진 사투리 퀴즈를 통해 점수를 획득하여 높은 등수를 노려보세요.
             </Typography>
           </AccordionDetails>
@@ -197,10 +186,10 @@ export default function Start() {
             aria-controls="panel5bh-content"
             id="panel5bh-header"
           >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>마이크 사용은 필수인가요?</Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>마이크 사용은 필수인가요?</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>
               교육 탭에서 마이크 사용은 필수입니다. 음성 녹음을 통한 억양, 발음 유사도 측정을 통해 그래프와 퍼센트를 결과로 보여줍니다. 게임 탭에서는 마이크는 별도로 필요하지 않으며, 채팅으로만 진행이 됩니다.
             </Typography>
           </AccordionDetails>

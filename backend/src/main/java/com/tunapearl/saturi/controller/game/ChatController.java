@@ -52,9 +52,7 @@ public class ChatController {
 
 
     /**
-     * 메시지 전달용 컨트롤러
-     * 1.게임 매칭요청
-     * 2.게임 채팅
+     * 게임방 매칭용
      */
     //'/pub/game/chat'로 들어오는 메시징 처리
     @MessageMapping("/chat")

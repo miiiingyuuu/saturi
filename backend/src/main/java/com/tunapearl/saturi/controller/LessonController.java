@@ -1,6 +1,5 @@
 package com.tunapearl.saturi.controller;
 
-import com.sun.source.tree.LiteralTree;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonClaimEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,10 +47,9 @@ public class LessonController {
      * 레슨 그룹, 그룹안에 들어가있는 레슨들 정보도 같이 보냄
      */
     @GetMapping("/lesson-group")
-    public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroupIdByLocationAndCategory(@RequestParam Long locationId,
-                                                                                              @RequestParam Long categoryId) {
-        log.info("received request to get lesson group id by location and category {}, {}", locationId, categoryId);
-        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(locationId, categoryId);
+    public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroupIdByLocationAndCategory(@ModelAttribute LocationIdAndCategoryIdDTO request) {
+        log.info("received request to get lesson group id by location and category {}, {}", request.getLocationId(), request.getCategoryId());
+        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(request.getLocationId(), request.getCategoryId());
         List<LessonGroupResponseDTO> result = lessonGroupByLocationAndCategory.stream()
                 .map(g -> new LessonGroupResponseDTO(g)).toList();
         return ResponseEntity.ok(result);
@@ -67,11 +64,11 @@ public class LessonController {
         LessonEntity findLesson = lessonService.findById(lessonId);
         return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
                 findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
-                findLesson.getSampleVoicePath(), findLesson.getScript(), findLesson.getLastUpdateDt()));
+                findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(), findLesson.getScript(), findLesson.getLastUpdateDt()));
     }
 
     /**
-     * 현재 지역과 유형에 맞는 퍼즐의 유저별 정보 조회
+     * 현재 지역과 유형에 맞는 퍼즐의 유저별 정보 조회                                                
      * 진척도, 퍼즐별(진행률, 평균 정확도), 유저 정보(경험치, 순위)
      */
     @GetMapping("/lesson-group/progress")

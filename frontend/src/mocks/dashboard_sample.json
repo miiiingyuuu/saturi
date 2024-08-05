@@ -1,0 +1,67 @@
+{
+  "userExpInfo": {
+    "currentExp": 10,
+    "userRank": 9
+  },
+  "recentLessonGroup": {
+    "lessonGroupId": 1,
+    "lessonGroupName": "gyungsang 일상 첫번째 퍼즐",
+    "locationId": 2,
+    "categoryId": 1,
+    "avgSimilarity": null,
+    "avgAccuracy": null,
+    "startDt": "2024-08-04T15:05:07.911174",
+    "endDt": null,
+    "isCompleted": false
+  },
+  "continuousLearnDay": {
+    "learnDays": 5,
+    "daysOfTheWeek": [6, 5, 4, 3, 2]
+  },
+  "streakInfo": [
+    {
+      "streakDate": {
+        "year": 2024,
+        "month": 7,
+        "day": 31
+      },
+      "solvedNum": 1
+    },
+    {
+      "streakDate": {
+        "year": 2024,
+        "month": 8,
+        "day": 4
+      },
+      "solvedNum": 1
+    },
+    {
+      "streakDate": {
+        "year": 2024,
+        "month": 8,
+        "day": 3
+      },
+      "solvedNum": 1
+    },
+    {
+      "streakDate": {
+        "year": 2024,
+        "month": 8,
+        "day": 2
+      },
+      "solvedNum": 1
+    },
+    {
+      "streakDate": {
+        "year": 2024,
+        "month": 8,
+        "day": 1
+      },
+      "solvedNum": 1
+    }
+  ],
+  "totalLessonInfo": {
+    "totalLessonGroup": 0,
+    "totalLesson": 5
+  }
+}

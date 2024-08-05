@@ -94,7 +94,7 @@ public class GameService {
 
         //게임방토픽Id 넘겨주자
         GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
-        responseDTO.setTopicId(gameRoomEntity.getTopicId());
+        responseDTO.setRoomId(gameRoomEntity.getTopicId());
         return responseDTO;
     }
 }
