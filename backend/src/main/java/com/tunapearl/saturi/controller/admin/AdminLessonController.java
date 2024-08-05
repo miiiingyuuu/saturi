@@ -75,7 +75,6 @@ public class AdminLessonController {
          * 임시로 파일을 생성해서 그걸 올리는데, 그걸 찾을 수 없다는 오류가 발생함
          * 그래서 그 방식을 그대로 구현함(내가 파일 로컬 폴더에 저장하고 그걸 올리고 파일 삭제)
          */
-//        gcsService.uploadFile("saturi", request.getSampleVoice().getOriginalFilename(), request.getSampleVoice());
         String filePath = attachFile.getStoreFileName();
         Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript(), filePath, attachFile.getStoreFileName());
         return ResponseEntity.created(URI.create("/lesson")).body(new AdminMsgResponseDTO("ok"));

@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./KEY_FOR_GOOGLE_STORAGE.json"
 
 def main():
     """Run administrative tasks."""

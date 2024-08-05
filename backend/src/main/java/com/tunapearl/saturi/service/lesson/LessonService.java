@@ -186,14 +186,8 @@ public class LessonService {
 
 
         // 평균 정확도가 높은 순으로 정렬
-        Collections.sort(lessonResults.orElse(null), new Comparator<LessonResultEntity>() {
-
-            @Override
-            public int compare(LessonResultEntity o1, LessonResultEntity o2) {
-                return Long.compare((o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2,
-                        (o1.getAccentSimilarity() + o1.getPronunciationAccuracy()) / 2);
-            }
-        });
+        Collections.sort(lessonResults.orElse(null), (o1, o2) -> Long.compare((o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2,
+                                                                                    (o1.getAccentSimilarity() + o1.getPronunciationAccuracy()) / 2));
         // 평균 정확도가 높은 레슨결과를 가져옴
         LessonResultEntity lessonResult = lessonResults.orElse(null).get(0);
 
@@ -248,6 +242,12 @@ public class LessonService {
 
     public List<LessonEntity> findAllByLessonGroupId(Long lessonGroupId) {
         return lessonRepository.findAllByLessonGroupId(lessonGroupId).orElse(null);
+
+    }
+
+    //TODO 반환 타입 결정
+    public void saveLessonGroupResult(Long userId, Long lessonGroupResultId) {
+
 
     }
 }
