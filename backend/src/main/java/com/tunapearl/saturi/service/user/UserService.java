@@ -398,7 +398,15 @@ public class UserService {
         }
 
         //TODO 대시보드 수정
+        /**
+         * 몇월 몇주차인지
+         */
         List<Integer> weekAndMonth = new ArrayList<>();
+        int weekOfMonth = today.get(weekFields.weekOfMonth());
+        int month = today.getMonthValue();
+        weekAndMonth.add(month);
+        weekAndMonth.add(weekOfMonth);
+
         return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek, weekAndMonth);
     }
 
