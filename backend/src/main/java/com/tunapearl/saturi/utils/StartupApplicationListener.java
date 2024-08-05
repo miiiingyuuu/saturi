@@ -40,11 +40,11 @@ public class StartupApplicationListener {
     private final LessonService lessonService;
 
     private static final String[] LOCATION_NAMES = {"default", "gyungsang", "gyunggi", "gangwon", "chungcheong", "jeonra", "jeju"};
-    private static final String[] BIRD_NAMES = {"agent", "banker", "clown", "sailor", "deckhand", "evil_king", "cavalry", "cute_killer",
-            "store_owner", "miner", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
+    private static final String[] BIRD_NAMES = {"miner", "banker", "clown", "sailor", "deckhand", "evil_king", "cavalry", "cute_killer",
+            "store_owner",  "agent", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
             "engineer", "musketeer"};
-    private static final String[] BIRD_DESCRIPTIONS = {"요원", "은행원", "어릿광대", "선원", "갑판원", "악의수장", "총기병", "귀여운 살인마",
-            "잡화상", "광부", "석유부자", "빨간머리", "정찰대", "비밀결사", "쇼호스트", "용병",
+    private static final String[] BIRD_DESCRIPTIONS = {"광부", "은행원", "어릿광대", "선원", "갑판원", "악의수장", "총기병", "귀여운 살인마",
+            "잡화상", "요원", "석유부자", "빨간머리", "정찰대", "비밀결사", "쇼호스트", "용병",
             "기관사", "삼총사"};
 
     private static final String[] Tips = {"타자가 빠르면 유리합니다.", "손가락의 유연성을 높이기 위한 운동을 하세요.", "화면을 주의 깊게 살펴보며 빠르게 대응하세요.",

@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,11 @@ public class BirdController {
     @GetMapping("/{birdId}")
     public ResponseEntity<BirdEntity> getBirdById(@PathVariable("birdId") Long birdId) {
         return ResponseEntity.ok(birdRepository.findById(birdId).orElse(null));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<BirdEntity>> getBirdAll() {
+        return ResponseEntity.ok(birdRepository.findAll().orElse(null));
     }
 
 }

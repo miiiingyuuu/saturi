@@ -114,10 +114,13 @@ public class AdminLessonController {
     @PutMapping("/{lessonId}")
     public ResponseEntity<AdminMsgResponseDTO> updateLesson(@PathVariable Long lessonId,
                                                             @ModelAttribute LessonRegisterRequestDTO request) throws IOException {
+        //TODO 레슨 수정을 수정(파일을 안올리면 null로 오는지 확인, null로 오면 원래 그대로 놔두기(원래껄로 덮어쓰기)
         log.info("received request to update lesson {}", lessonId);
         LessonGroupEntity findLessonGroup = lessonService.findByIdLessonGroup(request.getLessonGroupId());
-        UploadFile attachFile = fileStoreUtil.storeFile(request.getSampleVoice());
-        String filePath = attachFile.getStoreFileName();
+//        if(request.getSampleVoice() != null) {
+            UploadFile attachFile = fileStoreUtil.storeFile(request.getSampleVoice());
+            String filePath = attachFile.getStoreFileName();
+//        }
 
         lessonService.updateLesson(lessonId, request.getLessonGroupId(), request.getScript(), filePath);
         return ResponseEntity.ok(new AdminMsgResponseDTO("ok"));

@@ -16,4 +16,5 @@ public class LessonResultForSaveGroupResultDTO {
     private Long pronunciationAccuracy;
     private LocalDateTime lessonDt;
     private Boolean isSkipped;
+    private Boolean isBeforeResult;
 }
