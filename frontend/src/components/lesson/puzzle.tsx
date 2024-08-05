@@ -1,6 +1,7 @@
 import { LinearProgress, Grid, Card } from "@mui/material";
 import { useState, useEffect } from "react";
 import PuzzlePiece from "./puzzlePiece";
+import Jigsaw from "./jigsaw"
 
 interface PuzzleProps {
   id: number | null;
@@ -12,7 +13,7 @@ interface PuzzleProps {
 export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect }: PuzzleProps) {
   // 퍼즐 조각 데이터 (실제 데이터 가져오는 로직으로 대체 가능)
   const tempEachLessonProgress = [
-    {
+    { 
       lessonGroupId: 1,
       lessonGroupName: "일상1",
       groupProgress: 100,
@@ -68,7 +69,7 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
     },
   ];
 
-  const onClick = (piece: { lessonGroupId: number; avgAccuracy: number }) => {
+  const onJigsawClick = (piece: { lessonGroupId: number; avgAccuracy: number }) => {
     // lessonGroupId와 avgAccuracy를 전달
     onSelect(piece.lessonGroupId, piece.avgAccuracy);
   };
@@ -110,6 +111,17 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
         />
       </div>
       <Grid container spacing={2} className="grid grid-cols-3 items-center">
+        {/* 
+          <<변동사항 설명>>
+          puzzlePiece 부분을 아예 사용하지 않고 jigsaw로 대체함. 
+          jigsaw 내에서 버튼을 클릭하면 팝오버 되도록 하고 
+          이 컴포넌트의 onClick을 onJigsawClick으로 바꿔서 오른쪽 디테일 부분 바뀌도록 함.
+         */}
+        <Jigsaw
+            dataGroup = {tempEachLessonProgress}
+            onJigsawClick = {onJigsawClick}
+          />        
+        {/* 개인적인 생각엔 이 부분이랑 puzzlePiece 지워버려도 될 듯 
         {tempEachLessonProgress.map((piece) => (
           <Grid item xs={4} key={piece.lessonGroupId}>
             <Card
@@ -124,7 +136,7 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
               />
             </Card>
           </Grid>
-        ))}
+        ))} */}
       </Grid>
     </div>
   );
