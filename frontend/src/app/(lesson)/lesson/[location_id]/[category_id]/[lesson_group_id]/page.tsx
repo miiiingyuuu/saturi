@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
+import api from "@/lib/axios";
 import { v4 as uuidv4 } from "uuid"; // UUID 라이브러리 import
 import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 라이브러리 import
 
@@ -14,28 +15,28 @@ export default function LessonPage() {
   const [locationId, setLocationId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [lessonGroupId, setLessonGroupId] = useState<number | null>(null);
+  const [lessonGroupResultId, setLessonGroupResultId] = useState<number | null>(null);
   const [lessons, setLessons] = useState<object[]>([]); // lessons의 타입을 객체 배열로 명시
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
   const router = useRouter();
   const pathname = usePathname();
-
+  
   useEffect(() => {
     const pathSegments = pathname.split("/");
     const selectedLocation = parseInt(
       pathSegments[pathSegments.length - 3],
-      10
+      10,
     );
     const selectedCategory = parseInt(
       pathSegments[pathSegments.length - 2],
-      10
+      10,
     );
     const selectedLessonGroupId = parseInt(
       pathSegments[pathSegments.length - 1],
-      10
+      10,
     );
-
     if (
       ![1, 2, 3].includes(selectedLocation) ||
       Number.isNaN(selectedCategory)
@@ -44,64 +45,52 @@ export default function LessonPage() {
     } else {
       setLocationId(selectedLocation);
       setCategoryId(selectedCategory);
-      setLessonGroupId(selectedLessonGroupId);
+      setLessonGroupId(selectedLessonGroupId);     
     }
+    
   }, [pathname, router]);
 
+  // 레슨 그룹 결과 생성 함수
   useEffect(() => {
-    const createLessonGroupResult = async () => {
-      try {
-        const token = "your-auth-token"; // 실제 토큰 값으로 교체
-
-        const response = await fetch(`/api/learn/lesson-group-result/${lessonGroupId}`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 200) {
-          console.log(
-            "Lesson group result Id:",
-            (await response.json()).lessonGroupResultId
-          );
+    if (lessonGroupId !== null) {
+    api
+      .post(`learn/lesson-group-result/${lessonGroupId}`)
+      .then(response => {
+        if (response.status === 201) {
+          // console.log(
+          //   "Lesson group result Id:",
+          //   response.data.lessonGroupResultId,
+          // );
+          setLessonGroupResultId(response.data.lessonGroupResultId)
         }
-      } catch (error) {
-        console.error("Error creating lesson group result:", error);
-      }
-    };
-
-    if (lessonGroupId) {
-      createLessonGroupResult();
-    }
-  }, [lessonGroupId]);
+      })
+      .catch(error => {
+        console.log("레슨 그룹 결과 테이블 생성 실패오류 :", error);
+      });
+  }}, [lessonGroupId,pathname]);
 
   useEffect(() => {
-    const fetchLessons = async () => {
-      try {
-        if (
-          locationId !== null &&
-          categoryId !== null &&
-          lessonGroupId !== null
-        ) {
-          const response = await fetch(
-            `/api/learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`
-          );
-
-          if (response.status === 200 && (await response.json()).length > 0) {
-            const lessonGroup = (await response.json())[lessonGroupId - 1];
-            if (lessonGroup && lessonGroup.lessons) {
-              setLessons(lessonGroup.lessons);
+    if (locationId !== null && categoryId !== null && lessonGroupId !== null) {
+      api
+        .get(
+          `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`,
+        )
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response);
+            if (
+              response.data.length > 0 &&
+              response.data[lessonGroupId - 1].lessons
+            ) {
+              setLessons(response.data[lessonGroupId - 1].lessons);
             }
           }
-        }
-      } catch (error) {
-        console.error("API 요청 중 오류 발생:", error);
-      }
-    };
-
-    fetchLessons();
-  }, [locationId, categoryId, lessonGroupId]);
+        })
+        .catch(error => {
+          console.error("API 요청 중 오류 발생:", error);
+        });
+    }
+  }, [locationId, categoryId,pathname]);
 
   const tempLessons = [
     {
@@ -161,7 +150,7 @@ export default function LessonPage() {
         const mediaRecorder = new MediaRecorder(stream);
         mediaRecorderRef.current = mediaRecorder;
 
-        mediaRecorder.ondataavailable = (event) => {
+        mediaRecorder.ondataavailable = event => {
           audioChunksRef.current.push(event.data);
         };
 
@@ -177,8 +166,8 @@ export default function LessonPage() {
           const base64AudioData = btoa(
             new Uint8Array(arrayBuffer).reduce(
               (data, byte) => data + String.fromCharCode(byte),
-              ""
-            )
+              "",
+            ),
           );
 
           const response = await fetch("/api/upload", {
@@ -220,11 +209,7 @@ export default function LessonPage() {
             height={800}
             className="object-contain max-w-full h-auto"
           />
-          <Button
-            variant="outlined"
-            className="mt-4"
-            onClick={handleRecording}
-          >
+          <Button variant="outlined" className="mt-4" onClick={handleRecording}>
             {isRecording ? "녹음 중지" : "녹음 시작"}
           </Button>
         </div>
