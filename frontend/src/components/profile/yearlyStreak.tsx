@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography } from "@mui/material";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, plugins } from 'chart.js';
 
 interface StreakInfo {
   streakDate: {
@@ -15,9 +16,25 @@ interface YearlyStreakProps {
   isLoading: boolean;
 }
 
+// const StreakChart = {{ data }} => {
+//   const options = {
+//     responsive: true,
+//     plugins: {
+//       legend: {
+//         position: 'top',
+//       },
+//       title : {
+//         display: true,
+//         text: 'Annual Streak Chart'
+//       }
+//     }
+//   }
+// }
+
+
 const YearlyStreak: React.FC<YearlyStreakProps> = ({ data, isLoading }) => {
   if (isLoading) return <Typography>Loading...</Typography>;
-  if (!data) return <Typography>No yearly streak data available.</Typography>;
+  if (!data) return <Typography variant='h4'>No yearly streak data available.</Typography>;
 
   // 여기서 실제 차트를 구현 필요 
 

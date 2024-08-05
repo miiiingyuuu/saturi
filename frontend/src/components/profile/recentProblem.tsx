@@ -30,13 +30,8 @@ isLoading: boolean;
 
 const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
     if (isLoading) return <Typography>Loading...</Typography>;
-    if (!data) return <Typography>No recent problem data available.</Typography>;
-  
-    // const formattedLessonName = data.lessonGroupName.replace(
-    //   /^(\w+)/,
-    //   (match) => locationNames[data.locationId as number] || match
-    // );
-  
+    if (!data) return <Typography variant='h4'>최근에 학습한 문제가 없어요...</Typography>;
+
     return (
         <Box>
           <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>

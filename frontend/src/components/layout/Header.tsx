@@ -9,11 +9,11 @@ import { Menu, MenuItem, Box, Avatar, IconButton, Tooltip, ListItemIcon, Typogra
 import { usePathname, useRouter } from "next/navigation";
 import Person from '@mui/icons-material/Person';
 import Logout from '@mui/icons-material/Logout';
-import { getProfile, getAllCookies  } from "@/utils/profile";
 import { authToken } from "@/utils/authutils";
 import useLogout from "@/hooks/useLogout";
-import Tier from "@/components/profile/tier";
+import UserTierRank from "../profile/userTierRank";
 import { Settings } from "@mui/icons-material";
+import api from "@/lib/axios";
 
 
 export default function Header() {
@@ -25,7 +25,6 @@ export default function Header() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickName] = useState<string | null>(null);
-  const [profileExp, setProfileExp] = useState<number | null>(null);
   const logout = useLogout();
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
@@ -47,11 +46,20 @@ export default function Header() {
   const updateUserInfo = async () => {
     setProfileLoading(true);
     try {
-      const imageUrl = await getProfile();
-      setProfileImage(imageUrl);
-      const cookies = getAllCookies();
-      setNickName(cookies.nickname || "");
-      setProfileExp(cookies.exp ? parseInt(cookies.exp, 10) : null); // Set profile experience
+      const accessToken = sessionStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error('Access token not found');
+      }
+
+      const response = await api.get('/user/auth/profile', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      
+      const userData = response.data;
+      setProfileImage(userData.birdId);
+      setNickName(userData.nickname);
     } catch (error) {
       console.error("Failed to fetch user info:", error);
       setProfileImage("/default-profile.png");
@@ -117,7 +125,7 @@ export default function Header() {
                   ) : (
                     <Avatar
                       sizes="large" 
-                      src={profileImage ? `/mini_profile/${profileImage}` : "/default-profile.png"} 
+                      src={profileImage ? `/mini_profile/${profileImage}.png` : "/default-profile.png"} 
                     />
                   )}
                 </IconButton>
@@ -134,6 +142,11 @@ export default function Header() {
                     overflow: 'visible',
                     filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                     mt: 1.5,
+                    '& .MuiAvatar-root': {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                    },
                     '&:before': {
                       content: '""',
                       display: 'block',
@@ -150,6 +163,7 @@ export default function Header() {
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                style={{ marginRight: '20px' }} // 여기에 오른쪽 마진 추가
               >
                 <Box sx={{ p: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>{nickname}님, 안녕하세요!</Typography>
@@ -161,8 +175,8 @@ export default function Header() {
                     width: '100%',
                     mt: 2
                   }}>
-                    <Box sx={{ width: "auto"}}>
-                      <Tier exp={profileExp || 0} isLoading={profileLoading} />
+                    <Box sx= {{ width: "auto"}}>
+                      <UserTierRank />
                     </Box>
                   </Box>
                 </Box>
@@ -171,19 +185,10 @@ export default function Header() {
                   onClick={() => {
                   router.push("/user/profile")
                 }}>
-                  {/* <ListItemIcon> */}
                     <Person fontSize="large" />
-                  {/* </ListItemIcon> */}
                   내 프로필
                 </MenuItem>
-
-                <MenuItem component={Link} href="/user/profile">
-                  <ListItemIcon>
-                    <Settings fontSize="small" />
-                  </ListItemIcon>
-                  Dashboard
-                </MenuItem>
-
+                
                 <MenuItem
                   onClick={() => {
                   logout()

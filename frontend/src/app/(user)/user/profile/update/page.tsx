@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField, Dialog, DialogTitle, DialogContent, Grid, CircularProgress } from "@mui/material";
+import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField, Dialog, DialogTitle, DialogContent, Grid, CircularProgress, Typography } from "@mui/material";
 import api from "@/lib/axios";
 
 // type 선언
@@ -197,7 +197,7 @@ export default function EditProfilePage() {
         birdId: userProfile.birdId,
         isChanged
       };
-      // console.log('data', updateData)
+      console.log('data', updateData)
       const response = await api.put('/user/auth', updateData, {
         headers: {
           Authorization: `Bearer ${accessToken}`
@@ -313,9 +313,9 @@ export default function EditProfilePage() {
           </div>
         </CardActions>
         <Dialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)}>
-        <DialogTitle textAlign={ 'center' }>프로필 이미지를 선택하세요!</DialogTitle>
+        <DialogTitle textAlign={ 'center' } fontWeight={ 'bold' }>프로필 이미지를 선택하세요!</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
             {profileImages.map((img) => (
               <Grid item key={img.id} xs={4}>
                 <Avatar
