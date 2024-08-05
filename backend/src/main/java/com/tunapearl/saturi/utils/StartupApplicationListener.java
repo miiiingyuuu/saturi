@@ -4,6 +4,8 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.dto.lesson.LessonSaveRequestDTO;
+import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.service.game.GameService;
@@ -19,6 +21,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -55,21 +58,27 @@ public class StartupApplicationListener {
             "https://storage.cloud.google.com/saturi/%EC%96%B4%EC%96%B4%EC%96%B4.wav",
             "https://storage.cloud.google.com/saturi/%EC%9D%B4%EC%97%90%EC%9D%B4%EC%8A%B9.wav"};
     private static final String[] LESSON_VOICE_FILE_NAME = {"가가가가", "블루베리스무디", "어느정도높이까지올라가는거에요", "어어어", "이에이승"};
-
+    private static final Long LESSON_TEST_USER_ID = 15L;
 
     //TODO 퀴즈 샘플 데이터 등록 필요
 
     @EventListener
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        createLocation(); // 지역 샘플 추가(
+        // 1. 지역, 사투리무새 추가
+        createLocation();
         createBird();
+
+        // 2. 유저 추가(1번 추가 이후)
         createUser();
+
+        // 3. 게임 팁 추가
         createTip();
-        createLessonCategory();
-        createLessonGroup();
-        createLesson();
+
+        // 4. 학습 관련 추가
+        createLessonSamples();
     }
+
 
     private void createLocation() {
         for (String name : LOCATION_NAMES) {
@@ -84,29 +93,24 @@ public class StartupApplicationListener {
     }
 
     private void createUser() {
-        UserRegisterRequestDTO userInfoBasic1 = new UserRegisterRequestDTO(
-                "test1@email.com", "password1!", "testnickname1");
-        UserRegisterRequestDTO userInfoBasic2 = new UserRegisterRequestDTO(
-                "test2@email.com", "password1!", "testnickname2");
-        UserRegisterRequestDTO userInfoBasic3 = new UserRegisterRequestDTO(
-                "test3@email.com", "password1!", "testnickname3");
-        UserRegisterRequestDTO userInfoBasic4 = new UserRegisterRequestDTO(
-                "test4@email.com", "password1!", "testnickname4");
-        UserRegisterRequestDTO userInfoBasic5 = new UserRegisterRequestDTO(
-                "test5@email.com", "password1!", "testnickname5");
-        UserRegisterRequestDTO userInfoBasic6 = new UserRegisterRequestDTO(
-                "test6@email.com", "password1!", "testnickname6");
+        UserRegisterRequestDTO userInfoBasic;
+        for(int i=1;i<15;i++){
+            userInfoBasic = new UserRegisterRequestDTO(
+                    "test"+i+"@email.com", "password1!", "testnickname"+i);
+
+            userService.registerUser(userInfoBasic);
+        }
+        // lesson test 계정
+        UserRegisterRequestDTO userInfoLesson = new UserRegisterRequestDTO(
+                "lesson@email.com", "password1!", "lessonTester");
+        userService.registerUser(userInfoLesson);
+
+        // admin test 계정
         UserRegisterRequestDTO userInfoAdmin = new UserRegisterRequestDTO(
                 "admin@email.com", "password1!", "admintest");
         UserRegisterRequestDTO userInfoAdmin1 = new UserRegisterRequestDTO(
                 "adminback@email.com", "password1!", "adminbacktest");
-
-        userService.registerUser(userInfoBasic1);
-        userService.registerUser(userInfoBasic2);
-        userService.registerUser(userInfoBasic3);
-        userService.registerUser(userInfoBasic4);
-        userService.registerUser(userInfoBasic5);
-        userService.registerUser(userInfoBasic6);
+        
         userService.registerAdminUser(userInfoAdmin);
         userService.registerAdminUser(userInfoAdmin1);
     }
@@ -116,6 +120,27 @@ public class StartupApplicationListener {
             gameService.registTip(Tips[i]);
         }
     }
+
+    /**
+     * 학습 관련 샘플 데이터 추가
+     */
+    private void createLessonSamples() {
+        // 4. 학습 유형 추가
+        createLessonCategory();
+
+        // 5. 학습 그룹 추가(4번 추가 이후)
+        createLessonGroup();
+
+        // 6. 학습 추가(5번 추가 이후)
+        createLesson();
+
+        // 7. 레슨 그룹 결과 생성(6번 추가 이후)
+        createLessonGroupResult();
+
+        // 8. 레슨 결과 생성(7번 추가 이후)
+        createLessonResult();
+    }
+
     private void createLessonCategory() {
         for (int i = 0; i < LESSON_CATEGORIES.length; i++) {
             LessonCategoryEntity lessonCategory = adminLessonService.createLessonCategory(LESSON_CATEGORIES[i]);
@@ -138,10 +163,31 @@ public class StartupApplicationListener {
         }
     }
 
+    /**
+     * 레슨 test data (lessonGroupId1에 5문제)
+     */
     private void createLesson() {
         LessonGroupEntity lessonGroup = lessonService.findByIdLessonGroup(1L);
         for (int i = 0; i < 5; i++) {
             adminLessonService.createLesson(lessonGroup, LESSON_SCRIPT[i], LESSON_PATH[i], LESSON_VOICE_FILE_NAME[i]);
         }
     }
+    /**
+     * lessonGroupResult 테이블 생성
+     */
+    private void createLessonGroupResult() {
+        Long lessonGroupResultId = lessonService.createLessonGroupResult(LESSON_TEST_USER_ID, 1L);// userId 7, lessonGroupId 1
+    }
+
+    /**
+     * lessonResult 생성
+     */
+    private void createLessonResult() {
+        for (int i = 1; i <= 5; i++) {
+            LessonSaveRequestDTO lessonSaveRequest = new LessonSaveRequestDTO((long)i, 1L, 77L, 77L, "test file path", "test file name", "[0, 1, 2, 3, 4]", "[55, 33, 22, 11, 44]", "나는 바보입니다");
+            lessonService.saveLessonSample(lessonSaveRequest, LocalDateTime.now().minusDays(i-1));
+        }
+    }
+
+    //TODO lessonGroupResult 저장
 }

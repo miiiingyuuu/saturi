@@ -1,12 +1,17 @@
 package com.tunapearl.saturi.service.user;
 
+import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
+import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import com.tunapearl.saturi.domain.user.*;
+import com.tunapearl.saturi.dto.lesson.LessonGroupResultIdAndLessonId;
 import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.BirdRepository;
 import com.tunapearl.saturi.repository.UserRepository;
+import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import com.tunapearl.saturi.repository.redis.EmailRepository;
 import com.tunapearl.saturi.service.RedisService;
+import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import com.tunapearl.saturi.utils.PasswordEncoder;
 import jakarta.mail.MessagingException;
@@ -18,10 +23,11 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.time.temporal.WeekFields;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -38,6 +44,8 @@ public class UserService {
     private final TokenService tokenService;
     private final LocationService locationService;
     private final BirdService birdService;
+    private final BirdRepository birdRepository;
+    private final LessonService lessonService;
 
     /**
      * 정규표현식
@@ -46,7 +54,7 @@ public class UserService {
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9]+@(.+)$";
     // 비밀번호 정규표현식(8자 이상, 숫자 1, 특수문자(!@#$%^&+=) 1 포함)
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,}$";
-    private final BirdRepository birdRepository;
+    private final LessonRepository lessonRepository;
 
     public List<UserEntity> findUsers() {
         return userRepository.findAll().get();
@@ -274,7 +282,7 @@ public class UserService {
     public UserInfoResponseDTO getUserProfile(Long userId) {
         UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
         log.info("find User Profile {}", findUser);
-        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getName(), findUser.getBird().getId());
+        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getLocationId(), findUser.getBird().getId());
     }
 
     /**
@@ -315,4 +323,150 @@ public class UserService {
         }
         return null;
     }
+
+    public UserExpInfoDTO getUserExpInfo(Long userId) {
+        UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
+        Long currentExp = findUser.getExp();
+        Long UserRank = getUserRank(userId);
+        return new UserExpInfoDTO(currentExp, UserRank);
+    }
+
+    public UserRecentLessonGroupDTO getUserRecentLessonGroup(Long userId) {
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+        lessonGroupResults.sort(Comparator.comparing(LessonGroupResultEntity::getStartDt).reversed());
+
+        LessonGroupResultEntity recentLessonGroup = lessonGroupResults.get(0);
+        return new UserRecentLessonGroupDTO(recentLessonGroup);
+    }
+
+    public UserContinuousLearnDayDTO getUserContinuousLearnDay(Long userId) {
+        /**
+         * 연속 학습 일 수 구하기
+         */
+        Long learnDays = 0L;
+        // 유저 아이디로 모든 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+
+        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
+        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
+            lessonResults.addAll(findLessonResult);
+        }
+
+        // 레슨 학습 일시를 최근 순으로 정렬한 뒤, 오늘 학습 했으면 오늘 기준으로 계산하고, 어제 학습했으면 어제 기준으로 계산
+        lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
+        LessonResultEntity mostRecentLessonResult = lessonResults.get(0);
+        if(mostRecentLessonResult.getLessonDt().toLocalDate().equals(LocalDate.now()) || // 오늘 학습 했는지
+            mostRecentLessonResult.getLessonDt().toLocalDate().equals(LocalDate.now().minusDays(1))) { // 혹은 어제 학습했는지
+            learnDays++;
+            LocalDate currentDate = mostRecentLessonResult.getLessonDt().toLocalDate();
+            for (int i = 0; i < lessonResults.size(); i++) {
+                if(i == 0) continue;
+                if(lessonResults.get(i).getLessonDt().toLocalDate().equals(currentDate.minusDays(1))) {
+                    learnDays++;
+                    currentDate = lessonResults.get(i).getLessonDt().toLocalDate();
+                }
+            }
+        }
+        // 오늘, 어제 둘 다 안했으면 0일로 리턴
+
+        /**
+         * 이번 주 학습한 요일 구하기
+         */
+        List<Integer> daysOfTheWeek = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        // 이번 주 첫째날 구하기
+        WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 1);
+        LocalDate startOfWeek = today.with(weekFields.getFirstDayOfWeek());
+        log.info("==============이번 주 첫째날============== {}", startOfWeek);
+        for (LessonResultEntity lessonResult : lessonResults) {
+            LocalDate learnDate = lessonResult.getLessonDt().toLocalDate();
+
+            // 이번주에 해당하는지
+            if(!learnDate.isBefore(startOfWeek) && !learnDate.isAfter(startOfWeek.plusDays(6))) {
+                DayOfWeek dayOfWeek = learnDate.getDayOfWeek();
+                int dayValue = dayOfWeek.getValue() - 1; // 월요일을 0으로 설정 (일요일이 6)
+                daysOfTheWeek.add(dayValue);
+            } else {
+                break; // 최근 순으로 조회하기 때문에, 이번주에 해당되지 않으면 바로 break 해도됨
+            }
+        }
+        return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek);
+    }
+
+    public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId) {
+        List<UserStreakInfoDaysDTO> result = new ArrayList<>();
+        // 유저 아이디로 모든 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+
+        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
+        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
+            lessonResults.addAll(findLessonResult);
+        }
+
+        // 레슨 학습 일시를 최근 순으로 정렬, 올 해가 아니면 break
+        Map<LocalDate, Integer> streakDays = new HashMap<>();
+        lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
+        for (LessonResultEntity lessonResult : lessonResults) {
+            int year = lessonResult.getLessonDt().getYear();
+            if(LocalDate.now().getYear() != year) break;
+            LocalDate currentDate = lessonResult.getLessonDt().toLocalDate();
+            streakDays.put(currentDate, streakDays.getOrDefault(currentDate, 0) + 1);
+        }
+        for (LocalDate d : streakDays.keySet()) {
+            UserStreakDateDTO userStreakDate = new UserStreakDateDTO(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+            Integer solvedNum = streakDays.get(d);
+            result.add(new UserStreakInfoDaysDTO(userStreakDate, solvedNum));
+        }
+        return result;
+    }
+
+    public UserTotalLessonInfoDTO getUserTotalLessonInfo(Long userId) {
+        // 유저 아이디로 모든 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+        if(lessonGroupResults == null) return null;
+        int totalLessonGroupResultCnt = lessonGroupResults.size();
+        for (LessonGroupResultEntity lessonGroupResult : lessonGroupResults) {
+            if(!lessonGroupResult.getIsCompleted()) totalLessonGroupResultCnt--;
+        }
+
+        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
+        Map<LessonGroupResultIdAndLessonId, Integer> lessonGroupResultIdAndLessonIdMap = new HashMap<>(); // 복습한 레슨은 거르기 용
+        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
+            for (LessonResultEntity lr : findLessonResult) {
+                LessonGroupResultIdAndLessonId lesson = new LessonGroupResultIdAndLessonId(
+                        lr.getLessonGroupResult().getLessonGroupResultId(), lr.getLesson().getLessonId());
+                if(lessonGroupResultIdAndLessonIdMap.containsKey(lesson)) continue;
+                lessonGroupResultIdAndLessonIdMap.put(lesson, 1);
+                lessonResults.add(lr);
+            }
+        }
+        return new UserTotalLessonInfoDTO(totalLessonGroupResultCnt, lessonResults.size());
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

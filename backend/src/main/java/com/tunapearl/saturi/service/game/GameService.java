@@ -2,6 +2,7 @@ package com.tunapearl.saturi.service.game;
 
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.game.*;
+import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
@@ -10,7 +11,9 @@ import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.game.GameTipRepository;
-import com.tunapearl.saturi.repository.redis.TopicRepository;
+import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
+import com.tunapearl.saturi.service.GameRoomQuizService;
+import com.tunapearl.saturi.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,9 @@ public class GameService {
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
     private final GameRoomParticipantRepository gameRoomParticipantRepository;
-    private final TopicRepository topicRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final GameRoomQuizService gameRoomQuizService;
+    private final QuizService quizService;
 
     /**
      * 팁 추가
@@ -72,13 +77,19 @@ public class GameService {
             gameRoomEntity.setStatus(Status.MATCHING);
             gameRoomEntity.setLocation(locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow());
 
+
             //Topic생성해서 redis에 저장
             topic= ChatRoom.create();
             log.info("created roomId : {}",topic.getRoomId());
 
-            gameRoomEntity.setTopicId(topic.getRoomId());
+            gameRoomEntity.setTopicId(topic.getTopicId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
-            topicRepository.save(topic);
+
+            long roomId=gameRoomEntity.getRoomId();
+            topic.setRoomId(roomId);
+
+            chatRoomRepository.save(topic);
+            gameRoomQuizService.poseTenQuiz(roomId,quizService.findRandomIdByLocation(gameMatchingRequestDTO.getLocationId()));
         }
 
         UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();

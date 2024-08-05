@@ -21,6 +21,6 @@ public class UserInfoResponseDTO {
     private Gender gender;
     private Role role;
     private AgeRange ageRange;
-    private String locationName;
+    private Long locationId;
     private Long birdId;
 }

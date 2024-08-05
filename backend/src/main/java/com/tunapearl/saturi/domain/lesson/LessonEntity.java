@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
 @Getter @Setter
 @Table(name = "lesson")
@@ -16,7 +18,7 @@ public class LessonEntity {
     @Column(name = "lesson_id")
     private Long lessonId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "lesson_group_id")
     @JsonIgnore
     private LessonGroupEntity lessonGroup;
