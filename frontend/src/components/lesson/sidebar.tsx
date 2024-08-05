@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Box } from "@mui/material";
 
 interface SideNavbarProps {
   location: number | null;
@@ -8,7 +9,7 @@ interface SideNavbarProps {
 export default function SideNavbar({ location }: SideNavbarProps) {
   const categories = [
     [],
-    [{ id: 1, name: "일상", tag: "Daily" },
+    [ { id: 1, name: "일상", tag: "Daily" },
       { id: 2, name: "드라마", tag: "Drama" },
       { id: 3, name: "영화", tag: "Movie" },
       { id: 4, name: "밈", tag: "Meme" }],
@@ -32,18 +33,21 @@ export default function SideNavbar({ location }: SideNavbarProps) {
       : categories[2];
 
   return (
-    <div className="flex flex-col items-center">
+    <Box className="flex flex-col items-center">
       <ol className="grid grid-cols-1 gap-4 m-0 p-0">
       {selectedCategories.map((category) => ( 
         <ul key={category.id} className="p-0">
         <Link href={`/lesson/${location}/${category.id}`}>
           <li className="flex justify-center">
-            <Image
-              src={`/MainPage/learnButton${category.id}.png`}
-              alt=""
-              width={100}
-              height={100}
-            />
+            <Box
+              component="img"
+              src={`/MainPage/learnButtonLong${category.id}.png`}
+              alt="Learn Button"
+              sx={{
+                width: "85%",
+                height: "100%",
+              }}
+            />            
           </li>
         </Link>
         </ul>
@@ -52,6 +56,6 @@ export default function SideNavbar({ location }: SideNavbarProps) {
 
         
       </ol>
-    </div>
+    </Box>
   );
 }

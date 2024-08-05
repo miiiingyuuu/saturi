@@ -130,19 +130,19 @@ export default function Icon({ dataGroup, onJigsawClick }: JigsawProps) {
           horizontal: "center",
         }}
       >
-        <div className="p-1 rounded-full">
+        <Box className="p-1 rounded-full" sx= {{ margin: "15px" }}>
           <Typography variant="h6" className="font-bold text-center">
             {dataGroup[selectedIndex.current].lessonGroupName}
           </Typography>
           <Typography variant="subtitle1" className="">
             달성율 : {dataGroup[selectedIndex.current].groupProgress}%
           </Typography>
-          <div className="flex justify-center pt-2">
+          <Box className="flex justify-center pt-3">
             <Button variant="contained" color="primary" onClick={startLesson}>
               Start
             </Button>
-          </div>
-        </div>
+          </Box>
+        </Box>
       </Popover>
 
 
