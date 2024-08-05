@@ -10,17 +10,21 @@ import { usePathname, useRouter } from "next/navigation";
 import Person from '@mui/icons-material/Person';
 import Logout from '@mui/icons-material/Logout';
 import { getProfile, getAllCookies  } from "@/utils/profile";
+import { authToken } from "@/utils/authutils";
 import useLogout from "@/hooks/useLogout";
 
 
 export default function Header() {
   const router = useRouter();
-  const logout = useLogout()
+  const pathname = usePathname();
+  const [authChecking, setAuthChecking] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickName] = useState<string | null>(null);
   const [profileExp, setProfileExp] = useState<number | null>(null);
+  const logout = useLogout();
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -74,17 +78,6 @@ export default function Header() {
 
     checkAuth();
   }, [pathname, router]);
-
-  useEffect(() => {
-    if (pathname === '/start') {
-      frontLogOut().then(() => {
-        setIsLoggedIn(false);
-        setProfileImage(null);
-        setNickName(null);
-        setProfileExp(null); // Reset profile experience
-      });
-    }
-  }, [pathname]);
 
   return (
     <header className="w-full">

@@ -25,3 +25,4 @@ EXPOSE 3000
 
 # 실행 명령어 정의
 CMD ["npm", "start"]
+
