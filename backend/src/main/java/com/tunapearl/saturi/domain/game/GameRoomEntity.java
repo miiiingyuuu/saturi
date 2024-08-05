@@ -1,8 +1,6 @@
 package com.tunapearl.saturi.domain.game;
 
 import com.tunapearl.saturi.domain.LocationEntity;
-import com.tunapearl.saturi.domain.quiz.GameRoomQuizEntity;
-import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;

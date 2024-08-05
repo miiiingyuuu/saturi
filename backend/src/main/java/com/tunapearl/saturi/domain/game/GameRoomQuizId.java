@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.domain.quiz;
+package com.tunapearl.saturi.domain.game;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
