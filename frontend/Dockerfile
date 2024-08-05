@@ -16,8 +16,6 @@ COPY . .
 # 빌드하기
 RUN npm run build
 
-# 포트 노출
-EXPOSE 3000
-
-# 실행 명령어 정의
-CMD ["npm", "start"]
+FROM nginx:stable-alpine
+COPY --from=build-stage ./app/.next /usr/share/nginx/html/
+CMD ["nginx", "-g", "daemon off;"]

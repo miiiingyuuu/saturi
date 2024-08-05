@@ -2,8 +2,9 @@ package com.tunapearl.saturi.service.game;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tunapearl.saturi.domain.game.ChatMessage;
-import com.tunapearl.saturi.domain.game.RoomMessage;
+import com.tunapearl.saturi.domain.game.room.ChatMessage;
+import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
+import com.tunapearl.saturi.dto.game.QuizMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -33,16 +34,20 @@ public class RedisSubscriber implements MessageListener {
             String messageType = jsonNode.get("type").asText();
 
             if ("ROOM".equals(messageType)) {
-                // RoomMessage 객체로 맵핑
-                RoomMessage roomMessage = objectMapper.readValue(publishMessage, RoomMessage.class);
-                // WebSocket 구독자에게 채팅 메시지 전송
-                messagingTemplate.convertAndSend("/sub/room-request/" + roomMessage.getRoomId(), roomMessage);
+                PersonChatMessage personChatMessage = objectMapper.readValue(publishMessage, PersonChatMessage.class);
+                messagingTemplate.convertAndSend("/sub/room-request/" + personChatMessage.getRoomId(), personChatMessage);
             } else if ("CHAT".equals(messageType)) {
-                // ChatMessage 객체로 맵핑
+
                 ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
-                // WebSocket 구독자에게 채팅 메시지 전송
-                messagingTemplate.convertAndSend("/sub/chat-request/" + chatMessage.getRoomId(), chatMessage);
-            } else {
+                messagingTemplate.convertAndSend("/sub/chat/" + chatMessage.getRoomId(), chatMessage);
+            }else if ("CORRECT".equals(messageType)) {
+
+                log.info("SUB 들어옴");
+                QuizMessage quizMessage = objectMapper.readValue(publishMessage, QuizMessage.class);
+                messagingTemplate.convertAndSend("/sub/quiz/" + quizMessage.getRoomId(), quizMessage);
+            }
+
+            else {
                 log.error("Unknown message type: " + messageType);
             }
         } catch (Exception e) {

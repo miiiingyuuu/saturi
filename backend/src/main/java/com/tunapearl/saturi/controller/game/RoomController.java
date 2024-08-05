@@ -1,10 +1,13 @@
 package com.tunapearl.saturi.controller.game;
 
-import com.tunapearl.saturi.domain.game.PersonChatRoom;
+import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
+import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
+import com.tunapearl.saturi.repository.redis.PersonChatRoomRepository;
+import com.tunapearl.saturi.service.QuizService;
 import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +23,25 @@ public class RoomController {
 
     private final GameService gameService;
     private final JWTUtil jwtUtil;
+    private final PersonChatRoomRepository personChatRoomRepository;
+
+    //test용임
+    private final QuizService quizService;
 
     /**
-     * 게임 매칭
+     * 개인방 생성
      */
     @PostMapping("/room/in")
-    public ResponseEntity<GameMatchingResponseDTO> matchingRoom(@RequestHeader("Authorization") String authorization,@RequestBody GameMatchingRequestDTO request) throws UnAuthorizedException {
+    public ResponseEntity<GameMatchingResponseDTO> getPersonRoom(@RequestHeader("Authorization") String authorization, @RequestBody GameMatchingRequestDTO request) throws UnAuthorizedException {
 
         long userId = jwtUtil.getUserId(authorization);
         request.setUserId(userId);
-        //TODO: DB에 방 올려야함
-        
-        PersonChatRoom topic= PersonChatRoom.create(userId);
-        GameMatchingResponseDTO responseDTO=new GameMatchingResponseDTO();
+
+        PersonChatRoom topic = PersonChatRoom.create(userId);
+        topic.setUserId(userId);
+        personChatRoomRepository.save(topic);
+
+        GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
         responseDTO.setRoomId(topic.getPersonchatroomId());
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -57,8 +66,15 @@ public class RoomController {
 
         try {
             return ResponseEntity.ok().body(gameService.getTip());
-        }catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error getting gameTip", e);
         }
+    }
+
+    @PostMapping("/quiz")
+    public ResponseEntity<?> registQuiz(@RequestBody QuizRegisterRequestDTO registerRequestDto) {
+
+        quizService.saveQuiz(registerRequestDto);
+        return null;
     }
 }

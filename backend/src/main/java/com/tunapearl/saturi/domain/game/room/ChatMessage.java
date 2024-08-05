@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.domain.game;
+package com.tunapearl.saturi.domain.game.room;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,8 @@ public class ChatMessage {
     public enum MessageType {
         ENTER,QUIZ,CHAT,EXIT
     }
-    private String type = "CHAT";
+
+    private String type = "CHAT";//개인방인지 게임방인지 구분하기 위함
     private MessageType chatType;
     private String roomId;
     private Long senderId;

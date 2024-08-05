@@ -32,6 +32,13 @@ public class GameRoomRepository {
         return results.isEmpty() ? Optional.empty() : Optional.of(results);
     }
 
+    /*
+    * id로 단건 조회
+    */
+    public Optional<GameRoomEntity> findById(Long roomId){
+        return Optional.of(em.find(GameRoomEntity.class, roomId));
+    }
+
     public GameRoomEntity updateGameRoom(GameRoomEntity gameRoom) {
         return em.merge(gameRoom);
     }

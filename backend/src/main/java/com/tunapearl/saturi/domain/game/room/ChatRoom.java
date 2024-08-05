@@ -1,4 +1,4 @@
-package com.tunapearl.saturi.domain.game;
+package com.tunapearl.saturi.domain.game.room;
 
 import org.springframework.data.annotation.Id;
 import lombok.Getter;
@@ -7,17 +7,18 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.util.UUID;
 
-@RedisHash("ChatRoom")
+@RedisHash("ChannelTopic")
 @Getter
 @Setter
 public class ChatRoom {
 
     @Id
-    private String roomId;
+    private String topicId;
+    private long roomId;
 
     public static ChatRoom create() {
         ChatRoom topic = new ChatRoom();
-        topic.roomId= UUID.randomUUID().toString();
+        topic.topicId= UUID.randomUUID().toString();
         return topic;
     }
 }

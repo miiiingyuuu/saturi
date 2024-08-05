@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.user.UserRegisterRequestDTO;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.service.game.GameService;
@@ -84,29 +85,19 @@ public class StartupApplicationListener {
     }
 
     private void createUser() {
-        UserRegisterRequestDTO userInfoBasic1 = new UserRegisterRequestDTO(
-                "test1@email.com", "password1!", "testnickname1");
-        UserRegisterRequestDTO userInfoBasic2 = new UserRegisterRequestDTO(
-                "test2@email.com", "password1!", "testnickname2");
-        UserRegisterRequestDTO userInfoBasic3 = new UserRegisterRequestDTO(
-                "test3@email.com", "password1!", "testnickname3");
-        UserRegisterRequestDTO userInfoBasic4 = new UserRegisterRequestDTO(
-                "test4@email.com", "password1!", "testnickname4");
-        UserRegisterRequestDTO userInfoBasic5 = new UserRegisterRequestDTO(
-                "test5@email.com", "password1!", "testnickname5");
-        UserRegisterRequestDTO userInfoBasic6 = new UserRegisterRequestDTO(
-                "test6@email.com", "password1!", "testnickname6");
+
+        UserRegisterRequestDTO userInfoBasic;
+        for(int i=1;i<15;i++){
+            userInfoBasic = new UserRegisterRequestDTO(
+                    "test"+i+"@email.com", "password1!", "testnickname"+i);
+
+            userService.registerUser(userInfoBasic);
+        }
         UserRegisterRequestDTO userInfoAdmin = new UserRegisterRequestDTO(
                 "admin@email.com", "password1!", "admintest");
         UserRegisterRequestDTO userInfoAdmin1 = new UserRegisterRequestDTO(
                 "adminback@email.com", "password1!", "adminbacktest");
 
-        userService.registerUser(userInfoBasic1);
-        userService.registerUser(userInfoBasic2);
-        userService.registerUser(userInfoBasic3);
-        userService.registerUser(userInfoBasic4);
-        userService.registerUser(userInfoBasic5);
-        userService.registerUser(userInfoBasic6);
         userService.registerAdminUser(userInfoAdmin);
         userService.registerAdminUser(userInfoAdmin1);
     }
