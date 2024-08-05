@@ -193,15 +193,16 @@ public class LessonController {
                     lessonPronunciationAccuracyMap.put(lessonId, lr.getPronunciationAccuracy());
                 }
             } else { // 이번에 한게 아니면
-                // 맵에 레슨 아이디 키가 존재하면 이번에 한게 복습이라는거거나, 건너뛰기했다는 거거나
-                if(lessonResultMap.containsKey(lessonId)) {
-                    // 건너뛰기 했으면 패스
+                if(lessonResultMap.containsKey(lessonId)) { // 맵에 레슨 아이디 키가 존재하면 이번에 한게 복습이라는거거나, 건너뛰기했다는 거거나
+                    // 이전에 건너뛰기 한거였으면 continue
                     if(lr.getIsSkipped()) continue;
+
                     // 이전에 한게 더 잘했으면 경험치 0exp
                     // 이번에 한게 더 잘했으면 경험치 10exp
                     Long prevLessonScore = (lr.getAccentSimilarity() + lr.getPronunciationAccuracy()) / 2;
                     Long curLessonScore = (lessonResultMap.get(lessonId).getAccentSimilarity() +
                             lessonResultMap.get(lessonId).getPronunciationAccuracy()) / 2;
+
                     if(curLessonScore < prevLessonScore) { // 이전에 한게 더 잘했다.
                         expMap.replace(lessonId, 0L); // 경험치 0으로
                         // 수치 map을 높은 얘로 갱신
@@ -215,18 +216,20 @@ public class LessonController {
                     }
 
                 } else { // 맵에 레슨 아이디 키가 없으면 이전에 풀었던거 이번에 스킵한거임
-                    // 그러면 DTO에 isBeforeResult인지 알려줘야하고(맵에서 채울 때 시간보고 해야할듯)
+                    // 그러면 DTO에 isBeforeResult인지 알려줘야하고(맵에서 채울 때 lessonDt랑 lessonGroupResult의 startDt 비교해서 해야할듯)
                     // 맵에 이미 했던 결과를 넣어줘야함(근데 냅다 넣으면 다음에 이미 학습한 똑같은 레슨아이디가 돌 때, 이번에 한거라고 될 수 있어서 pq에 담아야할듯?
-                    // 제일 잘한 결과를 보여줘야 하기 때문에 pq에 담아서, map 사이즈가 5가 될 때까지 넣기, 똑같은 레슨아이디인 애들이 젤 위에 있으면 이미 들어가있늕지 확인해서 거르기
-
+                    // 제일 잘한 결과를 보여줘야 하기 때문에 pq에 담아서, map 사이즈가 5가 될 때까지 넣기, 똑같은 레슨아이디인 애들이 젤 위에 있으면 이미 들어가있는지 확인해서 거르기
+                    lessonResultPQ.offer(lr);
                 }
-
-
             }
+        } // end for
+        // lessonGroupResult 갱신
+            // 수치 갱신
+            // 완료여부 갱신
 
-        }
-        LessonResultForSaveGroupResults.add(new LessonResultForSaveGroupResultDTO()); // map에서 채우기
 
+        // DTO 생성
+//        LessonResultForSaveGroupResults.add(new LessonResultForSaveGroupResultDTO()); // map에서 채우기
 
         return ResponseEntity.ok(new LessonGroupResultSaveResponseDTO());
     }

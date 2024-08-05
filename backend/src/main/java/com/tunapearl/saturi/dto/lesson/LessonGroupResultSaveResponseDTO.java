@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class LessonGroupResultSaveResponseDTO {
     private UserExpInfoCurExpAndEarnExp userInfo;
     private List<LessonResultForSaveGroupResultDTO> lessonResult;
