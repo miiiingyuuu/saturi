@@ -1,62 +1,90 @@
 "use client"
 
-import useConnect from "@/hooks/useConnect"
+import { Input } from "@mui/material";
+import { IMessage } from "@stomp/stompjs";
+import useConnect from "@/hooks/useConnect";
+import { RoomIdProps } from "@/utils/props";
 import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
-import api from "@/lib/axios";
-import { IMessage } from "@stomp/stompjs";
 
-export default function App(roomId: any) {
+export default function App({params:{roomId}}: RoomIdProps) {
   const clientRef = useConnect(roomId)
-  const [ input, setInput ] = useState("")
+  const [ message, setMessage ] = useState("")
   const [ quizzes, setQuizzes ] = useState([])
 
   useEffect(() => {
-
-    api.get("game/room/{roomId}/quiz")
-      .then(response => setQuizzes(response.data))
-
-
     const client = clientRef.current
-    if (client && client.connected) {
-      client.subscribe(`/sub/room-request/${roomId}`, (message: IMessage) => {
-        const body = JSON.parse(message.body)
-        // 여기로 답 보내주는건가?
-        console.log(body)
-      })
-
-      // 여기는 채팅 보내는 퍼블리셔
-      client.publish({
-        destination: `/pub/room-request/${roomId}`,
-        body: JSON.stringify({
-          message: input,
-          quizId: "",
-          others: "",
+    if (client) {
+      const onConnect = () => {
+        // 들어왔어요
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            chatType: "ENTER",
+            roomId
+          }),
+          headers: {
+          Authorization: sessionStorage.getItem("accessToken") as string,
+        },
         })
-      })
-      setInput("")
+
+        // 퀴즈 주세요 -> 이거는 어디로 돌아오나요 ?
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            chatType: "QUIZ",
+            roomId
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
+        })
+        // 퀴즈 받았어요
+        client.subscribe("/sub/room", (message: IMessage) => {
+          const body = JSON.parse(message.body)
+          setQuizzes(body)
+        })
+
+        // 채팅방 접속
+        client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
+          const body = JSON.parse(message.body)
+          console.log(message)
+          console.log(body)
+        })
+      }
+
+      client.onConnect = onConnect
+      console.log(client)
+      if (client.connected) {
+        onConnect()
+      }
     }
-  }, [roomId, clientRef, input]);
+  }, [roomId, clientRef]);
 
   function sendMessage() {
-    if (input.trim() && clientRef.current) {
+    if (message.trim() && clientRef.current) {
       clientRef.current.publish({
-        destination: `/pub/room-request/${roomId}`,
+        destination: "/pub/chat",
         body: JSON.stringify({
-          message: input,
-        })
+          quizId: "",
+          message,
+          roomId
+        }),
+        headers: {
+          Authorization: sessionStorage.getItem("accessToken") as string,
+        },
       })
-      setInput("")
+      setMessage("")
     }
   }
 
   return (
     <div>
       <div>여기서 게임 소켓 처리</div>
-      <input
+      <Input
         type="text"
-        value={input}
-        onChange={event => handleValueChange(event,setInput)}
+        value={message}
+        onChange={event => handleValueChange(event,setMessage)}
         onKeyDown={e => {
           if (e.key === "Enter") sendMessage()
         }}

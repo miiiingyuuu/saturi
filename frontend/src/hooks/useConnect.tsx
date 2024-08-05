@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Client, IMessage } from "@stomp/stompjs";
+import { Client } from "@stomp/stompjs";
 
 
 export default function useConnect(roomId: string) {
@@ -11,27 +11,11 @@ export default function useConnect(roomId: string) {
       connectHeaders: {
         Authorization: `${sessionStorage.getItem("accessToken")}`
       },
+
       debug: (str) => console.log(str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      onConnect: (frame) => {
-        console.log(frame)
-        // 뭐 써야함
-        clientRef.current?.subscribe(`/sub/room-request/${roomId}`, (message: IMessage) => {
-          const body = JSON.parse(message.body);
-          console.log(body)
-        })
-        // 진짜 모르겠음
-        clientRef.current?.subscribe(`/game/room/in?location=${roomId}`, (message: IMessage) => {
-          const body = JSON.parse(message.body);
-          console.log(body)
-
-          if (body.newRoomId) {
-            window.location.href = `/game/in-game/${body.newRoomId}`
-          }
-        })
-      },
       onDisconnect: (frame) => {
         console.log("disconnected", frame)
       },
