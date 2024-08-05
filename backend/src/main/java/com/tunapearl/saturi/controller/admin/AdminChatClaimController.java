@@ -11,6 +11,7 @@ import com.tunapearl.saturi.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +40,12 @@ public class AdminChatClaimController {
     /*
     * 채팅 신고
     */
-//    @PostMapping
-//    public ResponseEntity<?> claimUserChat()
+    @PostMapping("/user/{gameLogId}")
+    public ResponseEntity<?> claimUserChat(@PathVariable Long gameLogId){
+        log.info("Received claim user chatting for {}", gameLogId);
+        chatClaimService.saveClaim(gameLogId);
+        return new ResponseEntity<String>(String.format("신고 완료 %d", gameLogId), HttpStatus.CREATED);
+    }
 
     /*
     * 채팅 신고 조회
@@ -55,8 +60,9 @@ public class AdminChatClaimController {
 
     /*
     * 채팅 신고 삭제
+    * TODO: ClaimDeleteRequest 제거하고 PathVariable로 변경
     */
-    @DeleteMapping
+    @DeleteMapping("/user")
     public ResponseEntity<?> deleteChatClaim(@ModelAttribute ClaimDeleteRequestDto request) {
         log.info("Received delete claim request for {}", request);
         chatClaimService.removeClaim(request);

@@ -24,6 +24,10 @@ public class ChatClaimRepository {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+    public void save(ChatClaimEntity chatClaimEntity) {
+        em.persist(chatClaimEntity);
+    }
+
     public List<ChatClaimEntity> findAll(ClaimReadRequestDto responseDto) {
         QChatClaimEntity qChatClaim = new QChatClaimEntity("cc");
         return queryFactory

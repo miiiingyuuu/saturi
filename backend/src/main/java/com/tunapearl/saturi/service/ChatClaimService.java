@@ -7,6 +7,7 @@ import com.tunapearl.saturi.dto.admin.claim.ClaimDeleteRequestDto;
 import com.tunapearl.saturi.dto.admin.claim.ClaimReadRequestDto;
 import com.tunapearl.saturi.dto.admin.claim.ClaimReadResponseDto;
 import com.tunapearl.saturi.repository.ChatClaimRepository;
+import com.tunapearl.saturi.repository.game.GameLogRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,18 @@ import java.util.stream.Collectors;
 public class ChatClaimService {
 
     private final ChatClaimRepository chatClaimRepository;
+    private final GameLogRepository gameLogRepository;
+
+    /*
+    * 유저 채팅 신고 하기
+    */
+    public void saveClaim(Long gameLogId){
+        GameLogEntity gameLog = gameLogRepository.findById(gameLogId).orElseThrow(()
+                -> new RuntimeException(String.format("Not found game log for %d", gameLogId)));
+        ChatClaimEntity chatClaimEntity = ChatClaimEntity.createChatClaim(gameLog);
+        chatClaimRepository.save(chatClaimEntity);
+    }
+
 
     /*
     * 유저 채팅 신고 전체 조회
