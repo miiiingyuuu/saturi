@@ -33,18 +33,18 @@ public class RedisSubscriber implements MessageListener {
             JsonNode jsonNode = objectMapper.readTree(publishMessage);
             String messageType = jsonNode.get("type").asText();
 
-            if ("ROOM".equals(messageType)) {
+            if ("PERSON".equals(messageType)) {
                 PersonChatMessage personChatMessage = objectMapper.readValue(publishMessage, PersonChatMessage.class);
                 messagingTemplate.convertAndSend("/sub/room-request/" + personChatMessage.getRoomId(), personChatMessage);
-            } else if ("CHAT".equals(messageType)) {
+
+            } else if ("ROOM".equals(messageType)) {
 
                 ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
-                messagingTemplate.convertAndSend("/sub/chat/" + chatMessage.getRoomId(), chatMessage);
-            }else if ("CORRECT".equals(messageType)) {
+                messagingTemplate.convertAndSend("/sub/room/" + chatMessage.getRoomId(), chatMessage);
+            }else if ("CHAT".equals(messageType)) {
 
-                log.info("SUB 들어옴");
                 QuizMessage quizMessage = objectMapper.readValue(publishMessage, QuizMessage.class);
-                messagingTemplate.convertAndSend("/sub/quiz/" + quizMessage.getRoomId(), quizMessage);
+                messagingTemplate.convertAndSend("/sub/chat/" + quizMessage.getRoomId(), quizMessage);
             }
 
             else {

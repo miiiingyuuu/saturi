@@ -6,11 +6,13 @@ import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
 import com.tunapearl.saturi.dto.game.QuizMessage;
+import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
 import com.tunapearl.saturi.service.game.ChatService;
 import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.service.game.RedisPublisher;
+import com.tunapearl.saturi.service.user.UserService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class ChatController {
     private final ChatService chatService;
     private final GameService gameService;
     private final GameRoomQuizRepository gameRoomQuizRepository;
+    private final UserService userService;
 
     /**
      * 게임방 매칭용
@@ -53,8 +56,8 @@ public class ChatController {
     /**
      * 게임방 매칭용
      */
-    //'/pub/game/chat'로 들어오는 메시징 처리
-    @MessageMapping("/chat")
+    //'/pub/room'로 들어오는 메시징 처리
+    @MessageMapping("/room")
     public void progressGame(@Header("Authorization") String authorization, @ModelAttribute ChatMessage message) throws UnAuthorizedException {
 
         Long userId = jwtUtil.getUserId(authorization);
@@ -75,8 +78,6 @@ public class ChatController {
 
             //문제 id받아와야함, 정답유무 판단
 
-
-//            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
         } else if (ChatMessage.MessageType.EXIT.equals(message.getChatType())) {//퇴장
 
 
@@ -87,13 +88,19 @@ public class ChatController {
     }
 
     ///pub/quiz
-    @MessageMapping("/quiz")
+    @MessageMapping("/chat")
     public void progressGame(@Header("Authorization") String authorization, @ModelAttribute QuizMessage quiz) throws UnAuthorizedException {
 
         Long userId = jwtUtil.getUserId(authorization);
+        UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
+        quiz.setSenderNickName(userProfile.getNickname());
         quiz.setSenderId(userId);
+
+
         chatService.enterGameRoom(quiz.getRoomId());
         chatService.playGame(quiz);
+
+
         redisPublisher.quizChattingPublish(chatService.getRoomTopic(quiz.getRoomId()), quiz);
     }
 }
