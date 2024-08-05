@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +38,15 @@ public class QuizService {
     public QuizDetailReadResponseDTO findOne(Long quizId) {
         QuizEntity quiz = quizRepository.findById(quizId).orElseThrow(()->new RuntimeException("Quiz not found"));
         return this.convertEntityToDetailDto(quiz);
+    }
+    
+    // 랜덤 퀴즈 id 조회(10개)
+    public List<Integer> findRandomIdByLocation(Long locationId) throws RuntimeException{
+        List<Integer> idList = quizRepository.getAvailableQuizId();
+        if(idList.size() < 10) throw new RuntimeException("Find Ten Quiz Randomly: 문제가 부족합니다.");
+
+        Collections.shuffle(idList);
+        return idList.subList(0, 10);
     }
 
     // 퀴즈 저장
@@ -105,6 +115,13 @@ public class QuizService {
                 .isObjective(quizEntity.getIsObjective())
                 .choiceList(choiceDtoList)
                 .build();
+    }
+
+    public List<Integer> generateUniqueRandomNumbers(int n) {
+        List<Integer> numbers = new ArrayList<>();
+        for(int i = 1; i <= n; i++) numbers.add(i);
+        Collections.shuffle(numbers);
+        return numbers.subList(0, 10);
     }
 
 }

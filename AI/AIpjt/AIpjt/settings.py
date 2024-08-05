@@ -21,8 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
 
-INVOKE_URL = env('INVOKE_URL')
-SECRET = env('SECRET')
+CLOVA_SPEECH_INVOKE_URL = env('CLOVA_SPEECH_INVOKE_URL')
+CLOVA_SPEECH_SECRET = env('CLOVA_SPEECH_SECRET')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -136,3 +137,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 MEDIA_URL = 'media/'
+
+ALLOWED_HOSTS = ["i11d104.p.ssafy.io"]
