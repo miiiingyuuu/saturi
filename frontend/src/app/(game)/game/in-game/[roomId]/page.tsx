@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import api from "@/lib/axios";
 
-export default function App(roomId: string) {
+export default function App(roomId: any) {
   const clientRef = useConnect(roomId)
   const [ input, setInput ] = useState("")
   const [ quizzes, setQuizzes ] = useState([])
