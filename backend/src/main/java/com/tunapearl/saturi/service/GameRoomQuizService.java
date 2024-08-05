@@ -1,7 +1,7 @@
 package com.tunapearl.saturi.service;
 
 import com.tunapearl.saturi.domain.game.GameRoomEntity;
-import com.tunapearl.saturi.domain.quiz.GameRoomQuizEntity;
+import com.tunapearl.saturi.domain.game.GameRoomQuizEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.repository.QuizRepository;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
