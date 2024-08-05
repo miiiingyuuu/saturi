@@ -153,7 +153,7 @@ public class LessonService {
         // 이미 레슨그룹결과가 있는지 확인
         Optional<List<LessonGroupResultEntity>> getLessonGroupResult = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
         if(getLessonGroupResult.isPresent()) {
-//            getLessonGroupResult.get().get(0).set
+            getLessonGroupResult.get().get(0).setStartDt(LocalDateTime.now()); // 복습이면 시간 현재로 갱신
             return getLessonGroupResult.get().get(0).getLessonGroupResultId();
         }
 

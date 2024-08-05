@@ -16,9 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -150,13 +149,29 @@ public class LessonController {
     public ResponseEntity<LessonGroupResultSaveResponseDTO> saveLessonGroupResult(@RequestHeader("Authorization") String accessToken,
                                                    @PathVariable("lessonGroupResultId") Long lessonGroupResultId) throws UnAuthorizedException {
         log.info("received request to save lesson group result for {}", lessonGroupResultId);
+        //FIXME 다 만들고나서 비즈니스 로직 서비스로 옮기고 반환 데이터만 받아오기(DTO끼리 연관돼있어서 일단 컨트롤러에서 만들어보고)
         Long userId = jwtUtil.getUserId(accessToken);
-        // 건너뛰기 하지 않고, 최근순으로 정렬된 레슨 결과 조회
+        // leesonGroupResult 조회
+        LessonGroupResultEntity lessonGroupResult = lessonService.findLessonGroupResult(lessonGroupResultId);
+        LocalDateTime lessonResultStartDt = lessonGroupResult.getStartDt();
+
         List<LessonResultEntity> lessonResults = lessonService.findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(lessonGroupResultId);
+        // 건너뛰기 하지 않고, 최근순으로 정렬된 레슨 결과 조회
+        Map<Long, LessonResultEntity> lessonResultMap = new HashMap<>();
+        Map<Long, Long> expMap = new HashMap<>();
         for (LessonResultEntity lr : lessonResults) {
-            // 5분 이내가 아니면 break
-            // 이미 확인한 lessonId면 break? -> 5분 이내에서 걸러지지 않을까
-            // 최근에 했더라도 복습인지 확인해야함
+            LocalDateTime lessonDt = lr.getLessonDt();
+            if(lessonResultStartDt.isBefore(lessonDt)) { // 이번에 한 레슨이면
+                // 일단 처음했다치고 맵에다가 레슨결과를 담고, 경험치도 20exp로 담는다.
+
+
+
+            } else { // 이번에 한게 아니면
+                // 맵에 레슨 아이디로 키가 존재하면 이번에 한게 복습이라는거임
+
+            }
+
+
         }
 
 

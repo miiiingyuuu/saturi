@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.service.user;
 
+import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
 import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import com.tunapearl.saturi.domain.user.*;
@@ -172,13 +173,14 @@ public class UserService {
         if(request.getIsChanged().equals(1L)) validateDuplicateUserNickname(request.getNickname());
         UserEntity findUser = userRepository.findByUserId(userId).get();
         BirdEntity bird = birdService.findById(request.getBirdId());
-        changeUserInfo(findUser, request.getNickname(), request.getLocationId(), request.getGender(), request.getAgeRange(), bird);
+        LocationEntity location = locationService.findById(request.getLocationId());
+        changeUserInfo(findUser, request.getNickname(), location, request.getGender(), request.getAgeRange(), bird);
         return new UserMsgResponseDTO("회원 수정 완료");
     }
 
-    private void changeUserInfo(UserEntity findUser, String nickname, Long locationId, Gender gender, AgeRange ageRange, BirdEntity bird) {
+    private void changeUserInfo(UserEntity findUser, String nickname, LocationEntity location, Gender gender, AgeRange ageRange, BirdEntity bird) {
         findUser.setNickname(nickname);
-        findUser.getLocation().setLocationId(locationId);
+        findUser.setLocation(location);
         findUser.setGender(gender);
         findUser.setAgeRange(ageRange);
         findUser.setBird(bird);
