@@ -11,5 +11,8 @@ public class LessonSaveRequestDTO {
     private Long accentSimilarity;
     private Long pronunciationAccuracy;
     private String filePath;
+    private String fileName;
+    private String graphInfoX;
+    private String graphInfoY;
     private String script;
 }

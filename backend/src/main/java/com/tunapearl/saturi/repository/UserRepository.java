@@ -1,12 +1,15 @@
 package com.tunapearl.saturi.repository;
 
+import com.tunapearl.saturi.domain.user.Role;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 @Repository
 @RequiredArgsConstructor
@@ -60,5 +63,14 @@ public class UserRepository {
     public Optional<List<UserEntity>> findAllSortedByExp() {
         return Optional.ofNullable(em.createQuery("select u from UserEntity u where u.isDeleted = false order by u.exp desc")
                 .getResultList());
+    }
+
+    public Optional<List<UserEntity>> findAllExceptAdmin() {
+        Role admin = Role.ADMIN;
+        List<UserEntity> users = em.createQuery("select u from UserEntity u where u.role != :admin", UserEntity.class)
+                .setParameter("admin", admin)
+                .getResultList();
+
+        return users.isEmpty() ? Optional.empty() : Optional.of(users);
     }
 }

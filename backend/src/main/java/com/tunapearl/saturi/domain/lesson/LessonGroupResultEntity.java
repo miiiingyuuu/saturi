@@ -24,9 +24,9 @@ public class LessonGroupResultEntity {
     @JoinColumn(name = "lesson_group_id")
     private LessonGroupEntity lessonGroup;
 
-    private Integer avgSimilarity; // 평균 유사도
+    private Long avgSimilarity; // 평균 유사도
 
-    private Integer avgAccuracy; // 평균 정확도
+    private Long avgAccuracy; // 평균 정확도
 
     private LocalDateTime startDt;
 
