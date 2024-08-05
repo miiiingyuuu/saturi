@@ -1,6 +1,7 @@
 package com.tunapearl.saturi.controller.admin;
 
 import com.tunapearl.saturi.dto.admin.UserBanRequestDTO;
+import com.tunapearl.saturi.dto.admin.claim.ClaimDeleteRequestDto;
 import com.tunapearl.saturi.dto.admin.claim.ClaimReadRequestDto;
 import com.tunapearl.saturi.dto.admin.claim.ClaimReadResponseDto;
 import com.tunapearl.saturi.dto.user.UserMsgResponseDTO;
@@ -36,6 +37,12 @@ public class AdminChatClaimController {
     }
 
     /*
+    * 채팅 신고
+    */
+//    @PostMapping
+//    public ResponseEntity<?> claimUserChat()
+
+    /*
     * 채팅 신고 조회
     */
     @GetMapping("/user")
@@ -44,5 +51,15 @@ public class AdminChatClaimController {
         List<ClaimReadResponseDto> list = chatClaimService.findAll(request);
         log.info("Received all claim response for {}", list);
         return ResponseEntity.ok(list);
+    }
+
+    /*
+    * 채팅 신고 삭제
+    */
+    @DeleteMapping
+    public ResponseEntity<?> deleteChatClaim(@ModelAttribute ClaimDeleteRequestDto request) {
+        log.info("Received delete claim request for {}", request);
+        chatClaimService.removeClaim(request);
+        return ResponseEntity.ok("Delete claim successful");
     }
 }

@@ -23,4 +23,16 @@ public class ChatClaimEntity {
 
     @Column(name = "is_checked")
     private boolean isChecked;
+
+    @Column(name = "checkedDt")
+    private LocalDateTime checkedDt;
+
+    /*
+    * 비즈니스 로직
+    */
+    public void check() {
+        this.isChecked = true;
+        checkedDt = LocalDateTime.now();
+    }
+
 }

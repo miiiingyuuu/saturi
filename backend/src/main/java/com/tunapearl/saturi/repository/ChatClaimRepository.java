@@ -8,13 +8,14 @@ import com.tunapearl.saturi.domain.game.QGameLogEntity;
 import com.tunapearl.saturi.domain.game.QGameRoomEntity;
 import com.tunapearl.saturi.domain.quiz.QQuizEntity;
 import com.tunapearl.saturi.domain.user.QUserEntity;
+import com.tunapearl.saturi.dto.admin.claim.ClaimDeleteRequestDto;
 import com.tunapearl.saturi.dto.admin.claim.ClaimReadRequestDto;
-import com.tunapearl.saturi.dto.admin.claim.ClaimReadResponseDto;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,7 +26,6 @@ public class ChatClaimRepository {
 
     public List<ChatClaimEntity> findAll(ClaimReadRequestDto responseDto) {
         QChatClaimEntity qChatClaim = new QChatClaimEntity("cc");
-
         return queryFactory
                 .selectFrom(qChatClaim)
                 .join(qChatClaim.gameLog).fetchJoin()
@@ -40,6 +40,14 @@ public class ChatClaimRepository {
                 )
                 .limit(1000)
                 .fetch();
+    }
+
+    public Optional<ChatClaimEntity> findById(ClaimDeleteRequestDto chatClaimId) {
+        return Optional.ofNullable(em.find(ChatClaimEntity.class, chatClaimId));
+    }
+
+    public void removeById(ClaimDeleteRequestDto request) {
+        em.remove(em.find(ChatClaimEntity.class, request.getChatClaimId()));
     }
 
     private BooleanExpression gameLogIdEq(QGameLogEntity gameLog, Long gameLogIdCond) {

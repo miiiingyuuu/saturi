@@ -18,4 +18,5 @@ public class ClaimReadResponseDto {
     private LocalDateTime chattingDt;
     private LocalDateTime claimedDt;
     private Boolean isChecked;
+    private LocalDateTime checkedDt;
 }
