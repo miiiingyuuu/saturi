@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import '../styles/koreaMap.css';
+import '../../../styles/home/main/koreaMap.css';
 
-interface IconProps {
+// 이걸 여기에서 삭제하면 eslint 에러 발생해서 여기 그대로 둠. 
+interface MapProps {
   onRegionClick?: (region: string) => void;
 }
 
-function Icon({ onRegionClick }: IconProps) {
+export default function Map({ onRegionClick }: MapProps) {
   const [selectedRegion, setSelectedRegion] = useState<SVGGElement | null>(null);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function Icon({ onRegionClick }: IconProps) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="973"
-      height="550"
+      height="59vh"
       // width="200%"
       // height="200%"
       x="0"
@@ -137,5 +138,3 @@ function Icon({ onRegionClick }: IconProps) {
     </svg>
   );
 }
-
-export default Icon;

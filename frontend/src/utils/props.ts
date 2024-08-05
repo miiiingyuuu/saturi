@@ -56,3 +56,45 @@ export interface LessonProps {
   script: string;
   lastUpdateDt: string;
 }
+
+// game
+export interface QuizProps {
+  quizId: number
+  locationId: number
+  question: string
+  creationDt: string
+  isObjective: boolean
+}
+
+export interface TipsProps {
+  tipId: number
+  content: string
+}
+
+// MainPart
+
+export interface LeftPartProps {
+  middlePosition: number;
+  moveDirection: string;
+  selectedRegion: string;
+}
+
+export interface MiddlePartProps {
+  middlePosition: number;
+  mainPageIndicator: string;
+  selectedRegion: string;
+}
+
+export interface ButtonPartProps {
+  onLeftClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onRightClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  middleToWhere: number;
+  selectedRegion: string;
+}
+
+export interface MiddleMapProps {
+  left: string;
+  onRegionClick: (region: string) => void;
+  selectedRegion: string;
+  middleToWhere: number;
+}

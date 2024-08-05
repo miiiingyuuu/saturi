@@ -1,36 +1,3 @@
-/* 헤더 부분 */
-.navbar {
-  background-color: whitesmoke;
-  position: sticky;
-  top: 0; /* 스크롤 시 맨 위에 고정되도록 설정 */
-  z-index: 15;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-list {
-  display: flex;
-  width: 100%;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  justify-content: space-between;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  margin-left: 10px;
-}
-
-.profile {
-  margin-right: 10px;
-}
-
 .leftpart {
   position: absolute;
   /* background-color: whitesmoke; */
@@ -142,7 +109,9 @@
   background-color: #aaa;
 }
 
+/* /////////////// */
 /* 게임 페이지 파트 */
+/* /////////////// */
 
 .profile-grid {
   border: 2px solid black;
@@ -151,7 +120,9 @@
   height: 300px;
 }
 
+/* /////////////// */
 /* 반짝이게 하기 */
+/* /////////////// */
 @keyframes blink-effect {
   50% {
     opacity: 0;

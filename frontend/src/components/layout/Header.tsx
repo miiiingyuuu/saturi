@@ -1,27 +1,17 @@
-/* eslint-disable no-nested-ternary */
-
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@mui/material/Button";
 import Divider from '@mui/material/Divider';
-import { styled } from "@mui/material/styles";
 import { useState, useEffect, MouseEvent } from "react";
-import { Menu, MenuItem, Box, Avatar, IconButton, Tooltip, ListItemIcon, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
-import Settings from '@mui/icons-material/Settings';
+import { Menu, MenuItem, Box, Avatar, IconButton, Tooltip, ListItemIcon, Typography, CircularProgress } from "@mui/material";
+import { usePathname, useRouter } from "next/navigation";
+import Person from '@mui/icons-material/Person';
 import Logout from '@mui/icons-material/Logout';
 import { getProfile, getAllCookies  } from "@/utils/profile";
 import useLogout from "@/hooks/useLogout";
 
-// 버튼 색
-const LoginButton = styled(Button)(() => ({
-  backgroundColor: '#99DE83',
-  '&:hover': {
-    backgroundColor: '#7AB367',
-  },
-}));
 
 export default function Header() {
   const router = useRouter();
@@ -30,7 +20,7 @@ export default function Header() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickName] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [profileExp, setProfileExp] = useState<number | null>(null);
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -40,84 +30,101 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  // 로그인 이후에는 start 페이지로 가지 못하게 막기
   const handleLogoClick = () => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = sessionStorage.getItem("accessToken");
     const targetPath = accessToken ? '/main' : '/start';
-  
-    if (window.location.pathname !== targetPath) {
+    if (pathname !== targetPath) {
       router.push(targetPath);
     }
   };
-  
 
-  // DB의 사용자 정보를 백(쿠키)에 요청
-  const updateUserInfo = () => {
-    const accessToken = sessionStorage.getItem("accessToken");
-    // 이미지 가져오기
-    if (accessToken) {
-      setIsLoggedIn(true);
-      getProfile()
-        .then(imageUrl => {
-          setProfileImage(imageUrl);
-        })
-        .catch(() => {
-          setProfileImage("/default-profile.png");
-        });
-
-        // 쿠키에 있는 모든 정보 가져오기
-        const cookies = getAllCookies();
-        setNickName(cookies.nickname || "");
-    } else {
-      setIsLoggedIn(false);
+  const updateUserInfo = async () => {
+    setProfileLoading(true);
+    try {
+      const imageUrl = await getProfile();
+      setProfileImage(imageUrl);
+      const cookies = getAllCookies();
+      setNickName(cookies.nickname || "");
+      setProfileExp(cookies.exp ? parseInt(cookies.exp, 10) : null); // Set profile experience
+    } catch (error) {
+      console.error("Failed to fetch user info:", error);
+      setProfileImage("/default-profile.png");
+    } finally {
+      setProfileLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
-    updateUserInfo();
-  }, []);
+    const checkAuth = async () => {
+      const accessToken = sessionStorage.getItem("accessToken");
+      if (accessToken) {
+        setIsLoggedIn(true);
+        await updateUserInfo();
+        if (pathname !== '/start') {
+          authToken(router);
+        }
+      } else {
+        setIsLoggedIn(false);
+        if (pathname !== '/start' && pathname !== '/login') {
+          router.push('/start');
+        }
+      }
+      setAuthChecking(false);
+    };
+
+    checkAuth();
+  }, [pathname, router]);
+
+  useEffect(() => {
+    if (pathname === '/start') {
+      frontLogOut().then(() => {
+        setIsLoggedIn(false);
+        setProfileImage(null);
+        setNickName(null);
+        setProfileExp(null); // Reset profile experience
+      });
+    }
+  }, [pathname]);
 
   return (
-    <header>
-      <div className="header" style={{ display: 'flex', alignItems: 'center', marginLeft: '30px' }}>
+    <header className="w-full">
+      <div className="flex items-center justify-between px-8 py-4">
         <Image
           src="/SSLogo.png"
           alt="SSLogo"
           width={127.5}
           height={85}
-          style={{ cursor: 'pointer' }}
+          className="cursor-pointer"
           onClick={handleLogoClick}
         />
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {loading ? (
-            <Avatar sx={{ width: 60, height: 60, mr: 6 }} />
+        <div className="flex items-center">
+          {authChecking ? (
+            <CircularProgress size={24} />
           ) : !isLoggedIn ? (
             <Link href="/login">
-              <LoginButton
-                variant="contained"
-                sx={{
-                  fontWeight: 'bold',
-                  height: '40px',
-                  marginRight: '60px',
-                }}
-              >
+              <Button variant="contained" className="font-bold h-10">
                 로그인
-              </LoginButton>
+              </Button>
             </Link>
-          ) : (   
-            // 프로필 클릭 시 팝업되서 나오는 메뉴들
+          ) : (
             <Box>
               <Tooltip title="View Profile">
                 <IconButton
                   onClick={handleOpenMenu}
-                  size="small"
-                  sx={{ ml: 2 }}
+                  size="medium"
+                  className="ml-2"
                   aria-controls={anchorEl ? 'account-menu' : undefined}
                   aria-haspopup="true"
                   aria-expanded={anchorEl ? 'true' : undefined}
                 >
-                  <Avatar sx={{ width: 85, height: 85, mr: 4 }} src={profileImage || "/default-profile.png"} />
+                  {profileLoading ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    <Avatar
+                      sizes="large" 
+                      src={profileImage ? `/mini_profile/${profileImage}` : "/default-profile.png"} 
+                    />
+                  )}
                 </IconButton>
               </Tooltip>
               <Menu
@@ -132,14 +139,7 @@ export default function Header() {
                     overflow: 'visible',
                     filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                     mt: 1.5,
-                    maxWidth: 300, // 메뉴의 최대 너비 설정
-                    '& .MuiAvatar-root': {
-                      width: 32,
-                      height: 32,
-                      ml: -0.5,
-                      mr: 1,
-                    },
-                    '&::before': {
+                    '&:before': {
                       content: '""',
                       display: 'block',
                       position: 'absolute',
@@ -154,16 +154,29 @@ export default function Header() {
                   },
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <Typography sx={{ ml: 2, mr: 2, mb: 1}}>
-                  {nickname}님 반갑습니다!
-                </Typography>
-
+                <Box sx={{ p: 2 }}>
+                  <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>{nickname}님, 안녕하세요!</Typography>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    gap: 2,
+                    width: '100%',
+                    mt: 2
+                  }}>
+                    <Box sx={{ width: "auto"}}>
+                      <Tier exp={profileExp || 0} isLoading={profileLoading} />
+                    </Box>
+                  </Box>
+                </Box>
                 <Divider />
-
-                <MenuItem component={Link} href="/user/profile">
-                <Avatar /> My Profile
+                <MenuItem onClick={handleProfileClick}>
+                  {/* <ListItemIcon> */}
+                    <Person fontSize="large" />
+                  {/* </ListItemIcon> */}
+                  내 프로필
                 </MenuItem>
 
                 <MenuItem component={Link} href="/user/profile">
@@ -187,7 +200,6 @@ export default function Header() {
           )}
         </div>
       </div>
-      <Divider />
     </header>
   );
 }

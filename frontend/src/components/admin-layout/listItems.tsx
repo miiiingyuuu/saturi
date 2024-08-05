@@ -1,19 +1,18 @@
-import * as React from "react";
-import ListItemButton from "@mui/material/ListItemButton";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Collapse from "@mui/material/Collapse";
+import SchoolIcon from "@mui/icons-material/School";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import ListSubheader from "@mui/material/ListSubheader";
-import Collapse from "@mui/material/Collapse";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { useState } from "react";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import PeopleIcon from "@mui/icons-material/People";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import ReportProblem from "@mui/icons-material/ReportProblem";
-import SchoolIcon from "@mui/icons-material/School";
-import { useRouter } from "next/navigation";
+import ListSubheader from "@mui/material/ListSubheader";
 import { CustomAccordionItemProps } from "@/utils/props";
+import ListItemButton from "@mui/material/ListItemButton";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ReportProblem from "@mui/icons-material/ReportProblem";
+import HomeIcon from "@mui/icons-material/Home"
 
 // Accordion Item Component with Custom Icon
 function AccordionItem({
@@ -33,6 +32,7 @@ function AccordionItem({
   function handleItemClick(path: string) {
     router.push(`${basePath}/${path}`);
   };
+
   return (
     <>
       <ListItemButton onClick={handleClick} sx={{ pl: 2, pr: 2 }}>
@@ -63,35 +63,28 @@ function AccordionItem({
   );
 }
 
-// Secondary List Items with Accordion and Custom Icons
 export default (
   <>
     <ListSubheader component="div" inset>
       목록
     </ListSubheader>
-    <AccordionItem
-      primaryText="회원 관리"
-      items={["조회", "생성", "수정", "삭제"]}
-      icon={<PeopleIcon />}
-      basePath="/admin/user"
-      paths={["view", "create", "edit", "delete"]} // Paths for each item
-    />
+
     <AccordionItem
       primaryText="레슨"
-      items={["조회", "생성", "수정", "삭제"]}
+      items={["조회 및 수정", "생성"]}
       icon={<SchoolIcon />}
       basePath="/admin/lesson"
-      paths={["view", "create", "edit", "delete"]} // Paths for each item
+      paths={["view", "create"]} // Paths for each item
     />
     <AccordionItem
-      primaryText="퀴즈 관리"
-      items={["조회", "생성", "수정", "삭제"]}
+      primaryText="퀴즈"
+      items={["조회 및 수정", "생성"]}
       icon={<DashboardIcon />}
       basePath="/admin/quiz"
-      paths={["view", "create", "edit", "delete"]} // Paths for each item
+      paths={["view", "create"]} // Paths for each item
     />
     <AccordionItem
-      primaryText="신고 관리"
+      primaryText="신고"
       items={["조회", "생성", "수정", "삭제"]}
       icon={<ReportProblem />}
       basePath="/admin/report"
