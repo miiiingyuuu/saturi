@@ -153,6 +153,7 @@ public class LessonService {
         // 이미 레슨그룹결과가 있는지 확인
         Optional<List<LessonGroupResultEntity>> getLessonGroupResult = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
         if(getLessonGroupResult.isPresent()) {
+//            getLessonGroupResult.get().get(0).set
             return getLessonGroupResult.get().get(0).getLessonGroupResultId();
         }
 
@@ -324,5 +325,13 @@ public class LessonService {
     public List<LessonResultEntity> findAllLessonResult() {
         return lessonRepository.findAllLessonResult().orElse(null);
 
+    }
+
+    public LessonGroupResultEntity findLessonGroupResult(Long lessonGroupResultId) {
+        return lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
+    }
+
+    public List<LessonResultEntity> findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(Long lessonGroupResultId) {
+        return lessonRepository.findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(lessonGroupResultId).orElse(null);
     }
 }

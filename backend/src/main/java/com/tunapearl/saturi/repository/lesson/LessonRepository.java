@@ -201,4 +201,15 @@ public class LessonRepository {
 
         return lessonResults.isEmpty() ? Optional.empty() : Optional.of(lessonResults);
     }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(Long lessonGroupResultId) {
+        List<LessonResultEntity> result = em.createQuery("select lr from LessonResultEntity lr" +
+                        " where lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId" +
+                        " and lr.isSkipped = false" +
+                        " order by lr.lessonDt desc", LessonResultEntity.class)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList();
+
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
 }

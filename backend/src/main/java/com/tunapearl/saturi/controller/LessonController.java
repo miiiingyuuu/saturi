@@ -1,8 +1,6 @@
 package com.tunapearl.saturi.controller;
 
-import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
-import com.tunapearl.saturi.domain.lesson.LessonEntity;
-import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
 import com.tunapearl.saturi.dto.lesson.*;
@@ -18,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,7 +104,7 @@ public class LessonController {
 
     /**
      * 레슨 그룹 결과 테이블 생성
-     * 이미 생성돼있으면 생성된 그룹 결과 id를 반환함
+     * 이미 생성돼있으면 복습이니까, 시간을 갱신하고 원래있던 그룹 결과 id를 반환함
      */
     @PostMapping("/lesson-group-result/{lessonGroupId}")
     public ResponseEntity<CreateLessonGroupResultResponseDTO> createLessonGroupResult(@RequestHeader("Authorization") String accessToken,
@@ -151,31 +150,15 @@ public class LessonController {
     public ResponseEntity<LessonGroupResultSaveResponseDTO> saveLessonGroupResult(@RequestHeader("Authorization") String accessToken,
                                                    @PathVariable("lessonGroupResultId") Long lessonGroupResultId) throws UnAuthorizedException {
         log.info("received request to save lesson group result for {}", lessonGroupResultId);
-        // TODO 레슨 그룹 저장 기능 구현
-        // TODO 경험치 부여, 평균 유사도, 평균 정확도 설정
-        // TODO 5개 다 완료했으면 레슨 그룹 종료 일시 설정, 레슨 그룹 완료 여부 true로 변경
-        // TODO 출력에 경험치 얼마 줬는지 보내야함
-        // TODO 복습한 레슨 결과라면 경험치 줄이기??
         Long userId = jwtUtil.getUserId(accessToken);
-        /**
-         * UserInfo
-         */
-        // 유저의 현재 경험치 받아오기
-        UserInfoResponseDTO user = userService.getUserProfile(userId);
-        Long currentExp = user.getExp();
+        // 건너뛰기 하지 않고, 최근순으로 정렬된 레슨 결과 조회
+        List<LessonResultEntity> lessonResults = lessonService.findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(lessonGroupResultId);
+        for (LessonResultEntity lr : lessonResults) {
+            // 5분 이내가 아니면 break
+            // 이미 확인한 lessonId면 break? -> 5분 이내에서 걸러지지 않을까
+            // 최근에 했더라도 복습인지 확인해야함
+        }
 
-        // 유저가 획득한 경험치 받아오기(밑에 그룹결과 보고 판단)
-
-        // 경험치 부여된 후 경험치(위에꺼 두개 더하거나 받아오기)
-
-        /**
-         * lessonResult
-         */
-        lessonService.saveLessonGroupResult(userId, lessonGroupResultId);
-
-        /**
-         * lessonGroupResult
-         */
 
         return ResponseEntity.ok(new LessonGroupResultSaveResponseDTO());
     }
