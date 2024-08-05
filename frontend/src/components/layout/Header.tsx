@@ -175,9 +175,7 @@ export default function Header() {
                     width: '100%',
                     mt: 2
                   }}>
-                    <Box sx= {{ width: "auto"}}>
-                      <UserTierRank />
-                    </Box>
+                    <UserTierRank />
                   </Box>
                 </Box>
                 <Divider />

@@ -41,7 +41,7 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
               <Typography variant="body1">{data.lessonGroupName}</Typography>
               <LinearProgress variant="determinate" value={data.avgAccuracy || 0} />
               <Typography variant="body2" sx={{ mt: 1 }}>
-                평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : 'N/A'}
+                평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : '데이터가 아직 없어요...'}
               </Typography>
             </Box>
           </Box>

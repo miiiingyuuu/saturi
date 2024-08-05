@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Paper, Box, Typography, CircularProgress } from "@mui/material";
 import api from '@/lib/axios';
-import { FaBox } from 'react-icons/fa';
+import { FaCrown } from 'react-icons/fa';
 
 const tierImages = {
   stone: '/tier/stone.png',
@@ -81,16 +81,25 @@ const UserTierRank: React.FC = () => {
   const tierName = formatTierName(tierKey);
 
   return (
-    <Paper sx={{ p: 4, bgcolor: 'primary.main', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="h5">
-          {`전체 순위: ${userExpInfo.userRank}`}
-        </Typography>
+    <Paper sx={{ 
+      p: 3, 
+      bgcolor: '#f0f0f0', 
+      borderRadius: '16px',
+      position: 'relative',
+      height: '80%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <Box sx={{ top: 16, left: 16, display: 'flex', alignItems: 'center', marginTop: 3}}>
+        <FaCrown style={{ color: 'gold', marginRight: 8 }} />
+        <Typography variant="h6" >전체 {userExpInfo.userRank}위</Typography>
       </Box>
-      <Box display="flex" alignItems="center" sx={{ mt: 4 }}>
-        <Box sx={{ position: 'relative', mr: 6, width: 100, height: 100 }}>
+      <Box sx={{ marginTop: 1}}>
           {!imageLoaded && (
             <CircularProgress 
+              size={60}
               sx={{ 
                 position: 'absolute', 
                 top: '50%', 
@@ -102,21 +111,18 @@ const UserTierRank: React.FC = () => {
           <Image
             src={imageSrc}
             alt={`${tierKey} Tier`}
-            width={100}
-            height={100}
+            width={120}
+            height={120}
             onLoad={() => setImageLoaded(true)}
             style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.3s' }}
           />
-        </Box>
-        <Box>
-          <Typography variant="h5" sx={{ whiteSpace: "nowrap", overflow: 'visible', mb: 0.5 }}>
-            {tierName}
-          </Typography>
-          <Typography variant="h6">
-            {`${userExpInfo.currentExp} EXP`}
-          </Typography>
-        </Box>
       </Box>
+      <Typography variant="h5" color="text.primary" sx={{ mt: 1 }}>
+        {tierName}
+      </Typography>
+      <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+        {`${userExpInfo.currentExp} EXP`}
+      </Typography>
     </Paper>
   );
 };

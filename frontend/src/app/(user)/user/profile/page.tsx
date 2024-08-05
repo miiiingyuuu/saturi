@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { 
   Box,
   Grid,
-  Paper
+  Paper,
+  Typography
 } from "@mui/material";
 import sampleData from '@/mocks/dashboard_sample.json';
 import RecentProblem from "@/components/profile/recentProblem";
@@ -83,36 +84,48 @@ export default function ProfilePage() {
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
-      <Grid container spacing={3} sx={{ maxWidth: '70%', mx: 'auto' }} >
-        {/* 프로필 정보 */}
-        <Grid item xs={12} md={6}>
-          <ProfileInfo />
-        </Grid>
-
-        {/* 티어, 경험치,  순위 */}
-        <Grid item xs={12} md={6}>
-          <UserTierRank/>
-        </Grid>
-
-        {/* 최근 푼 문제 */}
+      <Grid container spacing={3} sx={{ maxWidth: '70%', mx: 'auto' }}>
+        {/* My Profile 섹션 */}
         <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <RecentProblem data={dashboardData?.recentLessonGroup || null} isLoading={isLoading} />
-          </Paper>
+          <Typography variant="h4" sx={{ mb: 2 }}>My Profile</Typography>
+          <Grid container spacing={3}>
+            {/* 프로필 정보 */}
+            <Grid item xs={12} md={6}>
+              <ProfileInfo />
+            </Grid>
+            
+            {/* 티어, 경험치, 순위 */}
+            <Grid item xs={12} md={6}>
+              <UserTierRank/>
+            </Grid>
+          </Grid>
         </Grid>
-
-        {/* 주간 스트릭 */}
+  
+        {/* Dashboard 섹션 */}
         <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <WeeklyStreak data={dashboardData?.continuousLearnDay || null} isLoading={isLoading} />
-          </Paper>
-        </Grid>
-
-        {/* 연간 스트릭 */}
-        <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 2 }}>
-            <YearlyStreak data={dashboardData?.streakInfo || null} isLoading={isLoading} />
-          </Paper>
+          <Typography variant="h4" sx={{ mb: 2, mt: 4 }}>Dashboard</Typography>
+          <Grid container spacing={3}>
+            {/* 최근 푼 문제 */}
+            <Grid item xs={12}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                <RecentProblem data={dashboardData?.recentLessonGroup || null} isLoading={isLoading} />
+              </Paper>
+            </Grid>
+  
+            {/* 주간 스트릭 */}
+            <Grid item xs={12}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                <WeeklyStreak data={dashboardData?.continuousLearnDay || null} isLoading={isLoading} />
+              </Paper>
+            </Grid>
+  
+            {/* 연간 스트릭 */}
+            <Grid item xs={12}>
+              <Paper elevation={3} sx={{ p: 2 }}>
+                <YearlyStreak data={dashboardData?.streakInfo || null} isLoading={isLoading} />
+              </Paper>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </Box>

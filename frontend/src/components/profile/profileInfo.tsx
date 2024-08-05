@@ -88,7 +88,7 @@ const ProfileInfo: React.FC = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2 }}>
+    <Paper elevation={3} sx={{ p: 2, height: 'auto' }}>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <Avatar
