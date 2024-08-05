@@ -384,7 +384,6 @@ public class UserService {
         // 이번 주 첫째날 구하기
         WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 1);
         LocalDate startOfWeek = today.with(weekFields.getFirstDayOfWeek());
-        log.info("==============이번 주 첫째날============== {}", startOfWeek);
         for (LessonResultEntity lessonResult : lessonResults) {
             LocalDate learnDate = lessonResult.getLessonDt().toLocalDate();
 
@@ -397,7 +396,10 @@ public class UserService {
                 break; // 최근 순으로 조회하기 때문에, 이번주에 해당되지 않으면 바로 break 해도됨
             }
         }
-        return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek);
+
+        //TODO 대시보드 수정
+        List<Integer> weekAndMonth = new ArrayList<>();
+        return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek, weekAndMonth);
     }
 
     public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId) {
