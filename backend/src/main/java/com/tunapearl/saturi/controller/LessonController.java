@@ -155,24 +155,77 @@ public class LessonController {
         LessonGroupResultEntity lessonGroupResult = lessonService.findLessonGroupResult(lessonGroupResultId);
         LocalDateTime lessonResultStartDt = lessonGroupResult.getStartDt();
 
-        List<LessonResultEntity> lessonResults = lessonService.findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(lessonGroupResultId);
-        // 건너뛰기 하지 않고, 최근순으로 정렬된 레슨 결과 조회
-        Map<Long, LessonResultEntity> lessonResultMap = new HashMap<>();
-        Map<Long, Long> expMap = new HashMap<>();
+        // 최근순으로 정렬된 레슨 결과 조회(건너뛰기 포함)
+        List<LessonResultEntity> lessonResults = lessonService.findLessonResultByLessonGroupResultIdSortedByRecentDt(lessonGroupResultId);
+
+        List<LessonResultForSaveGroupResultDTO> LessonResultForSaveGroupResults = new ArrayList<>(); // DTO
+
+        Map<Long, LessonResultEntity> lessonResultMap = new HashMap<>(); // 이번에 한 결과
+        Map<Long, Long> expMap = new HashMap<>(); // 줘야하는 경험치
+        Map<Long, Long> lessonAccentSimilarityMap = new HashMap<>(); // 억양 유사도
+        Map<Long, Long> lessonPronunciationAccuracyMap = new HashMap<>(); // 발음 정확도
+        PriorityQueue<LessonResultEntity> lessonResultPQ = new PriorityQueue<>(new Comparator<LessonResultEntity>() {
+            @Override
+            public int compare(LessonResultEntity o1, LessonResultEntity o2) {
+                Long o1Score = (o1.getAccentSimilarity() + o1.getPronunciationAccuracy()) / 2;
+                Long o2Score = (o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2;
+                return Long.compare(o2Score, o1Score);
+            }
+        });
+
         for (LessonResultEntity lr : lessonResults) {
+
             LocalDateTime lessonDt = lr.getLessonDt();
+            Long lessonId = lr.getLesson().getLessonId();
+
             if(lessonResultStartDt.isBefore(lessonDt)) { // 이번에 한 레슨이면
-                // 일단 처음했다치고 맵에다가 레슨결과를 담고, 경험치도 20exp로 담는다.
-
-
-
+                // 일단 처음했다치고 맵에다가 레슨결과를 담고, 경험치도 20exp로 담는다. score도 담는다.
+                    // 근데 건너뛰기 했으면 경험치는 0으로, score도 0으로
+                if(lr.getIsSkipped()) { // 건너뛰기
+                    lessonResultMap.put(lessonId, lr);
+                    expMap.put(lessonId, 0L);
+                    lessonAccentSimilarityMap.put(lessonId, 0L);
+                    lessonPronunciationAccuracyMap.put(lessonId, 0L);
+                } else {
+                    lessonResultMap.put(lessonId, lr);
+                    expMap.put(lessonId, 20L);
+                    lessonAccentSimilarityMap.put(lessonId, lr.getAccentSimilarity());
+                    lessonPronunciationAccuracyMap.put(lessonId, lr.getPronunciationAccuracy());
+                }
             } else { // 이번에 한게 아니면
-                // 맵에 레슨 아이디로 키가 존재하면 이번에 한게 복습이라는거임
+                // 맵에 레슨 아이디 키가 존재하면 이번에 한게 복습이라는거거나, 건너뛰기했다는 거거나
+                if(lessonResultMap.containsKey(lessonId)) {
+                    // 건너뛰기 했으면 패스
+                    if(lr.getIsSkipped()) continue;
+                    // 이전에 한게 더 잘했으면 경험치 0exp
+                    // 이번에 한게 더 잘했으면 경험치 10exp
+                    Long prevLessonScore = (lr.getAccentSimilarity() + lr.getPronunciationAccuracy()) / 2;
+                    Long curLessonScore = (lessonResultMap.get(lessonId).getAccentSimilarity() +
+                            lessonResultMap.get(lessonId).getPronunciationAccuracy()) / 2;
+                    if(curLessonScore < prevLessonScore) { // 이전에 한게 더 잘했다.
+                        expMap.replace(lessonId, 0L); // 경험치 0으로
+                        // 수치 map을 높은 얘로 갱신
+                        lessonAccentSimilarityMap.replace(lessonId, Math.max(lessonAccentSimilarityMap.get(lessonId), lr.getAccentSimilarity()));
+                        lessonPronunciationAccuracyMap.replace(lessonId, Math.max(lessonPronunciationAccuracyMap.get(lessonId), lr.getPronunciationAccuracy()));
+                    } else { // 이번에 한게 더 잘했다.
+                        expMap.replace(lessonId, 10L); // 경험치 10으로
+                        // 수치 map을 높은 애로 갱신
+                        lessonAccentSimilarityMap.replace(lessonId, Math.max(lessonAccentSimilarityMap.get(lessonId), lessonResultMap.get(lessonId).getAccentSimilarity()));
+                        lessonPronunciationAccuracyMap.replace(lessonId, Math.max(lessonPronunciationAccuracyMap.get(lessonId), lessonResultMap.get(lessonId).getPronunciationAccuracy()));
+                    }
+
+                } else { // 맵에 레슨 아이디 키가 없으면 이전에 풀었던거 이번에 스킵한거임
+                    // 그러면 DTO에 isBeforeResult인지 알려줘야하고(맵에서 채울 때 시간보고 해야할듯)
+                    // 맵에 이미 했던 결과를 넣어줘야함(근데 냅다 넣으면 다음에 이미 학습한 똑같은 레슨아이디가 돌 때, 이번에 한거라고 될 수 있어서 pq에 담아야할듯?
+                    // 제일 잘한 결과를 보여줘야 하기 때문에 pq에 담아서, map 사이즈가 5가 될 때까지 넣기, 똑같은 레슨아이디인 애들이 젤 위에 있으면 이미 들어가있늕지 확인해서 거르기
+
+                }
+
 
             }
 
-
         }
+        LessonResultForSaveGroupResults.add(new LessonResultForSaveGroupResultDTO()); // map에서 채우기
 
 
         return ResponseEntity.ok(new LessonGroupResultSaveResponseDTO());

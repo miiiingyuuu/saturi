@@ -334,4 +334,8 @@ public class LessonService {
     public List<LessonResultEntity> findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(Long lessonGroupResultId) {
         return lessonRepository.findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(lessonGroupResultId).orElse(null);
     }
+
+    public List<LessonResultEntity> findLessonResultByLessonGroupResultIdSortedByRecentDt(Long lessonGroupResultId) {
+        return lessonRepository.findLessonResultByLessonGroupResultIdSortedByRecentDt(lessonGroupResultId).orElse(null);
+    }
 }
