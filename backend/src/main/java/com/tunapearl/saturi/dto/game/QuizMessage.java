@@ -7,9 +7,10 @@ import lombok.Setter;
 @Setter
 public class QuizMessage {
 
-    private String type = "CORRECT";
+    private String type = "CHAT";
     private String roomId;
     private Long senderId;
+    private String senderNickName;
     private long quizId;
     private String message;
     private boolean isCorrect=false;
