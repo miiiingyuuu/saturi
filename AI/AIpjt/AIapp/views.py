@@ -129,7 +129,7 @@ def script_similarity_ratio(original, transcribed):
         return 0
     return SequenceMatcher(None, original, transcribed).ratio()
 
-@api_view(['POST'])
+@api_view(['POST','OPTIONS'])
 def analyze_audio(request):
     serializer = CommingDataSerializer(data=request.data)
     if serializer.is_valid():

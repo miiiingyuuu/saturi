@@ -5,7 +5,10 @@ import Image from "next/image";
 import { Button } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import api from "@/lib/axios";
+import apiAi from "@/lib/axiosAI";
 import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 라이브러리 import
+
+
 
 // 컴포넌트: LessonPage
 export default function LessonPage() {
@@ -19,6 +22,7 @@ export default function LessonPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioBlobRef = useRef<Blob | null>(null); // Store the final audio blob
+  
 
   const router = useRouter();
   const pathname = usePathname();
@@ -133,6 +137,7 @@ export default function LessonPage() {
   ];
 
   const handleNext = async () => {
+    // 녹음 파일 google-storage 저장
     if (audioBlobRef.current) {
       const wavBlob = await convertToWav(audioBlobRef.current);
       const arrayBuffer = await wavBlob.arrayBuffer();
@@ -154,7 +159,35 @@ export default function LessonPage() {
       if (response.ok) {
         const result = await response.json();
         console.log("File uploaded with name:", result.filename);
+        
         // 정답파일명, 음성파일명을 django 로 보내기
+        apiAi.post('/audio/analyze/',
+          {
+            "answerVoiceFileName": '1994_가시나운동하나도안했네.wav',
+            "userVoiceFileName": `${result.filename}`,
+          }
+        ).then((res) => {
+          if (res.status === 200) {
+            console.log(res.data);
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            // 요청은 성공적으로 보내졌지만, 서버가 2xx 범위 외의 상태 코드를 응답한 경우
+            console.error('Response error:', error.response.data);
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+          } else if (error.request) {
+            // 요청이 보내졌지만, 응답을 받지 못한 경우
+            console.error('Request error:', error.request);
+          } else {
+            // 요청을 설정하는 과정에서 에러가 발생한 경우
+            console.error('Error', error.message);
+          }
+          console.log('레슨 결과 분석 실패 :', error.config);
+        });
+        
+        // 
       } else {
         console.error("Failed to upload file");
       }
