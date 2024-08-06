@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "bird")
 public class BirdEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bird_id")
     private Long id;
 

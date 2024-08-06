@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "game_log")
 public class GameLogEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="game_log_id")
     private long gameLogId;
 

@@ -20,6 +20,7 @@ import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.service.GameRoomParticipantService;
 import com.tunapearl.saturi.service.GameRoomQuizService;
 import com.tunapearl.saturi.service.QuizService;
+import com.tunapearl.saturi.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class GameService {
     private final GameRoomQuizService gameRoomQuizService;
     private final QuizService quizService;
     private final GameRoomParticipantService gameRoomParticipantService;
+    private final RedisPublisher redisPublisher;
 
     /**
      * 팁 추가
@@ -108,7 +110,6 @@ public class GameService {
 
         if (participants.size() == 5) {
             gameRoomEntity.setStatus(Status.IN_PROGRESS);
-            gameRoomRepository.updateGameRoom(gameRoomEntity);
         }
 
         //게임방토픽Id 넘겨주자
@@ -118,10 +119,9 @@ public class GameService {
     }
 
     public List<GameResultResponseDTO> getGameResult(GameResultRequestDTO requestdDto) {
-        //TODO:correctCount 내림차 순으로 주기
-        //TODO:경험치도 올려야함
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(requestdDto.getRoomId());
 
+
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(requestdDto.getRoomId());
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
             long roomId = chatRoom.getRoomId();

@@ -14,7 +14,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Table(name = "lesson")
 public class LessonEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_id")
     private Long lessonId;
 

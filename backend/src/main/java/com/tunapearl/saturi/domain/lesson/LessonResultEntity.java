@@ -13,7 +13,7 @@ import static jakarta.persistence.FetchType.*;
 @Table(name = "lesson_result")
 public class LessonResultEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_result_id")
     private Long lessonResultId;
 

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Table(name = "lesson_record_file")
 public class LessonRecordFileEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_record_file_id")
     private Long lessonRecordFileId;
 
