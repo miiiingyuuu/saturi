@@ -150,11 +150,8 @@ public class LessonController {
                                                    @PathVariable("lessonGroupResultId") Long lessonGroupResultId) throws UnAuthorizedException {
         log.info("received request to save lesson group result for {}", lessonGroupResultId);
         Long userId = jwtUtil.getUserId(accessToken);
-        // leesonGroupResult 조회
         LessonGroupResultSaveResponseDTO result = lessonService.saveLessonGroupResult(userId, lessonGroupResultId);
-
-
-        return ResponseEntity.ok(new LessonGroupResultSaveResponseDTO());
+        return ResponseEntity.ok(result);
     }
 
     /**
