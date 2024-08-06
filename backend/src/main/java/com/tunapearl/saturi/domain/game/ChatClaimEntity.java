@@ -27,6 +27,18 @@ public class ChatClaimEntity {
     @Column(name = "checkedDt")
     private LocalDateTime checkedDt;
 
+
+    /*
+     * 생성 메서드
+     */
+    public static ChatClaimEntity createChatClaim(GameLogEntity gameLog){
+        ChatClaimEntity chatClaimEntity = new ChatClaimEntity();
+        chatClaimEntity.gameLog = gameLog;
+        chatClaimEntity.claimedDt = LocalDateTime.now();
+        chatClaimEntity.isChecked = false;
+        return chatClaimEntity;
+    }
+
     /*
     * 비즈니스 로직
     */
@@ -34,5 +46,4 @@ public class ChatClaimEntity {
         this.isChecked = true;
         checkedDt = LocalDateTime.now();
     }
-
 }
