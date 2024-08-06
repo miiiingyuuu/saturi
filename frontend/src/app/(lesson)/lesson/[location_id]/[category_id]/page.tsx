@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Box, Card } from "@mui/material";
+import { Box, Card, Container, Typography } from "@mui/material";
 import api from "@/lib/axios";
 import SideNavbar from "../../../../../components/lesson/sidebar";
 import Puzzle from "../../../../../components/lesson/puzzle";
@@ -80,14 +80,14 @@ export default function CategorySelectPage() {
   };
 
   return (
-    <Box sx = {{ display:"flex", justifyContent:"center" }}>
-      <Box sx= {{ display:"flex", justifyContent:"space-between", width:"80%", height:"740px", marginTop: "10px" }}>
-        <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "2px solid", borderRadius: "8px" }}>
+    <Container maxWidth="xl">
+      <Box sx= {{ display:"flex", justifyContent:"space-between", width:"100%%", height:"700px", marginTop: "10px" }}>
+        <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
           {/* <h2>locationID = {locationId}</h2>
           <h2>CategoryName = {categoryName}</h2> */}
           <SideNavbar location={locationId} />
         </Card>
-        <Card sx = {{ width:"45%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "2px solid", borderRadius: "8px" }}>
+        <Card sx = {{ width:"45%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
           {locationId && (
             <Puzzle
               id={locationId}
@@ -97,7 +97,11 @@ export default function CategorySelectPage() {
             />
           )}
         </Card>
-        <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "2px solid", borderRadius: "8px" }}>
+        <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
+          {selectedPuzzleId == null && (
+            <Typography> 퍼즐을 선택하세요. </Typography>
+          )}
+          
           <Box>
             {selectedPuzzleId !== null && selectedPuzzleAccuracy !== null && (
               <PuzzleInfo
@@ -109,7 +113,7 @@ export default function CategorySelectPage() {
           </Box>
         </Card>
       </Box>
-    </Box>
+    </Container>
     
     
 
