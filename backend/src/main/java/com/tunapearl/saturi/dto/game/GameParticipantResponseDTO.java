@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,14 +14,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameParticipantResponseDTO {
-    MessageType chatType;
+    private MessageType chatType;
     private String senderNickName;
     private String message;
     private List<GameParticipantDTO> participants;
 
     public void addParticipant(GameParticipantDTO participant) {
-        if (participants == null) {
+        if (participant == null) {
             throw new RuntimeException(String.format("GameParticipantResponseDTO.addParticipant(GameParticipantDTO) called with null participants"));
+        }
+        if(participants == null) {
+            participants = new ArrayList<GameParticipantDTO>();
         }
         participants.add(participant);
     }

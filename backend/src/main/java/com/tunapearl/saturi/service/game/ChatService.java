@@ -240,5 +240,7 @@ public class ChatService {
         }
 
         return message;
+
+        //TODO: 채팅로그id set해서넘겨줘야햠
     }
 }

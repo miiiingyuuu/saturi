@@ -2,6 +2,7 @@ package com.tunapearl.saturi.service.game;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tunapearl.saturi.domain.game.MessageType;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
@@ -15,7 +16,9 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -76,24 +79,32 @@ public class RedisSubscriber implements MessageListener {
                     }
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, quizList);
 
-                } else if("START".equals(subType)){
-                    for(JsonNode data : jsonNode.get("data")){
-                        GameParticipantResponseDTO gprDto = GameParticipantResponseDTO.builder()
-                                .chatType(MessageType.START)
-                                .senderNickName(data.get("senderNickName").asText())
-                                .message(data.get("message").asText())
-                                .build();
-                        for(JsonNode participant : data.get("participants")){
+                } else if ("START".equals(subType)) {
+                    JsonNode data = jsonNode.get("data");
+                    String roomId = jsonNode.get("roomId").asText();
+
+                    GameParticipantResponseDTO gprDto = GameParticipantResponseDTO.builder()
+                            .chatType(MessageType.START)
+                            .senderNickName(data.get("senderNickName").asText())
+                            .message(data.get("message").asText())
+                            .build();
+
+                    JsonNode participants = data.get("participants");
+                    for (JsonNode participant : participants) {
+                        for (JsonNode e : participant) {
                             GameParticipantDTO gpDto = GameParticipantDTO.builder()
-                                    .nickName(participant.get("nickName").asText())
-                                    .birdId(participant.get("birdId").asLong())
+                                    .nickName(e.get("nickName").asText())
+                                    .birdId(e.get("birdId").asLong())
                                     .build();
+                            log.info("gprDto: {}", gpDto);
                             gprDto.addParticipant(gpDto);
                         }
-                        log.info("RedisSubscriber START:::::: Dto:{}", gprDto);
                     }
-                }
-                else {
+
+                    log.info("RedisSubscriber START:::::: Dto:{}", gprDto);
+                    log.info("roomId: {}", roomId);
+                    messagingTemplate.convertAndSend("/sub/room/" + roomId, gprDto);
+                } else {
 
                     ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
                     messagingTemplate.convertAndSend("/sub/room/" + chatMessage.getRoomId(), chatMessage);
