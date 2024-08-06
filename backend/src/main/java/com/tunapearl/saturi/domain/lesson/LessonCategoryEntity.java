@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.domain.lesson;
 
+import io.lettuce.core.dynamic.annotation.CommandNaming;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import lombok.Setter;
 @Table(name = "lesson_category")
 public class LessonCategoryEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_category_id")
     private Long lessonCategoryId;
 

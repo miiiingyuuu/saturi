@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "chat_claim")
 public class ChatClaimEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_claim_id")
     private Long chatClaimId;
 

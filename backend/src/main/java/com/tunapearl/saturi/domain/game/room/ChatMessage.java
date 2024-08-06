@@ -8,13 +8,13 @@ import lombok.Setter;
 public class ChatMessage {
 
     public enum MessageType {
-        ENTER,QUIZ,EXIT
+        ENTER,START,QUIZ,EXIT,END
     }
 
     private String type = "ROOM";
     private String subType="";
     private MessageType chatType;
     private String roomId;
-    private Long senderId;
+    private String senderNickName;
     private String message;
 }

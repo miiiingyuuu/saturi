@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "game_tip")
 public class GameTipEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="tip_id")
     private int tipId;
 

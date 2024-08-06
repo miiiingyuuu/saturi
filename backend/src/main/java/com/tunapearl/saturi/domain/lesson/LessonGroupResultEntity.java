@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "lesson_group_result")
 public class LessonGroupResultEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_group_result_id")
     private Long lessonGroupResultId;
 

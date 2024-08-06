@@ -1,9 +1,6 @@
 package com.tunapearl.saturi.service.game;
 
-import com.tunapearl.saturi.domain.game.GameLogEntity;
-import com.tunapearl.saturi.domain.game.GameRoomEntity;
-import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
-import com.tunapearl.saturi.domain.game.GameRoomQuizEntity;
+import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
@@ -51,8 +48,8 @@ public class ChatService {
     private final QuizService quizService;
     private final GameRoomQuizService gameRoomQuizService;
     private final UserService userService;
-    private final GameRoomParticipantRepository gameRoomParticipantRepository;
     private final GameRoomParticipantService gameRoomParticipantService;
+    private final RedisPublisher redisPublisher;
 
     /**
      * 개인방 관련 메소드
@@ -86,12 +83,33 @@ public class ChatService {
     /**
      * 아래부터는 게임방 관련 메소드
      */
-    public void enterGameRoom(String roomId) {
-        ChannelTopic topic = getRoomTopic(roomId);
+    public boolean enterGameRoom(String topicId) {
+        ChannelTopic topic = getRoomTopic(topicId);
         if (topic == null)
-            topic = new ChannelTopic(roomId);
+            topic = new ChannelTopic(topicId);
 
         redisMessageListener.addMessageListener(redisSubscriber, topic);
+        //TODO room에 몇명인지확인하고 5명이면 시작하라고 publish한다...?
+        //topicId를 통해서 roomId를 가져와서, status가 in-progress다? 마지막사람이 등장한거니까시작해.
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(topicId);
+
+        if (chatRoomOptional.isPresent()) {
+            ChatRoom chatRoom = chatRoomOptional.get();
+            long roomId = chatRoom.getRoomId();
+
+            GameRoomEntity gameRoomEntity = gameRoomRepository.findById(roomId).orElse(null);
+            if (gameRoomEntity != null) {
+                log.info("게임방은 있슈");
+
+                if(gameRoomEntity.getStatus().equals(Status.IN_PROGRESS)){//모두 모임. 게임 시작하라
+
+                    return true;//게임을 시작하라
+                }
+            }
+
+
+        }
+        return false;//아직 덜 모음
     }
 
     public Optional<ChatRoom> getChatRoom(String roomId) {

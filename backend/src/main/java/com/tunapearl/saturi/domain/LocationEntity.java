@@ -16,7 +16,7 @@ import java.util.List;
 @ToString
 public class LocationEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "location_id")
     private Long locationId;
 
