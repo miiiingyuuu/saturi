@@ -1,6 +1,7 @@
 package com.tunapearl.saturi.controller.admin;
 
 import com.tunapearl.saturi.domain.LocationEntity;
+import com.tunapearl.saturi.domain.game.GameRoomEntity;
 import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
@@ -150,5 +151,26 @@ public class AdminStatisticsController {
 
         return ResponseEntity.ok(new LessonStatisticsResponseDTO(sortedByCompletedNum, sortedByAvgSimilarity,
                 sortedByAvgAccuracy, sortedByClaimNum));
+    }
+
+    @GetMapping("/content")
+    public ResponseEntity<LessonAndGameRateResponseDTO> getContentStatistics() {
+        // 레슨 그룹 결과 테이블 로우 개수
+        List<LessonGroupResultEntity> lessonGroupResults = adminService.findAllLessonGroupResult();
+        Long lessonRate = 0L;
+        if(lessonGroupResults != null) {
+            lessonRate = (long)lessonGroupResults.size();
+        }
+
+        // 게임방 테이블 로우 개수 * 5 (5명 참가)
+        Long gameRate = 0L;
+        List<GameRoomEntity> gameRooms = adminService.findAllGameRoom();
+        if(gameRooms != null) {
+            gameRate = gameRooms.size() * 5L;
+        }
+        Long total = lessonRate + gameRate;
+        lessonRate = lessonRate * 100 / total;
+        gameRate = gameRate * 100 / total;
+        return ResponseEntity.ok(new LessonAndGameRateResponseDTO(lessonRate, gameRate));
     }
 }

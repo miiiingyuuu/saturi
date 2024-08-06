@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.service.user;
 
+import com.tunapearl.saturi.domain.game.GameRoomEntity;
 import com.tunapearl.saturi.domain.lesson.LessonClaimEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
@@ -8,6 +9,7 @@ import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.admin.UserBanRequestDTO;
 import com.tunapearl.saturi.dto.user.UserMsgResponseDTO;
 import com.tunapearl.saturi.repository.UserRepository;
+import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ public class AdminService {
 
     private final UserRepository userRepository;
     private final LessonRepository lessonRepository;
+    private final GameRoomRepository gameRoomRepository;
 
     public UserMsgResponseDTO banUser(UserBanRequestDTO request) {
         UserEntity findUser = userRepository.findByUserId(request.getUserId()).get();
@@ -53,5 +56,13 @@ public class AdminService {
 
     public List<LessonClaimEntity> findAllLessonClaim() {
         return lessonRepository.findAllLessonClaim().orElse(null);
+    }
+
+    public List<LessonGroupResultEntity> findAllLessonGroupResult() {
+        return lessonRepository.findAllLessonGroupResult().orElse(null);
+    }
+
+    public List<GameRoomEntity> findAllGameRoom() {
+        return gameRoomRepository.findAllGameRoom().orElse(null);
     }
 }
