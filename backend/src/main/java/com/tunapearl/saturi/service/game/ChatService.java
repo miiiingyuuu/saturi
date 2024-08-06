@@ -105,7 +105,6 @@ public class ChatService {
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
             long roomId = chatRoom.getRoomId();
-            log.info("ChatRoom found: {}", roomId);
 
             Optional<List<Long>> quizIdListOptional = gameRoomQuizRepository.findQuizIdsByRoomId(roomId);
             if (quizIdListOptional.isPresent()) {

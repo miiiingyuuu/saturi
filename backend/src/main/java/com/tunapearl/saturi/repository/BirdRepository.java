@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,5 +21,10 @@ public class BirdRepository {
 
     public Optional<BirdEntity> findById(Long birdId) {
         return Optional.ofNullable(em.find(BirdEntity.class, birdId));
+    }
+
+    public Optional<List<BirdEntity>> findAll() {
+        List<BirdEntity> birds = em.createQuery("select b from BirdEntity b", BirdEntity.class).getResultList();
+        return birds.isEmpty() ? Optional.empty() : Optional.of(birds);
     }
 }

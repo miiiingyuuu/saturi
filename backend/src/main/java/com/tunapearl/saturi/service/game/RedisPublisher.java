@@ -3,6 +3,7 @@ package com.tunapearl.saturi.service.game;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
+import com.tunapearl.saturi.dto.game.GameQuizResponseDTO;
 import com.tunapearl.saturi.dto.game.QuizMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,8 +37,15 @@ public class RedisPublisher {
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }
 
-    public void quizListPublish(ChannelTopic topic, List<QuizEntity> quizList){
+    public void quizListPublish(ChannelTopic topic, List<GameQuizResponseDTO> quizList, String roomId){
 
-        redisTemplate.convertAndSend(topic.getTopic(), quizList);
+//        redisTemplate.convertAndSend(topic.getTopic(), quizList);
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "ROOM");
+        message.put("subType", "QUIZ");
+        message.put("roomId",roomId);
+        message.put("data", quizList);
+        redisTemplate.convertAndSend(topic.getTopic(), message);
+        log.info("Published quiz list to topic: {}", topic.getTopic());
     }
 }
