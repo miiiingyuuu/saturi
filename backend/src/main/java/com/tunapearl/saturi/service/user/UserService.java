@@ -464,6 +464,28 @@ public class UserService {
         }
         return new UserTotalLessonInfoDTO(totalLessonGroupResultCnt, lessonResults.size());
     }
+
+    /**
+     * 임시 비밀번호 생성
+     */
+    public String makeRandomTempPassword() {
+        Random r1 = new Random();
+        Random r2 = new Random();
+        StringBuilder randomNumber = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            if (r1.nextBoolean()) randomNumber.append(Integer.toString(r2.nextInt(10)));
+            else randomNumber.append((char) (r2.nextInt(26) + 97));
+        }
+        // 숫자 한 개 추가
+        // 특수문자 한 개 추가
+        randomNumber.append("1").append("!");
+        return randomNumber.toString();
+    }
+
+    @Transactional
+    public void changePasswordByTmpPassword(UserEntity user, String tmpPassword) {
+        user.setPassword(PasswordEncoder.encrypt(user.getEmail(), tmpPassword));
+    }
 }
 
 

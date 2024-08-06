@@ -1,8 +1,10 @@
 package com.tunapearl.saturi.controller;
 
 
+import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.*;
+import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.service.user.SocialUserService;
 import com.tunapearl.saturi.service.user.TokenService;
 import com.tunapearl.saturi.service.user.UserService;
@@ -31,6 +33,7 @@ public class UserController {
     private final SocialUserService socialUserService;
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
+    private final UserRepository userRepository;
 
 
     /**
@@ -154,7 +157,7 @@ public class UserController {
         if (userService.checkAuthNum(request.getEmail(), request.getAuthNum())) {
             return ResponseEntity.ok().body("ok");
         } else {
-            throw new NullPointerException("error!");
+            throw new IllegalStateException();
         }
     }
 
@@ -218,5 +221,22 @@ public class UserController {
 
         return ResponseEntity.ok().body(new UserDashboardResponseDTO(userExpInfo, recentLessonGroup,
                 continuousLearnDay, streakInfoDays, totalLessonInfo));
+    }
+
+    /**
+     * 비밀번호 찾기
+     */
+    @PostMapping("/auth/password-find")
+    public ResponseEntity<TempPasswordResponseDTO> createTempPassword(@RequestBody FindPasswordRequestDTO request) {
+        log.info("Received normal find password request for {}", request);
+        if (userService.checkAuthNum(request.getEmail(), request.getCode())) {
+            String tmpPassword = userService.makeRandomTempPassword();
+            UserEntity user = userRepository.findByEmail(request.getEmail()).orElse(null).get(0);
+            userService.changePasswordByTmpPassword(user, tmpPassword);
+
+            return ResponseEntity.ok().body(new TempPasswordResponseDTO(tmpPassword));
+        } else {
+            throw new IllegalStateException();
+        }
     }
 }
