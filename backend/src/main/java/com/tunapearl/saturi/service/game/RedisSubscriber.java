@@ -2,11 +2,10 @@ package com.tunapearl.saturi.service.game;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tunapearl.saturi.domain.game.MessageType;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
-import com.tunapearl.saturi.dto.game.GameQuizChoiceDTO;
-import com.tunapearl.saturi.dto.game.GameQuizResponseDTO;
-import com.tunapearl.saturi.dto.game.QuizMessage;
+import com.tunapearl.saturi.dto.game.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -78,8 +77,21 @@ public class RedisSubscriber implements MessageListener {
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, quizList);
 
                 } else if("START".equals(subType)){
-
-                    log.info("RedisSubscriber START:::::: message:{}",message);
+                    for(JsonNode data : jsonNode.get("data")){
+                        GameParticipantResponseDTO gprDto = GameParticipantResponseDTO.builder()
+                                .chatType(MessageType.START)
+                                .senderNickName(data.get("senderNickName").asText())
+                                .message(data.get("message").asText())
+                                .build();
+                        for(JsonNode participant : data.get("participants")){
+                            GameParticipantDTO gpDto = GameParticipantDTO.builder()
+                                    .nickName(participant.get("nickName").asText())
+                                    .birdId(participant.get("birdId").asLong())
+                                    .build();
+                            gprDto.addParticipant(gpDto);
+                        }
+                        log.info("RedisSubscriber START:::::: Dto:{}", gprDto);
+                    }
                 }
                 else {
 
