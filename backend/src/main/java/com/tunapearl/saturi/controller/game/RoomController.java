@@ -100,7 +100,6 @@ public class RoomController {
         long userId = jwtUtil.getUserId(authorization);
         gameResultRequestDTO.setUserId(userId);
 
-        //TODO:게임방 상태 바꿀것
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(gameResultRequestDTO.getRoomId());
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
