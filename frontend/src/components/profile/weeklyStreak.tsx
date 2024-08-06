@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import { FaFire } from "react-icons/fa";
 
 interface ContinuousLearnDay {
@@ -41,26 +41,29 @@ interface ContinuousLearnDay {
     return (
       <Box>
         <Typography variant="h6" gutterBottom>주간 스트릭</Typography>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="body2" sx={{ ml: 1 ,mt: 2 }}>24년 { formattedDate }</Typography>
-        </Box>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
-          <Box display="flex" gap={12} sx={{ border: '1px solid black', borderRadius: '4px', padding: '8px' }}>  {/* 요일 간의 간격을 줄임 */}
-            {daysOfWeek.map((day, index) => (
-              <Box key={day} textAlign="center">
-                <Typography variant="body2">{day}</Typography>
-                <FaFire color={data.daysOfTheWeek.includes(index) ? "orange" : "gray"} />
-              </Box>
-            ))}
-          </Box>
-          <Box>  {/* 오른쪽에 연속 학습 일수 표시 */}
-            <Typography>사투리가 서툴러유와 함께한지</Typography>
-            <Typography variant="h5" fontWeight="bold">
-              {data.learnDays > 0 ? ` ${data.learnDays}일!` : ''}
-            </Typography>
-            {/* <Typography variant="body2">오늘도 화이팅</Typography> */}
-          </Box>
-        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="body2" sx={{ mt: 2 }}>24년 {formattedDate}</Typography>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Box display="flex" gap={2} sx={{ border: '1px solid black', borderRadius: '4px', padding: '8px', overflowX: 'auto' }}>
+              {daysOfWeek.map((day, index) => (
+                <Box key={day} textAlign="center" sx={{ minWidth: '40px' }}>
+                  <Typography variant="body2">{day}</Typography>
+                  <FaFire color={data.daysOfTheWeek.includes(index) ? "orange" : "gray"} />
+                </Box>
+              ))}
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: { xs: 'left', md: 'right' } }}>
+              <Typography>사투리가 서툴러유와 함께한지</Typography>
+              <Typography variant="h5" fontWeight="bold">
+                {data.learnDays > 0 ? ` ${data.learnDays}일!` : ''}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
     );
   };

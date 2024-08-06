@@ -1,85 +1,115 @@
-"use client";
+"use client"
 
-import { Button, Container, TextField, Typography, Box } from "@mui/material";
-import { handleValueChange } from "@/utils/utils";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getCookie } from "cookies-next";
-import { handleLogin } from "@/utils/authutils";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { 
+  Box, 
+  TextField, 
+  Button, 
+  Typography, 
+  Container, 
+  Paper, 
+  Alert,
+  Grid
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { changePassword } from './confirmation';
+import { validatePassword } from '@/utils/utils';
 
-export default function App() {
-  const [ email, setEmail ] = useState("");
-  const [ password, setPassword] = useState("");
+const PasswordChangeForm: React.FC = () => {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && !sessionStorage.getItem("accessToken")) {
-      router.push("/")
-    } else {
-      const cookieEmail = getCookie("email")
-      if (cookieEmail) {
-        setEmail(cookieEmail);
-      }
-    }
-  }, []);
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-      }}
-    >
-      <Container component="main" maxWidth="sm">
-        <Box
-          component="form"
-          onSubmit={event => {
-            event.preventDefault();
-            handleLogin({ email, password, router, goTo:"", })
-          }}
-          noValidate
-          sx={{ mt: 1 }}
-        >
-          <Typography component="h1" variant="h3" align="center">
-            비밀번호 확인
-          </Typography>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsError(false);
 
+    if (!validatePassword(currentPassword) || !validatePassword(newPassword)) {
+      setMessage('비밀번호는 숫자, 소문자, 특수문자를 포함한 8자 이상이어야 합니다.');
+      setIsError(true);
+      return;
+    }
+
+    const result = await changePassword({ currentPassword, newPassword });
+    setMessage(result.message);
+    setIsError(!result.success);
+    if (result.success) {
+      setCurrentPassword('');
+      setNewPassword('');
+      setTimeout(() => {
+        router.push('/user/profile');
+      }, 2000);
+    }
+  };
+
+  const handleGoBack = () => {
+    router.push('/user/profile/update');
+  };
+
+  return (
+    <Container maxWidth="sm">
+      <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          비밀번호 변경
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
+            required
             fullWidth
-            id="password"
-            label="비밀번호"
+            name="currentPassword"
+            label="현재 비밀번호"
             type="password"
-            value={password}
-            onChange={event => handleValueChange(event, setPassword)}
+            id="currentPassword"
             autoComplete="current-password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
           />
           <TextField
             margin="normal"
+            required
             fullWidth
-            id="password"
-            label="비밀번호확인"
+            name="newPassword"
+            label="새 비밀번호"
             type="password"
-            value={password}
-            onChange={event => handleValueChange(event, setPassword)}
-            autoComplete="current-password"
+            id="newPassword"
+            autoComplete="new-password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{
-              mt: 3,
-              mb: 2,
-              height: "56px",
-            }}
-          >
-            비밀번호 변경
-          </Button>
+          <Grid container spacing={2} sx={{ mt: 3 }}>
+            <Grid item xs={6}>
+              <Button
+                startIcon={<ArrowBackIcon />}
+                onClick={handleGoBack}
+                variant="outlined"
+                fullWidth
+              >
+                뒤로 가기
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+              >
+                비밀번호 변경
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
-      </Container>
-    </Box>
+        {message && (
+          <Alert severity={isError ? "error" : "success"} sx={{ mt: 2 }}>
+            {message}
+          </Alert>
+        )}
+      </Paper>
+    </Container>
   );
-}
+};
+
+export default PasswordChangeForm;
