@@ -20,7 +20,6 @@ import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.service.GameRoomParticipantService;
 import com.tunapearl.saturi.service.GameRoomQuizService;
 import com.tunapearl.saturi.service.QuizService;
-import com.tunapearl.saturi.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -106,10 +105,12 @@ public class GameService {
         GameRoomParticipantEntity gameRoomParticipantEntity = new GameRoomParticipantEntity(gameRoomEntity, user);
         gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
 
-        List<GameRoomParticipantEntity> participants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
-
-        if (participants.size() == 5) {
-            gameRoomEntity.setStatus(Status.IN_PROGRESS);
+        Optional<List<GameRoomParticipantEntity>> Optionalparticipants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
+        if(Optionalparticipants.isPresent()){
+            List<GameRoomParticipantEntity> participants=Optionalparticipants.get();
+            if (participants.size() == 2) {
+                gameRoomEntity.setStatus(Status.IN_PROGRESS);
+            }
         }
 
         //게임방토픽Id 넘겨주자

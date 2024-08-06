@@ -1,15 +1,12 @@
 package com.tunapearl.saturi.domain.game.room;
 
+import com.tunapearl.saturi.domain.game.MessageType;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class ChatMessage {
-
-    public enum MessageType {
-        ENTER,START,QUIZ,EXIT,END
-    }
 
     private String type = "ROOM";
     private String subType="";
