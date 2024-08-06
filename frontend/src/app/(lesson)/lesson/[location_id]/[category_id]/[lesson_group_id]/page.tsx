@@ -13,20 +13,59 @@ import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 �
 // 컴포넌트: LessonPage
 export default function LessonPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentlessonId, setCurrentlessonId] = useState<number>(1);
   const [isRecording, setIsRecording] = useState(false);
   const [locationId, setLocationId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [lessonGroupId, setLessonGroupId] = useState<number | null>(null);
   const [lessonGroupResultId, setLessonGroupResultId] = useState<number | null>(null);
   const [lessons, setLessons] = useState<object[]>([]); // lessons의 타입을 객체 배열로 명시
+  // 음성 녹음을 위한 변수
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioBlobRef = useRef<Blob | null>(null); // Store the final audio blob
-  
 
   const router = useRouter();
   const pathname = usePathname();
   
+  // // lesson/2/1/1 에서 데이터 있음, 테스트용 더미데이터
+  // const tempLessons = [
+  //   {
+  //     lessonId: 1,
+  //     sampleVoicePath: null,
+  //     script: "test script 1",
+  //     lastUpdateDt: "2024-08-31T12:00:47.786786",
+  //     isDeleted: false,
+  //   },
+  //   {
+  //     lessonId: 2,
+  //     sampleVoicePath: null,
+  //     script: "test script 2",
+  //     lastUpdateDt: "2024-08-31T12:00:47.786786",
+  //     isDeleted: false,
+  //   },
+  //   {
+  //     lessonId: 3,
+  //     sampleVoicePath: null,
+  //     script: "test script 3",
+  //     lastUpdateDt: "2024-08-31T12:00:47.786786",
+  //     isDeleted: false,
+  //   },
+  //   {
+  //     lessonId: 4,
+  //     sampleVoicePath: null,
+  //     script: "test script 4",
+  //     lastUpdateDt: "2024-08-31T12:00:47.786786",
+  //     isDeleted: false,
+  //   },
+  //   {
+  //     lessonId: 5,
+  //     sampleVoicePath: null,
+  //     script: "test script 5",
+  //     lastUpdateDt: "2024-08-31T12:00:47.786786",
+  //     isDeleted: false,
+  //   },
+  // ];
   // 지역, 카테고리, 레슨그룹 정보
   useEffect(() => {
     const pathSegments = pathname.split("/");
@@ -46,7 +85,7 @@ export default function LessonPage() {
       ![1, 2, 3].includes(selectedLocation) ||
       Number.isNaN(selectedCategory)
     ) {
-      router.push("/lesson/1/1");
+      router.push("/lesson/2/1");
     } else {
       setLocationId(selectedLocation);
       setCategoryId(selectedCategory);
@@ -62,10 +101,7 @@ export default function LessonPage() {
       .post(`learn/lesson-group-result/${lessonGroupId}`)
       .then(response => {
         if (response.status === 201) {
-          // console.log(
-          //   "Lesson group result Id:",
-          //   response.data.lessonGroupResultId,
-          // );
+          // 레슨 그룹 아이디 설정
           setLessonGroupResultId(response.data.lessonGroupResultId)
         }
       })
@@ -88,7 +124,7 @@ export default function LessonPage() {
               response.data.length > 0 &&
               response.data[lessonGroupId - 1].lessons
             ) {
-              setLessons(response.data[lessonGroupId - 1].lessons);
+              setLessons(response.data[lessonGroupId - 1].lessons);              
             }
           }
         })
@@ -98,44 +134,8 @@ export default function LessonPage() {
     }
   }, [locationId, categoryId, pathname, lessonGroupId]);
 
-  const tempLessons = [
-    {
-      lessonId: 1,
-      sampleVoicePath: null,
-      script: "test script 1",
-      lastUpdateDt: "2024-08-31T12:00:47.786786",
-      isDeleted: false,
-    },
-    {
-      lessonId: 2,
-      sampleVoicePath: null,
-      script: "test script 2",
-      lastUpdateDt: "2024-08-31T12:00:47.786786",
-      isDeleted: false,
-    },
-    {
-      lessonId: 3,
-      sampleVoicePath: null,
-      script: "test script 3",
-      lastUpdateDt: "2024-08-31T12:00:47.786786",
-      isDeleted: false,
-    },
-    {
-      lessonId: 4,
-      sampleVoicePath: null,
-      script: "test script 4",
-      lastUpdateDt: "2024-08-31T12:00:47.786786",
-      isDeleted: false,
-    },
-    {
-      lessonId: 5,
-      sampleVoicePath: null,
-      script: "test script 5",
-      lastUpdateDt: "2024-08-31T12:00:47.786786",
-      isDeleted: false,
-    },
-  ];
 
+  // 녹음 파일을 GCR 에 저장, 
   const handleNext = async () => {
     // 녹음 파일 google-storage 저장
     if (audioBlobRef.current) {
@@ -147,7 +147,7 @@ export default function LessonPage() {
           "",
         ),
       );
-
+      // google-storage 에 저장
       const response = await fetch("/api/upload", {
         method: "POST",
         headers: {
@@ -160,7 +160,7 @@ export default function LessonPage() {
         const result = await response.json();
         console.log("File uploaded with name:", result.filename);
         
-        // 정답파일명, 음성파일명을 django 로 보내기
+        // 정답파일명, 음성파일명을 django 로 보내서 분석결과 수집
         apiAi.post('/audio/analyze/',
           {
             "answerVoiceFileName": '1994_가시나운동하나도안했네.wav',
@@ -168,7 +168,36 @@ export default function LessonPage() {
           }
         ).then((res) => {
           if (res.status === 200) {
+            // 분석 결과
             console.log(res.data);
+            // 개별 레슨 결과 전송
+            console.log("lessonId: ",currentlessonId,"lessonGroupResultId: ",lessonGroupResultId)
+            const requestBody = {
+              lessonId: currentlessonId,
+              lessonGroupResultId: lessonGroupResultId, // "레슨 그룹 결과 테이블 생성"에서 받아온 lessonGroupResultId 사용
+              accentSimilarity: res.data.voiceSimilarity,
+              pronunciationAccuracy: res.data.scriptSimilarity,
+              filePath: 'this_is_not_file_path', // 임시 data 가능
+              fileName: result.filename, // (추가) 유저 음성 파일 이름
+              // 데이터 크기가 너무 커서 지금은 주석처리
+              // graphInfoX: res.data.userVoiceTime, // (추가) 유저 음성 파형 정보 x좌표 임시 data 가능
+              // garphInfoY: res.data.userVoicePitch, // (추가) 유저 음성 파형 정보 y좌표
+              graphInfoX: 'time for voice',
+              graphInfoY: 'pitch for voice',
+              script: res.data.userScript,
+            };
+            console.log("curretlessonid:",typeof(currentlessonId))
+            // Log the request body
+            console.log('Request Body:', requestBody);
+            api.post('/learn/lesson',requestBody
+            )
+            .then(res=>{
+              if(res.status === 201){
+                console.log(res)
+              }})
+            .catch((error)=>{
+              console.log(error)
+            })
           }
         })
         .catch((error) => {
@@ -185,17 +214,18 @@ export default function LessonPage() {
             console.error('Error', error.message);
           }
           console.log('레슨 결과 분석 실패 :', error.config);
-        });
-        
+        });        
         // 
+        
       } else {
         console.error("Failed to upload file");
       }
     }
 
 
-    if (currentIndex < tempLessons.length - 1) {
+    if (currentIndex < lessons.length - 1) {
       setCurrentIndex(currentIndex + 1);
+      setCurrentlessonId(lessons[currentIndex].lessonId)
     }
   };
 
@@ -258,7 +288,7 @@ export default function LessonPage() {
           <h1 className="text-3xl font-bold text-black mb-2">
             {currentIndex + 1}/5
           </h1>
-          {tempLessons.map((lesson, index) => (
+          {lessons.map((lesson, index) => (
             <h1
               key={lesson.lessonId}
               className="mb-2 text-4xl font-bold text-black"
@@ -280,7 +310,7 @@ export default function LessonPage() {
             <Button variant="contained" color="success" onClick={handleNext}>
               건너뛰기
             </Button>
-            {currentIndex < tempLessons.length - 1 ? (
+            {currentIndex < lessons.length - 1 ? (
               <Button variant="contained" color="success" onClick={handleNext}>
                 다음 문장
               </Button>
