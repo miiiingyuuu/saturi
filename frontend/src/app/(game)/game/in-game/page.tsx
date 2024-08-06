@@ -1,20 +1,27 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Box, TextField, Button, List, ListItem, ListItemText, Paper, Typography, Card, LinearProgress } from '@mui/material';
+import { MessagesProps } from "@/utils/props";
 import SendIcon from '@mui/icons-material/Send';
-import { handleValueChange } from "@/utils/utils"
+import { handleValueChange } from "@/utils/utils";
+import {
+  Box,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
+  Card,
+  LinearProgress
+} from '@mui/material';
 
 export default function ChatApp() {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<MessagesProps[]>([]);
+  const [message, setMessage] = useState('');
 
-  const handleSend = () => {
-    if (input.trim()) {
-      setMessages([...messages, input]);
-      setInput('');
-    }
-  };
+
 
   return (
     <Box>
@@ -80,6 +87,7 @@ export default function ChatApp() {
           <Typography variant="h6" gutterBottom>
             Chat
           </Typography>
+
           <List>
             {messages.map((message, index) => (
               <ListItem key={index}>
@@ -92,15 +100,15 @@ export default function ChatApp() {
           <TextField
             variant="outlined"
             fullWidth
-            value={input}
-            onChange={event => handleValueChange(event, setInput)}
+            value={message}
+            onChange={event => handleValueChange(event, setMessage)}
             placeholder="Type your message..."
           />
           <Button
             variant="contained"
             color="primary"
             endIcon={<SendIcon />}
-            onClick={handleSend}
+            // onClick={}
             sx={{ ml: 1 }}
           >
             Send
@@ -139,9 +147,6 @@ export default function ChatApp() {
           다음
         </Button>
       </Box>
-      
-
-      
     </Box>
   );
 };

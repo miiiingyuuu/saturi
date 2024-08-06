@@ -71,6 +71,14 @@ export interface TipsProps {
   content: string
 }
 
+export interface RoomIdProps {
+  params: {roomId: string}
+}
+
+export interface MessagesProps {
+  nickname: string
+  message: string
+}
 // MainPart
 
 export interface LeftPartProps {
