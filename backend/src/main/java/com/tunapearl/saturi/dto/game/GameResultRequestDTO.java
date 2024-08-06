@@ -1,9 +1,10 @@
 package com.tunapearl.saturi.dto.game;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class GameResultRequestDTO {
 
     String roomId;
+    Long userId;
 }
