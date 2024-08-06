@@ -1,16 +1,30 @@
-"use client"
+"use client";
 
-import { Input } from "@mui/material";
-import { IMessage } from "@stomp/stompjs";
-import useConnect from "@/hooks/useConnect";
-import { RoomIdProps } from "@/utils/props";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { MessagesProps, RoomIdProps } from "@/utils/props";
+import SendIcon from '@mui/icons-material/Send';
 import { handleValueChange } from "@/utils/utils";
+import {
+  Box,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
+  Card,
+} from "@mui/material";
+import useConnect from "@/hooks/useConnect";
+import { IMessage } from "@stomp/stompjs";
+
 
 export default function App({params:{roomId}}: RoomIdProps) {
   const clientRef = useConnect()
-  const [ message, setMessage ] = useState("")
+  const [ messages, setMessages] = useState<MessagesProps[]>([]);
+  const [ message, setMessage] = useState('');
   const [ quizzes, setQuizzes ] = useState([])
+  // const [  ] = useState(1)
 
   useEffect(() => {
     const client = clientRef.current
@@ -38,21 +52,22 @@ export default function App({params:{roomId}}: RoomIdProps) {
             Authorization: sessionStorage.getItem("accessToken") as string,
           },
         })
+
         // 퀴즈 받았어요
         client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
           setQuizzes(body)
+          console.log(body)
         })
 
         // 채팅방 접속
         client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
-          console.log(message)
-          console.log(body)
+          const timestamp = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: true });
+          const newMsg: MessagesProps = {timestamp, nickname: body.senderNickName, message:body.message}
+          setMessages(prevMsg =>[newMsg,...prevMsg])
         })
       }
-      
-      
 
       client.onConnect = onConnect
       if (client.connected) {
@@ -79,34 +94,99 @@ export default function App({params:{roomId}}: RoomIdProps) {
   }
 
   return (
-    <div>
-      <div>여기서 게임 소켓 처리</div>
-      <Input
-        type="text"
-        value={message}
-        onChange={event => handleValueChange(event,setMessage)}
-        onKeyDown={e => {
-          if (e.key === "Enter") sendMessage()
+    <Box>
+      <Box
+        sx = {{
+          display: "grid",
+          placeItems: "center",
+          marginBottom: "150px",
+        }}>
+        <Typography
+          sx={{
+            fontSize: "39px",
+            fontWeight: "bold",
+          }}
+        >
+          주관식 퀴즈
+        </Typography>
+        <Typography>
+          정구지의 표준말은?
+        </Typography>
+      </Box>
+
+      <Box
+        sx = {{
+          display: "grid",
+          placeItems: "center",
+        }}>
+        <Box
+          sx = {{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "1100px",
+          }}
+        >
+          <Card sx={{width: "200px", height: "300px"}}> 플레이어 </Card>
+          <Card sx={{width: "200px", height: "300px"}}> 플레이어 </Card>
+          <Card sx={{width: "200px", height: "300px"}}> 플레이어 </Card>
+          <Card sx={{width: "200px", height: "300px"}}> 플레이어 </Card>
+          <Card sx={{width: "200px", height: "300px"}}> 플레이어 </Card>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          p: 2,
+          backgroundColor: '#f5f5f5',
         }}
-      />
-      <button onClick={sendMessage}>전송</button>
-    </div>
-  )
+      >
+        <Paper
+          sx={{
+            flex: 1,
+            p: 2,
+            overflowY: 'auto',
+            mb: 2,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Chat
+          </Typography>
 
-}
-
-/*
-여기서는 소켓 통신을 하면서 게임을 처리할 예정
-1. 여기로 이동했다는건 대기열이 끝나고 게임 방으로 왔다는 뜻
-1-1. 게임 방으로 모든 사람들이 한번에 초대 되었을 것이기 때문에, 초대되면서 바로 문제 뽑아오기
-> 이러면 각자에게 랜덤 함수로 주어지는지, 특정 문제를 백엔드에서 랜덤으로 뽑은 뒤에 클라에 뿌리는지 모르겠긴 함
-1-2.
-2. 어느정도 타임아웃을 둔 다음 게임 시작
-2-1 . while 문으로 문제 인덱스를 한칸씩 올리면서
-3. 게임을 하면서 발생하는 모든 채팅에 문제 번호, 채팅자 명, 등 담아서 보내기
-4. 모든 사람들이 정답이면 ? -> 이거 어떻게 처리하지
-4-1. 다음 문제로 바로 넘기고
-4-2. 아니면 타이머를 두어서 타이머까지 정답을 못맞추는 경우 넘어가기
-누군가 정답을 먼저 맞추고 바로 넘어가는거라면? 그냥 정답자 나오자마자 바로 다음 문제로
-> 정답자 메시지가 날라오는가?
- */
+          <List>
+            {messages.map((msg, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={msg.timestamp} />
+                <ListItemText primary={msg.nickname} />
+                <ListItemText primary={msg.message} />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+        <Box sx={{ display: 'flex' }}>
+          <TextField
+            variant="outlined"
+            fullWidth
+            value={message}
+            onChange={event => handleValueChange(event, setMessage)}
+            onKeyDown={e => {
+              if (e.key === "Enter") sendMessage()
+            }}
+            placeholder="Type your message..."
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            endIcon={<SendIcon />}
+            onClick={sendMessage}
+            sx={{ ml: 1 }}
+          >
+            Send
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
+};

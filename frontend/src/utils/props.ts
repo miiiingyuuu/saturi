@@ -76,6 +76,7 @@ export interface RoomIdProps {
 }
 
 export interface MessagesProps {
+  timestamp: string
   nickname: string
   message: string
 }

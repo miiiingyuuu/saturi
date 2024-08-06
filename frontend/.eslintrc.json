@@ -29,6 +29,7 @@
        "react/jsx-first-prop-new-line": ["error", "multiline"],
        "react/jsx-no-bind": "off",
        "react/jsx-props-no-spreading": "off",
+       "@typescript-eslint/no-shadow":  "off",
        "react/jsx-max-props-per-line": [
          "error",
          {
@@ -36,8 +37,7 @@
            "when": "multiline"
          }
        ],
-       "no-param-reassign":  "off",
-       "no-shadow": "off"
+       "no-param-reassign":  "off"
      },
      "settings": {
        "react": {
