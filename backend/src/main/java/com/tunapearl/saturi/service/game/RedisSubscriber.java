@@ -32,14 +32,10 @@ public class RedisSubscriber implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         try {
 
-            log.info("Received message from Redis: {}", message);
-            // Redis에서 발행된 데이터를 받아 deserialize
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 
-            // 메시지 타입을 확인하기 위해 임시로 맵핑
             JsonNode jsonNode = objectMapper.readTree(publishMessage);
             String messageType = jsonNode.get("type").asText();
-            log.info("Message type: {}", messageType);
 
             if ("PERSON".equals(messageType)) {
                 PersonChatMessage personChatMessage = objectMapper.readValue(publishMessage, PersonChatMessage.class);
@@ -81,7 +77,11 @@ public class RedisSubscriber implements MessageListener {
                     }
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, quizList);
 
-                } else {
+                } else if("START".equals(subType)){
+
+                    log.info("RedisSubscriber START:::::: message:{}",message);
+                }
+                else {
 
                     ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
                     messagingTemplate.convertAndSend("/sub/room/" + chatMessage.getRoomId(), chatMessage);
