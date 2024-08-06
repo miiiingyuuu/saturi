@@ -14,6 +14,7 @@ import {
   Paper,
   Typography,
   Card,
+  ToggleButton,
 } from "@mui/material";
 import useConnect from "@/hooks/useConnect";
 import { IMessage } from "@stomp/stompjs";
@@ -93,6 +94,15 @@ export default function App({params:{roomId}}: RoomIdProps) {
     }
   }
 
+  // /////////////
+  // Toggle 파트
+  // /////////////
+  const [isToggled, setIsToggled] = useState(false);
+
+  const handleToggle = () => {
+    setIsToggled(!isToggled);
+  };
+
   return (
     <Box>
       <Box
@@ -112,6 +122,28 @@ export default function App({params:{roomId}}: RoomIdProps) {
         <Typography>
           정구지의 표준말은?
         </Typography>
+        <Box 
+          sx={{
+            marginTop:"50px",
+            display:"flex",
+            justifyContent:"space-between",
+            width:"600px",
+            height:"70px",
+            visibility: 0 === 1 ? "hidden" : "visible",                       
+        }}>
+          <ToggleButton value="check" selected={isToggled} sx={{width: "120px", border: isToggled ? '2px solid #1976d2' : '2px solid transparent'}} onClick={handleToggle}>
+            여기에 입력
+          </ToggleButton>
+          <ToggleButton value="check" selected={isToggled} sx={{width: "120px", border: isToggled ? '2px solid #1976d2' : '2px solid transparent'}} onClick={handleToggle}>
+            여기에 입력
+          </ToggleButton>
+          <ToggleButton value="check" selected={isToggled} sx={{width: "120px", border: isToggled ? '2px solid #1976d2' : '2px solid transparent'}} onClick={handleToggle}>
+            여기에 입력
+          </ToggleButton>
+          <ToggleButton value="check" selected={isToggled} sx={{width: "120px", border: isToggled ? '2px solid #1976d2' : '2px solid transparent'}} onClick={handleToggle}>
+            여기에 입력
+          </ToggleButton>
+        </Box>
       </Box>
 
       <Box
