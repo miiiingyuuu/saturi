@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "lesson_claim")
 public class LessonClaimEntity {
     
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_claim_id")
     private Long lessonClaimId;
     

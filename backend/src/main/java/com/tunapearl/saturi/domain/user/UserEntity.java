@@ -18,7 +18,7 @@ import static jakarta.persistence.EnumType.STRING;
 @ToString
 public class UserEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 

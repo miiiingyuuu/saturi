@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "lesson_group")
 public class LessonGroupEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_group_id")
     private Long lessonGroupId;
 
