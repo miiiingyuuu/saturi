@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Button } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import api from "@/lib/axios";
-import { v4 as uuidv4 } from "uuid"; // UUID 라이브러리 import
 import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 라이브러리 import
 
 // 컴포넌트: LessonPage
@@ -19,10 +18,12 @@ export default function LessonPage() {
   const [lessons, setLessons] = useState<object[]>([]); // lessons의 타입을 객체 배열로 명시
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const audioBlobRef = useRef<Blob | null>(null); // Store the final audio blob
 
   const router = useRouter();
   const pathname = usePathname();
   
+  // 지역, 카테고리, 레슨그룹 정보
   useEffect(() => {
     const pathSegments = pathname.split("/");
     const selectedLocation = parseInt(
@@ -68,7 +69,8 @@ export default function LessonPage() {
         console.log("레슨 그룹 결과 테이블 생성 실패오류 :", error);
       });
   }}, [lessonGroupId,pathname]);
-
+  
+  // lessons 할당 함수
   useEffect(() => {
     if (locationId !== null && categoryId !== null && lessonGroupId !== null) {
       api
@@ -90,7 +92,7 @@ export default function LessonPage() {
           console.error("API 요청 중 오류 발생:", error);
         });
     }
-  }, [locationId, categoryId,pathname]);
+  }, [locationId, categoryId, pathname, lessonGroupId]);
 
   const tempLessons = [
     {
@@ -130,12 +132,41 @@ export default function LessonPage() {
     },
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (audioBlobRef.current) {
+      const wavBlob = await convertToWav(audioBlobRef.current);
+      const arrayBuffer = await wavBlob.arrayBuffer();
+      const base64AudioData = btoa(
+        new Uint8Array(arrayBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          "",
+        ),
+      );
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ audioData: base64AudioData }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("File uploaded with name:", result.filename);
+        // 정답파일명, 음성파일명을 django 로 보내기
+      } else {
+        console.error("Failed to upload file");
+      }
+    }
+
+
     if (currentIndex < tempLessons.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
+  // 녹음 후 구글 스토리지로 저장
   const handleRecording = async () => {
     if (isRecording) {
       if (mediaRecorderRef.current) {
@@ -155,35 +186,10 @@ export default function LessonPage() {
         };
 
         mediaRecorder.onstop = async () => {
-          const audioBlob = new Blob(audioChunksRef.current, {
+          audioBlobRef.current = new Blob(audioChunksRef.current, {
             type: "audio/webm",
           });
           audioChunksRef.current = [];
-
-          // Blob을 WAV 형식으로 변환
-          const wavBlob = await convertToWav(audioBlob);
-          const arrayBuffer = await wavBlob.arrayBuffer();
-          const base64AudioData = btoa(
-            new Uint8Array(arrayBuffer).reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              "",
-            ),
-          );
-
-          const response = await fetch("/api/upload", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ audioData: base64AudioData }),
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            console.log("File uploaded with name:", result.filename);
-          } else {
-            console.error("Failed to upload file");
-          }
         };
 
         mediaRecorder.start();
