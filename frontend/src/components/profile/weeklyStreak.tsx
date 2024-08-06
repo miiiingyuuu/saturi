@@ -54,10 +54,11 @@ interface ContinuousLearnDay {
             ))}
           </Box>
           <Box>  {/* 오른쪽에 연속 학습 일수 표시 */}
-            <Typography variant="body2" fontWeight="bold">
-              {data.learnDays > 0 ? `총 ${data.learnDays}일 동안` : ''}
+            <Typography>사투리가 서툴러유와 함께한지</Typography>
+            <Typography variant="h5" fontWeight="bold">
+              {data.learnDays > 0 ? ` ${data.learnDays}일!` : ''}
             </Typography>
-            <Typography variant="body2">접속 중!</Typography>
+            {/* <Typography variant="body2">오늘도 화이팅</Typography> */}
           </Box>
         </Box>
       </Box>
