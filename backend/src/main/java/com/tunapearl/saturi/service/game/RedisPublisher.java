@@ -27,6 +27,11 @@ public class RedisPublisher {
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }
 
+    public void gameStartPublish(ChannelTopic topic){
+        
+        //TODO:퀴즈목록이랑게임시작한다고 전송
+    }
+    
     public void gamePublish(ChannelTopic topic, ChatMessage message){
 
         redisTemplate.convertAndSend(topic.getTopic(), message);
