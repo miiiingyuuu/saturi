@@ -42,15 +42,6 @@ public class StartupApplicationListener {
     private final LessonService lessonService;
     private final QuizService quizService;
 
-    private static final String[] LESSON_SCRIPT = {"가가가가", "블루베리스무디", "어느정도높이까지올라가는거에요", "어어어", "이에이승"};
-    private static final String[] LESSON_PATH = {"https://storage.cloud.google.com/saturi/%EA%B0%80%EA%B0%80%EA%B0%80%EA%B0%80.wav",
-            "https://storage.cloud.google.com/saturi/%EB%B8%94%EB%A3%A8%EB%B2%A0%EB%A6%AC%EC%8A%A4%EB%AC%B4%EB%94%94.wav",
-            "https://storage.cloud.google.com/saturi/%EB%B8%94%EB%A3%A8%EB%B2%A0%EB%A6%AC%EC%8A%A4%EB%AC%B4%EB%94%94.wav",
-            "https://storage.cloud.google.com/saturi/%EC%96%B4%EC%96%B4%EC%96%B4.wav",
-            "https://storage.cloud.google.com/saturi/%EC%9D%B4%EC%97%90%EC%9D%B4%EC%8A%B9.wav"};
-    private static final String[] LESSON_VOICE_FILE_NAME = {"가가가가", "블루베리스무디", "어느정도높이까지올라가는거에요", "어어어", "이에이승"};
-    private static final Long LESSON_TEST_USER_ID = 15L;
-
     //TODO 퀴즈 샘플 데이터 등록 필요
     private final static String[] QUIZ_QUESTION = {
             "만다꼬 그라노에서 '만다꼬'의 뜻으로 알맞은 것은?",
@@ -93,57 +84,9 @@ public class StartupApplicationListener {
     @EventListener
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
-
-        // 4. 학습 관련 추가
-        createLessonSamples();
-
         //5. 게임 퀴즈 추가
         createGameQuiz();
     }
-
-
-    /**
-     * 학습 관련 샘플 데이터 추가
-     */
-    private void createLessonSamples() {
-
-        // 6. 학습 추가(5번 추가 이후)
-        createLesson();
-
-        // 7. 레슨 그룹 결과 생성(6번 추가 이후)
-        createLessonGroupResult();
-
-        // 8. 레슨 결과 생성(7번 추가 이후)
-        createLessonResult();
-    }
-
-    /**
-     * 레슨 test data (lessonGroupId1에 5문제)
-     */
-    private void createLesson() {
-        LessonGroupEntity lessonGroup = lessonService.findByIdLessonGroup(1L);
-        for (int i = 0; i < 5; i++) {
-            adminLessonService.createLesson(lessonGroup, LESSON_SCRIPT[i], LESSON_PATH[i], LESSON_VOICE_FILE_NAME[i]);
-        }
-    }
-    /**
-     * lessonGroupResult 테이블 생성
-     */
-    private void createLessonGroupResult() {
-        Long lessonGroupResultId = lessonService.createLessonGroupResult(LESSON_TEST_USER_ID, 1L);// userId 7, lessonGroupId 1
-    }
-
-    /**
-     * lessonResult 생성
-     */
-    private void createLessonResult() {
-        for (int i = 1; i <= 5; i++) {
-            LessonSaveRequestDTO lessonSaveRequest = new LessonSaveRequestDTO((long)i, 1L, 77L, 77L, "test file path", "test file name", "[0, 1, 2, 3, 4]", "[55, 33, 22, 11, 44]", "나는 바보입니다");
-            lessonService.saveLessonSample(lessonSaveRequest, LocalDateTime.now().minusDays(i-1));
-        }
-    }
-
-    //TODO lessonGroupResult 저장
 
     /*
     * quiz samples 생성
