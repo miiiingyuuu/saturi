@@ -232,7 +232,9 @@ public class ChatService {
 
             gameLog.setChatting(message.getMessage());
             gameLog.setChattingDt(LocalDateTime.now());
-            gameLogRepository.save(gameLog);
+            long logId=gameLogRepository.save(gameLog);
+
+            message.setChatLogId(logId);
 
         } else {
 
@@ -241,6 +243,6 @@ public class ChatService {
 
         return message;
 
-        //TODO: 채팅로그id set해서넘겨줘야햠
+
     }
 }
