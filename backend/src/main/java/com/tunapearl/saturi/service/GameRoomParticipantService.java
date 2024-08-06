@@ -2,9 +2,7 @@ package com.tunapearl.saturi.service;
 
 import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
 import com.tunapearl.saturi.domain.game.GameRoomParticipantId;
-import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
-import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,8 @@ public class GameRoomParticipantService {
         gameRoomParticipantEntity.setCorrectCount(gameRoomParticipantEntity.getCorrectCount() + 1);
     }
 
-    public List<GameRoomParticipantEntity> findParticipantByGameRoomParticipantId(Long gameRoomParticipantId) {
-        return null;
+    public List<GameRoomParticipantEntity> findParticipantByRoomIdOrderByCorrectCount(Long roomId) {
+
+        return gameRoomParticipantRepository.findByRoomIdOrderByCorrectCount(roomId);
     }
 }

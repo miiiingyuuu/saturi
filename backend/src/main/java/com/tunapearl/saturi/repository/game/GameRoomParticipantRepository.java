@@ -33,6 +33,12 @@ public class GameRoomParticipantRepository {
                 .getResultList();
     }
 
+    public List<GameRoomParticipantEntity> findByRoomIdOrderByCorrectCount(Long roomId) {
+        return em.createQuery("select p from GameRoomParticipantEntity p where p.id.roomId = :roomId order by correctCount desc", GameRoomParticipantEntity.class)
+                .setParameter("roomId", roomId)
+                .getResultList();
+    }
+
     public GameRoomParticipantEntity findParticipantByGameRoomParticipantId(GameRoomParticipantId id) {
         return em.createQuery("select  p from GameRoomParticipantEntity p where p.gameRoom.roomId = :roomId and p.user.userId=:userId", GameRoomParticipantEntity.class)
                 .setParameter("roomId", id.getRoomId())

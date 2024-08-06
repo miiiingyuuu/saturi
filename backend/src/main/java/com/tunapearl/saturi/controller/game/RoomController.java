@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.controller.game;
 
+import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
 import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
 import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
@@ -14,7 +15,10 @@ import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -80,11 +84,11 @@ public class RoomController {
     }
 
     @GetMapping("/result")
-    public ResponseEntity<?> getResult(@RequestBody GameResultRequestDTO gameResultRequestDTO ) {
+    public ResponseEntity<?> getResult(@RequestHeader("Authorization") String authorization, @RequestBody GameResultRequestDTO gameResultRequestDTO ) throws UnAuthorizedException {
         log.info("Received select gameResult>> roomId:{}",gameResultRequestDTO.getRoomId());
+        long userId = jwtUtil.getUserId(authorization);
+        gameResultRequestDTO.setUserId(userId);
 
-        //TODO:경험치도 올려야함
-        return ResponseEntity.ok().body(gameService.getGameResult());
+        return ResponseEntity.ok().body(gameService.getGameResult(gameResultRequestDTO));
     }
-
 }
