@@ -19,7 +19,7 @@ import static jakarta.persistence.EnumType.STRING;
 @Table(name = "game_room")
 public class GameRoomEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="room_id")
     private long roomId;
 

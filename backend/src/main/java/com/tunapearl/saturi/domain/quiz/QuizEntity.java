@@ -19,7 +19,7 @@ public class QuizEntity {
 
     protected QuizEntity() {}
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false, name = "quiz_id")
     private Long quizId;
 
