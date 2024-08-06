@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Box, Card, Container, Typography } from "@mui/material";
 import api from "@/lib/axios";
 import SideNavbar from "../../../../../components/lesson/sidebar";
 import Puzzle from "../../../../../components/lesson/puzzle";
@@ -79,15 +80,14 @@ export default function CategorySelectPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <div className="flex w-full justify-center items-center">
-        <div className="w-1/5 bg-gray-100 p-4">
-          <h2>locationID = {locationId}</h2>
-          <h2>CategoryName = {categoryName}</h2>
+    <Container maxWidth="xl">
+      <Box sx= {{ display:"flex", justifyContent:"space-between", width:"100%%", height:"700px", marginTop: "10px" }}>
+        <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
+          {/* <h2>locationID = {locationId}</h2>
+          <h2>CategoryName = {categoryName}</h2> */}
           <SideNavbar location={locationId} />
-        </div>
-        <div className="flex-none flex flex-col items-center justify-center p-4">
-          {/* 태훈형이 만들어준 퍼즐 조각 넣을 예정 */}
+        </Card>
+        <Card sx = {{ width:"45%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
           {locationId && (
             <Puzzle
               id={locationId}
@@ -96,17 +96,45 @@ export default function CategorySelectPage() {
               eachLessonProgress={eachLessonProgress}
             />
           )}
-        </div>
-        <div className="w-1/5 p-4 flex items-center">
-          {selectedPuzzleId !== null && selectedPuzzleAccuracy !== null && (
-            <PuzzleInfo
-              locationId={locationId}
-              id={selectedPuzzleId}
-              avgAccuracy={selectedPuzzleAccuracy} // avgAccuracy 전달
-            />
+        </Card>
+        <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
+          {selectedPuzzleId == null && (
+            <Typography> 퍼즐을 선택하세요. </Typography>
           )}
-        </div>
-      </div>
-    </div>
+          
+          <Box>
+            {selectedPuzzleId !== null && selectedPuzzleAccuracy !== null && (
+              <PuzzleInfo
+                locationId={locationId}
+                id={selectedPuzzleId}
+                avgAccuracy={selectedPuzzleAccuracy} // avgAccuracy 전달
+              />
+            )}
+          </Box>
+        </Card>
+      </Box>
+    </Container>
+    
+    
+
+
+
+
+
+
+
+
+
+    // <Box className="flex flex-col justify-center items-center">
+    //   <Box className="flex w-full justify-center items-center">
+    //     
+    //     {/* <Box className="flex-none flex flex-col items-center justify-center p-4"> */}
+    //     <Box sx={{ width: "50%", justifyItems:"center" }}>          
+    //       {/* 태훈형이 만들어준 퍼즐 조각 넣을 예정 */}
+    //       
+    //     </Box>
+
+    //   </Box>
+    // </Box>
   );
 }

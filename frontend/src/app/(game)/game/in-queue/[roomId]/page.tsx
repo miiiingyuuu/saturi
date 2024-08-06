@@ -7,7 +7,7 @@ import useConnect from "@/hooks/useConnect";
 import { TipsProps, RoomIdProps } from "@/utils/props"
 
 export default function App({params:{roomId}}: RoomIdProps) {
-  const clientRef = useConnect(roomId)
+  const clientRef = useConnect()
   const [tips, setTips] = useState<TipsProps[]>([]);
 
   useEffect(() => {
@@ -21,32 +21,37 @@ export default function App({params:{roomId}}: RoomIdProps) {
     const client = clientRef.current
 
     if (client) {
-      const onConnect = () => {
+      client.onConnect = () => {
+        client.subscribe(`/sub/room-request/${roomId}`, (message: IMessage) => {
+          const body = JSON.parse(message.body)
+          console.log(body)
+          if (body.matchedroomId) {
+            window.location.href = `${process.env.NEXT_PUBLIC_FRONTURL}/game/in-game/${body.matchedroomId}`
+          }
+        })
 
         client.publish({
-          destination: "/pub/room-request",
+          destination: "/pub/room",
           body: JSON.stringify({
-            chatType: "ROOM",
-            roomId,
-            locationId: 1,
+            chatType: "ENTER",
+            roomId
           }),
           headers: {
             Authorization: sessionStorage.getItem("accessToken") as string,
           },
         })
 
-        // 여기를 구독하고 matchedroomId를 포함한 메시지가 왔다는 건, 메시지로 새 방에 가는 것
-        client.subscribe(`/sub/room-request/${roomId}`, (message: IMessage) => {
-          const body = JSON.parse(message.body)
-          if (body.message.matchedroomId) {
-            window.location.href = `${process.env.NEXT_PUBLIC_FRONTURL}/game/in-game/${body.message.matchedroomId}`
-          }
-          console.log(message)
+        client.publish({
+          destination: "/pub/room-request",
+          body: JSON.stringify({
+            chatType: "ROOM",
+            roomId,
+            locationId: 2,
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
         })
-      }
-      client.onConnect = onConnect
-      if (client.connected) {
-        onConnect()
       }
     }
   }, [clientRef, roomId]);

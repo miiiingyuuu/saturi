@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 
 export default function App({params:{roomId}}: RoomIdProps) {
-  const clientRef = useConnect(roomId)
+  const clientRef = useConnect()
   const [ message, setMessage ] = useState("")
   const [ quizzes, setQuizzes ] = useState([])
 
@@ -16,18 +16,6 @@ export default function App({params:{roomId}}: RoomIdProps) {
     const client = clientRef.current
     if (client) {
       const onConnect = () => {
-        // 들어왔어요
-        client.publish({
-          destination: "/pub/room",
-          body: JSON.stringify({
-            chatType: "ENTER",
-            roomId
-          }),
-          headers: {
-          Authorization: sessionStorage.getItem("accessToken") as string,
-        },
-        })
-
         // 퀴즈 주세요 -> 이거는 어디로 돌아오나요 ?
         client.publish({
           destination: "/pub/room",
@@ -39,8 +27,19 @@ export default function App({params:{roomId}}: RoomIdProps) {
             Authorization: sessionStorage.getItem("accessToken") as string,
           },
         })
+        // 입장
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            chatType: "ENTER",
+            roomId
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
+        })
         // 퀴즈 받았어요
-        client.subscribe("/sub/room", (message: IMessage) => {
+        client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
           setQuizzes(body)
         })
@@ -52,9 +51,10 @@ export default function App({params:{roomId}}: RoomIdProps) {
           console.log(body)
         })
       }
+      
+      
 
       client.onConnect = onConnect
-      console.log(client)
       if (client.connected) {
         onConnect()
       }
@@ -66,7 +66,7 @@ export default function App({params:{roomId}}: RoomIdProps) {
       clientRef.current.publish({
         destination: "/pub/chat",
         body: JSON.stringify({
-          quizId: "",
+          quizId: 1,
           message,
           roomId
         }),
