@@ -24,10 +24,8 @@ export default function App({params:{roomId}}: RoomIdProps) {
       client.onConnect = () => {
         client.subscribe(`/sub/room-request/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
-
+          console.log(body)
           if (body.matchedroomId) {
-            console.log("엥")
-            //여기부터 시작
             window.location.href = `${process.env.NEXT_PUBLIC_FRONTURL}/game/in-game/${body.matchedroomId}`
           }
         })

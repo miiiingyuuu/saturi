@@ -27,6 +27,17 @@ export default function App({params:{roomId}}: RoomIdProps) {
             Authorization: sessionStorage.getItem("accessToken") as string,
           },
         })
+        // 입장
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            chatType: "ENTER",
+            roomId
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
+        })
         // 퀴즈 받았어요
         client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
@@ -40,9 +51,10 @@ export default function App({params:{roomId}}: RoomIdProps) {
           console.log(body)
         })
       }
+      
+      
 
       client.onConnect = onConnect
-      console.log(client)
       if (client.connected) {
         onConnect()
       }
