@@ -256,7 +256,7 @@ public class StartupApplicationListener {
             }
 
             QuizRegisterRequestDTO request = QuizRegisterRequestDTO.builder()
-                    .locationId(1L)
+                    .locationId(2L)
                     .question(QUIZ_QUESTION[i])
                     .isObjective(true)
                     .choiceList(choices)

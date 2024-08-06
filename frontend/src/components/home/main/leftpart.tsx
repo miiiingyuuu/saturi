@@ -37,19 +37,19 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
   function buttonLearn(num: number) {
     let region = 1;    
     switch (selectedRegion) {
-      case "경기도":
+      case "경상도":
         region = 2;
         break;
-      case "강원도":
+      case "경기도":
         region = 3;
         break;
-      case "충청도":
+      case "강원도":
         region = 4;
         break;
-      case "전라도":
+      case "충청도":
         region = 5;
         break;
-      case "경상도":
+      case "전라도":
         region = 6;
         break;
       case "제주도":

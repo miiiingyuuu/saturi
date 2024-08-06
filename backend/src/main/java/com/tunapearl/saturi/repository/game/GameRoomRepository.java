@@ -42,4 +42,13 @@ public class GameRoomRepository {
     public GameRoomEntity updateGameRoom(GameRoomEntity gameRoom) {
         return em.merge(gameRoom);
     }
+
+    /**
+     * 통계용 게임방 조회
+     */
+    public Optional<List<GameRoomEntity>> findAllGameRoom() {
+        List<GameRoomEntity> result = em.createQuery("select gr from GameRoomEntity gr", GameRoomEntity.class)
+                .getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
 }

@@ -24,6 +24,10 @@ public class ChatClaimRepository {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+    public void save(ChatClaimEntity chatClaimEntity) {
+        em.persist(chatClaimEntity);
+    }
+
     public List<ChatClaimEntity> findAll(ClaimReadRequestDto responseDto) {
         QChatClaimEntity qChatClaim = new QChatClaimEntity("cc");
         return queryFactory
@@ -46,8 +50,8 @@ public class ChatClaimRepository {
         return Optional.ofNullable(em.find(ChatClaimEntity.class, chatClaimId));
     }
 
-    public void removeById(ClaimDeleteRequestDto request) {
-        em.remove(em.find(ChatClaimEntity.class, request.getChatClaimId()));
+    public void removeById(Long chatClaimId) {
+        em.remove(em.find(ChatClaimEntity.class, chatClaimId));
     }
 
     private BooleanExpression gameLogIdEq(QGameLogEntity gameLog, Long gameLogIdCond) {

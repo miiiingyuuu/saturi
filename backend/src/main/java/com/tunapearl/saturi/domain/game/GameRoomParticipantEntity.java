@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -26,6 +27,10 @@ public class GameRoomParticipantEntity {
 
     @Column(name = "match_rank")
     private int matchRank;
+
+    @Column(name="correct_count")
+    @ColumnDefault("0")
+    private int correctCount;
 
     public GameRoomParticipantEntity() {}
 

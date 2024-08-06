@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 
 
-export default function useConnect(roomId: string) {
+export default function useConnect() {
   const clientRef = useRef<Client | null>(null)
 
   useEffect(() => {
@@ -16,20 +16,20 @@ export default function useConnect(roomId: string) {
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
+
       onDisconnect: (frame) => {
         console.log("disconnected", frame)
       },
     })
-    if (clientRef.current) {
-      clientRef.current.activate()
-    }
+
+    clientRef.current.activate()
 
     return () => {
       if (clientRef.current) {
         clientRef.current.deactivate()
       }
     }
-  },[roomId])
+  },[clientRef])
 
   return clientRef
 }

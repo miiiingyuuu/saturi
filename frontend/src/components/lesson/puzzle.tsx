@@ -1,4 +1,4 @@
-import { LinearProgress, Grid, Card } from "@mui/material";
+import { LinearProgress, Grid, Card, Box } from "@mui/material";
 import { useState, useEffect } from "react";
 import PuzzlePiece from "./puzzlePiece";
 import Jigsaw from "./jigsaw"
@@ -94,8 +94,8 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
   }, []);
 
   return (
-    <div>
-      <div className="grid">
+    <Box sx={{ width: "50%"}}>
+      <Box className="grid">
         <LinearProgress
           variant="determinate"
           value={progress}
@@ -109,8 +109,8 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
             },
           }}
         />
-      </div>
-      <Grid container spacing={2} className="grid grid-cols-3 items-center">
+      </Box>
+      <Box sx={{display:"flex", justifyContent:"center"}}>
         {/* 
           <<변동사항 설명>>
           puzzlePiece 부분을 아예 사용하지 않고 jigsaw로 대체함. 
@@ -137,7 +137,7 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
             </Card>
           </Grid>
         ))} */}
-      </Grid>
-    </div>
+      </Box>
+    </Box>
   );
 }

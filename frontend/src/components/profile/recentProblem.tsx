@@ -30,13 +30,8 @@ isLoading: boolean;
 
 const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
     if (isLoading) return <Typography>Loading...</Typography>;
-    if (!data) return <Typography>No recent problem data available.</Typography>;
-  
-    // const formattedLessonName = data.lessonGroupName.replace(
-    //   /^(\w+)/,
-    //   (match) => locationNames[data.locationId as number] || match
-    // );
-  
+    if (!data) return <Typography variant='h4'>최근에 학습한 문제가 없어요...</Typography>;
+
     return (
         <Box>
           <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
@@ -46,7 +41,7 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
               <Typography variant="body1">{data.lessonGroupName}</Typography>
               <LinearProgress variant="determinate" value={data.avgAccuracy || 0} />
               <Typography variant="body2" sx={{ mt: 1 }}>
-                평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : 'N/A'}
+                평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : '데이터가 아직 없어요...'}
               </Typography>
             </Box>
           </Box>

@@ -9,7 +9,7 @@ export default function App() {
 
   useEffect(() => {
     api.post("/game/room/in", {
-      locationId: 1
+      locationId: 2
     })
       .then(response => {
         router.push(`game/in-queue/${response.data.roomId}`);

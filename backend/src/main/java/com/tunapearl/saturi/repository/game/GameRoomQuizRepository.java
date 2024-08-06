@@ -26,4 +26,12 @@ public class GameRoomQuizRepository {
 
         return results.isEmpty() ? Optional.empty() : Optional.of(results);
     }
+
+    public Optional<GameRoomQuizEntity> findQuizById(Long quizId, Long roomId){
+        GameRoomQuizEntity gameRoomQuiz = em.createQuery("select q from GameRoomQuizEntity q where q.room.roomId = :roomId and q.quiz.quizId = :quizId", GameRoomQuizEntity.class)
+                .setParameter("roomId", roomId)
+                .setParameter("quizId", quizId)
+                .getSingleResult();
+        return Optional.ofNullable(gameRoomQuiz);
+    }
 }
