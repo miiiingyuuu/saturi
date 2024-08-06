@@ -7,13 +7,16 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import { authToken, insertCookie } from "@/utils/authutils";
 
 export default function App() {
-  const pathname = usePathname();
   const router = useRouter();
-  const code = useSearchParams().get("code");
+  const pathname = usePathname();
+  const params = useSearchParams()
+  const [isLoading] = useState(true);
+  
+  if (pathname&&params) {
+  const code = params.get("code");
   const userType = pathname
     .substring(pathname.lastIndexOf("/") + 1)
     .toUpperCase();
-  const [isLoading] = useState(true);
 
   if (typeof window !== "undefined") {
     api
@@ -28,7 +31,7 @@ export default function App() {
         router.push("/");
       });
   }
-
+}
   return (
     <Backdrop
       sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }}

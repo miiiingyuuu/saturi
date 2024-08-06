@@ -25,6 +25,7 @@ export default function LessonPage() {
   
   // 지역, 카테고리, 레슨그룹 정보
   useEffect(() => {
+    if (pathname) {
     const pathSegments = pathname.split("/");
     const selectedLocation = parseInt(
       pathSegments[pathSegments.length - 3],
@@ -48,7 +49,7 @@ export default function LessonPage() {
       setCategoryId(selectedCategory);
       setLessonGroupId(selectedLessonGroupId);     
     }
-    
+    }
   }, [pathname, router]);
 
   // 레슨 그룹 결과 생성 함수
@@ -223,7 +224,7 @@ export default function LessonPage() {
           <Typography variant="h1" className="text-3xl font-bold text-black mb-2">
             {currentIndex + 1}/5
           </Typography>
-          {temp_lessons.map((text, index) => (
+          {tempLessons.map((text, index) => (
             <Typography 
               variant="h1"
               key={text.lessonId}
@@ -267,9 +268,10 @@ export default function LessonPage() {
 }
 
 // WebM Blob을 WAV로 변환하는 헬퍼 함수
-async function convertToWav(webmBlob) {
+async function convertToWav(webmBlob: any) {
   const arrayBuffer = await webmBlob.arrayBuffer();
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const audioContext = new window.AudioContext();
+  // window.webkitAudioContext 누락
   const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
   // audiobuffer-to-wav 라이브러리를 사용하여 AudioBuffer를 WAV로 변환

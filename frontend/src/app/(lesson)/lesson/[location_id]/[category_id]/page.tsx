@@ -21,6 +21,7 @@ export default function CategorySelectPage() {
 
   // 선택된 지역, 카테고리 할당
   useEffect(() => {
+    if (pathname) {
     const pathSegments = pathname.split("/");
     const selectedLocation = parseInt(
       pathSegments[pathSegments.length - 2],
@@ -39,6 +40,7 @@ export default function CategorySelectPage() {
     } else {
       setLocationId(selectedLocation);
       setCategoryId(selectedCategory);
+    }
     }
   }, [pathname, router]);
 

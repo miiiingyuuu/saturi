@@ -78,7 +78,7 @@ export default function Header() {
         }
       } else {
         setIsLoggedIn(false);
-        if (!['/start', '/login', '/register'].includes(pathname)) {
+        if (pathname&&!['/start', '/login', '/register'].includes(pathname)) {
           router.push('/start');
         }
       }

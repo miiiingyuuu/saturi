@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   },[router])
 
   
-  if (pathname.startsWith("/admin")) {
+  if (pathname&&pathname.startsWith("/admin")) {
     return (
       <html lang="ko" className={inter.className}>
         <body>
