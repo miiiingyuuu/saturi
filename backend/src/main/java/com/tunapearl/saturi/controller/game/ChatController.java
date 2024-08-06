@@ -108,7 +108,7 @@ public class ChatController {
 
 
         chatService.enterGameRoom(quiz.getRoomId());
-        chatService.playGame(quiz);
+        quiz = chatService.playGame(quiz);
 
 
         redisPublisher.quizChattingPublish(chatService.getRoomTopic(quiz.getRoomId()), quiz);

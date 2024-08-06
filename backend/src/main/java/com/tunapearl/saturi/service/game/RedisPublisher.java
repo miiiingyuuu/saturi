@@ -46,6 +46,5 @@ public class RedisPublisher {
         message.put("roomId",roomId);
         message.put("data", quizList);
         redisTemplate.convertAndSend(topic.getTopic(), message);
-        log.info("Published quiz list to topic: {}", topic.getTopic());
     }
 }

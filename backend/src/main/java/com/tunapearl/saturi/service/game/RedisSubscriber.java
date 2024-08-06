@@ -1,12 +1,9 @@
 package com.tunapearl.saturi.service.game;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.json.Json;
-import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
-import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
+import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.dto.game.GameQuizChoiceDTO;
 import com.tunapearl.saturi.dto.game.GameQuizResponseDTO;
 import com.tunapearl.saturi.dto.game.QuizMessage;
@@ -50,50 +47,40 @@ public class RedisSubscriber implements MessageListener {
 
             } else if ("ROOM".equals(messageType)) {
                 String subType = jsonNode.get("subType").asText();
-                List<GameQuizResponseDTO> quizList = new ArrayList<>();
 
                 if ("QUIZ".equals(subType)) {
+                    List<GameQuizResponseDTO> quizList = new ArrayList<>();
 
                     String roomId = jsonNode.get("roomId").asText();
-                    log.info("sub들어왔다요: {}", jsonNode.get("data"));
 
-                    for(JsonNode element : jsonNode.get("data")) {
-                        GameQuizResponseDTO dto = new GameQuizResponseDTO();
-                        log.info("for문: {}", element);
+                    for (JsonNode element : jsonNode.get("data")) {
 
-                        for(JsonNode e: element){
-                            log.info("e: {}", e.toString());
-
+                        for (JsonNode e : element) {
+                            GameQuizResponseDTO dto = new GameQuizResponseDTO();
                             dto.setQuestion(e.get("question").asText());
                             dto.setQuizId(e.get("quizId").asLong());
                             dto.setIsObjective(e.get("isObjective").asBoolean());
 
-                            List<GameQuizChoiceDTO> choices=new ArrayList<>();
+                            List<GameQuizChoiceDTO> choices = new ArrayList<>();
 
-                            for(JsonNode e2: e.get("quizChoiceList")){
+                            for (JsonNode e2 : e.get("quizChoiceList")) {
 
                                 GameQuizChoiceDTO choice;
-                                for(JsonNode e2e: e2){
-                                    log.info("e2e: {}", e2e.toString());
-                                    choice=new GameQuizChoiceDTO();
+                                for (JsonNode e2e : e2) {
+                                    choice = new GameQuizChoiceDTO();
                                     choice.setChoiceId(e2e.get("choiceId").asLong());
                                     choice.setChoiceText(e2e.get("choiceText").asText());
                                     choice.setIsCorrect(e2e.get("isCorrect").asBoolean());
                                     choices.add(choice);
-                                    log.info("choice: {}", choice.toString());
                                 }
 
                             }
                             dto.setQuizChoiceList(choices);
-                            log.info("dto: {}", dto);
                             quizList.add(dto);
                         }
-
                     }
-                    log.info("Sending message to room: /sub/room{}", roomId);
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, quizList);
-                    log.info("Message sent to room: /sub/room{}", roomId);
-//                    messagingTemplate.convertAndSend("/sub/room" + roomId, quizList);
+
                 } else {
 
                     ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);

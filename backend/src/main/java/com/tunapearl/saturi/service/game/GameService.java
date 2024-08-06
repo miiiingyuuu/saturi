@@ -6,6 +6,8 @@ import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
+import com.tunapearl.saturi.dto.game.GameResultResponseDTO;
+import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,5 +110,18 @@ public class GameService {
         GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
         responseDTO.setRoomId(gameRoomEntity.getTopicId());
         return responseDTO;
+    }
+
+    public List<GameResultResponseDTO> getGameResult(){
+
+        //TODO:correctCount 내림차 순으로 주기
+
+        List<GameResultResponseDTO> resultList = new ArrayList<>();
+
+        GameResultResponseDTO responseDTO= new GameResultResponseDTO();
+        responseDTO.setRank(1);
+        responseDTO.setNickName("nickname임");
+        resultList.add(responseDTO);
+        return resultList;
     }
 }
