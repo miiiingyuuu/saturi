@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.dto.lesson;
 
+import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,4 +18,16 @@ public class LessonResultForSaveGroupResultDTO {
     private LocalDateTime lessonDt;
     private Boolean isSkipped;
     private Boolean isBeforeResult;
+
+    public LessonResultForSaveGroupResultDTO(LessonResultEntity lessonResult, Boolean isBeforeResult) {
+        this.lessonId = lessonResult.getLesson().getLessonId();
+        this.userVoicePath = lessonResult.getLessonRecordFile().getUserVoiceFilePath();
+        this.userVoiceName = lessonResult.getLessonRecordFile().getUserVoiceFileName();
+        this.userScript = lessonResult.getLessonRecordFile().getUserVoiceScript();
+        this.accentSimilarity = lessonResult.getAccentSimilarity();
+        this.pronunciationAccuracy = lessonResult.getPronunciationAccuracy();
+        this.lessonDt = lessonResult.getLessonDt();
+        this.isSkipped = lessonResult.getIsSkipped();
+        this.isBeforeResult = isBeforeResult;
+    }
 }

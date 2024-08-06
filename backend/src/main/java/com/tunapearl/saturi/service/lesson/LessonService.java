@@ -3,10 +3,8 @@ package com.tunapearl.saturi.service.lesson;
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
-import com.tunapearl.saturi.dto.lesson.LessonGroupProgressByUserDTO;
-import com.tunapearl.saturi.dto.lesson.LessonGroupResultSaveResponseDTO;
-import com.tunapearl.saturi.dto.lesson.LessonInfoDTO;
-import com.tunapearl.saturi.dto.lesson.LessonSaveRequestDTO;
+import com.tunapearl.saturi.dto.lesson.*;
+import com.tunapearl.saturi.dto.user.UserExpInfoCurExpAndEarnExp;
 import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
@@ -382,13 +380,57 @@ public class LessonService {
             }
         } // end for lessonResult
 
-        // pq에 값이 있는지 확인
-        for (Long l : pqMap.keySet()) {
-            LessonResultEntity first = pqMap.get(l).poll();
-            lessonResultMap.put(first.getLesson().getLessonId(), first);
+        // isBeforeResult 설정을 위해 DTO를 미리 만들자.
+        List<LessonResultForSaveGroupResultDTO> lessonResultDtoLst = new ArrayList<>();
+        for (Long lessonId : lessonResultMap.keySet()) {
+            LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), false);
+            lessonResultDtoLst.add(lessonResultDto);
         }
 
-        return new LessonGroupResultSaveResponseDTO();
+        // pq에 값이 있는지 확인
+        for (Long lessonId : pqMap.keySet()) {
+            LessonResultEntity first = pqMap.get(lessonId).poll();
+            // pq의 최고 우선순위를 빼서 lessonResultMap에 넣는다.
+            lessonResultMap.put(first.getLesson().getLessonId(), first);
+            // isBeforeResult를 true로 해야한다.
+            LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), true);
+            lessonResultDtoLst.add(lessonResultDto);
+        }
+
+        // lessonGroupResult를 갱신하자
+        int lessonResultCnt = 0;
+        Long sumSimilarity = 0L;
+        Long sumAccuracy = 0L;
+        for (Long lessonId : maxAccuracyMap.keySet()) {
+            if(maxAccuracyMap.get(lessonId).equals(0L)) continue;
+            lessonResultCnt++;
+            sumSimilarity += maxSimilarityMap.get(lessonId); // 누적
+            sumAccuracy += maxAccuracyMap.get(lessonId); // 누적
+        }
+        Long avgSimilarity = sumSimilarity / lessonResultCnt; // 평균
+        Long avgAccuracy = sumAccuracy / lessonResultCnt; // 평균
+        lessonGroupResult.setAvgSimilarity(avgSimilarity); // score 갱신
+        lessonGroupResult.setAvgAccuracy(avgAccuracy); // score 갱신
+        if(lessonResultCnt == 5) { // 건너뛰기한게 없으면
+            lessonGroupResult.setEndDt(LocalDateTime.now());
+            lessonGroupResult.setIsCompleted(true);
+        }
+
+        // 경험치를 부여하자
+        Long sumExp = 0L;
+        for (Long lessonId : expMap.keySet()) {
+            sumExp += expMap.get(lessonId);
+        }
+        UserEntity user = userRepository.findByUserId(userId).orElse(null);
+        Long prevUserExp = user.getExp();
+        user.setExp(prevUserExp + sumExp);
+        Long curUserExp = user.getExp();
+
+        // DTO를 만들자
+        UserExpInfoCurExpAndEarnExp userExpDto = new UserExpInfoCurExpAndEarnExp(prevUserExp, sumExp, curUserExp);
+        LessonGroupResultForSaveLessonGroupDTO lessonGroupResultForSaveLessonGroup = new LessonGroupResultForSaveLessonGroupDTO(lessonGroupResult);
+
+        return new LessonGroupResultSaveResponseDTO(userExpDto, lessonResultDtoLst, lessonGroupResultForSaveLessonGroup);
     }
 
     public List<LessonGroupResultEntity> findLessonGroupResultWithoutIsCompletedAllByUserId(Long userId) {

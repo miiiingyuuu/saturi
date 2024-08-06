@@ -1,19 +1,23 @@
 package com.tunapearl.saturi.service.game;
 
 import com.tunapearl.saturi.domain.LocationEntity;
-import com.tunapearl.saturi.domain.game.*;
+import com.tunapearl.saturi.domain.game.GameRoomEntity;
+import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
+import com.tunapearl.saturi.domain.game.GameTipEntity;
+import com.tunapearl.saturi.domain.game.Status;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
+import com.tunapearl.saturi.dto.game.GameResultRequestDTO;
 import com.tunapearl.saturi.dto.game.GameResultResponseDTO;
-import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.game.GameTipRepository;
 import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
+import com.tunapearl.saturi.service.GameRoomParticipantService;
 import com.tunapearl.saturi.service.GameRoomQuizService;
 import com.tunapearl.saturi.service.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +43,7 @@ public class GameService {
     private final ChatRoomRepository chatRoomRepository;
     private final GameRoomQuizService gameRoomQuizService;
     private final QuizService quizService;
+    private final GameRoomParticipantService gameRoomParticipantService;
 
     /**
      * 팁 추가
@@ -65,8 +70,8 @@ public class GameService {
      */
     public GameMatchingResponseDTO matching(GameMatchingRequestDTO gameMatchingRequestDTO) {
 
-        LocationEntity location=locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow();
-        Optional<List<GameRoomEntity>> findRooms = gameRoomRepository.findByLocationAndStatus(location,Status.MATCHING);
+        LocationEntity location = locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow();
+        Optional<List<GameRoomEntity>> findRooms = gameRoomRepository.findByLocationAndStatus(location, Status.MATCHING);
         GameRoomEntity gameRoomEntity;
         ChatRoom topic;
 
@@ -74,7 +79,7 @@ public class GameService {
 
             gameRoomEntity = findRooms.get().get(0);
 
-        }else{
+        } else {
             //방 생성
             gameRoomEntity = new GameRoomEntity();
             gameRoomEntity.setStatus(Status.MATCHING);
@@ -82,17 +87,17 @@ public class GameService {
 
 
             //Topic생성해서 redis에 저장
-            topic= ChatRoom.create();
-            log.info("created roomId : {}",topic.getRoomId());
+            topic = ChatRoom.create();
+            log.info("created roomId : {}", topic.getRoomId());
 
             gameRoomEntity.setTopicId(topic.getTopicId());
             gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
 
-            long roomId=gameRoomEntity.getRoomId();
+            long roomId = gameRoomEntity.getRoomId();
             topic.setRoomId(roomId);
 
             chatRoomRepository.save(topic);
-            gameRoomQuizService.poseTenQuiz(roomId,quizService.findRandomIdByLocation(gameMatchingRequestDTO.getLocationId()));
+            gameRoomQuizService.poseTenQuiz(roomId, quizService.findRandomIdByLocation(gameMatchingRequestDTO.getLocationId()));
         }
 
         UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
@@ -112,16 +117,44 @@ public class GameService {
         return responseDTO;
     }
 
-    public List<GameResultResponseDTO> getGameResult(){
-
+    public List<GameResultResponseDTO> getGameResult(GameResultRequestDTO requestdDto) {
         //TODO:correctCount 내림차 순으로 주기
+        //TODO:경험치도 올려야함
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(requestdDto.getRoomId());
 
-        List<GameResultResponseDTO> resultList = new ArrayList<>();
+        if (chatRoomOptional.isPresent()) {
+            ChatRoom chatRoom = chatRoomOptional.get();
+            long roomId = chatRoom.getRoomId();
 
-        GameResultResponseDTO responseDTO= new GameResultResponseDTO();
-        responseDTO.setRank(1);
-        responseDTO.setNickName("nickname임");
-        resultList.add(responseDTO);
-        return resultList;
+            List<GameRoomParticipantEntity> participants = gameRoomParticipantService.findParticipantByRoomIdOrderByCorrectCount(roomId);
+            List<GameResultResponseDTO> resultList = new ArrayList<>();
+
+            int rank = 1;
+            for (GameRoomParticipantEntity participant : participants) {
+                GameResultResponseDTO resultDTO = new GameResultResponseDTO();
+                resultDTO.setRank(rank);
+                UserEntity user = participant.getUser();
+                resultDTO.setNickName(user.getNickname());
+                participant.setMatchRank(rank++);
+
+                if (user.getUserId() == requestdDto.getUserId()) {//본인임
+                    resultDTO.setUser(true);
+                }
+
+                long nowExp = user.getExp();
+                int count=participant.getCorrectCount();
+                resultDTO.setExp(nowExp);
+                resultDTO.setAnsCount(count);
+                resultDTO.setEarnedExp(count*2);//개당 2exp임
+
+                user.setExp(user.getExp() + count*2);
+
+                log.info("resultDTO : {}", resultDTO);
+                resultList.add(resultDTO);
+            }
+
+            return resultList;
+        }
+        return null;
     }
 }
