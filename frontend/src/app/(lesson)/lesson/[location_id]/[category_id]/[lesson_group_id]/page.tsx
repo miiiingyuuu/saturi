@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { Button } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import api from "@/lib/axios";
 import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 라이브러리 import
@@ -205,9 +205,10 @@ export default function LessonPage() {
   };
 
   return (
-    <div className="grid grid-cols-2 h-screen justify-center items-center">
-      <div className="grid grid-cols-1 justify-center items-center w-full h-full">
-        <div className="items-center p-4 flex flex-col">
+    <Box className="grid grid-cols-2 h-screen justify-center items-center">
+      <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
+        <Box className="flex items-center p-4">
+          {/* 새 이미지 */}
           <Image
             src="/images/quokka.jpg"
             alt="귀여운 쿼카"
@@ -215,28 +216,26 @@ export default function LessonPage() {
             height={800}
             className="object-contain max-w-full h-auto"
           />
-          <Button variant="outlined" className="mt-4" onClick={handleRecording}>
-            {isRecording ? "녹음 중지" : "녹음 시작"}
-          </Button>
-        </div>
-      </div>
-      <div className="flex justify-center items-center w-full h-full">
-        <div className="bg-gray-200 p-8 md:p-16 lg:p-24 rounded shadow flex flex-col items-center justify-center w-full max-w-3xl">
-          <h1 className="text-3xl font-bold text-black mb-2">
+        </Box>
+      </Box>
+      <Box className="flex justify-center items-center w-full h-full">
+        <Box className="bg-gray-200 p-8 md:p-16 lg:p-24 rounded shadow flex flex-col items-center justify-center w-full max-w-3xl">
+          <Typography variant="h1" className="text-3xl font-bold text-black mb-2">
             {currentIndex + 1}/5
-          </h1>
-          {tempLessons.map((lesson, index) => (
-            <h1
-              key={lesson.lessonId}
+          </Typography>
+          {temp_lessons.map((text, index) => (
+            <Typography 
+              variant="h1"
+              key={text.lessonId}
               className="mb-2 text-4xl font-bold text-black"
               style={{
                 display: index === currentIndex ? "block" : "none",
               }}
             >
-              {lesson.script}
-            </h1>
+              {text.script}
+            </Typography>
           ))}
-          <div className="mt-4 flex space-x-2">
+          <Box className="mt-4 flex space-x-2">
             <Button
               variant="contained"
               color={isRecording ? "error" : "success"}
@@ -260,10 +259,10 @@ export default function LessonPage() {
                 결과 보기
               </Button>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

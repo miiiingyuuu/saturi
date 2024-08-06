@@ -22,7 +22,7 @@ export default function PuzzleInfo({ locationId, id, avgAccuracy }: PuzzleInfoPr
   }, [locationId]);
 
   return (
-    <div className="bg-white p-12 rounded shadow">
+    <div>
       <h1 className="text-xl font-bold whitespace-nowrap">
         {location} 퍼즐 조각
       </h1>
