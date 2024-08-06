@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,6 +111,7 @@ public class GameService {
             List<GameRoomParticipantEntity> participants=Optionalparticipants.get();
             if (participants.size() == 2) {
                 gameRoomEntity.setStatus(Status.IN_PROGRESS);
+                gameRoomEntity.setStartDt(LocalDateTime.now());
             }
         }
 
@@ -126,6 +128,8 @@ public class GameService {
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
             long roomId = chatRoom.getRoomId();
+
+            GameRoomEntity gameRoomEntity = gameRoomRepository.findById(roomId).orElseThrow();
 
             List<GameRoomParticipantEntity> participants = gameRoomParticipantService.findParticipantByRoomIdOrderByCorrectCount(roomId);
             List<GameResultResponseDTO> resultList = new ArrayList<>();

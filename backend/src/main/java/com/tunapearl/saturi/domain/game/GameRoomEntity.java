@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +29,10 @@ public class GameRoomEntity {
     private LocationEntity location;
 
     @Column(name="start_dt")
-    private Timestamp startDt;
+    private LocalDateTime startDt;
 
     @Column(name="end_dt")
-    private Timestamp endDt;
+    private LocalDateTime endDt;
 
     @Enumerated(STRING)
     private Status status;
