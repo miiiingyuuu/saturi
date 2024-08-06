@@ -11,15 +11,9 @@ export default function useConnect() {
       connectHeaders: {
         Authorization: `${sessionStorage.getItem("accessToken")}`
       },
-
-      debug: (str) => console.log(str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-
-      onDisconnect: (frame) => {
-        console.log("disconnected", frame)
-      },
     })
 
     clientRef.current.activate()

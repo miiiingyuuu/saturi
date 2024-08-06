@@ -80,6 +80,20 @@ export interface MessagesProps {
   nickname: string
   message: string
 }
+
+export interface GameQuizChoiceProps {
+  choiceId: number;
+  choiceText: string;
+  isCorrect: boolean;
+}
+
+export interface GameQuizProps<T> {
+  quizId: number;
+  question: string;
+  isObjective: boolean;
+  quizChoiceList: T[];
+}
+
 // MainPart
 
 export interface LeftPartProps {
