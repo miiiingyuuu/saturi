@@ -7,7 +7,6 @@ import {
   Paper,
   Typography
 } from "@mui/material";
-import sampleData from '@/mocks/dashboard_sample.json';
 import RecentProblem from "@/components/profile/recentProblem";
 import WeeklyStreak from "@/components/profile/weeklyStreak";
 import YearlyStreak from "@/components/profile/yearlyStreak";

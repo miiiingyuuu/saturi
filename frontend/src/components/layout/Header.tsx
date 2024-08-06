@@ -1,18 +1,17 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Button from "@mui/material/Button";
-import Divider from '@mui/material/Divider';
-import { useState, useEffect, MouseEvent } from "react";
-import { Menu, MenuItem, Box, Avatar, IconButton, Tooltip, ListItemIcon, Typography, CircularProgress } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
-import Person from '@mui/icons-material/Person';
-import Logout from '@mui/icons-material/Logout';
+import { 
+  Button, Divider, Menu, MenuItem, Box, Avatar, IconButton, 
+  Tooltip, ListItemIcon, Typography, CircularProgress 
+} from "@mui/material";
+import { Person, Logout } from '@mui/icons-material';
 import { authToken } from "@/utils/authutils";
 import useLogout from "@/hooks/useLogout";
-import UserTierRank from "../profile/userTierRank";
-import { Settings } from "@mui/icons-material";
+import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
 
 
@@ -27,7 +26,7 @@ export default function Header() {
   const [nickname, setNickName] = useState<string | null>(null);
   const logout = useLogout();
 
-  const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -35,13 +34,13 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  const handleLogoClick = () => {
+  const handleLogoClick = useCallback(() => {
     const accessToken = sessionStorage.getItem("accessToken");
     const targetPath = accessToken ? '/main' : '/start';
     if (pathname !== targetPath) {
       router.push(targetPath);
     }
-  };
+  }, [pathname, router]);
 
   const updateUserInfo = async () => {
     setProfileLoading(true);
@@ -79,7 +78,7 @@ export default function Header() {
         }
       } else {
         setIsLoggedIn(false);
-        if (pathname !== '/start' && pathname !== '/login') {
+        if (!['/start', '/login', '/register'].includes(pathname)) {
           router.push('/start');
         }
       }
@@ -167,7 +166,8 @@ export default function Header() {
               >
                 <Box sx={{ p: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>{nickname}님, 안녕하세요!</Typography>
-                  <Box sx={{ 
+                  <Box
+sx={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
                     alignItems: 'center', 
