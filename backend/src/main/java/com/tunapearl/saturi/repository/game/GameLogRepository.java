@@ -6,6 +6,8 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class GameLogRepository {
@@ -14,5 +16,9 @@ public class GameLogRepository {
 
     public void save(GameLogEntity gameLogEntity) {
         em.persist(gameLogEntity);
+    }
+
+    public Optional<GameLogEntity> findById(Long gameLogId){
+        return Optional.of(em.find(GameLogEntity.class, gameLogId));
     }
 }

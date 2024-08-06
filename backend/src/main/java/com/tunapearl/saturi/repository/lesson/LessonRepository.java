@@ -222,4 +222,10 @@ public class LessonRepository {
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
+
+    public Optional<List<LessonGroupResultEntity>> findAllLessonGroupResult() {
+        List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr", LessonGroupResultEntity.class)
+                .getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
 }

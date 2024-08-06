@@ -10,4 +10,5 @@ import java.util.List;
 public class UserContinuousLearnDayDTO {
     private Long learnDays;
     private List<Integer> daysOfTheWeek;
+    private List<Integer> weekAndMonth;
 }

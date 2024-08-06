@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
 import com.tunapearl.saturi.dto.admin.quiz.QuizRegisterRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
 import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
+import com.tunapearl.saturi.dto.game.GameResultRequestDTO;
 import com.tunapearl.saturi.dto.game.GameTipRequestDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.redis.PersonChatRoomRepository;
@@ -77,4 +78,13 @@ public class RoomController {
         quizService.saveQuiz(registerRequestDto);
         return null;
     }
+
+    @GetMapping("/result")
+    public ResponseEntity<?> getResult(@RequestBody GameResultRequestDTO gameResultRequestDTO ) {
+        log.info("Received select gameResult>> roomId:{}",gameResultRequestDTO.getRoomId());
+
+        //TODO:경험치도 올려야함
+        return ResponseEntity.ok().body(gameService.getGameResult());
+    }
+
 }

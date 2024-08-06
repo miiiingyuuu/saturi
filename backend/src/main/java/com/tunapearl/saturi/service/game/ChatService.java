@@ -2,19 +2,26 @@ package com.tunapearl.saturi.service.game;
 
 import com.tunapearl.saturi.domain.game.GameLogEntity;
 import com.tunapearl.saturi.domain.game.GameRoomEntity;
+import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
+import com.tunapearl.saturi.domain.game.GameRoomQuizEntity;
 import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
-import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.QuizMessage;
+import com.tunapearl.saturi.dto.quiz.QuizDetailReadResponseDTO;
 import com.tunapearl.saturi.repository.QuizRepository;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameLogRepository;
+import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.repository.redis.PersonChatRoomRepository;
+import com.tunapearl.saturi.service.GameRoomParticipantService;
+import com.tunapearl.saturi.service.GameRoomQuizService;
+import com.tunapearl.saturi.service.QuizService;
+import com.tunapearl.saturi.service.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +48,11 @@ public class ChatService {
     private final GameLogRepository gameLogRepository;
     private final UserRepository userRepository;
     private final GameRoomRepository gameRoomRepository;
+    private final QuizService quizService;
+    private final GameRoomQuizService gameRoomQuizService;
+    private final UserService userService;
+    private final GameRoomParticipantRepository gameRoomParticipantRepository;
+    private final GameRoomParticipantService gameRoomParticipantService;
 
     /**
      * 개인방 관련 메소드
@@ -110,9 +122,9 @@ public class ChatService {
             if (quizIdListOptional.isPresent()) {
 
                 List<Long> quizIdList = quizIdListOptional.get();
-                List<QuizEntity>quizList=quizRepository.findByIdList(quizIdList);
+                List<QuizEntity> quizList = quizRepository.findByIdList(quizIdList);
 
-                for(QuizEntity quizEntity:quizList){
+                for (QuizEntity quizEntity : quizList) {
                     Hibernate.initialize((quizEntity.getLocation()));
                     quizEntity.getQuizChoiceList().forEach(Hibernate::initialize);
                 }
@@ -130,22 +142,75 @@ public class ChatService {
     }
 
     @Transactional
-    public void playGame(QuizMessage message) {
+    public QuizMessage playGame(QuizMessage message) {
 
-        //TODO:정답처리, 로그 저장
+        //정답판단 로직
+        QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
+
+        String answer = "";
+        //객관식인 경우
+        if (quizDetailReadResponseDTO.getIsObjective()) {
+            for (QuizDetailReadResponseDTO.Choice choice : quizDetailReadResponseDTO.getChoiceList()) {
+
+                if (choice.getIsAnswer()) {//정답 선지 찾기
+                    answer = choice.getChoiceId().toString();
+                }
+            }
+        }
+        //주관식인 경우
+        else {
+            answer = quizDetailReadResponseDTO.getChoiceList().get(0).getContent();
+        }
+
+        log.info("answer:{}", answer);
+        log.info("message:{}", message.getMessage());
+
+        if (message.getMessage().equals(answer)) {
+
+            //최초정답자인경우만 GameRoomQuizEntity에 정답자 추가 및 GameRoomParticipantEntity count추가임
+            Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
+
+            if (chatRoomOptional.isPresent()) {
+                ChatRoom chatRoom = chatRoomOptional.get();
+                long roomId = chatRoom.getRoomId();
+                Optional<GameRoomQuizEntity> gameRoomQuiz = gameRoomQuizRepository.findQuizById(message.getQuizId(), roomId);
+                if (gameRoomQuiz.isPresent()) {
+                    GameRoomQuizEntity gameRoomQuizEntity = gameRoomQuiz.get();
+                    if (gameRoomQuizEntity.getUser() == null) {
+                        log.info("맞춘사람없슈!!");
+
+                        //정답자 추가
+                        UserEntity user = userService.findById(message.getSenderId());
+                        gameRoomQuizService.updateGameRoomQuiz(gameRoomQuizEntity, user);
+
+                        //게임방에 몇개 맞췄는지 업뎃하셈
+                        GameRoomParticipantEntity participant = gameRoomParticipantService.findById(roomId,message.getSenderId());
+                        gameRoomParticipantService.updateParticipant(participant);
+
+                        //message에 맞췄다고 표시
+                        message.setCorrect(true);
+                    } else {
+                        log.info("이미 누가 맞춤ㅋ");
+                    }
+                }
+            } else {
+                log.info("roomId가 없슈");
+            }
+        }
+
+        //게임 로그 저장
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
-
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
 
-            GameLogEntity gameLog=new GameLogEntity();
-            UserEntity user=userRepository.findByUserId(message.getSenderId()).orElseThrow();
+            GameLogEntity gameLog = new GameLogEntity();
+            UserEntity user = userRepository.findByUserId(message.getSenderId()).orElseThrow();
             gameLog.setUser(user);
 
-            QuizEntity quiz=quizRepository.findById(message.getQuizId()).orElseThrow();
+            QuizEntity quiz = quizRepository.findById(message.getQuizId()).orElseThrow();
             gameLog.setQuiz(quiz);
 
-            GameRoomEntity gameRoom=gameRoomRepository.findById(chatRoom.getRoomId()).orElseThrow();
+            GameRoomEntity gameRoom = gameRoomRepository.findById(chatRoom.getRoomId()).orElseThrow();
             gameLog.setRoom(gameRoom);
 
             gameLog.setChatting(message.getMessage());
@@ -156,5 +221,7 @@ public class ChatService {
 
             log.info("ChatRoom with ID {} not found.", message.getRoomId());
         }
+
+        return message;
     }
 }

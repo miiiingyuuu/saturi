@@ -3,6 +3,7 @@ package com.tunapearl.saturi.service;
 import com.tunapearl.saturi.domain.game.GameRoomEntity;
 import com.tunapearl.saturi.domain.game.GameRoomQuizEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
+import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.repository.QuizRepository;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,5 +34,12 @@ public class GameRoomQuizService {
             GameRoomQuizEntity grQuiz = GameRoomQuizEntity.create(room, quizList.get(i), Long.valueOf(i+1));
             grQuizRepository.save(grQuiz);
         }
+    }
+
+    @Transactional
+    public void updateGameRoomQuiz(GameRoomQuizEntity gameRoomQuizEntity, UserEntity user){
+
+        gameRoomQuizEntity.setUser(user);
+        gameRoomQuizEntity.setCorrectDt(LocalDateTime.now());
     }
 }
