@@ -5,12 +5,12 @@ import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.domain.user.UserEntity;
+import com.tunapearl.saturi.dto.game.GameResultResponseDTO;
 import com.tunapearl.saturi.dto.game.QuizMessage;
 import com.tunapearl.saturi.dto.quiz.QuizDetailReadResponseDTO;
 import com.tunapearl.saturi.repository.QuizRepository;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameLogRepository;
-import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
@@ -28,6 +28,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,7 +100,7 @@ public class ChatService {
             if (gameRoomEntity != null) {
                 log.info("게임방은 있슈");
 
-                if(gameRoomEntity.getStatus().equals(Status.IN_PROGRESS)){//모두 모임. 게임 시작하라
+                if (gameRoomEntity.getStatus().equals(Status.IN_PROGRESS)) {//모두 모임. 게임 시작하라
 
                     return true;//게임을 시작하라
                 }
@@ -158,7 +159,7 @@ public class ChatService {
     @Transactional
     public QuizMessage playGame(QuizMessage message) {
 
-        if(message.getQuizId()>0){
+        if (message.getQuizId() > 0) {
 
             //정답판단 로직
             QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
@@ -200,7 +201,7 @@ public class ChatService {
                             gameRoomQuizService.updateGameRoomQuiz(gameRoomQuizEntity, user);
 
                             //게임방에 몇개 맞췄는지 업뎃하셈
-                            GameRoomParticipantEntity participant = gameRoomParticipantService.findById(roomId,message.getSenderId());
+                            GameRoomParticipantEntity participant = gameRoomParticipantService.findById(roomId, message.getSenderId());
                             gameRoomParticipantService.updateParticipant(participant);
 
                             //message에 맞췄다고 표시
@@ -232,7 +233,7 @@ public class ChatService {
 
             gameLog.setChatting(message.getMessage());
             gameLog.setChattingDt(LocalDateTime.now());
-            long logId=gameLogRepository.save(gameLog);
+            long logId = gameLogRepository.save(gameLog);
 
             message.setChatLogId(logId);
 
@@ -245,7 +246,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void endGameRoom(String topicId) {
+    public void terminateGameRoom(String topicId) {
 
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(topicId);
         if (chatRoomOptional.isPresent()) {
@@ -255,6 +256,50 @@ public class ChatService {
             GameRoomEntity gameRoomEntity = gameRoomRepository.findById(roomId).orElseThrow();
             gameRoomEntity.setStatus(Status.TERMINATED);
             gameRoomEntity.setEndDt(LocalDateTime.now());
+        }
+    }
+
+    @Transactional
+    public void endGameRoom(String topicId) {
+
+        
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(topicId);
+        if (chatRoomOptional.isPresent()) {
+            ChatRoom chatRoom = chatRoomOptional.get();
+            long roomId = chatRoom.getRoomId();
+
+            GameRoomEntity gameRoomEntity = gameRoomRepository.findById(roomId).orElseThrow();
+
+            if (gameRoomEntity.getStatus() == Status.IN_PROGRESS) {
+
+                //게임방 상태 변경
+                gameRoomEntity.setStatus(Status.COMPLETED);
+                gameRoomEntity.setEndDt(LocalDateTime.now());
+
+
+                //순위 저장
+                List<GameRoomParticipantEntity> participants = gameRoomParticipantService.findParticipantByRoomIdOrderByCorrectCount(roomId);
+
+                int rank = 1;
+                int pre = -1;//이전 참가자 맞춘 횟수
+                int same=0;//점수 같은 사람 수
+                for (GameRoomParticipantEntity participant : participants) {
+
+                    if (pre > participant.getCorrectCount()) {
+                        rank+=same;
+                        same=1;
+                    }else{//동점자
+                        same++;
+                    }
+                    pre=participant.getCorrectCount();
+                    
+                    UserEntity user = participant.getUser();
+                    participant.setMatchRank(rank);//순위 저장
+
+                    int count = participant.getCorrectCount();
+                    user.setExp(participant.getBeforeExp() + count * 2);
+                }
+            }
         }
     }
 }

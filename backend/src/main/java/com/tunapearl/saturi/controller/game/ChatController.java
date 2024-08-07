@@ -25,7 +25,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -151,11 +150,16 @@ public class ChatController {
                 redisPublisher.gameExitPublish(chatService.getRoomTopic(message.getRoomId()), exitMessage);
             }
 
-        } else if (MessageType.END.equals(message.getChatType())) {
-            //TODO:강제종료 로직 :: 그냥 방 terminated로 바꾼다 아무 경험치 주지않는다
+        } else if (MessageType.TERMINATED.equals(message.getChatType())) {
+
+            chatService.terminateGameRoom(message.getRoomId());
+            message.setMessage("인원 부족으로 게임이 종료되었습니다.");
+            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
+        }else{//정상종료
 
             chatService.endGameRoom(message.getRoomId());
-
+            message.setMessage("게임이 종료되었습니다.");
+            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
         }
     }
 

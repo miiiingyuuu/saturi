@@ -36,11 +36,15 @@ public class GameRoomParticipantEntity {
     @ColumnDefault("false")
     private boolean isExited;
 
+    @Column(name="before_exp")
+    private Long beforeExp;
+
     public GameRoomParticipantEntity() {}
 
     public GameRoomParticipantEntity(GameRoomEntity gameRoom, UserEntity user) {
         this.id = new GameRoomParticipantId(gameRoom.getRoomId(), user.getUserId());
         this.gameRoom = gameRoom;
         this.user = user;
+        this.beforeExp=user.getExp();
     }
 }
