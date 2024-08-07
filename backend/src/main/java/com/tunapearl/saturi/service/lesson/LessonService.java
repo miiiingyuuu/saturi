@@ -166,11 +166,15 @@ public class LessonService {
     }
 
     public Optional<LessonInfoDTO> getLessonInfoForUser(Long userId, Long lessonId) {
+        // 레슨 아이디로 레슨 조회해서 레슨 그룹 아이디 조회
+        LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
+        Long lessonGroupId = lesson.getLessonGroup().getLessonGroupId();
+
         // 유저 아이디와 레슨 그룹 아이디로 레슨 그룹 결과 조회
         Optional<List<LessonGroupResultEntity>> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId);
         if(lessonGroupResults.isEmpty()) return Optional.empty();
         // FIXME lessonGroupId를 넣어야함
-        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults.get(), lessonId);
+        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults.get(), lessonGroupId);
         for (LessonGroupResultEntity lr : lessonGroupResults.get()) {
             log.info("lr = {}. {}", lr.getLessonGroup().getLessonGroupId(), lr.getLessonGroup().getName());
         }
