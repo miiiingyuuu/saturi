@@ -14,8 +14,9 @@ public class GameLogRepository {
 
     private final EntityManager em;
 
-    public void save(GameLogEntity gameLogEntity) {
+    public long save(GameLogEntity gameLogEntity) {
         em.persist(gameLogEntity);
+        return gameLogEntity.getGameLogId();
     }
 
     public Optional<GameLogEntity> findById(Long gameLogId){

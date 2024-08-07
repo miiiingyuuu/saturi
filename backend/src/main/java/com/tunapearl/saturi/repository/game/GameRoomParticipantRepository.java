@@ -27,10 +27,14 @@ public class GameRoomParticipantRepository {
         em.persist(gameRoomParticipantEntity);
     }
 
-    public List<GameRoomParticipantEntity> findByRoomId(Long roomId) {
-        return em.createQuery("select p from GameRoomParticipantEntity p where p.id.roomId = :roomId", GameRoomParticipantEntity.class)
+    public Optional<List<GameRoomParticipantEntity>> findByRoomId(Long roomId) {
+
+        List<GameRoomParticipantEntity> results =
+                em.createQuery("select p from GameRoomParticipantEntity p where p.id.roomId = :roomId", GameRoomParticipantEntity.class)
                 .setParameter("roomId", roomId)
                 .getResultList();
+        return results.isEmpty() ? Optional.empty() : Optional.of(results);
+
     }
 
     public List<GameRoomParticipantEntity> findByRoomIdOrderByCorrectCount(Long roomId) {
@@ -42,7 +46,7 @@ public class GameRoomParticipantRepository {
     public GameRoomParticipantEntity findParticipantByGameRoomParticipantId(GameRoomParticipantId id) {
         return em.createQuery("select  p from GameRoomParticipantEntity p where p.gameRoom.roomId = :roomId and p.user.userId=:userId", GameRoomParticipantEntity.class)
                 .setParameter("roomId", id.getRoomId())
-                .setParameter("userId",id.getUserId())
+                .setParameter("userId", id.getUserId())
                 .getSingleResult();
 
     }

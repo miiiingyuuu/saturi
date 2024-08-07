@@ -49,7 +49,6 @@ public class ChatService {
     private final GameRoomQuizService gameRoomQuizService;
     private final UserService userService;
     private final GameRoomParticipantService gameRoomParticipantService;
-    private final RedisPublisher redisPublisher;
 
     /**
      * 개인방 관련 메소드
@@ -89,8 +88,7 @@ public class ChatService {
             topic = new ChannelTopic(topicId);
 
         redisMessageListener.addMessageListener(redisSubscriber, topic);
-        //TODO room에 몇명인지확인하고 5명이면 시작하라고 publish한다...?
-        //topicId를 통해서 roomId를 가져와서, status가 in-progress다? 마지막사람이 등장한거니까시작해.
+
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(topicId);
 
         if (chatRoomOptional.isPresent()) {
@@ -106,8 +104,6 @@ public class ChatService {
                     return true;//게임을 시작하라
                 }
             }
-
-
         }
         return false;//아직 덜 모음
     }
@@ -233,7 +229,9 @@ public class ChatService {
 
             gameLog.setChatting(message.getMessage());
             gameLog.setChattingDt(LocalDateTime.now());
-            gameLogRepository.save(gameLog);
+            long logId=gameLogRepository.save(gameLog);
+
+            message.setChatLogId(logId);
 
         } else {
 
@@ -241,5 +239,7 @@ public class ChatService {
         }
 
         return message;
+
+
     }
 }
