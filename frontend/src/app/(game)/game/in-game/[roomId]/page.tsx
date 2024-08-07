@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { IMessage } from "@stomp/stompjs";
 import useConnect from "@/hooks/useConnect";
@@ -21,8 +21,10 @@ import {
 } from "@mui/material";
 import { getCookie } from "cookies-next";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
+import { useRouter } from "next/navigation"
 
 export default function App({ params: { roomId } }: RoomIdProps) {
+  const router = useRouter()
   const clientRef = useConnect();
   const [now, setNow] = useState(0);
   const [message, setMessage] = useState("");
@@ -32,8 +34,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [isAnswerTime, setIsAnswerTime] = useState(false);
   const [result, setResult] = useState("");
   const [time, setTime] = useState(10);
-  // const [participants, setParticipants] = useState<Object[]>([])
-  // TODO: 들어올때, 들어오고 나서 사람들 들어올때 실행해서 participants 채우기
+  const [isStart, setIsStart] = useState(false);
 
   function sendMessage() {
     if (message.trim() && clientRef.current) {
@@ -80,20 +81,23 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         });
 
         client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
-          const body = JSON.parse(message.body);
+          const body = JSON.parse(message.body)
+          console.log(body)
           if (Array.isArray(body)) {
             setQuizzes(body);
+          } else if (!isStart && body.chatType === "START") {
+            setIsStart(true);
           }
         });
 
         client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body);
+          console.log(body)
           if (body.correct) {
-            // 정답자에 대한 예우를 지켜줘야함
             if (you === body.senderNickName) {
-              setResult("너 재능있어");
+              setResult("정답입니다!");
             } else {
-              setResult("허접");
+              setResult(`${body.senderNickName}님이 정답을 맞추셨습니다ㅋ`);
             }
             setIsAnswerTime(true);
 
@@ -101,6 +105,16 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               setIsAnswerTime(false);
               setNow((prev) => prev + 1);
             }, 5000);
+
+            if (body.quizId>=10) {
+              // 그리고 게임이 종료가되면 "END"
+
+              setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
+              setIsAnswerTime(true);
+              setTimeout(() => {
+                router.push(`/game/in-game/${roomId}/result`)
+              }, 3000)
+            }
           }
 
           const timestamp = new Date().toLocaleTimeString("ko-KR", {
@@ -108,6 +122,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             hour: "2-digit",
             minute: "2-digit",
           });
+
           const newMsg: MessagesProps = {
             timestamp,
             message: body.message,
@@ -117,10 +132,35 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         });
       };
 
+      const onDisconnect = () => {
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            roomId,
+            chatType: "TERMINATED"
+          })
+        });
+      };
+
+      // onDisconnect 이벤트 리스너 추가
+      const handleBeforeUnload = () => {
+        onDisconnect();
+      };
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      window.addEventListener("unload", handleBeforeUnload);
+
+      client.onDisconnect = onDisconnect;
       client.onConnect = onConnect;
+
       if (client.connected) {
         onConnect();
       }
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        window.removeEventListener("unload", handleBeforeUnload);
+      };
     }
   }, [roomId, clientRef]);
 
@@ -132,20 +172,19 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   }, [quizzes, now]);
 
   useEffect(() => {
-    if (time) {
+    if (time && isStart) {
       setTimeout(() => setTime(time - 1), 1000);
-    } else {
+    } else if (time === 0 && isStart) {
       setNow((prev) => prev + 1);
     }
-  }, [time]);
+  }, [time, isStart]);
 
   useConfirmLeave();
+
   return (
     <Box>
-      {isAnswerTime && (
-        <Typography>{result}</Typography>
-      )}
-      {time ? (
+      {now}
+      {!isStart ? (
         <Typography
           component="h1"
           variant="h5"
@@ -154,85 +193,103 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             mb: 3,
           }}
         >
-          {time}초 뒤 게임이 시작됩니다
+          대기중입니다.
         </Typography>
       ) : (
-        <Box
-          sx={{
-            display: "grid",
-            placeItems: "center",
-            marginBottom: "150px",
-          }}
-        >
-          {!isAnswerTime && nowQuiz && (
-            <>
-              <Typography
-                sx={{
-                  fontSize: "39px",
-                  fontWeight: "bold",
-                }}
-              >
-                {nowQuiz.quizId}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
-              </Typography>
-              <Typography>{nowQuiz.question}</Typography>
-              {nowQuiz.isObjective ? (
-                <Box
-                  sx={{
-                    marginTop: "50px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box
+        <>
+          {isAnswerTime && (
+            <Typography>{result}</Typography>
+          )}
+          {time ? (
+            <Typography
+              component="h1"
+              variant="h5"
+              sx={{
+                textAlign: "center",
+                mb: 3,
+              }}
+            >
+              {time}초 뒤 게임이 시작됩니다
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                display: "grid",
+                placeItems: "center",
+                marginBottom: "150px",
+              }}
+            >
+              {!isAnswerTime && nowQuiz && (
+                <>
+                  <Typography
                     sx={{
-                      width: "100%",
-                      maxWidth: "600px",
-                      mx: "auto",
+                      fontSize: "39px",
+                      fontWeight: "bold",
                     }}
                   >
-                    <ToggleButtonGroup
-                      exclusive
-                      value={message}
-                      onChange={(_, value) => setMessage(value)}
+                    {nowQuiz.quizId}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
+                  </Typography>
+                  <Typography>{nowQuiz.question}</Typography>
+                  {nowQuiz.isObjective ? (
+                    <Box
                       sx={{
+                        marginTop: "50px",
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 2,
+                        justifyContent: "space-between",
                       }}
                     >
-                      {nowQuiz.quizChoiceList.map((choiceList) => (
-                        <ToggleButton
-                          key={choiceList.choiceId}
-                          value={choiceList.choiceId.toString()}
+                      <Box
+                        sx={{
+                          width: "100%",
+                          maxWidth: "600px",
+                          mx: "auto",
+                        }}
+                      >
+                        <ToggleButtonGroup
+                          exclusive
+                          value={message}
+                          onChange={(_, value) => setMessage(value)}
                           sx={{
-                            minWidth: 300,
-                            maxWidth: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: 2,
                           }}
                         >
-                          {choiceList.choiceId}번. {choiceList.choiceText}
-                        </ToggleButton>
-                      ))}
-                    </ToggleButtonGroup>
-                  </Box>
-                </Box>
-              ) : (
-                <Box sx={{ display: "flex" }}>
-                  <TextField variant="outlined" fullWidth />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                      ml: 1,
-                    }}
-                  >
-                    <SendIcon />
-                  </Button>
-                </Box>
+                          {nowQuiz.quizChoiceList.map((choiceList) => (
+                            <ToggleButton
+                              key={choiceList.choiceId}
+                              value={choiceList.choiceId.toString()}
+                              sx={{
+                                minWidth: 300,
+                                maxWidth: "100%",
+                              }}
+                            >
+                              {choiceList.choiceId}번. {choiceList.choiceText}
+                            </ToggleButton>
+                          ))}
+                        </ToggleButtonGroup>
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box sx={{ display: "flex" }}>
+                      <TextField variant="outlined" fullWidth />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                          ml: 1,
+                        }}
+                      >
+                        <SendIcon />
+                      </Button>
+                    </Box>
+                  )}
+                </>
               )}
-            </>
+            </Box>
           )}
-        </Box>
+        </>
       )}
 
       <Box

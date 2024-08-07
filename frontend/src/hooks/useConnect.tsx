@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
-import useConfirmLeave from "@/hooks/useConfirmLeave"; // 경로를 실제 파일 위치로 변경하세요
+import useConfirmLeave from "@/hooks/useConfirmLeave";
 
 export default function useConnect() {
   const clientRef = useRef<Client | null>(null);
@@ -13,16 +13,16 @@ export default function useConnect() {
       connectHeaders: {
         Authorization: `${sessionStorage.getItem("accessToken")}`,
       },
-      reconnectDelay: 5000,
+      reconnectDelay: 60000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     });
 
     clientRef.current.activate();
 
-    function handleBeforeUnload () {
+    function handleBeforeUnload() {
       const url = new URL(window.location.href);
-      if (url.pathname === "/specific-url") { // "/specific-url"을 실제 특정 URL로 변경하세요
+      if (!url.pathname.startsWith("/game")) {
         if (clientRef.current) {
           clientRef.current.deactivate();
         }
@@ -31,11 +31,12 @@ export default function useConnect() {
 
     window.addEventListener("beforeunload", handleBeforeUnload);
 
+    // 클린업 함수에서 이벤트 핸들러 제거
     return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       if (clientRef.current) {
         clientRef.current.deactivate();
       }
-      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 

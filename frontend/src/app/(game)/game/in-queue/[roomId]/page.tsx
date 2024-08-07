@@ -5,8 +5,10 @@ import { IMessage } from "@stomp/stompjs";
 import { useEffect, useState } from "react";
 import useConnect from "@/hooks/useConnect";
 import { TipsProps, RoomIdProps } from "@/utils/props"
+import { useRouter } from "next/navigation"
 
 export default function App({params:{roomId}}: RoomIdProps) {
+  const router = useRouter()
   const clientRef = useConnect()
   const [tips, setTips] = useState<TipsProps[]>([]);
 
@@ -24,9 +26,8 @@ export default function App({params:{roomId}}: RoomIdProps) {
       client.onConnect = () => {
         client.subscribe(`/sub/room-request/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
-          console.log(body)
           if (body.matchedroomId) {
-            window.location.href = `${process.env.NEXT_PUBLIC_FRONTURL}/game/in-game/${body.matchedroomId}`
+            router.push(`/game/in-game/${body.matchedroomId}`)
           }
         })
 
