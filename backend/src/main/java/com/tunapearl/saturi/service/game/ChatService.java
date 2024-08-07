@@ -158,57 +158,60 @@ public class ChatService {
     @Transactional
     public QuizMessage playGame(QuizMessage message) {
 
-        //정답판단 로직
-        QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
+        if(message.getQuizId()>0){
 
-        String answer = "";
-        //객관식인 경우
-        if (quizDetailReadResponseDTO.getIsObjective()) {
-            for (QuizDetailReadResponseDTO.Choice choice : quizDetailReadResponseDTO.getChoiceList()) {
+            //정답판단 로직
+            QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
 
-                if (choice.getIsAnswer()) {//정답 선지 찾기
-                    answer = choice.getChoiceId().toString();
-                }
-            }
-        }
-        //주관식인 경우
-        else {
-            answer = quizDetailReadResponseDTO.getChoiceList().get(0).getContent();
-        }
+            String answer = "";
+            //객관식인 경우
+            if (quizDetailReadResponseDTO.getIsObjective()) {
+                for (QuizDetailReadResponseDTO.Choice choice : quizDetailReadResponseDTO.getChoiceList()) {
 
-        log.info("answer:{}", answer);
-        log.info("message:{}", message.getMessage());
-
-        if (message.getMessage().equals(answer)) {
-
-            //최초정답자인경우만 GameRoomQuizEntity에 정답자 추가 및 GameRoomParticipantEntity count추가임
-            Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
-
-            if (chatRoomOptional.isPresent()) {
-                ChatRoom chatRoom = chatRoomOptional.get();
-                long roomId = chatRoom.getRoomId();
-                Optional<GameRoomQuizEntity> gameRoomQuiz = gameRoomQuizRepository.findQuizById(message.getQuizId(), roomId);
-                if (gameRoomQuiz.isPresent()) {
-                    GameRoomQuizEntity gameRoomQuizEntity = gameRoomQuiz.get();
-                    if (gameRoomQuizEntity.getUser() == null) {
-                        log.info("맞춘사람없슈!!");
-
-                        //정답자 추가
-                        UserEntity user = userService.findById(message.getSenderId());
-                        gameRoomQuizService.updateGameRoomQuiz(gameRoomQuizEntity, user);
-
-                        //게임방에 몇개 맞췄는지 업뎃하셈
-                        GameRoomParticipantEntity participant = gameRoomParticipantService.findById(roomId,message.getSenderId());
-                        gameRoomParticipantService.updateParticipant(participant);
-
-                        //message에 맞췄다고 표시
-                        message.setCorrect(true);
-                    } else {
-                        log.info("이미 누가 맞춤ㅋ");
+                    if (choice.getIsAnswer()) {//정답 선지 찾기
+                        answer = choice.getChoiceId().toString();
                     }
                 }
-            } else {
-                log.info("roomId가 없슈");
+            }
+            //주관식인 경우
+            else {
+                answer = quizDetailReadResponseDTO.getChoiceList().get(0).getContent();
+            }
+
+            log.info("answer:{}", answer);
+            log.info("message:{}", message.getMessage());
+
+            if (message.getMessage().equals(answer)) {
+
+                //최초정답자인경우만 GameRoomQuizEntity에 정답자 추가 및 GameRoomParticipantEntity count추가임
+                Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
+
+                if (chatRoomOptional.isPresent()) {
+                    ChatRoom chatRoom = chatRoomOptional.get();
+                    long roomId = chatRoom.getRoomId();
+                    Optional<GameRoomQuizEntity> gameRoomQuiz = gameRoomQuizRepository.findQuizById(message.getQuizId(), roomId);
+                    if (gameRoomQuiz.isPresent()) {
+                        GameRoomQuizEntity gameRoomQuizEntity = gameRoomQuiz.get();
+                        if (gameRoomQuizEntity.getUser() == null) {
+                            log.info("맞춘사람없슈!!");
+
+                            //정답자 추가
+                            UserEntity user = userService.findById(message.getSenderId());
+                            gameRoomQuizService.updateGameRoomQuiz(gameRoomQuizEntity, user);
+
+                            //게임방에 몇개 맞췄는지 업뎃하셈
+                            GameRoomParticipantEntity participant = gameRoomParticipantService.findById(roomId,message.getSenderId());
+                            gameRoomParticipantService.updateParticipant(participant);
+
+                            //message에 맞췄다고 표시
+                            message.setCorrect(true);
+                        } else {
+                            log.info("이미 누가 맞춤ㅋ");
+                        }
+                    }
+                } else {
+                    log.info("roomId가 없슈");
+                }
             }
         }
 
@@ -239,7 +242,5 @@ public class ChatService {
         }
 
         return message;
-
-
     }
 }
