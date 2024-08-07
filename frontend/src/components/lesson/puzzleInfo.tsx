@@ -7,7 +7,7 @@ interface PuzzleInfoProps {
 }
 
 export default function PuzzleInfo({ locationId, id, avgAccuracy }: PuzzleInfoProps) {
-  const locations = ["","경상도 사투리", "표준어"];
+  const locations = ["","경상도", "표준어"];
   const [location, setLocation] = useState("표준어");
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function PuzzleInfo({ locationId, id, avgAccuracy }: PuzzleInfoPr
       <h1 className="text-xl font-bold whitespace-nowrap">
         {location} 퍼즐 조각
       </h1>
-      <p className="whitespace-nowrap">{id}번 퍼즐 조각에 대한 정보</p>
-      <p className="whitespace-nowrap">평균 정확도 :  {avgAccuracy}%</p>
+      <p className="whitespace-nowrap">lessonGroupId : {id}</p>
+      <p className="whitespace-nowrap">평균 정확도(더미) : {avgAccuracy}%</p>
       {/* 추가적인 퍼즐 조각 정보를 여기에 추가 */}
     </div>
   );

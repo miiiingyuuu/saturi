@@ -24,7 +24,7 @@ export default function LessonPage() {
     sampleVoiceName: string; // 샘플 음성 이름
     sampleVoicePath: string; // 샘플 음성 경로 (URL)
     script: string; // 스크립트 내용
-}
+  }
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentLessonId, setCurrentLessonId] = useState<number>(1);
   const [isRecording, setIsRecording] = useState(false);
@@ -42,38 +42,38 @@ export default function LessonPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioBlobRef = useRef<Blob | null>(null); // Store the final audio blob
-  const [audioData, setAudioData] = useState<ArrayBuffer|null>(null);
+  const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
 
   // 지역, 카테고리, 레슨그룹 정보
   useEffect(() => {
-    if(pathname){
+    if (pathname) {
       const pathSegments = pathname.split("/");
       const selectedLocation = parseInt(
         pathSegments[pathSegments.length - 3],
         10,
       );
-    const selectedCategory = parseInt(
-      pathSegments[pathSegments.length - 2],
-      10,
-    );
-    const selectedLessonGroupId = parseInt(
-      pathSegments[pathSegments.length - 1],
-      10,
-    );
-    if (
-      ![1, 2, 3].includes(selectedLocation) ||
-      Number.isNaN(selectedCategory)
-    ) {
-      router.push("/lesson/2/1");
-    } else {
-      setLocationId(selectedLocation);
-      setCategoryId(selectedCategory);
-      setLessonGroupId(selectedLessonGroupId);
+      const selectedCategory = parseInt(
+        pathSegments[pathSegments.length - 2],
+        10,
+      );
+      const selectedLessonGroupId = parseInt(
+        pathSegments[pathSegments.length - 1],
+        10,
+      );
+      if (
+        ![1, 2, 3].includes(selectedLocation) ||
+        Number.isNaN(selectedCategory)
+      ) {
+        router.push("/lesson/2/1");
+      } else {
+        setLocationId(selectedLocation);
+        setCategoryId(selectedCategory);
+        setLessonGroupId(selectedLessonGroupId);
+      }
     }
-  }
   }, [pathname, router]);
 
   // 레슨 그룹 결과 생성 함수
@@ -94,16 +94,18 @@ export default function LessonPage() {
   }, [lessonGroupId, pathname]);
 
   // 정답음성 재생을 위한 함수
-  // 오디오 다운로드 및 재생 함수 
+  // 오디오 다운로드 및 재생 함수
   const handleDownloadAndPlayAudio = async (lesson: object) => {
     try {
-      const response = await fetch('/api/download', {
-        method: 'POST',
+      const response = await fetch("/api/download", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         // body: JSON.stringify({ filename: lesson.sampleVoiceName }),
-        body: JSON.stringify({ filename: "경상도_드라마_11_1994_병문안안가봐도되나.wav" }),
+        body: JSON.stringify({
+          filename: `${lesson.sampleVoiceName}.wav`,
+        }),
       });
 
       if (response.ok) {
@@ -128,7 +130,7 @@ export default function LessonPage() {
       source.connect(audioContext.destination);
       source.start(0);
     }
-  };  
+  };
 
   // lessons 할당 함수
   useEffect(() => {
@@ -139,11 +141,12 @@ export default function LessonPage() {
         )
         .then(response => {
           if (response.status === 200) {
-            console.log(response);
+            console.log("category의 lessonGroups: ", response);
             if (
               response.data.length > 0 &&
               response.data[lessonGroupId - 1].lessons
             ) {
+              console.log(response.data[lessonGroupId - 1].lessons);
               const fetchedLessons = response.data[lessonGroupId - 1].lessons;
               setLessons(fetchedLessons);
               // 첫 번째 레슨의 lessonId로 currentLessonId 설정
@@ -158,8 +161,6 @@ export default function LessonPage() {
         });
     }
   }, [locationId, categoryId, pathname, lessonGroupId]);
-
-
 
   // 녹음 파일을 GCR 에 저장,
   const handleNext = async () => {
@@ -186,10 +187,17 @@ export default function LessonPage() {
         const result = await response.json();
         console.log("File uploaded with name:", result.filename);
 
+        // 현재 레슨 정보 가져오기
+        const currentLesson = lessons[currentIndex];
+        if (!currentLesson) {
+          console.error("Current lesson not found.");
+          return;
+        }
+
         // 정답파일명, 음성파일명을 django 로 보내서 분석결과 수집
         apiAi
           .post("/audio/analyze/", {
-            answerVoiceFileName: "경상도_드라마_11_1994_병문안안가봐도되나.wav",
+            answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
             userVoiceFileName: `${result.filename}`,
           })
           .then(res => {
@@ -255,7 +263,7 @@ export default function LessonPage() {
 
     if (currentIndex < lessons.length - 1) {
       const newIndex = currentIndex + 1;
-      setCurrentIndex(newIndex);  
+      setCurrentIndex(newIndex);
       setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
     }
   };
@@ -295,7 +303,11 @@ export default function LessonPage() {
   };
 
   const handleResult = () => {
-    router.push(`${pathname}/result`);
+    if (lessonGroupResultId !== null) {
+      router.push(`${pathname}/result?lessonGroupResultId=${lessonGroupResultId}`);
+    } else {
+      console.error("lessonGroupResultId가 설정되지 않았습니다.");
+    }
   };
 
   const handleSkip = () => {
@@ -307,13 +319,18 @@ export default function LessonPage() {
       })
       .catch(err => {
         console.log(err);
+        console.log(currentLessonId)
       });
     // 다음 문장으로
     if (currentIndex < lessons.length - 1) {
       const newIndex = currentIndex + 1;
       setCurrentIndex(newIndex);
       setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
+    } else {
+      handleResult();
     }
+
+
   };
 
   const handleClaim = () => {
@@ -377,7 +394,7 @@ export default function LessonPage() {
               className="mb-2 text-4xl font-bold text-black"
               style={{
                 display: index === currentIndex ? "block" : "none",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
               onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
             >
