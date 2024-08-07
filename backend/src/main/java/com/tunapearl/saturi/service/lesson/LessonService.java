@@ -114,7 +114,7 @@ public class LessonService {
         Long lessonGroupId = findLesson.getLessonGroup().getLessonGroupId();
 
         // 유저아이디와 레슨그룹 아이디로 레슨그룹결과 아이디를 찾는다.
-        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonId);
 
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.

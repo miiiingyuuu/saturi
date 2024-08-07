@@ -49,7 +49,6 @@ public class ChatService {
     private final GameRoomQuizService gameRoomQuizService;
     private final UserService userService;
     private final GameRoomParticipantService gameRoomParticipantService;
-    private final RedisPublisher redisPublisher;
 
     /**
      * 개인방 관련 메소드
@@ -105,8 +104,6 @@ public class ChatService {
                     return true;//게임을 시작하라
                 }
             }
-
-
         }
         return false;//아직 덜 모음
     }
