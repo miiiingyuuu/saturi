@@ -93,7 +93,7 @@ public class RoomController {
     /**
      * 게임 결과 조회 :: 게임 종료
      */
-    @GetMapping("/result")
+    @PostMapping("/result")
     public ResponseEntity<?> getResult(@RequestHeader("Authorization") String authorization, @RequestBody GameResultRequestDTO gameResultRequestDTO ) throws UnAuthorizedException {
         log.info("Received select gameResult>> roomId:{}",gameResultRequestDTO.getRoomId());
 
