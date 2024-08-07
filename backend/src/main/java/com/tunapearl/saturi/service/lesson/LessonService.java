@@ -76,6 +76,7 @@ public class LessonService {
         int completedLessonGroupCnt = 0;
         // 유저 아이디로 그룹 결과 조회(완료된거만)
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+        if(lessonGroupResult == null) return 0L;
         // 조회된 그룹 결과를 그룹 아이디로 조회하며 지역과 대화유형이 맞는 개수를 셈
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
             LocationEntity location = lgResult.getLessonGroup().getLocation();
@@ -92,6 +93,7 @@ public class LessonService {
         // lessonGroup 완성 여부에 상관없이 lessonGroupResult 받아오기
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
+        if(lessonGroupResult == null) return result;
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
             // lessonGroupId
             Long lessonGroupId = lgResult.getLessonGroup().getLessonGroupId();
@@ -115,8 +117,8 @@ public class LessonService {
 
         // 유저아이디와 레슨그룹 아이디로 레슨그룹결과 아이디를 찾는다.
         List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
-        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonId);
-
+        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonGroupId);
+        log.info("너 널이지 {}", lessonGroupResultId);
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.
         // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
         Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
@@ -134,13 +136,6 @@ public class LessonService {
 
         // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
         return lessonRepository.saveLessonForSkipped(lessonResultSkipped).orElse(null);
-    }
-
-    private Long findLessonGroupResultId(List<LessonGroupResultEntity> lessonGroupResults, Long lessonId) {
-        for (LessonGroupResultEntity lgr : lessonGroupResults) {
-            if(lgr.getLessonGroup().getLessonGroupId().equals(lessonId)) return lgr.getLessonGroupResultId();
-        }
-        return null;
     }
 
     public Long createLessonGroupResult(Long userId, Long lessonGroupId) {
@@ -173,17 +168,22 @@ public class LessonService {
     public Optional<LessonInfoDTO> getLessonInfoForUser(Long userId, Long lessonId) {
         // 레슨 아이디로 레슨 조회해서 레슨 그룹 아이디 조회
         LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
+        Long lessonGroupId = lesson.getLessonGroup().getLessonGroupId();
 
         // 유저 아이디와 레슨 그룹 아이디로 레슨 그룹 결과 조회
-        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
-        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonId);
+        Optional<List<LessonGroupResultEntity>> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId);
+        if(lessonGroupResults.isEmpty()) return Optional.empty();
+        // FIXME lessonGroupId를 넣어야함
+        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults.get(), lessonGroupId);
+        for (LessonGroupResultEntity lr : lessonGroupResults.get()) {
+            log.info("lr = {}. {}", lr.getLessonGroup().getLessonGroupId(), lr.getLessonGroup().getName());
+        }
 
         // 레슨 아이디랑 레슨 그룹 결과 아이디로 레슨 결과 조회
         Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
 
         // 결과가 없으면 null 반환
         if(lessonResults.isEmpty()) return Optional.empty();
-
 
         // 평균 정확도가 높은 순으로 정렬
         Collections.sort(lessonResults.orElse(null), (o1, o2) -> Long.compare((o2.getAccentSimilarity() + o2.getPronunciationAccuracy()) / 2,
@@ -198,6 +198,13 @@ public class LessonService {
         return Optional.ofNullable(new LessonInfoDTO(false, lessonResult.getAccentSimilarity(), lessonResult.getPronunciationAccuracy()));
     }
 
+    private Long findLessonGroupResultId(List<LessonGroupResultEntity> lessonGroupResults, Long lessonId) {
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            if(lgr.getLessonGroup().getLessonGroupId().equals(lessonId)) return lgr.getLessonGroupResultId();
+        }
+        return null;
+    }
+
     public Long saveLesson(LessonSaveRequestDTO request) {
         // 레슨 아이디로 레슨 객체 조회
         LessonEntity findLesson = lessonRepository.findById(request.getLessonId()).orElse(null);
@@ -205,81 +212,42 @@ public class LessonService {
         // 레슨그룹결과아이디로 레슨그룹결과 객체 조회
         LessonGroupResultEntity findLessonGroupResult = lessonRepository.findLessonGroupResultById(request.getLessonGroupResultId()).orElse(null);
 
+        // LessonResultEntity 객체 생성
+        LessonResultEntity lessonResult = createLessonResult(findLesson, findLessonGroupResult, request);
+
         // 녹음 파일 관련, 파형 관련 추가
-        LessonRecordFileEntity lessonRecordFile = createLessonRecordFile(request);
+        LessonRecordFileEntity lessonRecordFile = createLessonRecordFile(request, lessonResult);
         Long lessonRecordFileId = lessonRepository.saveLessonRecordFile(lessonRecordFile).orElse(null);
-        LessonRecordGraphEntity lessonRecordGraph = createLessonRecordGraph(request);
+        LessonRecordGraphEntity lessonRecordGraph = createLessonRecordGraph(request, lessonResult);
         Long lessonRecordGraphId = lessonRepository.saveLessonRecordGraph(lessonRecordGraph).orElse(null);
 
-        // 레슨 아이디, 레슨그룹결과 아이디, 기타 정보 저장(건너뛰기 false, 레슨 학습 일시, 나머지)
-        LessonResultEntity lessonResult = createLessonResult(findLesson, findLessonGroupResult, lessonRecordFile, lessonRecordGraph, request);
         Long lessonResultId = lessonRepository.saveLessonResult(lessonResult).orElse(null);
         return lessonResultId;
     }
 
-    private LessonResultEntity createLessonResult(LessonEntity lesson, LessonGroupResultEntity lessonGroupResult, LessonRecordFileEntity lessonRecordFile,
-                                                  LessonRecordGraphEntity lessonRecordGraph, LessonSaveRequestDTO request) {
+    private LessonResultEntity createLessonResult(LessonEntity lesson, LessonGroupResultEntity lessonGroupResult, LessonSaveRequestDTO request) {
         LessonResultEntity lessonResult = new LessonResultEntity();
         lessonResult.setLesson(lesson);
         lessonResult.setLessonGroupResult(lessonGroupResult);
         lessonResult.setAccentSimilarity(request.getAccentSimilarity());
         lessonResult.setPronunciationAccuracy(request.getPronunciationAccuracy());
-        lessonResult.setLessonRecordFile(lessonRecordFile);
-        lessonResult.setLessonRecordGraph(lessonRecordGraph);
         lessonResult.setLessonDt(LocalDateTime.now());
         lessonResult.setIsSkipped(false);
         return lessonResult;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////lesson 결과 샘플 데이터 저장 시작 /////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public Long saveLessonSample(LessonSaveRequestDTO request, LocalDateTime when) {
-        // 레슨 아이디로 레슨 객체 조회
-        LessonEntity findLesson = lessonRepository.findById(request.getLessonId()).orElse(null);
-
-        // 레슨그룹결과아이디로 레슨그룹결과 객체 조회
-        LessonGroupResultEntity findLessonGroupResult = lessonRepository.findLessonGroupResultById(request.getLessonGroupResultId()).orElse(null);
-
-        // 녹음 파일 관련, 파형 관련 추가
-        LessonRecordFileEntity lessonRecordFile = createLessonRecordFile(request);
-        Long lessonRecordFileId = lessonRepository.saveLessonRecordFile(lessonRecordFile).orElse(null);
-        LessonRecordGraphEntity lessonRecordGraph = createLessonRecordGraph(request);
-        Long lessonRecordGraphId = lessonRepository.saveLessonRecordGraph(lessonRecordGraph).orElse(null);
-
-        // 레슨 아이디, 레슨그룹결과 아이디, 기타 정보 저장(건너뛰기 false, 레슨 학습 일시, 나머지)
-        LessonResultEntity lessonResult = createLessonResultSample(findLesson, findLessonGroupResult, lessonRecordFile, lessonRecordGraph, request, when);
-        Long lessonResultId = lessonRepository.saveLessonResult(lessonResult).orElse(null);
-        return lessonResultId;
-    }
-
-    private LessonResultEntity createLessonResultSample(LessonEntity lesson, LessonGroupResultEntity lessonGroupResult, LessonRecordFileEntity lessonRecordFile,
-                                                  LessonRecordGraphEntity lessonRecordGraph, LessonSaveRequestDTO request, LocalDateTime when) {
-        LessonResultEntity lessonResult = new LessonResultEntity();
-        lessonResult.setLesson(lesson);
-        lessonResult.setLessonGroupResult(lessonGroupResult);
-        lessonResult.setAccentSimilarity(request.getAccentSimilarity());
-        lessonResult.setPronunciationAccuracy(request.getPronunciationAccuracy());
-        lessonResult.setLessonRecordFile(lessonRecordFile);
-        lessonResult.setLessonRecordGraph(lessonRecordGraph);
-        lessonResult.setLessonDt(when);
-        lessonResult.setIsSkipped(false);
-        return lessonResult;
-    }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////lesson 결과 샘플 데이터 저장 끝 /////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private LessonRecordFileEntity createLessonRecordFile(LessonSaveRequestDTO request) {
+    private LessonRecordFileEntity createLessonRecordFile(LessonSaveRequestDTO request, LessonResultEntity lessonResult) {
         LessonRecordFileEntity lessonRecordFile = new LessonRecordFileEntity();
+        lessonRecordFile.setLessonResult(lessonResult);
         lessonRecordFile.setUserVoiceFileName(request.getFileName());
         lessonRecordFile.setUserVoiceFilePath(request.getFilePath());
         lessonRecordFile.setUserVoiceScript(request.getScript());
         return lessonRecordFile;
     }
 
-    private LessonRecordGraphEntity createLessonRecordGraph(LessonSaveRequestDTO request) {
+    private LessonRecordGraphEntity createLessonRecordGraph(LessonSaveRequestDTO request, LessonResultEntity lessonResult) {
         LessonRecordGraphEntity lessonRecordGraph = new LessonRecordGraphEntity();
+        lessonRecordGraph.setLessonResult(lessonResult);
         lessonRecordGraph.setGraphX(request.getGraphInfoX());
         lessonRecordGraph.setGraphY(request.getGraphInfoY());
         return lessonRecordGraph;
@@ -383,6 +351,7 @@ public class LessonService {
         // isBeforeResult 설정을 위해 DTO를 미리 만들자.
         List<LessonResultForSaveGroupResultDTO> lessonResultDtoLst = new ArrayList<>();
         for (Long lessonId : lessonResultMap.keySet()) {
+            log.info("lessonResultMap in {}", lessonResultMap.get(lessonId));
             LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), false);
             lessonResultDtoLst.add(lessonResultDto);
         }

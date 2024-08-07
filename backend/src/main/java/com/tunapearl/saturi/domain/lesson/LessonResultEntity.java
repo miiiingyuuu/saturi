@@ -3,6 +3,7 @@ package com.tunapearl.saturi.domain.lesson;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Getter @Setter
 @Table(name = "lesson_result")
+@ToString
 public class LessonResultEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
