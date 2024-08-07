@@ -349,7 +349,20 @@ public class UserService {
         Long learnDays = 0L;
         // 유저 아이디로 모든 레슨 그룹 결과 조회
         List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
-        if(lessonGroupResults == null) return null;
+        if(lessonGroupResults == null) {
+            LocalDate today = LocalDate.now();
+
+            // 이번 주 첫째날 구하기
+            WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 1);
+
+            List<Integer> weekAndMonth = new ArrayList<>();
+            int weekOfMonth = today.get(weekFields.weekOfMonth());
+            int month = today.getMonthValue();
+            weekAndMonth.add(month);
+            weekAndMonth.add(weekOfMonth);
+
+            return new UserContinuousLearnDayDTO(0L, new ArrayList<Integer>(), weekAndMonth);
+        }
 
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
         List<LessonResultEntity> lessonResults = new ArrayList<>();
@@ -397,7 +410,6 @@ public class UserService {
             }
         }
 
-        //TODO 대시보드 수정
         /**
          * 몇월 몇주차인지
          */
