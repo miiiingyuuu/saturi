@@ -55,6 +55,9 @@ public class UserService {
     private static final String EMAIL_PATTERN = "^[A-Za-z0-9]+@(.+)$";
     // 비밀번호 정규표현식(8자 이상, 숫자 1, 특수문자(!@#$%^&+=) 1 포함)
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&+=])(?=\\S+$).{8,}$";
+    // 닉네임 정규표현식
+    private static final String NICKNAME_PATTERN = "^(?!.*[ㄱ-ㅎㅏ-ㅣ])[A-Za-z0-9가-힣]{1,10}$";
+
     private final LessonRepository lessonRepository;
 
     public List<UserEntity> findUsers() {
@@ -72,6 +75,7 @@ public class UserService {
     public UserMsgResponseDTO registerUser(UserRegisterRequestDTO request) {
         validateEmail(request.getEmail());
         validatePassword(request.getPassword());
+        validateNickname(request.getNickname());
         validateDuplicateUserEmail(request.getEmail());
         validateDuplicateUserNickname(request.getNickname());
         UserEntity user = createNewUser(request);
@@ -88,6 +92,12 @@ public class UserService {
     private static void validatePassword(String password) {
         if (!Pattern.matches(PASSWORD_PATTERN, password)) {
             throw new IllegalArgumentException("유효하지 않은 비밀번호 형식입니다");
+        }
+    }
+
+    private static void validateNickname(String nickname) {
+        if (!Pattern.matches(NICKNAME_PATTERN, nickname)) {
+            throw new IllegalArgumentException("유효하지 않은 닉네임 형식입니다");
         }
     }
 
@@ -170,7 +180,10 @@ public class UserService {
      */
     @Transactional
     public UserMsgResponseDTO updateUser(Long userId, UserUpdateRequestDTO request) {
-        if(request.getIsChanged().equals(1L)) validateDuplicateUserNickname(request.getNickname());
+        if(request.getIsChanged().equals(1L)) {
+            validateNickname(request.getNickname());
+            validateDuplicateUserNickname(request.getNickname());
+        }
         UserEntity findUser = userRepository.findByUserId(userId).get();
         BirdEntity bird = birdService.findById(request.getBirdId());
         LocationEntity location = locationService.findById(request.getLocationId());
