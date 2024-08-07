@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,13 +34,13 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  const handleLogoClick = useCallback(() => {
+  function handleLogoClick() {
     const accessToken = sessionStorage.getItem("accessToken");
     const targetPath = accessToken ? '/main' : '/start';
     if (pathname !== targetPath) {
       router.push(targetPath);
     }
-  }, [pathname, router]);
+  }
 
   const updateUserInfo = async () => {
     setProfileLoading(true);
@@ -162,12 +162,11 @@ export default function Header() {
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                style={{ marginRight: '20px' }} // 여기에 오른쪽 마진 추가
               >
                 <Box sx={{ p: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>{nickname}님, 안녕하세요!</Typography>
                   <Box
-sx={{ 
+                  sx={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
                     alignItems: 'center', 
@@ -175,7 +174,7 @@ sx={{
                     width: '100%',
                     mt: 2
                   }}>
-                    <UserTierRank />
+                    <UserTierRank layout="horizontal"/>
                   </Box>
                 </Box>
                 <Divider />
@@ -183,7 +182,9 @@ sx={{
                   onClick={() => {
                   router.push("/user/profile")
                 }}>
+                  <ListItemIcon sx={{ mr: 1 }}>
                     <Person fontSize="large" />
+                  </ListItemIcon>
                   내 프로필
                 </MenuItem>
                 
@@ -192,8 +193,8 @@ sx={{
                   logout()
                     .then(() => router.push("/start"))
                   }}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
+                  <ListItemIcon sx={{ mr: 1 }}>
+                    <Logout fontSize="large" />
                   </ListItemIcon>
                   Logout
                 </MenuItem>

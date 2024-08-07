@@ -88,7 +88,7 @@ const ProfileInfo: React.FC = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2, height: 'auto' }}>
+    <Paper elevation={3} sx={{ p: 4, height: 'auto' }}>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <Avatar
@@ -106,19 +106,19 @@ const ProfileInfo: React.FC = () => {
         <Grid item xs={12} sm={4}>
           <Box display="flex" alignItems="center">
             <FaMapMarkerAlt />
-            <Typography variant="body2" sx={{ ml: 1 }}>사투리 : {getFormattedLocationId(profile.locationId)}</Typography>
+            <Typography variant="body2" sx={{ ml: 1 }}>{getFormattedLocationId(profile.locationId)}</Typography>
           </Box>
         </Grid>
         <Grid item xs={12} sm={4}>
           <Box display="flex" alignItems="center">
             <FaUserAlt />
-            <Typography variant="body2" sx={{ ml: 1 }}>성별 : {getFormattedGender(profile.gender)}</Typography>
+            <Typography variant="body2" sx={{ ml: 1 }}>{getFormattedGender(profile.gender)}</Typography>
           </Box>
         </Grid>
         <Grid item xs={12} sm={4}>
           <Box display="flex" alignItems="center">
             <FaUsers />
-            <Typography variant="body2" sx={{ ml: 1 }}>연령대 : {getFormattedAgeRange(profile.ageRange)}</Typography>
+            <Typography variant="body2" sx={{ ml: 1 }}>{getFormattedAgeRange(profile.ageRange)}</Typography>
           </Box>
         </Grid>
       </Grid>

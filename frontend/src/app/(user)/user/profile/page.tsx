@@ -35,6 +35,7 @@ interface DashboardData {
   continuousLearnDay: {
     learnDays: number;
     daysOfTheWeek: number[];
+    weekAndMonth: number[];
   };
   streakInfo: Array<{
     streakDate: {
@@ -83,7 +84,7 @@ export default function ProfilePage() {
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
-      <Grid container spacing={3} sx={{ maxWidth: '70%', mx: 'auto' }}>
+      <Grid container spacing={3} sx={{ maxWidth: '75%', mx: 'auto' }}>
         {/* My Profile 섹션 */}
         <Grid item xs={12}>
           <Typography variant="h4" sx={{ mb: 2 }}>My Profile</Typography>
@@ -121,7 +122,11 @@ export default function ProfilePage() {
             {/* 연간 스트릭 */}
             <Grid item xs={12}>
               <Paper elevation={3} sx={{ p: 2 }}>
-                <YearlyStreak data={dashboardData?.streakInfo || null} isLoading={isLoading} />
+                <YearlyStreak 
+                  data={dashboardData?.streakInfo || null}
+                  totalLessonInfo={dashboardData?.totalLessonInfo || { totalLessonGroup: 0, totalLesson: 0}} 
+                  isLoading={isLoading} 
+                />
               </Paper>
             </Grid>
           </Grid>
