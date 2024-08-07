@@ -2,9 +2,27 @@ import { Box, Popover, Typography, Button } from "@mui/material";
 import React, { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
+interface Lesson {
+  lessonId: number;
+  sampleVoicePath: string;
+  sampleVoiceName: string; // Updated field name
+  script: string;
+  lastUpdateDt: string;
+  isDeleted: boolean;
+}
+
+interface LessonGroup {
+  lessonGroupId: number;
+  locationName: string;
+  lessonCategoryName: string;
+  name: string;
+  lessons: Lesson[];
+}
+
 interface JigsawProps {
   onJigsawClick: (piece: { lessonGroupId: number; avgAccuracy: number }) => void;
-  dataGroup: {
+  dataGroup: LessonGroup[];
+  progressData : {
     lessonGroupId: number;
     lessonGroupName: string;
     groupProgress: number;
@@ -12,7 +30,7 @@ interface JigsawProps {
     }[];
 }
 
-export default function Icon({ dataGroup, onJigsawClick }: JigsawProps) {
+export default function Icon({ dataGroup, progressData, onJigsawClick }: JigsawProps) {
 
   // 클릭 시 변동되는 State
   const [isClicked1, setIsClicked1] = useState(false);
@@ -53,55 +71,55 @@ export default function Icon({ dataGroup, onJigsawClick }: JigsawProps) {
   const jigsawClick1 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 0;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy: progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick2 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 1;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy: progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick3 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 2;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick4 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 3;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick5 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 4;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick6 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 5;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick7 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 6;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick8 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 7;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClick9 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 8;
     setAnchorEl(event.currentTarget);
-    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : dataGroup[selectedIndex.current].avgAccuracy})
+    onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
     console.log(dataGroup)    
   };
   const jigsawClose = () => {
@@ -132,10 +150,10 @@ export default function Icon({ dataGroup, onJigsawClick }: JigsawProps) {
       >
         <Box className="p-1 rounded-full" sx= {{ margin: "15px" }}>
           <Typography variant="h6" className="font-bold text-center">
-            {dataGroup[selectedIndex.current].lessonGroupName}
+            {progressData[selectedIndex.current].lessonGroupName}
           </Typography>
           <Typography variant="subtitle1" className="">
-            달성율 : {dataGroup[selectedIndex.current].groupProgress}%
+            달성율 : {progressData[selectedIndex.current].groupProgress}%
           </Typography>
           <Box className="flex justify-center pt-3">
             <Button variant="contained" color="primary" onClick={startLesson}>
