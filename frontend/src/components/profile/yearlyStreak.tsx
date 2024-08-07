@@ -3,14 +3,12 @@ import dynamic from 'next/dynamic';
 import { Box, Typography, Grid } from "@mui/material";
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
+import './styles.css'
 
 // dynamic import
 const ReactTooltip = dynamic(() => import('react-tooltip'), {
   ssr: false,
 });
-// const CalendarHeatmap = dynamic(() => import('react-calendar-heatmap'), {
-//   ssr: false,
-// });
 
 interface StreakInfo {
   streakDate: {
