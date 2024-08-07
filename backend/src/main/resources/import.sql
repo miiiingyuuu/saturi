@@ -147,6 +147,7 @@ INSERT INTO lesson (lesson_group_id, sample_voice_path, sample_voice_name, scrip
 
 /*퀴즈 등록*/
 INSERT INTO quiz (location_id, question, is_objective, creation_dt) VALUES
+                (1, '대기 중 대화용', false, NOW()),
                 (2, '만다꼬 그라노에서 ''만다꼬''의 뜻으로 알맞은 것은?', true, NOW()),
                 (2, '애비다 의 뜻으로 알맞은 것은?', true, NOW()),
                 (2, '어디까지올라가는거에요의 음정으로 알맞은 것은?', true, NOW()),
@@ -159,11 +160,11 @@ INSERT INTO quiz (location_id, question, is_objective, creation_dt) VALUES
                 (2, '디비라의 뜻은?', false, NOW());
 
 INSERT INTO quiz_choice (is_answer, choice_id, quiz_id, content) VALUES
-                        (false, 1, 1, '가만 두라고'),(true, 1, 2, '야위다'),(true, 1, 3, '도레미파솔라시도레미레'),(false, 1, 4, '파였다'),(false, 1, 5, '정구지'),
-                        (true, 1, 6, '조금'),(true, 1, 7, '빨리'),(true, 1, 8, '고마'),(true, 1, 9, '고등학교 수학 선생님이'),(true, 1, 10, '뒤집어라'),
-                        (true, 2, 1, '뭐 한다고'),(false, 2, 2, '아프다'),(false, 2, 3, '도레미파솔라시도레미파'),(true, 2, 4, '별로다'),(false, 2, 5, '단디'),
-                        (false, 3, 1, '그만 두라고'),(false, 3, 2, '예쁘다'),(false, 3, 3, '레미레도시라솔파미레도'),(false, 3, 4, 'Pie다'),(true, 3, 5, '솔'),
-                        (false, 4, 1, '많다고'),(false, 4, 2, 'Im your father'),(false, 4, 3, '도레미파솔라시도시도레'),(false, 4, 4, 'π'),(false, 4, 5, '잠온다');
+                        (false, 1, 2, '가만 두라고'),(true, 1, 3, '야위다'),(true, 1, 4, '도레미파솔라시도레미레'),(false, 1, 5, '파였다'),(false, 1, 6, '정구지'),
+                        (true, 1, 7, '조금'),(true, 1, 8, '빨리'),(true, 1, 9, '고마'),(true, 1, 10, '고등학교 수학 선생님이'),(true, 1, 11, '뒤집어라'),
+                        (true, 2, 2, '뭐 한다고'),(false, 2, 3, '아프다'),(false, 2, 4, '도레미파솔라시도레미파'),(true, 2, 5, '별로다'),(false, 2, 6, '단디'),
+                        (false, 3, 2, '그만 두라고'),(false, 3, 3, '예쁘다'),(false, 3, 4, '레미레도시라솔파미레도'),(false, 3, 5, 'Pie다'),(true, 3, 6, '솔'),
+                        (false, 4, 2, '많다고'),(false, 4, 3, 'Im your father'),(false, 4, 4, '도레미파솔라시도시도레'),(false, 4, 5, 'π'),(false, 4, 6, '잠온다');
 
 /* 학습 결과 데이터 */
     /* 대쉬보드 용 */
