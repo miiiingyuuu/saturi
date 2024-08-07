@@ -18,7 +18,7 @@ export default function RedirectPage() {
     if (locations.includes(check)) {
       router.push(`${pathname}/1`);
     } else {
-      router.push("/lesson/1/1");
+      router.push("/lesson/2/1");
     }
     }
 

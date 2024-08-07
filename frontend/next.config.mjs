@@ -18,13 +18,7 @@ const nextConfig = {
     });
 
     return config;
-  },
-  // 업로드 하는 파일 크기 제한을 1mb 에서 2mb 로 확장
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "2mb", // 서버 액션에서 사용될 본문 크기 제한
-    },
-  },
+  }
 };
 
 export default nextConfig;

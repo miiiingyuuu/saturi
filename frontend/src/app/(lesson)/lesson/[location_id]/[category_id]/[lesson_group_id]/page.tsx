@@ -85,6 +85,7 @@ export default function LessonPage() {
           if (response.status === 201) {
             // 레슨 그룹 아이디 설정
             setLessonGroupResultId(response.data.lessonGroupResultId);
+            console.log(response.data.lessonGroupResultId);
           }
         })
         .catch(error => {
@@ -95,14 +96,13 @@ export default function LessonPage() {
 
   // 정답음성 재생을 위한 함수
   // 오디오 다운로드 및 재생 함수
-  const handleDownloadAndPlayAudio = async (lesson: object) => {
+  const handleDownloadAndPlayAudio = async (lesson: Lesson) => {
     try {
       const response = await fetch("/api/download", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // body: JSON.stringify({ filename: lesson.sampleVoiceName }),
         body: JSON.stringify({
           filename: `${lesson.sampleVoiceName}.wav`,
         }),
@@ -164,27 +164,31 @@ export default function LessonPage() {
 
   // 녹음 파일을 GCR 에 저장,
   const handleNext = async () => {
-    // 녹음 파일 google-storage 저장
     if (audioBlobRef.current) {
-      const wavBlob = await convertToWav(audioBlobRef.current);
-      const arrayBuffer = await wavBlob.arrayBuffer();
-      const base64AudioData = btoa(
-        new Uint8Array(arrayBuffer).reduce(
-          (data, byte) => data + String.fromCharCode(byte),
-          "",
-        ),
-      );
-      // google-storage 에 저장
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ audioData: base64AudioData }),
-      });
+      try {
+        const wavBlob = await convertToWav(audioBlobRef.current);
+        const arrayBuffer = await wavBlob.arrayBuffer();
+        const base64AudioData = btoa(
+          new Uint8Array(arrayBuffer).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            "",
+          ),
+        );
 
-      if (response.ok) {
-        const result = await response.json();
+        // google-storage 에 저장
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ audioData: base64AudioData }),
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload file");
+        }
+
+        const result = await uploadResponse.json();
         console.log("File uploaded with name:", result.filename);
 
         // 현재 레슨 정보 가져오기
@@ -195,76 +199,62 @@ export default function LessonPage() {
         }
 
         // 정답파일명, 음성파일명을 django 로 보내서 분석결과 수집
-        apiAi
-          .post("/audio/analyze/", {
-            answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
-            userVoiceFileName: `${result.filename}`,
-          })
-          .then(res => {
-            if (res.status === 200) {
-              // 분석 결과
-              console.log(res.data);
-              // 개별 레슨 결과 전송
-              console.log(
-                "lessonId: ",
-                currentLessonId,
-                "lessonGroupResultId: ",
-                lessonGroupResultId,
-              );
-              const requestBody = {
-                lessonId: currentLessonId,
-                lessonGroupResultId: lessonGroupResultId, // "레슨 그룹 결과 테이블 생성"에서 받아온 lessonGroupResultId 사용
-                accentSimilarity: res.data.voiceSimilarity,
-                pronunciationAccuracy: res.data.scriptSimilarity,
-                filePath: "this_is_not_file_path", // 임시 data 가능
-                fileName: result.filename, // (추가) 유저 음성 파일 이름
-                // 데이터 크기가 너무 커서 지금은 주석처리
-                // graphInfoX: res.data.userVoiceTime, // (추가) 유저 음성 파형 정보 x좌표 임시 data 가능
-                // garphInfoY: res.data.userVoicePitch, // (추가) 유저 음성 파형 정보 y좌표
-                graphInfoX: "time for voice",
-                graphInfoY: "pitch for voice",
-                script: res.data.userScript,
-              };
-              console.log("curretlessonid:", typeof currentLessonId);
-              // Log the request body
-              console.log("Request Body:", requestBody);
-              api
-                .post("/learn/lesson", requestBody)
-                .then(res => {
-                  if (res.status === 201) {
-                    console.log(res);
-                  }
-                })
-                .catch(error => {
-                  console.log(error);
-                });
-            }
-          })
-          .catch(error => {
-            if (error.response) {
-              // 요청은 성공적으로 보내졌지만, 서버가 2xx 범위 외의 상태 코드를 응답한 경우
-              console.error("Response error:", error.response.data);
-              console.error("Status:", error.response.status);
-              console.error("Headers:", error.response.headers);
-            } else if (error.request) {
-              // 요청이 보내졌지만, 응답을 받지 못한 경우
-              console.error("Request error:", error.request);
-            } else {
-              // 요청을 설정하는 과정에서 에러가 발생한 경우
-              console.error("Error", error.message);
-            }
-            console.log("레슨 결과 분석 실패 :", error.config);
-          });
-        //
-      } else {
-        console.error("Failed to upload file");
-      }
-    }
+        const analysisResponse = await apiAi.post("/audio/analyze/", {
+          answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
+          userVoiceFileName: `${result.filename}`,
+        });
+        console.log(analysisResponse)
+        if (analysisResponse.status !== 200) {
+          throw new Error("Failed to analyze audio");
+        }
 
-    if (currentIndex < lessons.length - 1) {
-      const newIndex = currentIndex + 1;
-      setCurrentIndex(newIndex);
-      setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
+        // 분석 결과
+        console.log(analysisResponse.data);
+
+        // 개별 레슨 결과 전송
+        const requestBody = {
+          lessonId: currentLessonId,
+          lessonGroupResultId: lessonGroupResultId, // "레슨 그룹 결과 테이블 생성"에서 받아온 lessonGroupResultId 사용
+          accentSimilarity: analysisResponse.data.voiceSimilarity,
+          pronunciationAccuracy: analysisResponse.data.scriptSimilarity,
+          filePath: "this_is_not_file_path", // 임시 data 가능
+          fileName: result.filename, // (추가) 유저 음성 파일 이름
+          graphInfoX: "time for voice",
+          graphInfoY: "pitch for voice",
+          script: analysisResponse.data.userScript,
+        };
+
+        const lessonResponse = await api.post("/learn/lesson", requestBody);
+
+        if (lessonResponse.status !== 201) {
+          throw new Error("Failed to save lesson result");
+        }
+
+        console.log("Lesson result saved:", lessonResponse.data);
+
+        // 모든 레슨을 완료한 경우, 결과 보기로 이동
+        if (currentIndex >= lessons.length - 1) {
+          // 이 부분을 수정
+          await handleResult(); // 마지막 문제일 때도 handleResult 실행
+        } else {
+          const newIndex = currentIndex + 1;
+          setCurrentIndex(newIndex);
+          setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
+        }
+      } catch (error) {
+        const err = error as any; // error를 any 타입으로 캐스팅
+
+        console.error("Error in handleNext:", err.message);
+      }
+    } else {
+      // 녹음 파일이 없으면 다음 문장으로 넘어가지 않고 결과로 이동
+      if (currentIndex >= lessons.length - 1) {
+        await handleResult();
+      } else {
+        const newIndex = currentIndex + 1;
+        setCurrentIndex(newIndex);
+        setCurrentLessonId(lessons[newIndex].lessonId);
+      }
     }
   };
 
@@ -302,9 +292,11 @@ export default function LessonPage() {
     }
   };
 
-  const handleResult = () => {
+  const handleResult = async () => {
     if (lessonGroupResultId !== null) {
-      router.push(`${pathname}/result?lessonGroupResultId=${lessonGroupResultId}`);
+      router.push(
+        `${pathname}/result?lessonGroupResultId=${lessonGroupResultId}`,
+      );
     } else {
       console.error("lessonGroupResultId가 설정되지 않았습니다.");
     }
@@ -319,8 +311,9 @@ export default function LessonPage() {
       })
       .catch(err => {
         console.log(err);
-        console.log(currentLessonId)
+        console.log(currentLessonId);
       });
+
     // 다음 문장으로
     if (currentIndex < lessons.length - 1) {
       const newIndex = currentIndex + 1;
@@ -329,8 +322,6 @@ export default function LessonPage() {
     } else {
       handleResult();
     }
-
-
   };
 
   const handleClaim = () => {
@@ -428,11 +419,7 @@ export default function LessonPage() {
                 다음 문장
               </Button>
             ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleResult}
-              >
+              <Button variant="contained" color="primary" onClick={handleNext}>
                 결과 보기
               </Button>
             )}
