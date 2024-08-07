@@ -17,8 +17,16 @@ import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 �
 
 // 컴포넌트: LessonPage
 export default function LessonPage() {
+  interface Lesson {
+    isDeleted: boolean; // 삭제 여부를 나타내는 속성
+    lastUpdateDt: string; // 마지막 업데이트 날짜 (ISO 형식의 문자열)
+    lessonId: number; // 레슨 ID
+    sampleVoiceName: string; // 샘플 음성 이름
+    sampleVoicePath: string; // 샘플 음성 경로 (URL)
+    script: string; // 스크립트 내용
+}
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentlessonId, setCurrentlessonId] = useState<number>(1);
+  const [currentLessonId, setCurrentLessonId] = useState<number>(1);
   const [isRecording, setIsRecording] = useState(false);
   const [locationId, setLocationId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
@@ -26,7 +34,7 @@ export default function LessonPage() {
   const [lessonGroupResultId, setLessonGroupResultId] = useState<number | null>(
     null,
   );
-  const [lessons, setLessons] = useState<object[]>([]); // lessons의 타입을 객체 배열로 명시
+  const [lessons, setLessons] = useState<Lesson[]>([]); // lessons의 타입을 객체 배열로 명시
   const [modalOpen, setModalOpen] = useState(false); // Modal state
   const [reportContent, setReportContent] = useState(""); // Report content state
 
@@ -138,9 +146,9 @@ export default function LessonPage() {
             ) {
               const fetchedLessons = response.data[lessonGroupId - 1].lessons;
               setLessons(fetchedLessons);
-              // 첫 번째 레슨의 lessonId로 currentlessonId 설정
+              // 첫 번째 레슨의 lessonId로 currentLessonId 설정
               if (fetchedLessons.length > 0) {
-                setCurrentlessonId(fetchedLessons[0].lessonId);
+                setCurrentLessonId(fetchedLessons[0].lessonId);
               }
             }
           }
@@ -191,12 +199,12 @@ export default function LessonPage() {
               // 개별 레슨 결과 전송
               console.log(
                 "lessonId: ",
-                currentlessonId,
+                currentLessonId,
                 "lessonGroupResultId: ",
                 lessonGroupResultId,
               );
               const requestBody = {
-                lessonId: currentlessonId,
+                lessonId: currentLessonId,
                 lessonGroupResultId: lessonGroupResultId, // "레슨 그룹 결과 테이블 생성"에서 받아온 lessonGroupResultId 사용
                 accentSimilarity: res.data.voiceSimilarity,
                 pronunciationAccuracy: res.data.scriptSimilarity,
@@ -209,7 +217,7 @@ export default function LessonPage() {
                 graphInfoY: "pitch for voice",
                 script: res.data.userScript,
               };
-              console.log("curretlessonid:", typeof currentlessonId);
+              console.log("curretlessonid:", typeof currentLessonId);
               // Log the request body
               console.log("Request Body:", requestBody);
               api
@@ -247,8 +255,8 @@ export default function LessonPage() {
 
     if (currentIndex < lessons.length - 1) {
       const newIndex = currentIndex + 1;
-      setCurrentIndex(newIndex);      
-      setCurrentlessonId(lessons[newIndex].lessonId); // currentlessonId 업데이트
+      setCurrentIndex(newIndex);  
+      setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
     }
   };
 
@@ -293,7 +301,7 @@ export default function LessonPage() {
   const handleSkip = () => {
     // 건너뛰기
     api
-      .put(`learn/lesson/${currentlessonId}`)
+      .put(`learn/lesson/${currentLessonId}`)
       .then(response => {
         console.log(response);
       })
@@ -304,14 +312,14 @@ export default function LessonPage() {
     if (currentIndex < lessons.length - 1) {
       const newIndex = currentIndex + 1;
       setCurrentIndex(newIndex);
-      setCurrentlessonId(lessons[newIndex].lessonId); // currentlessonId 업데이트
+      setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
     }
   };
 
   const handleClaim = () => {
     // 신고 내용을 포함하여 서버에 요청 전송
     const requestBody = {
-      lessonId: currentlessonId,
+      lessonId: currentLessonId,
       content: reportContent,
     };
     console.log(requestBody);
@@ -337,10 +345,9 @@ export default function LessonPage() {
   };
 
   return (
-    <Box className="grid grid-cols-2 h-screen justify-center items-center">
-      <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
-        <Box className="flex items-center p-4">
-          {/* 새 이미지 */}
+    <div className="grid grid-cols-2 h-screen justify-center items-center">
+      <div className="grid grid-cols-1 justify-center items-center w-full h-full">
+        <div className="items-center p-4 flex flex-col">
           <Image
             src="/images/quokka.jpg"
             alt="귀여운 쿼카"
@@ -374,10 +381,10 @@ export default function LessonPage() {
               }}
               onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
             >
-              {text.script}
-            </Typography>
+              {lesson.script}
+            </h1>
           ))}
-          <Box className="mt-4 flex space-x-2">
+          <div className="mt-4 flex space-x-2">
             <Button
               className="text-nowrap"
               variant="contained"
