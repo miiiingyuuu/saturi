@@ -17,6 +17,8 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           } return "0%";              
         })()
       }}>
+      
+      {/* 배경 엘리먼트 */}
       <Box className="area">
         <ul className="circles">
           <li/>
@@ -30,14 +32,14 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           <li/>
           <li/>
         </ul>
-
       </Box>
+      
       <Typography 
         variant = "h1"
         className="blink" 
         style={{
           position: 'absolute',
-          top: '65%',
+          top: '10%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           textShadow: "1px 1px 0px whitesmoke",

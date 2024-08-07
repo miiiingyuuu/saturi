@@ -44,7 +44,7 @@ export default function SideNavbar({ location }: SideNavbarProps) {
               src={`/MainPage/learnButtonLong${category.id}.png`}
               alt="Learn Button"
               sx={{
-                width: "85%",
+                width: "100%",
                 height: "100%",
               }}
             />            

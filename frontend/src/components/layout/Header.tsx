@@ -90,15 +90,21 @@ export default function Header() {
 
   return (
     <header className="w-full">
-      <div className="flex items-center justify-between px-8 py-4">
-        <Image
-          src="/SSLogo.png"
-          alt="SSLogo"
-          width={127.5}
-          height={85}
+      <Box 
+        className="flex items-center justify-between px-8" 
+        sx={{
+          height:"10vh",
+          borderBottom: "1px solid",
+      }}>
+        <Box 
+          component="img"   
           className="cursor-pointer"
+          src = "/SSLogo.png"
+          alt = "SSLogo"
           onClick={handleLogoClick}
-        />
+          sx={{
+            width:"100px"
+        }}/>          
         <div className="flex items-center">
           {isAuthChecked ? (
             <CircularProgress size={24} />
@@ -202,7 +208,7 @@ export default function Header() {
             </Box>
           )}
         </div>
-      </div>
+      </Box>
     </header>
   );
 }

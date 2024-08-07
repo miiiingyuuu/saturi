@@ -57,13 +57,32 @@ function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: Middl
   }
   
   return (
-    <Box className="middleMap" style={{ left: left === "null" ? undefined : left, top: "45vh" }}>
-      <Typography 
-        variant="h4" 
-        sx={{ textAlign: "center", fontWeight: "bold", visibility: selectedRegion === "_" ? "hidden" : "visible" }}> {selectedRegion} </Typography>
+    <Box 
+      className="middleMap"
+      style={{ 
+        left: left === "null" ? undefined : left
+      }}>
+      
+      {/* 두 번쨰: 맵 */}
       <Box style={{ width: '100%', height: '100%' }}>
         <KoreaMap onRegionClick={onRegionClick} />
       </Box>
+
+
+      {/* 첫 번째: 지도 이름 */}
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          textAlign: "center", 
+          fontWeight: "bold", 
+          visibility: selectedRegion === "_" ? "hidden" : "visible" 
+        }}> {selectedRegion} </Typography>
+      
+      
+
+      {/* 세 번째: 이건 가려놓고, 공간만 차지하도록 
+      하려고 했는데 일단 보류 */}
+      
     </Box>
   );
 }
@@ -120,7 +139,7 @@ export default function App() {
 
   return (
     <Box style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
-      <Box style={{ position: 'relative', width: '100%', height: '920px' }}>
+      <Box style={{ position: 'relative', width: '100%', height: '90vh' }}>
         <LeftPart
           middlePosition={middleToWhere}
           moveDirection={moveDirection.current}

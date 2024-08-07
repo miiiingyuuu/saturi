@@ -94,12 +94,14 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
   }, []);
 
   return (
-    <Box sx={{ width: "50%"}}>
+    <Box>
+
+      {/* 첫 번째: 프로그레스 바 */}
       <Box className="grid">
         <LinearProgress
           variant="determinate"
           value={progress}
-          className="pb-4 m-10"
+          className="pb-4 mb-5"
           aria-label="progress bar"
           sx={{
             height: 8, // 원하는 높이로 설정
@@ -110,6 +112,8 @@ export default function Puzzle({ id, totalProgress, eachLessonProgress, onSelect
           }}
         />
       </Box>
+
+      {/* 두 번째: 직소 */}
       <Box sx={{display:"flex", justifyContent:"center"}}>
         {/* 
           <<변동사항 설명>>
