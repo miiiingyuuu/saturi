@@ -76,6 +76,7 @@ public class LessonService {
         int completedLessonGroupCnt = 0;
         // 유저 아이디로 그룹 결과 조회(완료된거만)
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+        if(lessonGroupResult == null) return 0L;
         // 조회된 그룹 결과를 그룹 아이디로 조회하며 지역과 대화유형이 맞는 개수를 셈
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
             LocationEntity location = lgResult.getLessonGroup().getLocation();
@@ -92,6 +93,7 @@ public class LessonService {
         // lessonGroup 완성 여부에 상관없이 lessonGroupResult 받아오기
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
+        if(lessonGroupResult == null) return result;
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
             // lessonGroupId
             Long lessonGroupId = lgResult.getLessonGroup().getLessonGroupId();
