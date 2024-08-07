@@ -35,7 +35,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class StartupApplicationListener {
-    
+
     private final LocationService locationService;
     private final BirdService birdService;
     private final UserService userService;
@@ -46,7 +46,7 @@ public class StartupApplicationListener {
 
     private static final String[] LOCATION_NAMES = {"default", "gyungsang", "gyunggi", "gangwon", "chungcheong", "jeonra", "jeju"};
     private static final String[] BIRD_NAMES = {"miner", "banker", "clown", "sailor", "deckhand", "evil_king", "cavalry", "cute_killer",
-            "store_owner",  "agent", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
+            "store_owner", "agent", "oil_mogul", "redhair", "scout", "secret_society", "showhost", "mercenary",
             "engineer", "musketeer"};
     private static final String[] BIRD_DESCRIPTIONS = {"광부", "은행원", "어릿광대", "선원", "갑판원", "악의수장", "총기병", "귀여운 살인마",
             "잡화상", "요원", "석유부자", "빨간머리", "정찰대", "비밀결사", "쇼호스트", "용병",
@@ -139,9 +139,9 @@ public class StartupApplicationListener {
 
     private void createUser() {
         UserRegisterRequestDTO userInfoBasic;
-        for(int i=1;i<15;i++){
+        for (int i = 1; i < 15; i++) {
             userInfoBasic = new UserRegisterRequestDTO(
-                    "test"+i+"@email.com", "password1!", "testnickname"+i);
+                    "test" + i + "@email.com", "password1!", "testnickname" + i);
 
             userService.registerUser(userInfoBasic);
         }
@@ -155,7 +155,7 @@ public class StartupApplicationListener {
                 "admin@email.com", "password1!", "admintest");
         UserRegisterRequestDTO userInfoAdmin1 = new UserRegisterRequestDTO(
                 "adminback@email.com", "password1!", "adminbacktest");
-        
+
         userService.registerAdminUser(userInfoAdmin);
         userService.registerAdminUser(userInfoAdmin1);
     }
@@ -217,6 +217,7 @@ public class StartupApplicationListener {
             adminLessonService.createLesson(lessonGroup, LESSON_SCRIPT[i], LESSON_PATH[i], LESSON_VOICE_FILE_NAME[i]);
         }
     }
+
     /**
      * lessonGroupResult 테이블 생성
      */
@@ -229,36 +230,40 @@ public class StartupApplicationListener {
      */
     private void createLessonResult() {
         for (int i = 1; i <= 5; i++) {
-            LessonSaveRequestDTO lessonSaveRequest = new LessonSaveRequestDTO((long)i, 1L, 77L, 77L, "test file path", "test file name", "[0, 1, 2, 3, 4]", "[55, 33, 22, 11, 44]", "나는 바보입니다");
-            lessonService.saveLessonSample(lessonSaveRequest, LocalDateTime.now().minusDays(i-1));
+            LessonSaveRequestDTO lessonSaveRequest = new LessonSaveRequestDTO((long) i, 1L, 77L, 77L, "test file path", "test file name", "[0, 1, 2, 3, 4]", "[55, 33, 22, 11, 44]", "나는 바보입니다");
+            lessonService.saveLessonSample(lessonSaveRequest, LocalDateTime.now().minusDays(i - 1));
         }
     }
 
     //TODO lessonGroupResult 저장
 
 
-
     /*
-    * quiz samples 생성
-    */
+     * quiz samples 생성
+     */
     private void createGameQuiz() {
+        boolean isObjective = true;
 
-        for(int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             List<QuizRegisterRequestDTO.Choice> choices = new ArrayList<>();
-            for(int j = 0; j < 4; j++){
+            for (int j = 0; j < 4; j++) {
                 if (!QUIZ_CHOICE_LIST[i][j].isEmpty()) {
                     choices.add(QuizRegisterRequestDTO.Choice.builder()
-                            .choiceId((long) j+1)
+                            .choiceId((long) j + 1)
                             .content(QUIZ_CHOICE_LIST[i][j])
                             .isAnswer(QUIZ_CHOICE_ANSWER_LIST[i][j])  // 실제 답인지 여부를 설정해야 합니다.
                             .build());
                 }
             }
 
+
+            if (i > 4)
+                isObjective = false;
+
             QuizRegisterRequestDTO request = QuizRegisterRequestDTO.builder()
                     .locationId(2L)
                     .question(QUIZ_QUESTION[i])
-                    .isObjective(true)
+                    .isObjective(isObjective)
                     .choiceList(choices)
                     .build();
 
