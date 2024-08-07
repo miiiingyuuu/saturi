@@ -6,6 +6,7 @@ import com.tunapearl.saturi.domain.quiz.QQuizEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.quiz.QuizReadRequestDTO;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -57,8 +58,11 @@ public class QuizRepository {
                 .fetch();
     }
 
-    public List<Long> getAvailableQuizId(){
-        return em.createQuery("select q.quizId from QuizEntity q order by q.quizId asc").getResultList();
+    public List<Long> getAvailableQuizId(Long locationId){
+        return em.createQuery("select q from QuizEntity q where q.location.id = :locationId", Long.class)
+                .setParameter("locationId", locationId)
+                .getResultList();
+
     }
 
     public void deleteQuizById(Long quizId){
