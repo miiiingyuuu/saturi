@@ -75,3 +75,6 @@ export default function App({params:{roomId}}: RoomIdProps) {
 3. 큐가 돌아가고, 큐의 인원이 차면 ws 에서 퀴즈룸 id 발송
 4. 퀴즈룸에서 게임 시작
 */
+/*
+in-game에서 in-queue와 기능 분할하기
+ */
