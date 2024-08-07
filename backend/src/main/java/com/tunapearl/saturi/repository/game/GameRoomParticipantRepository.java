@@ -5,6 +5,7 @@ import com.tunapearl.saturi.domain.game.GameRoomParticipantId;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -49,5 +50,12 @@ public class GameRoomParticipantRepository {
                 .setParameter("userId", id.getUserId())
                 .getSingleResult();
 
+    }
+
+    public long countActiveParticipantsByRoomId(Long roomId){
+
+        String query = "SELECT COUNT(p) FROM GameRoomParticipantEntity p WHERE p.gameRoom.roomId = :roomId AND p.isExited = false";
+        TypedQuery<Long> countQuery = em.createQuery(query, Long.class).setParameter("roomId", roomId);
+        return countQuery.getSingleResult();
     }
 }

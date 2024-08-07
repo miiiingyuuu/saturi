@@ -1,14 +1,19 @@
 package com.tunapearl.saturi.controller.game;
 
 import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
+import com.tunapearl.saturi.domain.game.GameRoomParticipantId;
 import com.tunapearl.saturi.domain.game.MessageType;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
+import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.game.*;
 import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
+import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
+import com.tunapearl.saturi.repository.game.GameRoomRepository;
+import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.service.GameRoomParticipantService;
 import com.tunapearl.saturi.service.game.ChatService;
 import com.tunapearl.saturi.service.game.GameService;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,6 +44,9 @@ public class ChatController {
     private final GameRoomQuizRepository gameRoomQuizRepository;
     private final UserService userService;
     private final GameRoomParticipantService gameRoomParticipantService;
+    private final ChatRoomRepository chatRoomRepository;
+    private final GameRoomRepository gameRoomRepository;
+    private final GameRoomParticipantRepository gameRoomParticipantRepository;
 
     /**
      * 게임방 매칭용
@@ -117,10 +126,33 @@ public class ChatController {
             redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizResponseDTOS, message.getRoomId());
 
         } else if (MessageType.EXIT.equals(message.getChatType())) {//퇴장
+            
+            //TODO:roomId를 long으로 바꾸는 로직 필요
+            Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
+
+            if (chatRoomOptional.isPresent()) {
+                
+                ChatRoom chatRoom = chatRoomOptional.get();
+                long roomId = chatRoom.getRoomId();
+                GameRoomParticipantId grpid=new GameRoomParticipantId(roomId,userId);
+                
+                //상태 변경
+                gameService.changeParticipantStatus(grpid);
+//                message.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
+
+                //누가나갔는지, 현재 몇명인지,
+                ExitMessage exitMessage = new ExitMessage();
+                exitMessage.setRoomId(message.getRoomId());
+                exitMessage.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
+                exitMessage.setExitNickName(message.getSenderNickName());
 
 
-            message.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
-            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
+                long remained=gameRoomParticipantRepository.countActiveParticipantsByRoomId(roomId);
+                exitMessage.setRemainCount(remained);//몇명남았냐
+
+                redisPublisher.gameExitPublish(chatService.getRoomTopic(message.getRoomId()), exitMessage);
+            }
+            
         }
 
 //        redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);

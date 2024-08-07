@@ -1,10 +1,7 @@
 package com.tunapearl.saturi.service.game;
 
 import com.tunapearl.saturi.domain.LocationEntity;
-import com.tunapearl.saturi.domain.game.GameRoomEntity;
-import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
-import com.tunapearl.saturi.domain.game.GameTipEntity;
-import com.tunapearl.saturi.domain.game.Status;
+import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
@@ -45,7 +42,6 @@ public class GameService {
     private final GameRoomQuizService gameRoomQuizService;
     private final QuizService quizService;
     private final GameRoomParticipantService gameRoomParticipantService;
-    private final RedisPublisher redisPublisher;
 
     /**
      * 팁 추가
@@ -119,6 +115,15 @@ public class GameService {
         GameMatchingResponseDTO responseDTO = new GameMatchingResponseDTO();
         responseDTO.setRoomId(gameRoomEntity.getTopicId());
         return responseDTO;
+    }
+
+    /**
+     * 게임 퇴장
+     */
+    public void changeParticipantStatus(GameRoomParticipantId id){
+        //게임 탈주
+        GameRoomParticipantEntity gameRoomParticipantEntity=gameRoomParticipantRepository.findParticipantByGameRoomParticipantId(id);
+        gameRoomParticipantEntity.setExited(true);
     }
 
     public List<GameResultResponseDTO> getGameResult(GameResultRequestDTO requestdDto) {
