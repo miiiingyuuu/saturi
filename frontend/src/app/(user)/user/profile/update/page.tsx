@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField, Dialog, DialogTitle, DialogContent, Grid, CircularProgress } from "@mui/material";
+import { validateNickname } from "@/utils/utils";
 import api from "@/lib/axios";
 
 // type 선언
@@ -185,6 +186,11 @@ export default function EditProfilePage() {
       const accessToken = sessionStorage.getItem('accessToken');
       if (!accessToken) {
         throw new Error('Access token not found');
+      }
+
+      if (!validateNickname(userProfile.nickname)) {
+        alert('닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)');
+        return;
       }
 
       const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;

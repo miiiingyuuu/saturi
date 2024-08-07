@@ -40,6 +40,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'AIapp',
     'rest_framework',
     'django.contrib.admin',
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,6 +82,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AIpjt.wsgi.application'
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "https://i11d104.p.ssafy.io",
+# ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'accesstoken',  # 추가된 헤더
+    'refreshtoken',  # 이 경우도 필요할 수 있음
+]
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -138,4 +162,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 MEDIA_URL = 'media/'
 
-ALLOWED_HOSTS = ["i11d104.p.ssafy.io"]
+ALLOWED_HOSTS = ["i11d104.p.ssafy.io",
+    '127.0.0.1',
+    'localhost',]

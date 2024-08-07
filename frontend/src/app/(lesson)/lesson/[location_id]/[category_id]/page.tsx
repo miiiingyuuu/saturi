@@ -82,13 +82,16 @@ export default function CategorySelectPage() {
   };
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="lg">
       <Box sx= {{ display:"flex", justifyContent:"space-between", width:"100%%", height:"700px", marginTop: "10px" }}>
+        {/* 맨 왼쪽 */}
         <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
           {/* <h2>locationID = {locationId}</h2>
           <h2>CategoryName = {categoryName}</h2> */}
           <SideNavbar location={locationId} />
         </Card>
+
+        {/* 중간 */}
         <Card sx = {{ width:"45%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
           {locationId && (
             <Puzzle
@@ -99,6 +102,8 @@ export default function CategorySelectPage() {
             />
           )}
         </Card>
+
+        {/* 맨 오른쪽 */}
         <Card sx = {{ width:"25%", height:"100%", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid", borderRadius: "8px" }}>
           {selectedPuzzleId == null && (
             <Typography> 퍼즐을 선택하세요. </Typography>

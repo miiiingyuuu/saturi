@@ -58,8 +58,19 @@ def extract_pitch(audio_data):
             audio = parselmouth.Sound(temp_wav_file.name)
             pitch = call(audio, "To Pitch", 0.0, 75, 600)  # 75Hz에서 600Hz 범위로 피치 계산
             pitch_values = pitch.selected_array['frequency']
-            pitch_values = pitch_values[pitch_values != 0]  # 0 값을 제거
-            return pitch_values.tolist()
+            times = pitch.xs()  # 시간 간격 가져오기
+            non_zero_indices = pitch_values != 0  # 0이 아닌 피치 값의 인덱스
+            
+            # 0 값을 제거
+            filtered_times = times[non_zero_indices]
+            filtered_pitch_values = pitch_values[non_zero_indices]
+
+            # 피치 값을 소수점 두 번째 자리까지 반올림
+            rounded_pitch_values = [float((round(pitch, 2))) for pitch in filtered_pitch_values]
+            rounded_time_values = [float(round(time,2)) for time in filtered_times]
+
+            # 시간 간격과 반올림된 피치 값을 리스트로 반환
+            return rounded_time_values, rounded_pitch_values
     except Exception as e:
         logger.error(f"Error extracting pitch: {e}")
         raise
@@ -129,7 +140,7 @@ def script_similarity_ratio(original, transcribed):
         return 0
     return SequenceMatcher(None, original, transcribed).ratio()
 
-@api_view(['POST'])
+@api_view(['POST','OPTIONS'])
 def analyze_audio(request):
     serializer = CommingDataSerializer(data=request.data)
     if serializer.is_valid():
@@ -145,10 +156,10 @@ def analyze_audio(request):
                 return JsonResponse({'error': 'File not found.'}, status=status.HTTP_404_NOT_FOUND)
 
             # 첫 번째 음원 처리
-            answer_pitch = extract_pitch(answer_voice_data)
+            answer_time, answer_pitch = extract_pitch(answer_voice_data)
 
             # 두 번째 음원 처리
-            user_pitch = extract_pitch(user_voice_data)
+            user_time, user_pitch = extract_pitch(user_voice_data)
 
             # 크로스 코릴레이션 유사성 계산
             def cross_correlation_similarity(signal_a, signal_b):
@@ -175,10 +186,11 @@ def analyze_audio(request):
 
             # 데이터 생성
             sending_data = {
-                'voiceSimilarity': float(Decimal(str(voice_similarity))),
-                'scriptSimilarity': float(Decimal(str(script_similarity))),
-                'answerVoicePitch': {'pitches': answer_pitch},
-                'userVoicePitch': {'pitches': user_pitch},
+                'voiceSimilarity': int(Decimal(str(voice_similarity))),
+                'scriptSimilarity': int(Decimal(str(script_similarity))),
+                'answerVoicePitch': str(answer_pitch),
+                'userVoicePitch': str(user_pitch),
+                'userVoiceTime':str(user_time),
                 'userScript': transcript2
             }
 

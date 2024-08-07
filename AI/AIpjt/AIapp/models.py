@@ -6,8 +6,9 @@ class CommingData(models.Model):
 
 
 class SendingData(models.Model):
-    voiceSimilarity = models.DecimalField(max_digits=4, decimal_places=2)
-    scriptSimilarity = models.DecimalField(max_digits=4, decimal_places=2)
-    answerVoicePitch = models.JSONField()
-    userVoicePitch = models.JSONField()
+    voiceSimilarity = models.IntegerField()
+    scriptSimilarity = models.IntegerField()
+    answerVoicePitch = models.TextField()
+    userVoicePitch = models.TextField()
+    userVoicetime = models.TextField()
     userScript = models.TextField()
