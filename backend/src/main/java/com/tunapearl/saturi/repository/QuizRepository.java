@@ -59,7 +59,7 @@ public class QuizRepository {
     }
 
     public List<Long> getAvailableQuizId(Long locationId){
-        return em.createQuery("select q from QuizEntity q where q.location.id = :locationId", Long.class)
+        return em.createQuery("select q.quiz_id from QuizEntity q where q.location.id = :locationId", Long.class)
                 .setParameter("locationId", locationId)
                 .getResultList();
 
