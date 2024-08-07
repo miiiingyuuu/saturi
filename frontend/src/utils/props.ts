@@ -71,6 +71,29 @@ export interface TipsProps {
   content: string
 }
 
+export interface RoomIdProps {
+  params: {roomId: string}
+}
+
+export interface MessagesProps {
+  timestamp: string
+  nickname: string
+  message: string
+}
+
+export interface GameQuizChoiceProps {
+  choiceId: number;
+  choiceText: string;
+  isCorrect: boolean;
+}
+
+export interface GameQuizProps<T> {
+  quizId: number;
+  question: string;
+  isObjective: boolean;
+  quizChoiceList: T[];
+}
+
 // MainPart
 
 export interface LeftPartProps {

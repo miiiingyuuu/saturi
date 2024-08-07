@@ -1,11 +1,8 @@
 package com.tunapearl.saturi.repository.game;
 
-import com.tunapearl.saturi.domain.quiz.GameRoomQuizEntity;
-import com.tunapearl.saturi.domain.quiz.QuizEntity;
-import com.tunapearl.saturi.domain.user.UserEntity;
+import com.tunapearl.saturi.domain.game.GameRoomQuizEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,5 +25,13 @@ public class GameRoomQuizRepository {
                         .getResultList();
 
         return results.isEmpty() ? Optional.empty() : Optional.of(results);
+    }
+
+    public Optional<GameRoomQuizEntity> findQuizById(Long quizId, Long roomId){
+        GameRoomQuizEntity gameRoomQuiz = em.createQuery("select q from GameRoomQuizEntity q where q.room.roomId = :roomId and q.quiz.quizId = :quizId", GameRoomQuizEntity.class)
+                .setParameter("roomId", roomId)
+                .setParameter("quizId", quizId)
+                .getSingleResult();
+        return Optional.ofNullable(gameRoomQuiz);
     }
 }

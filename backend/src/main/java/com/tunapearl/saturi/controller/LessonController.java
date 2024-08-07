@@ -16,9 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -151,13 +150,8 @@ public class LessonController {
                                                    @PathVariable("lessonGroupResultId") Long lessonGroupResultId) throws UnAuthorizedException {
         log.info("received request to save lesson group result for {}", lessonGroupResultId);
         Long userId = jwtUtil.getUserId(accessToken);
-        // 건너뛰기 하지 않고, 최근순으로 정렬된 레슨 결과 조회
-        List<LessonResultEntity> lessonResults = lessonService.findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(lessonGroupResultId);
-        for (LessonResultEntity lr : lessonResults) {
-            // 5분 이내가 아니면 break
-            // 이미 확인한 lessonId면 break? -> 5분 이내에서 걸러지지 않을까
-            // 최근에 했더라도 복습인지 확인해야함
-        }
+        // leesonGroupResult 조회
+        LessonGroupResultSaveResponseDTO result = lessonService.saveLessonGroupResult(userId, lessonGroupResultId);
 
 
         return ResponseEntity.ok(new LessonGroupResultSaveResponseDTO());

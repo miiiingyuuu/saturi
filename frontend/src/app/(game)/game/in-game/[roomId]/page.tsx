@@ -1,84 +1,315 @@
-"use client"
+"use client";
 
-import useConnect from "@/hooks/useConnect"
-import { useEffect, useState } from "react";
-import { handleValueChange } from "@/utils/utils";
-import api from "@/lib/axios";
 import { IMessage } from "@stomp/stompjs";
+import useConnect from "@/hooks/useConnect";
+import SendIcon from "@mui/icons-material/Send";
+import { handleValueChange } from "@/utils/utils";
+import React, { useEffect, useState } from "react";
+import { GameQuizChoiceProps, GameQuizProps, MessagesProps, RoomIdProps } from "@/utils/props";
+import {
+  Box,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
+  Card,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
+import { getCookie } from "cookies-next";
+import useConfirmLeave from "@/hooks/useConfirmLeave";
 
-export default function App(roomId: any) {
-  const clientRef = useConnect(roomId)
-  const [ input, setInput ] = useState("")
-  const [ quizzes, setQuizzes ] = useState([])
-
-  useEffect(() => {
-
-    api.get("game/room/{roomId}/quiz")
-      .then(response => setQuizzes(response.data))
-
-
-    const client = clientRef.current
-    if (client && client.connected) {
-      client.subscribe(`/sub/room-request/${roomId}`, (message: IMessage) => {
-        const body = JSON.parse(message.body)
-        // 여기로 답 보내주는건가?
-        console.log(body)
-      })
-
-      // 여기는 채팅 보내는 퍼블리셔
-      client.publish({
-        destination: `/pub/room-request/${roomId}`,
-        body: JSON.stringify({
-          message: input,
-          quizId: "",
-          others: "",
-        })
-      })
-      setInput("")
-    }
-  }, [roomId, clientRef, input]);
+export default function App({ params: { roomId } }: RoomIdProps) {
+  const clientRef = useConnect();
+  const [now, setNow] = useState(0);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<MessagesProps[]>([]);
+  const [quizzes, setQuizzes] = useState<GameQuizProps<GameQuizChoiceProps>[]>([]);
+  const [nowQuiz, setNowQuiz] = useState<GameQuizProps<GameQuizChoiceProps>>();
+  const [isAnswerTime, setIsAnswerTime] = useState(false);
+  const [result, setResult] = useState("");
+  const [time, setTime] = useState(10);
+  // const [participants, setParticipants] = useState<Object[]>([])
+  // TODO: 들어올때, 들어오고 나서 사람들 들어올때 실행해서 participants 채우기
 
   function sendMessage() {
-    if (input.trim() && clientRef.current) {
+    if (message.trim() && clientRef.current) {
       clientRef.current.publish({
-        destination: `/pub/room-request/${roomId}`,
+        destination: "/pub/chat",
         body: JSON.stringify({
-          message: input,
-        })
-      })
-      setInput("")
+          quizId: now,
+          message,
+          roomId,
+        }),
+        headers: {
+          Authorization: sessionStorage.getItem("accessToken") as string,
+        },
+      });
     }
+    setMessage("");
   }
 
+  useEffect(() => {
+    const you = getCookie("nickname");
+    const client = clientRef.current;
+    if (client) {
+      const onConnect = () => {
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            chatType: "QUIZ",
+            roomId,
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
+        });
+
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            chatType: "ENTER",
+            roomId,
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
+        });
+
+        client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
+          const body = JSON.parse(message.body);
+          if (Array.isArray(body)) {
+            setQuizzes(body);
+          }
+        });
+
+        client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
+          const body = JSON.parse(message.body);
+          if (body.correct) {
+            // 정답자에 대한 예우를 지켜줘야함
+            if (you === body.senderNickName) {
+              setResult("너 재능있어");
+            } else {
+              setResult("허접");
+            }
+            setIsAnswerTime(true);
+
+            setTimeout(() => {
+              setIsAnswerTime(false);
+              setNow((prev) => prev + 1);
+            }, 5000);
+          }
+
+          const timestamp = new Date().toLocaleTimeString("ko-KR", {
+            hour12: true,
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const newMsg: MessagesProps = {
+            timestamp,
+            message: body.message,
+            nickname: body.senderNickName,
+          };
+          setMessages((prevMsg) => [newMsg, ...prevMsg]);
+        });
+      };
+
+      client.onConnect = onConnect;
+      if (client.connected) {
+        onConnect();
+      }
+    }
+  }, [roomId, clientRef]);
+
+  useEffect(() => {
+    if (Array.isArray(quizzes)) {
+      const data = quizzes.find((quiz) => quiz.quizId === now);
+      setNowQuiz(data);
+    }
+  }, [quizzes, now]);
+
+  useEffect(() => {
+    if (time) {
+      setTimeout(() => setTime(time - 1), 1000);
+    } else {
+      setNow((prev) => prev + 1);
+    }
+  }, [time]);
+
+  useConfirmLeave();
   return (
-    <div>
-      <div>여기서 게임 소켓 처리</div>
-      <input
-        type="text"
-        value={input}
-        onChange={event => handleValueChange(event,setInput)}
-        onKeyDown={e => {
-          if (e.key === "Enter") sendMessage()
+    <Box>
+      {isAnswerTime && (
+        <Typography>{result}</Typography>
+      )}
+      {time ? (
+        <Typography
+          component="h1"
+          variant="h5"
+          sx={{
+            textAlign: "center",
+            mb: 3,
+          }}
+        >
+          {time}초 뒤 게임이 시작됩니다
+        </Typography>
+      ) : (
+        <Box
+          sx={{
+            display: "grid",
+            placeItems: "center",
+            marginBottom: "150px",
+          }}
+        >
+          {!isAnswerTime && nowQuiz && (
+            <>
+              <Typography
+                sx={{
+                  fontSize: "39px",
+                  fontWeight: "bold",
+                }}
+              >
+                {nowQuiz.quizId}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
+              </Typography>
+              <Typography>{nowQuiz.question}</Typography>
+              {nowQuiz.isObjective ? (
+                <Box
+                  sx={{
+                    marginTop: "50px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: "100%",
+                      maxWidth: "600px",
+                      mx: "auto",
+                    }}
+                  >
+                    <ToggleButtonGroup
+                      exclusive
+                      value={message}
+                      onChange={(_, value) => setMessage(value)}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 2,
+                      }}
+                    >
+                      {nowQuiz.quizChoiceList.map((choiceList) => (
+                        <ToggleButton
+                          key={choiceList.choiceId}
+                          value={choiceList.choiceId.toString()}
+                          sx={{
+                            minWidth: 300,
+                            maxWidth: "100%",
+                          }}
+                        >
+                          {choiceList.choiceId}번. {choiceList.choiceText}
+                        </ToggleButton>
+                      ))}
+                    </ToggleButtonGroup>
+                  </Box>
+                </Box>
+              ) : (
+                <Box sx={{ display: "flex" }}>
+                  <TextField variant="outlined" fullWidth />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                      ml: 1,
+                    }}
+                  >
+                    <SendIcon />
+                  </Button>
+                </Box>
+              )}
+            </>
+          )}
+        </Box>
+      )}
+
+      <Box
+        sx={{
+          display: "grid",
+          placeItems: "center",
         }}
-      />
-      <button onClick={sendMessage}>전송</button>
-    </div>
-  )
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "1100px",
+          }}
+        >
+          {/* TODO: 닉네임이랑 프사 받아오기 */}
+          {/* {participants?.map((participant) => ( */}
+          {/*   <Card sx={{ width: "200px", height: "300px" }}> {participant.nickname} </Card> */}
+          {/*   ) */}
+          {/* )} */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+        </Box>
+      </Box>
 
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          p: 2,
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <Paper
+          sx={{
+            flex: 1,
+            p: 2,
+            overflowY: "auto",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Chat
+          </Typography>
+          <List>
+            {messages.map((msg, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={msg.timestamp} />
+                <ListItemText primary={msg.nickname} />
+                <ListItemText primary={msg.message} />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+        <Box sx={{ display: "flex" }}>
+          <TextField
+            variant="outlined"
+            fullWidth
+            value={message}
+            onChange={(event) => handleValueChange(event, setMessage)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage();
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={sendMessage}
+            sx={{ ml: 1 }}
+          >
+            <SendIcon />
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
 }
-
-/*
-여기서는 소켓 통신을 하면서 게임을 처리할 예정
-1. 여기로 이동했다는건 대기열이 끝나고 게임 방으로 왔다는 뜻
-1-1. 게임 방으로 모든 사람들이 한번에 초대 되었을 것이기 때문에, 초대되면서 바로 문제 뽑아오기
-> 이러면 각자에게 랜덤 함수로 주어지는지, 특정 문제를 백엔드에서 랜덤으로 뽑은 뒤에 클라에 뿌리는지 모르겠긴 함
-1-2.
-2. 어느정도 타임아웃을 둔 다음 게임 시작
-2-1 . while 문으로 문제 인덱스를 한칸씩 올리면서
-3. 게임을 하면서 발생하는 모든 채팅에 문제 번호, 채팅자 명, 등 담아서 보내기
-4. 모든 사람들이 정답이면 ? -> 이거 어떻게 처리하지
-4-1. 다음 문제로 바로 넘기고
-4-2. 아니면 타이머를 두어서 타이머까지 정답을 못맞추는 경우 넘어가기
-누군가 정답을 먼저 맞추고 바로 넘어가는거라면? 그냥 정답자 나오자마자 바로 다음 문제로
-> 정답자 메시지가 날라오는가?
- */

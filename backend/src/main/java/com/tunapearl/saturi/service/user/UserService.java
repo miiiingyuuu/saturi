@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.service.user;
 
+import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
 import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import com.tunapearl.saturi.domain.user.*;
@@ -172,13 +173,14 @@ public class UserService {
         if(request.getIsChanged().equals(1L)) validateDuplicateUserNickname(request.getNickname());
         UserEntity findUser = userRepository.findByUserId(userId).get();
         BirdEntity bird = birdService.findById(request.getBirdId());
-        changeUserInfo(findUser, request.getNickname(), request.getLocationId(), request.getGender(), request.getAgeRange(), bird);
+        LocationEntity location = locationService.findById(request.getLocationId());
+        changeUserInfo(findUser, request.getNickname(), location, request.getGender(), request.getAgeRange(), bird);
         return new UserMsgResponseDTO("회원 수정 완료");
     }
 
-    private void changeUserInfo(UserEntity findUser, String nickname, Long locationId, Gender gender, AgeRange ageRange, BirdEntity bird) {
+    private void changeUserInfo(UserEntity findUser, String nickname, LocationEntity location, Gender gender, AgeRange ageRange, BirdEntity bird) {
         findUser.setNickname(nickname);
-        findUser.getLocation().setLocationId(locationId);
+        findUser.setLocation(location);
         findUser.setGender(gender);
         findUser.setAgeRange(ageRange);
         findUser.setBird(bird);
@@ -382,7 +384,6 @@ public class UserService {
         // 이번 주 첫째날 구하기
         WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 1);
         LocalDate startOfWeek = today.with(weekFields.getFirstDayOfWeek());
-        log.info("==============이번 주 첫째날============== {}", startOfWeek);
         for (LessonResultEntity lessonResult : lessonResults) {
             LocalDate learnDate = lessonResult.getLessonDt().toLocalDate();
 
@@ -395,7 +396,18 @@ public class UserService {
                 break; // 최근 순으로 조회하기 때문에, 이번주에 해당되지 않으면 바로 break 해도됨
             }
         }
-        return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek);
+
+        //TODO 대시보드 수정
+        /**
+         * 몇월 몇주차인지
+         */
+        List<Integer> weekAndMonth = new ArrayList<>();
+        int weekOfMonth = today.get(weekFields.weekOfMonth());
+        int month = today.getMonthValue();
+        weekAndMonth.add(month);
+        weekAndMonth.add(weekOfMonth);
+
+        return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek, weekAndMonth);
     }
 
     public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId) {

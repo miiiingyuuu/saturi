@@ -337,9 +337,10 @@ export default function LessonPage() {
   };
 
   return (
-    <div className="grid grid-cols-2 h-screen justify-center items-center">
-      <div className="grid grid-cols-1 justify-center items-center w-full h-full">
-        <div className="items-center p-4 flex flex-col">
+    <Box className="grid grid-cols-2 h-screen justify-center items-center">
+      <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
+        <Box className="flex items-center p-4">
+          {/* 새 이미지 */}
           <Image
             src="/images/quokka.jpg"
             alt="귀여운 쿼카"
@@ -373,10 +374,10 @@ export default function LessonPage() {
               }}
               onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
             >
-              {lesson.script}
-            </h1>
+              {text.script}
+            </Typography>
           ))}
-          <div className="mt-4 flex space-x-2">
+          <Box className="mt-4 flex space-x-2">
             <Button
               className="text-nowrap"
               variant="contained"

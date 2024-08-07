@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField, Dialog, DialogTitle, DialogContent, Grid, CircularProgress } from "@mui/material";
+import { validateNickname } from "@/utils/utils";
 import api from "@/lib/axios";
 
 // type 선언
@@ -121,7 +122,7 @@ export default function EditProfilePage() {
 
         setUserProfile(response.data);
         setOriginalNickname(response.data.nickname);
-      } catch (error) {
+      } catch {
         console.error('프로필 정보를 가져오는데 실패했습니다:', error);
         setError('프로필 정보를 불러오는데 실패했습니다.');
       } finally {
@@ -187,6 +188,11 @@ export default function EditProfilePage() {
         throw new Error('Access token not found');
       }
 
+      if (!validateNickname(userProfile.nickname)) {
+        alert('닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)');
+        return;
+      }
+
       const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
       
       const updateData: ProfileUpdateData = {
@@ -197,7 +203,6 @@ export default function EditProfilePage() {
         birdId: userProfile.birdId,
         isChanged
       };
-      // console.log('data', updateData)
       const response = await api.put('/user/auth', updateData, {
         headers: {
           Authorization: `Bearer ${accessToken}`
@@ -205,12 +210,14 @@ export default function EditProfilePage() {
       });
 
       if (response.status === 200) {
+        // eslint-disable-next-line no-alert
         alert('프로필이 성공적으로 수정되었습니다.');
         setOriginalNickname(userProfile.nickname);
         router.push('/user/profile');
       }
-    } catch (error) {
+    } catch {
       console.error('프로필 수정 중 오류가 발생했습니다:', error);
+      // eslint-disable-next-line no-alert
       alert('프로필 수정에 실패했습니다.');
     }
   };  
@@ -313,9 +320,9 @@ export default function EditProfilePage() {
           </div>
         </CardActions>
         <Dialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)}>
-        <DialogTitle textAlign={ 'center' }>프로필 이미지를 선택하세요!</DialogTitle>
+        <DialogTitle textAlign="center" fontWeight="bold">프로필 이미지를 선택하세요!</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
             {profileImages.map((img) => (
               <Grid item key={img.id} xs={4}>
                 <Avatar

@@ -212,4 +212,20 @@ public class LessonRepository {
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdSortedByRecentDt(Long lessonGroupResultId) {
+        List<LessonResultEntity> result = em.createQuery("select lr from LessonResultEntity lr" +
+                        " where lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId" +
+                        " order by lr.lessonDt desc", LessonResultEntity.class)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList();
+
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+
+    public Optional<List<LessonGroupResultEntity>> findAllLessonGroupResult() {
+        List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr", LessonGroupResultEntity.class)
+                .getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
 }

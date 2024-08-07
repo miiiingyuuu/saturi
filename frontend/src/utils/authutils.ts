@@ -10,7 +10,6 @@ export function insertCookie(response: AxiosResponse) {
   if (typeof data === "string" || data === null) {
     throw new Error("Could not insert cookie");
   }
-
   Object.keys(data).forEach(key => {
     const value = data[key];
     if (typeof value === "string") {
@@ -19,6 +18,12 @@ export function insertCookie(response: AxiosResponse) {
       setCookie(key, JSON.stringify(value));
     }
   });
+}
+
+// 유저 정보 받기
+export function getUserInfo() {
+  api.get("/user/auth/profile")
+    .then(response => insertCookie(response))
 }
 
 // 로그인
@@ -52,9 +57,7 @@ export function handleLogin({
         alert("아이디 또는 비밀번호가 올바르지 않습니다.");
       }
     });
-
 }
-
 
 // 소셜 로그인
 export function goSocialLogin(provider: string) {
@@ -94,17 +97,12 @@ export async function frontLogOut() {
 export function authToken(router: any) {
   api.get("/user/auth/token-check")
     .then(response => {
-      if (response.status === 200) {
-        api.get("user/auth/profile").then(response => {
-          // 유효성 검사 후, 받아온 데이터를 쿠키에 저장
-          insertCookie(response);
-          if (getCookie("nickname") === "null") {
-            alert("닉네임을 설정해주세요.")
-            router.push("/user/profile/update")
-          }
-        });
-      }
-    })
+      if (response.status === 200) getUserInfo()
+      if (getCookie("nickname") === "null") {
+        alert("닉네임을 설정해주세요.")
+        router.push("/user/profile/update")
+      }}
+    )
     .catch(err => {
       // 401 에러 발생 시
       if (err.response.status === 401) {
@@ -132,7 +130,6 @@ export function authToken(router: any) {
       }
     });
 }
-
 
 // 회원 정보 수정
 export function updateUser(data: object) {

@@ -3,11 +3,7 @@
 import * as React from 'react';
 import Link from "next/link";
 import Image from "next/image";
-import Button from "@mui/material/Button";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import Typography from '@mui/material/Typography';
+import { Button, Accordion, AccordionDetails, AccordionSummary, Typography, Box  } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -28,14 +24,14 @@ export default function Start() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center bg-cover bg-center text-white max-w-[1200px] w-full px-5 box-border mx-auto">   
+    <Box className="flex flex-col justify-center items-center bg-cover bg-center text-white max-w-[1200px] w-full px-5 box-border mx-auto">   
       <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
-        <div className="content">
-          <h1 className="text-5xl m-0">실시간 음성 분석, 채팅으로</h1>
-          <h3 className="text-5xl m-0">사투리를 재미있게 배워보세요.</h3>
-          <p className="text-2xl my-5 mb-[70px] font-bold">
+        <Box className="content">
+          <Typography variant="h1" sx = {{ fontWeight:"bold" }} className="text-5xl m-0">실시간 음성 분석, 채팅으로</Typography>
+          <Typography variant="h3" className="text-5xl m-0">사투리를 재미있게 배워보세요.</Typography>
+          <Typography variant="body1" className="text-2xl my-5 mb-[70px] font-bold">
             사투리를 배워볼 준비가 되셨나요? 서비스를 이용하기 위해 회원가입 하세요.
-          </p>
+          </Typography>
           <Link href="/login">
             <Button 
               variant="contained"
@@ -44,45 +40,80 @@ export default function Start() {
               회원 가입
             </Button>
           </Link>
-        </div>
+        </Box>
       </main>
 
-      <div className="mt-10 text-center text-black mb-10 whitespace-nowrap">
-        <h2 className="text-5xl mb-5">대한민국 전국 사투리를 한 곳에</h2>
-        <p className="text-xl font-bold">
-          경상도, 전라도, 강원도 등 각 지역별로 존재하는 다양한 사투리를 경험해 보세요.
-        </p>
-        <p className="text-xl font-bold">
+      <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
+        <Box className="content">
+          <Box
+            component="img"
+            src="/app/(home)/start/startPageExample.png"
+            alt="Start Page Example"
+            sx={{
+              width: '100%',  
+              marginBottom: "3%",            
+            }}
+          />
+          <Typography variant="h2" className="text-5xl mb-5">대한민국 전국 사투리를 한 곳에</Typography>
+          <Typography variant="body1" className="text-xl font-bold">
+            경상도, 전라도, 강원도 등 각 지역별로 존재하는 다양한 사투리를 경험해 보세요.
+          </Typography>          
+          <Typography variant="body1" className="text-xl font-bold">
           사투리 학습과 채팅을 이용한 게임이 준비되어 있습니다.
-        </p>
-      </div>
+          </Typography>          
+        </Box>
+      </main>
 
-      <div className="mt-10 text-center text-black mb-10 whitespace-nowrap">
-        <h2 className="text-5xl mb-5">발음 정확도, 억양 유사도를 통한 사투리 학습</h2>
-        <p className="text-xl font-bold">
-          원하는 지역의 학습을 고른 뒤, 해당 음성을 듣고 따라하여 유사도를 얻을 수 있습니다.
-        </p>
-        <p className="text-xl font-bold">
-          각 지역별로 준비된 음성파일로 쉽게 따라할 수 있습니다.
-        </p>
-        <p className="text-xl font-bold">
-          실시간 채팅으로 여러 플레이어들과 사투리 맞추기를 겨뤄보세요.
-        </p>
-      </div>
+      <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
+        <Box className="content">
+          <Box
+            component="img"
+            src="/app/(home)/start/startPageExample.png"
+            alt="Start Page Example"
+            sx={{
+              width: '100%',  
+              marginBottom: "3%",            
+            }}
+          />
+          <Typography variant="h2" className="text-5xl mb-5">발음 정확도, 억양 유사도를 통한 사투리 학습</Typography>
+          <Typography variant="body1" className="text-xl font-bold">
+            원하는 지역의 학습을 고른 뒤, 해당 음성을 듣고 따라하여 유사도를 얻을 수 있습니다.
+          </Typography>
+          <Typography variant="body1" className="text-xl font-bold">
+            각 지역별로 준비된 음성파일로 쉽게 따라할 수 있습니다.
+          </Typography>
+          <Typography variant="body1" className="text-xl font-bold">
+            실시간 채팅으로 여러 플레이어들과 사투리 맞추기를 겨뤄보세요.
+          </Typography>
+        </Box>
+      </main>
 
-      <div className="mt-10 text-center text-black mb-10 whitespace-nowrap">
-        <h2 className="text-5xl mb-5">다양한 컨텐츠를 통해 키우는 나만의 쿼카</h2>
-        <p className="text-xl font-bold">
-          사투리 학습, 실시간 채팅을 통한 경험치로 쿼카를 키워보세요.
-        </p>
-        <p className="text-xl font-bold">
-          데일리 스트릭, 학습, 게임을 통해 귀여운 쿼카를 키울 수 있습니다.
-        </p>
-      </div>
 
-      <div className="contents text-black justify-center font-bold text-3xl">
+
+      <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
+        <Box className="content">
+          <Box
+            component="img"
+            src="/app/(home)/start/startPageExample.png"
+            alt="Start Page Example"
+            sx={{
+              width: '100%',  
+              marginBottom: "3%",            
+            }}
+          />
+          <Typography variant="h2" className="text-5xl mb-5">다양한 컨텐츠를 통해 키우는 나만의 쿼카</Typography>
+          <Typography variant="body1" className="text-xl font-bold">
+            사투리 학습, 실시간 채팅을 통한 경험치로 쿼카를 키워보세요.
+          </Typography>
+          <Typography variant="body1" className="text-xl font-bold">
+            데일리 스트릭, 학습, 게임을 통해 귀여운 쿼카를 키울 수 있습니다.
+          </Typography>
+        </Box>
+      </main>
+
+      <Box className="contents text-black justify-center font-bold text-3xl">
         <Image src="/SSLogo.png" width={255} height={170} alt="SSLogo" />
-        <div>바로 시작 해보세요</div>
+        <Box>바로 시작 해보세요</Box>
         <Link href="/login">
           <Button 
             variant="contained"
@@ -91,10 +122,10 @@ export default function Start() {
             회원 가입
           </Button>
         </Link>
-      </div>
+      </Box>
 
       {/* FAQ */}
-      <div className="w-full max-w-4xl mx-auto">
+      <Box className="w-full max-w-4xl mx-auto">
       <h2 className="text-4xl mb-5 text-center text-black">자주 묻는 질문</h2>
         {/* 아코디언 1 */}
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
@@ -115,7 +146,8 @@ export default function Start() {
         <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2bh-content"sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem' }}
+            aria-controls="panel2bh-content"
+            sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem' }}
             id="panel2bh-header"
           >
             <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>사투리란 무엇인가요?</Typography>
@@ -171,7 +203,7 @@ export default function Start() {
             </Typography>
           </AccordionDetails>
         </Accordion>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

@@ -1,13 +1,17 @@
-package com.tunapearl.saturi.domain.quiz;
+package com.tunapearl.saturi.domain.game;
 
-import com.tunapearl.saturi.domain.game.GameRoomEntity;
+import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
+@Table(name = "game_room_quiz")
 public class GameRoomQuizEntity {
 
     @EmbeddedId

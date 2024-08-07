@@ -3,9 +3,7 @@ package com.tunapearl.saturi.controller.game;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
-import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
-import com.tunapearl.saturi.dto.game.GameMatchingResponseDTO;
-import com.tunapearl.saturi.dto.game.QuizMessage;
+import com.tunapearl.saturi.dto.game.*;
 import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
@@ -21,7 +19,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -70,13 +70,23 @@ public class ChatController {
 
         } else if (ChatMessage.MessageType.QUIZ.equals(message.getChatType())) {
 
-            //TODO:문제를 10개를 던져주죠
-            List<QuizEntity> quizList=chatService.getquizList(message.getRoomId());
-            redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizList);
 
-        } else if (ChatMessage.MessageType.CHAT.equals(message.getChatType())) {//채팅
+            List<QuizEntity> quizEntityList = chatService.getquizList(message.getRoomId());
 
-            //문제 id받아와야함, 정답유무 판단
+            List<GameQuizResponseDTO> quizResponseDTOS = new ArrayList<>();
+            for (QuizEntity quizEntity : quizEntityList) {
+
+                GameQuizResponseDTO dto = new GameQuizResponseDTO();
+                dto.setQuizId(quizEntity.getQuizId());
+                dto.setQuestion(quizEntity.getQuestion());
+                dto.setIsObjective(quizEntity.getIsObjective());
+                dto.setQuizChoiceList(quizEntity.getQuizChoiceList().stream()
+                        .map(choiceEntity -> new GameQuizChoiceDTO(choiceEntity.getQuizChoicePK().getChoiceId(), choiceEntity.getContent(), choiceEntity.getIsAnswer()))
+                        .collect(Collectors.toList()));
+
+                quizResponseDTOS.add(dto);
+            }
+            redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizResponseDTOS, message.getRoomId());
 
         } else if (ChatMessage.MessageType.EXIT.equals(message.getChatType())) {//퇴장
 
@@ -98,7 +108,7 @@ public class ChatController {
 
 
         chatService.enterGameRoom(quiz.getRoomId());
-        chatService.playGame(quiz);
+        quiz = chatService.playGame(quiz);
 
 
         redisPublisher.quizChattingPublish(chatService.getRoomTopic(quiz.getRoomId()), quiz);
