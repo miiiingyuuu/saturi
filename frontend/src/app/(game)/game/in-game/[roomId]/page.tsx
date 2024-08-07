@@ -5,7 +5,7 @@ import useConnect from "@/hooks/useConnect";
 import SendIcon from "@mui/icons-material/Send";
 import { handleValueChange } from "@/utils/utils";
 import React, { useEffect, useState } from "react";
-import { GameQuizChoiceProps, GameQuizProps, MessagesProps, RoomIdProps } from "@/utils/props";
+import { GameQuizChoiceProps, GameQuizProps, MessagesProps, RoomIdProps, ParticipantsProps } from "@/utils/props";
 import {
   Box,
   TextField,
@@ -22,11 +22,13 @@ import {
 import { getCookie } from "cookies-next";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
 import { useRouter } from "next/navigation"
+import { styled } from "@mui/material/styles"
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 
 export default function App({ params: { roomId } }: RoomIdProps) {
   const router = useRouter()
   const clientRef = useConnect();
-  const [now, setNow] = useState(0);
+  const [now, setNow] = useState(1);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<MessagesProps[]>([]);
   const [quizzes, setQuizzes] = useState<GameQuizProps<GameQuizChoiceProps>[]>([]);
@@ -35,8 +37,35 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [result, setResult] = useState("");
   const [time, setTime] = useState(10);
   const [isStart, setIsStart] = useState(false);
+  const [participants, setParticipants] = useState<ParticipantsProps[]>([]);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [highlightedNick, setHighlightedNick] = useState<string | null>(null);
 
-  function sendMessage() {
+  const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  ))({
+    [`& .${tooltipClasses.tooltip}`]: {
+      fontSize: '20px', // 원하는 폰트 사이즈로 변경
+    },
+  });
+
+
+  function showTooltip() {
+    setTooltipOpen(true);
+    setTimeout(() => setTooltipOpen(false), 3000); // 3초 후 Tooltip 닫기
+  }
+
+  function updateParticipantMessage(nickName: string, message: string) {
+    setParticipants((prevParticipants) =>
+      prevParticipants.map((participant) =>
+        participant.nickName === nickName
+          ? { ...participant, latestMessage: message }
+          : participant
+      )
+    );
+  }
+
+  function sendMessage(message: string) {
     if (message.trim() && clientRef.current) {
       clientRef.current.publish({
         destination: "/pub/chat",
@@ -49,9 +78,15 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           Authorization: sessionStorage.getItem("accessToken") as string,
         },
       });
+      const you = getCookie("nickname");
+      setHighlightedNick(you as string);
+      updateParticipantMessage(you as string, message);
+      showTooltip();
+      setTimeout(() => setHighlightedNick(null), 3000);
     }
     setMessage("");
   }
+
 
   useEffect(() => {
     const you = getCookie("nickname");
@@ -87,6 +122,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             setQuizzes(body);
           } else if (!isStart && body.chatType === "START") {
             setIsStart(true);
+            setParticipants(body.participants);
           }
         });
 
@@ -104,17 +140,21 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             setTimeout(() => {
               setIsAnswerTime(false);
               setNow((prev) => prev + 1);
+              if (body.quizId>10) {
+                setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
+                setIsAnswerTime(true);
+                client.publish({
+                  destination: "/pub/room",
+                  body: JSON.stringify({
+                    chatType: "END",
+                    roomId
+                  })
+                })
+                setTimeout(() => {
+                  router.push(`/game/in-game/${roomId}/result`)
+                }, 3000)
+              }
             }, 5000);
-
-            if (body.quizId>=10) {
-              // 그리고 게임이 종료가되면 "END"
-
-              setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
-              setIsAnswerTime(true);
-              setTimeout(() => {
-                router.push(`/game/in-game/${roomId}/result`)
-              }, 3000)
-            }
           }
 
           const timestamp = new Date().toLocaleTimeString("ko-KR", {
@@ -142,7 +182,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         });
       };
 
-      // onDisconnect 이벤트 리스너 추가
       const handleBeforeUnload = () => {
         onDisconnect();
       };
@@ -183,7 +222,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   return (
     <Box>
-      {now}
       {!isStart ? (
         <Typography
           component="h1"
@@ -227,7 +265,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       fontWeight: "bold",
                     }}
                   >
-                    {nowQuiz.quizId}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
+                    {nowQuiz.quizId-1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
                   </Typography>
                   <Typography>{nowQuiz.question}</Typography>
                   {nowQuiz.isObjective ? (
@@ -248,7 +286,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                         <ToggleButtonGroup
                           exclusive
                           value={message}
-                          onChange={(_, value) => setMessage(value)}
+                          onChange={(_, value) => {
+                            sendMessage(value)
+                          }}
                           sx={{
                             display: "flex",
                             flexDirection: "column",
@@ -273,13 +313,22 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                     </Box>
                   ) : (
                     <Box sx={{ display: "flex" }}>
-                      <TextField variant="outlined" fullWidth />
+                      <TextField
+                        variant="outlined"
+                        fullWidth
+                        value={message}
+                        onChange={(event) => handleValueChange(event, setMessage)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") sendMessage(message);
+                        }}
+                      />
                       <Button
                         variant="contained"
                         color="primary"
                         sx={{
                           ml: 1,
                         }}
+                        onClick={() => sendMessage(message)}
                       >
                         <SendIcon />
                       </Button>
@@ -305,15 +354,26 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             width: "1100px",
           }}
         >
-          {/* TODO: 닉네임이랑 프사 받아오기 */}
-          {/* {participants?.map((participant) => ( */}
-          {/*   <Card sx={{ width: "200px", height: "300px" }}> {participant.nickname} </Card> */}
-          {/*   ) */}
-          {/* )} */}
-          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
-          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
-          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
-          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+          {participants?.map((participant) => (
+            <CustomTooltip
+              key={participant.birdId}
+              title={participant.latestMessage || ""}
+              open={tooltipOpen && highlightedNick === participant.nickName}
+              arrow
+              placement="top"
+            >
+              <Card sx={{ width: "200px", height: "300px", position: "relative" }}>
+                {participant.nickName}
+                <Box>
+                  <img
+                    src={`/main_profile/${participant.birdId}.png`}
+                    alt={`${participant.nickName}'s bird`}
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                </Box>
+              </Card>
+            </CustomTooltip>
+          ))}
         </Box>
       </Box>
 
@@ -354,13 +414,13 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             value={message}
             onChange={(event) => handleValueChange(event, setMessage)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") sendMessage();
+              if (e.key === "Enter") sendMessage(message);
             }}
           />
           <Button
             variant="contained"
             color="primary"
-            onClick={sendMessage}
+            onClick={() => sendMessage(message)}
             sx={{ ml: 1 }}
           >
             <SendIcon />
