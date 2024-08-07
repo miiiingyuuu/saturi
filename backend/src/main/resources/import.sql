@@ -27,3 +27,8 @@ INSERT INTO lesson (lesson_group_id, sample_voice_path, sample_voice_name, scrip
 
 /*레슨_경상도_일상*/
 
+/*퀴즈 등록*/
+INSERT INTO quiz (location_id, question, is_objective, creation_dt) VALUES (2, '만다꼬 그라노에서 ''만다꼬''의 뜻으로 알맞은 것은?', true, NOW()), (2, '애비다 의 뜻으로 알맞은 것은?', true, NOW()),(2, '어디까지올라가는거에요의 음정으로 알맞은 것은?', true, NOW()),(2, '다음 중 ''어어어 그 옷 파이다'' 에서 ''파이다''의 뜻을 잘 해석한 것은?', true, NOW()),(2, '다음 중 경상도 사투리가 아닌 것은?', true, NOW()),(2, '쪼매의 뜻은?', false, NOW()),(2, '퍼뜩의 뜻은?', false, NOW()),(2, '표준어 ''그만''을 경상도 사투리로 바꾸면?', false, NOW()),(2, '고닥꾜솩쌔미의 뜻은?', false, NOW()),(2, '디비라의 뜻은?', false, NOW());
+INSERT INTO quiz_choice (is_answer, choice_id, quiz_id, content) VALUES (false, 1, 1, '가만 두라고'),(true, 1, 2, '야위다'),(true, 1, 3, '도레미파솔라시도레미레'),(false, 1, 4, '파였다'),(false, 1, 5, '정구지'),(true, 1, 6, '조금'),(true, 1, 7, '빨리'),(true, 1, 8, '고마'),(true, 1, 9, '고등학교 수학 선생님이'),(true, 1, 10, '뒤집어라'),(true, 2, 1, '뭐 한다고'),(false, 2, 2, '아프다'),(false, 2, 3, '도레미파솔라시도레미파'),(true, 2, 4, '별로다'),(false, 2, 5, '단디'),(false, 3, 1, '그만 두라고'),(false, 3, 2, '예쁘다'),(false, 3, 3, '레미레도시라솔파미레도'),(false, 3, 4, 'Pie다'),(true, 3, 5, '솔'),(false, 4, 1, '많다고'),(false, 4, 2, 'Im your father'),(false, 4, 3, '도레미파솔라시도시도레'),(false, 4, 4, 'π'),(false, 4, 5, '잠온다');
+
+
