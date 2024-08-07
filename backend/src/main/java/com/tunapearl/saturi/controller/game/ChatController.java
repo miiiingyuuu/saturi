@@ -1,8 +1,6 @@
 package com.tunapearl.saturi.controller.game;
 
-import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
-import com.tunapearl.saturi.domain.game.GameRoomParticipantId;
-import com.tunapearl.saturi.domain.game.MessageType;
+import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
@@ -27,6 +25,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -90,7 +89,7 @@ public class ChatController {
                 //참여자정보 가져와
                 List<GameRoomParticipantEntity> participantEntityList = gameRoomParticipantService.findByRoomId(message.getRoomId());
                 List<GameParticipantDTO> participantDTOList = new ArrayList<>();
-                for(GameRoomParticipantEntity participant: participantEntityList) {
+                for (GameRoomParticipantEntity participant : participantEntityList) {
                     GameParticipantDTO participantDTO = new GameParticipantDTO();
 
                     participantDTO.setNickName(participant.getUser().getNickname());
@@ -126,16 +125,15 @@ public class ChatController {
             redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizResponseDTOS, message.getRoomId());
 
         } else if (MessageType.EXIT.equals(message.getChatType())) {//퇴장
-            
-            //TODO:roomId를 long으로 바꾸는 로직 필요
+
             Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
 
             if (chatRoomOptional.isPresent()) {
-                
+
                 ChatRoom chatRoom = chatRoomOptional.get();
                 long roomId = chatRoom.getRoomId();
-                GameRoomParticipantId grpid=new GameRoomParticipantId(roomId,userId);
-                
+                GameRoomParticipantId grpid = new GameRoomParticipantId(roomId, userId);
+
                 //상태 변경
                 gameService.changeParticipantStatus(grpid);
 //                message.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
@@ -147,15 +145,18 @@ public class ChatController {
                 exitMessage.setExitNickName(message.getSenderNickName());
 
 
-                long remained=gameRoomParticipantRepository.countActiveParticipantsByRoomId(roomId);
+                long remained = gameRoomParticipantRepository.countActiveParticipantsByRoomId(roomId);
                 exitMessage.setRemainCount(remained);//몇명남았냐
 
                 redisPublisher.gameExitPublish(chatService.getRoomTopic(message.getRoomId()), exitMessage);
             }
-            
-        }
 
-//        redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
+        } else if (MessageType.END.equals(message.getChatType())) {
+            //TODO:강제종료 로직 :: 그냥 방 terminated로 바꾼다 아무 경험치 주지않는다
+
+            chatService.endGameRoom(message.getRoomId());
+
+        }
     }
 
     ///pub/chat
