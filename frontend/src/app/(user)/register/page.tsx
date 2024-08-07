@@ -22,6 +22,7 @@ import {
   CircularProgress,
   InputAdornment,
 } from "@mui/material";
+import PasswordValidation from "@/components/PasswordValidation";
 
 export default function App() {
   const router = useRouter();
@@ -288,6 +289,13 @@ export default function App() {
                 value={password}
                 onChange={(event) => {
                   handleValueChange(event, setPassword);
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <PasswordValidation password={password} />
+                    </InputAdornment>
+                  ),
                 }}
                 error={!isPasswordValid}
               />

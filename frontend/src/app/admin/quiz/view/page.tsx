@@ -34,6 +34,14 @@ export default function App() {
     }
   }
 
+  function deleteQuiz(quizId: number) {
+    api.delete(`/admin/game/quiz/${quizId}`)
+      .then(() => {
+          setQuizzes(quizzes.filter(quiz => quiz.quizId !== quizId));
+        }
+      )
+  }
+
   useEffect(() => {
     api.get("/admin/game/quiz")
       .then(response => setQuizzes(response.data));
@@ -83,6 +91,7 @@ export default function App() {
                         variant="contained"
                         color="secondary"
                         size="small"
+                        onClick={() => deleteQuiz(quiz.quizId)}
                       >
                         Delete
                       </Button>
