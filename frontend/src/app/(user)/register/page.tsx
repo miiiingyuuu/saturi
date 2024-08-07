@@ -20,6 +20,7 @@ import {
   Typography,
   Backdrop,
   CircularProgress,
+  InputAdornment,
 } from "@mui/material";
 
 export default function App() {
@@ -28,27 +29,49 @@ export default function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [passwordConf, setPasswordConf] = useState("");
-
   const [isAuthEmail, setIsAuthEmail] = useState(false);
   const [isEmailSend, setIsEmailSend] = useState(false);
+  const [validationTime, setValidationTime] = useState(300);
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const isEmailValid = useMemo(() => validateEmail(email), [email]);
   const isPasswordValid = useMemo(() => validatePassword(password), [password]);
   const isPasswordConfirmed = useMemo(
     () => passwordConfirm({ password, passwordConf }),
-    [passwordConf],
+    [passwordConf]
   );
   const isNicknameValid = useMemo(() => validateNickname(nickname), [nickname]);
 
+  useEffect(() => {
+    let timer;
+    if (isEmailSend && validationTime > 0) {
+      timer = setInterval(() => {
+        setValidationTime((prevTime) => prevTime - 1);
+      }, 1000);
+    } else if (validationTime === 0) {
+      setIsEmailSend(false);
+    }
+    return () => clearInterval(timer);
+  }, [isEmailSend, validationTime]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
+      router.push("/");
+    }
+  }, []);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+
   function handleRegister(e: FormEvent) {
     e.preventDefault();
-    // TODO: 회원가입 -> 이메일,패스워드 기반으로 로그인 요청 -> 스텝 리디렉션 -> 회원 추가정보 삽입
     let error = "";
 
-    // eslint-disable-next-line default-case
     switch (true) {
       case !isAuthEmail:
         error = "이메일 인증을 해주세요.";
@@ -80,7 +103,7 @@ export default function App() {
         alert("회원가입이 완료되었습니다.");
         handleLogin({ email, password, router, goTo: "/register/step" });
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
   }
 
   function handleAuthEmail() {
@@ -92,18 +115,19 @@ export default function App() {
             email,
           },
         })
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             api
               .post("/user/auth/email-valid", {
                 email,
               })
-              .then(res => {
+              .then((res) => {
                 if (res.status === 200) {
                   setIsLoading(false);
                   setIsEmailSend(true);
+                  setValidationTime(300);
                   alert(
-                    "이메일이 발송되었습니다.\n네트워크 상황에 따라 메일 수신까지 시간이 걸릴 수 있습니다.",
+                    "이메일이 발송되었습니다.\n네트워크 상황에 따라 메일 수신까지 시간이 걸릴 수 있습니다."
                   );
                 }
               });
@@ -126,13 +150,13 @@ export default function App() {
         email,
         authNum,
       })
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           setIsAuthEmail(true);
           alert("인증되었습니다.");
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         alert("인증번호가 틀립니다.");
       });
@@ -140,35 +164,30 @@ export default function App() {
 
   function handleAuthNickname(event: MouseEvent) {
     event.preventDefault();
-    if (isNicknameValid) {
+    if (nickname && isNicknameValid) {
       api
         .get("/user/auth/nickname-dupcheck", {
           params: {
             nickname,
           },
         })
-        .then(response => {
+        .then((response) => {
           if (response) {
             if (window.confirm("이 닉네임을 사용하시겠습니까?")) {
               setIsNicknameChecked(true);
             }
           }
         })
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
     } else {
       alert("유효하지 않은 닉네임 입니다.");
     }
   }
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
-      router.push("/")
-    }
-  }, []);
   return (
     <Container component="main" maxWidth="xs">
       <Backdrop
-        sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}
       >
         <CircularProgress color="inherit" />
@@ -200,7 +219,7 @@ export default function App() {
                 name="email"
                 autoComplete="email"
                 value={email}
-                onChange={event => handleValueChange(event, setEmail)}
+                onChange={(event) => handleValueChange(event, setEmail)}
                 error={!isEmailValid}
                 helperText={isEmailValid ? "" : "이메일이 유효하지 않습니다."}
                 disabled={isAuthEmail}
@@ -216,6 +235,15 @@ export default function App() {
                 label="이메일 인증"
                 autoFocus
                 disabled={isAuthEmail}
+                InputProps={{
+                  endAdornment: isEmailSend && (
+                    <InputAdornment position="end">
+                      {formatTime(validationTime)}
+                    </InputAdornment>
+                  ),
+                }}
+                error={validationTime===0}
+                helperText={validationTime===0 ? "인증번호를 다시 받아주세요." : "" }
               />
             </Grid>
             <Grid item xs={4}>
@@ -234,7 +262,7 @@ export default function App() {
                 </Button>
               ) : (
                 <Button
-                  onClick={handleAuthEmailNumber}
+                  onClick={validationTime > 0 ? handleAuthEmailNumber : handleAuthEmail}
                   fullWidth
                   disabled={isAuthEmail}
                   variant="contained"
@@ -243,7 +271,7 @@ export default function App() {
                     height: "56px",
                   }}
                 >
-                  인증번호 확인
+                  {validationTime > 0 ? "인증번호 확인" : "재전송"}
                 </Button>
               )}
             </Grid>
@@ -257,7 +285,7 @@ export default function App() {
                 id="password"
                 autoComplete="new-password"
                 value={password}
-                onChange={event => {
+                onChange={(event) => {
                   handleValueChange(event, setPassword);
                 }}
                 error={!isPasswordValid}
@@ -272,7 +300,7 @@ export default function App() {
                 type="password"
                 id="passwordConf"
                 value={passwordConf}
-                onChange={event => {
+                onChange={(event) => {
                   handleValueChange(event, setPasswordConf);
                 }}
                 error={!isPasswordConfirmed}
@@ -286,7 +314,7 @@ export default function App() {
                 id="nickname"
                 label="별명"
                 value={nickname}
-                onChange={event => handleValueChange(event, setNickname)}
+                onChange={(event) => handleValueChange(event, setNickname)}
                 autoFocus
                 disabled={isNicknameChecked}
                 error={!isNicknameValid}
