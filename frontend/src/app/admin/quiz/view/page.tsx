@@ -58,68 +58,67 @@ export default function App() {
 
         <TableBody>
           {quizzes.map((quiz) => (
-            <Accordion
-              key={quiz.quizId}
-              expanded={expanded === quiz.quizId}
-              onChange={handleAccordionChange(quiz.quizId)}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-              >
-                <TableRow>
-                  <TableCell>{quiz.quizId}</TableCell>
-                  <TableCell>{quiz.locationId}</TableCell>
-                  <TableCell>{quiz.question}</TableCell>
-                  <TableCell>{new Date(quiz.creationDt).toLocaleString()}</TableCell>
-                  <TableCell>{quiz.isObjective ? "객관식" : "주관식"}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      sx={{ mr: 1 }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      size="small"
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </AccordionSummary>
-              <AccordionDetails>
-                {quizDetails[quiz.quizId] && (
-                  <>
-                    <Typography variant="h6">상세 정보</Typography>
-                    <Typography>질문: {quizDetails[quiz.quizId].question}</Typography>
-                    {quizDetails[quiz.quizId].choiceList && (
-                      <Table size="small">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>선택지</TableCell>
-                            <TableCell>답변</TableCell>
-                            <TableCell>정답여부</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {quizDetails[quiz.quizId].choiceList.map((choice: any) => (
-                            <TableRow key={choice.choiceId}>
-                              <TableCell>{choice.choiceId}</TableCell>
-                              <TableCell>{choice.content}</TableCell>
-                              <TableCell>{choice.isAnswer ? "Yes" : "No"}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+            <TableRow key={quiz.quizId}>
+              <TableCell colSpan={6} style={{ padding: 0 }}>
+                <Accordion
+                  expanded={expanded === quiz.quizId}
+                  onChange={handleAccordionChange(quiz.quizId)}
+                >
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <TableCell>{quiz.quizId}</TableCell>
+                    <TableCell>{quiz.locationId}</TableCell>
+                    <TableCell>{quiz.question}</TableCell>
+                    <TableCell>{new Date(quiz.creationDt).toLocaleString()}</TableCell>
+                    <TableCell>{quiz.isObjective ? "객관식" : "주관식"}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{ mr: 1 }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {quizDetails[quiz.quizId] && (
+                      <>
+                        <Typography variant="h6">상세 정보</Typography>
+                        <Typography>질문: {quizDetails[quiz.quizId].question}</Typography>
+                        {quizDetails[quiz.quizId].choiceList && (
+                          <Table size="small">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>선택지</TableCell>
+                                <TableCell>답변</TableCell>
+                                <TableCell>정답여부</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {quizDetails[quiz.quizId].choiceList.map((choice: any) => (
+                                <TableRow key={choice.choiceId}>
+                                  <TableCell>{choice.choiceId}</TableCell>
+                                  <TableCell>{choice.content}</TableCell>
+                                  <TableCell>{choice.isAnswer ? "Yes" : "No"}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              </AccordionDetails>
-            </Accordion>
+                  </AccordionDetails>
+                </Accordion>
+              </TableCell>
+            </TableRow>
           ))}
         </TableBody>
       </Table>
