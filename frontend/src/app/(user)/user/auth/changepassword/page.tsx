@@ -27,12 +27,6 @@ const PasswordChangeForm: React.FC = () => {
     e.preventDefault();
     setIsError(false);
 
-    if (!validatePassword(currentPassword) || !validatePassword(newPassword)) {
-      setMessage('비밀번호는 숫자, 소문자, 특수문자를 포함한 8자 이상이어야 합니다.');
-      setIsError(true);
-      return;
-    }
-
     const result = await changePassword({ currentPassword, newPassword });
     setMessage(result.message);
     setIsError(!result.success);
@@ -41,7 +35,7 @@ const PasswordChangeForm: React.FC = () => {
       setNewPassword('');
       setTimeout(() => {
         router.push('/user/profile');
-      }, 2000);
+      }, 300);
     }
   };
 
@@ -50,7 +44,7 @@ const PasswordChangeForm: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           비밀번호 변경
@@ -80,6 +74,7 @@ const PasswordChangeForm: React.FC = () => {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
+          <Typography sx={{ fontSize: '12px', ml: 1, color: 'red' }}>새 비밀번호는 숫자, 소문자, 특수문자를 포함한 8자 이상</Typography>
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
               <Button

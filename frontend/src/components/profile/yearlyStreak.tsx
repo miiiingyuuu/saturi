@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Box, Typography, Grid } from "@mui/material";
+import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
-// import ReactTooltip from 'react-tooltip';
 
 // dynamic import
 const ReactTooltip = dynamic(() => import('react-tooltip'), {
   ssr: false,
 });
-const CalendarHeatmap = dynamic(() => import('react-calendar-heatmap'), {
-  ssr: false,
-});
+// const CalendarHeatmap = dynamic(() => import('react-calendar-heatmap'), {
+//   ssr: false,
+// });
 
 interface StreakInfo {
   streakDate: {
@@ -34,17 +34,14 @@ interface YearlyStreakProps {
 
 const YearlyStreak: React.FC<YearlyStreakProps> = ({ data, totalLessonInfo, isLoading }) => {
   if (isLoading) return <Typography>Loading...</Typography>;
-  if (!data || data.length === 0) return <Typography variant='h4'>No yearly streak data available.</Typography>;
 
-  const currentYear = new Date().getFullYear();
-  const startDate = new Date(currentYear, 0, 1);
-  const endDate = new Date(currentYear, 11, 31);
+  const startDate = useMemo(() => new Date(new Date().getFullYear(), 0, 1), []);
+  const endDate = useMemo(() => new Date(new Date().getFullYear(), 11, 31), []);
 
-  const formattedData = data.map(item => ({
+  const formattedData = useMemo(() => data ? data.map(item => ({ 
     date: `${item.streakDate.year}-${String(item.streakDate.month).padStart(2, '0')}-${String(item.streakDate.day).padStart(2, '0')}`,
     count: item.solvedNum
-  }));
-  console.log(formattedData)
+  })) : [], [data]);
 
   return (
     <Box>
@@ -57,7 +54,7 @@ const YearlyStreak: React.FC<YearlyStreakProps> = ({ data, totalLessonInfo, isLo
           if (!value) {
             return 'color-empty';
           }
-          return `color-scale-${Math.min(4, Math.floor(value.count / 3))}`;
+          return `color-scale-${Math.min(10, value.count)}`;
         }}
         tooltipDataAttrs={(value: any) => {
           if (!value || !value.date) {
@@ -65,20 +62,25 @@ const YearlyStreak: React.FC<YearlyStreakProps> = ({ data, totalLessonInfo, isLo
           }
           const date = new Date(value.date);
           return {
-            'data-tip': `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일: ${value.count}문제 해결`,
+            'data-tip': `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일: ${value.count || 0}문제 해결`,
           };
         }}
       />
       <ReactTooltip />
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        <Grid item xs={12} sm={4}>
+      {!data || data.length === 0 && (
+        <Typography variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
+          아직 스트릭 데이터가 없습니다. 학습을 시작해보세요!
+        </Typography>
+      )}
+      <Grid container spacing={2} sx={{ mt: 2, textAlign: 'center' }}>
+        <Grid item xs={12} sm={6}>
           <Typography>
-            총 {totalLessonInfo.totalLessonGroup}개의 레슨 그룹을 완료했습니다.
+            총 {totalLessonInfo ? totalLessonInfo.totalLessonGroup : 0}개의 레슨 그룹을 완료했습니다.
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6}>
           <Typography>
-            총 {totalLessonInfo.totalLesson}개의 문제를 풀었습니다.
+            총 {totalLessonInfo ? totalLessonInfo.totalLesson : 0}개의 문제를 풀었습니다.
           </Typography>
         </Grid>
       </Grid>

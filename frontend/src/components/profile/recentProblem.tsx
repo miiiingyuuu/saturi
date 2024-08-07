@@ -43,25 +43,37 @@ interface RecentProblemProps {
 
 const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
     if (isLoading) return <Typography>Loading...</Typography>;
-    if (!data) return <Typography variant='h4'>최근에 학습한 문제가 없어요...</Typography>;
-
-    const displayName = getDisplayName(data.lessonGroupName);
 
     return (
-        <Box>
-          <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
+      <Box>
+        <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
+        {/* 데이터가 없을 시... */}
+        {data ? (
           <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
             <Avatar sx={{ bgcolor: 'green', mr: 2 }}>GO</Avatar>
             <Box flexGrow={1}>
-              <Typography variant="body1">{displayName}</Typography>
+              <Typography variant="body1">{getDisplayName(data.lessonGroupName)}</Typography>
               <LinearProgress variant="determinate" value={data.avgAccuracy || 0} />
               <Typography variant="body2" sx={{ mt: 1 }}>
                 평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : '데이터가 아직 없어요...'}
               </Typography>
             </Box>
           </Box>
-        </Box>
-      );
+        ) : (
+          // 데이터가 있을시...
+          <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
+            {/* TODO : 해당 문제로 가는 router 필요한데, 이거 구현되나? */}
+            <Avatar sx={{ bgcolor: 'grey', mr: 2 }}>-</Avatar>
+            <Box flexGrow={1}>
+              <Typography variant="body1">최근에 학습한 문제가 없어요...</Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                새로운 문제를 풀어보세요!
+              </Typography>
+            </Box>
+          </Box>
+        )}
+      </Box>
+    );
     };
   
   export default RecentProblem;

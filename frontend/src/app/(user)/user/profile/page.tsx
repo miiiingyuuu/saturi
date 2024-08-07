@@ -12,6 +12,8 @@ import WeeklyStreak from "@/components/profile/weeklyStreak";
 import YearlyStreak from "@/components/profile/yearlyStreak";
 import ProfileInfo from "@/components/profile/profileInfo";
 import UserTierRank from "@/components/profile/userTierRank";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import api from "@/lib/axios";
 
 
@@ -69,7 +71,7 @@ export default function ProfilePage() {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
         setDashboardData(response.data);
-
+        console.log('data', response)
         // 샘플 데이터 사용
         // setDashboardData(sampleData as DashboardData);
       } catch (error) {
@@ -87,7 +89,9 @@ export default function ProfilePage() {
       <Grid container spacing={3} sx={{ maxWidth: '75%', mx: 'auto' }}>
         {/* My Profile 섹션 */}
         <Grid item xs={12}>
-          <Typography variant="h4" sx={{ mb: 2 }}>My Profile</Typography>
+          <Typography variant="h4" sx={{ mb: 2 }}>
+            <AccountBoxIcon fontSize="medium" /> My Profile
+          </Typography>
           <Grid container spacing={3}>
             {/* 프로필 정보 */}
             <Grid item xs={12} md={6}>
@@ -103,7 +107,9 @@ export default function ProfilePage() {
   
         {/* Dashboard 섹션 */}
         <Grid item xs={12}>
-          <Typography variant="h4" sx={{ mb: 2, mt: 4 }}>Dashboard</Typography>
+          <Typography variant="h4" sx={{ mb: 2, mt: 4 }}>
+            <SpaceDashboardIcon fontSize="medium"/> Dashboard
+          </Typography>
           <Grid container spacing={3}>
             {/* 최근 푼 문제 */}
             <Grid item xs={12}>

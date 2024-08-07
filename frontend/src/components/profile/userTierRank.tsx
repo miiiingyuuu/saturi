@@ -7,13 +7,13 @@ import api from '@/lib/axios';
 import { FaCrown } from 'react-icons/fa';
 
 const tierImages = {
-  stone: '/tier/stone.png',
-  bronze: '/tier/bronze.png',
-  silver: '/tier/silver.png',
-  gold: '/tier/gold.png',
-  emerald: '/tier/emerald.png',
-  platinum: '/tier/platinum.png',
-  diamond: '/tier/diamond.png'
+  stone: '/tier/stone1.gif',
+  bronze: '/tier/bronze1.gif',
+  silver: '/tier/silver1.gif',
+  gold: '/tier/gold1.gif',
+  sapphire: '/tier/sappire1.gif',
+  platinum: '/tier/platinum1.gif',
+  diamond: '/tier/diamond1.gif'
 };
 
 type TierKey = keyof typeof tierImages;
@@ -21,10 +21,10 @@ type TierKey = keyof typeof tierImages;
 const getTierFromExp = (exp: number): TierKey => {
   if (exp === 0) return 'stone';
   if (exp < 100) return 'bronze';
-  if (exp < 200) return 'silver';
-  if (exp < 300) return 'gold';
-  if (exp < 400) return 'emerald';
-  if (exp < 500) return 'platinum';
+  if (exp < 500) return 'silver';
+  if (exp < 1500) return 'gold';
+  if (exp < 3000) return 'platinum';
+  if (exp < 5000) return 'sapphire';
   return 'diamond';
 };
 
@@ -88,9 +88,10 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vercial' }) => {
   const isHorizontal = layout === 'horizontal';
 
   return (
-    <Paper sx={{ 
+    <Paper elevation={3}
+    sx={{ 
       p: 2.5, 
-      bgcolor: '#f0f0f0', 
+      // bgcolor: '#f0f0f0', 
       borderRadius: '16px',
       position: 'relative',
       height: isHorizontal ? 'auto' : '90%',

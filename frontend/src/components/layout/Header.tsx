@@ -8,11 +8,13 @@ import {
   Button, Divider, Menu, MenuItem, Box, Avatar, IconButton, 
   Tooltip, ListItemIcon, Typography, CircularProgress 
 } from "@mui/material";
-import { Person, Logout } from '@mui/icons-material';
+import { Logout } from '@mui/icons-material';
 import { authToken } from "@/utils/authutils";
 import useLogout from "@/hooks/useLogout";
 import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { styleText } from "util";
 
 
 export default function Header() {
@@ -178,26 +180,28 @@ export default function Header() {
                   </Box>
                 </Box>
                 <Divider />
-                <MenuItem
-                  onClick={() => {
-                  router.push("/user/profile")
-                }}>
-                  <ListItemIcon sx={{ mr: 1 }}>
-                    <Person fontSize="large" />
-                  </ListItemIcon>
-                  내 프로필
-                </MenuItem>
-                
-                <MenuItem
-                  onClick={() => {
-                  logout()
-                    .then(() => router.push("/start"))
+                <Box sx={{ mt: 1 }}>
+                  <MenuItem
+                    onClick={() => {
+                    router.push("/user/profile")
                   }}>
-                  <ListItemIcon sx={{ mr: 1 }}>
-                    <Logout fontSize="large" />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
+                    <ListItemIcon sx={{ mr: 1 }}>
+                      <AccountBoxIcon fontSize="large" />
+                    </ListItemIcon>
+                    My Profile
+                  </MenuItem>
+                  
+                  <MenuItem
+                    onClick={() => {
+                    logout()
+                      .then(() => router.push("/start"))
+                    }}>
+                    <ListItemIcon sx={{ mr: 1 }}>
+                      <Logout fontSize="large" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Box>
               </Menu>
             </Box>
           )}
