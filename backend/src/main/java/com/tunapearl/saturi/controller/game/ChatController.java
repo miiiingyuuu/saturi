@@ -1,14 +1,17 @@
 package com.tunapearl.saturi.controller.game;
 
-import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
-import com.tunapearl.saturi.domain.game.MessageType;
+import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
+import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.game.*;
 import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
+import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
+import com.tunapearl.saturi.repository.game.GameRoomRepository;
+import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.service.GameRoomParticipantService;
 import com.tunapearl.saturi.service.game.ChatService;
 import com.tunapearl.saturi.service.game.GameService;
@@ -22,8 +25,10 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,6 +43,9 @@ public class ChatController {
     private final GameRoomQuizRepository gameRoomQuizRepository;
     private final UserService userService;
     private final GameRoomParticipantService gameRoomParticipantService;
+    private final ChatRoomRepository chatRoomRepository;
+    private final GameRoomRepository gameRoomRepository;
+    private final GameRoomParticipantRepository gameRoomParticipantRepository;
 
     /**
      * 게임방 매칭용
@@ -81,7 +89,7 @@ public class ChatController {
                 //참여자정보 가져와
                 List<GameRoomParticipantEntity> participantEntityList = gameRoomParticipantService.findByRoomId(message.getRoomId());
                 List<GameParticipantDTO> participantDTOList = new ArrayList<>();
-                for(GameRoomParticipantEntity participant: participantEntityList) {
+                for (GameRoomParticipantEntity participant : participantEntityList) {
                     GameParticipantDTO participantDTO = new GameParticipantDTO();
 
                     participantDTO.setNickName(participant.getUser().getNickname());
@@ -118,12 +126,37 @@ public class ChatController {
 
         } else if (MessageType.EXIT.equals(message.getChatType())) {//퇴장
 
+            Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
 
-            message.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
-            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
+            if (chatRoomOptional.isPresent()) {
+
+                ChatRoom chatRoom = chatRoomOptional.get();
+                long roomId = chatRoom.getRoomId();
+                GameRoomParticipantId grpid = new GameRoomParticipantId(roomId, userId);
+
+                //상태 변경
+                gameService.changeParticipantStatus(grpid);
+//                message.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
+
+                //누가나갔는지, 현재 몇명인지,
+                ExitMessage exitMessage = new ExitMessage();
+                exitMessage.setRoomId(message.getRoomId());
+                exitMessage.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
+                exitMessage.setExitNickName(message.getSenderNickName());
+
+
+                long remained = gameRoomParticipantRepository.countActiveParticipantsByRoomId(roomId);
+                exitMessage.setRemainCount(remained);//몇명남았냐
+
+                redisPublisher.gameExitPublish(chatService.getRoomTopic(message.getRoomId()), exitMessage);
+            }
+
+        } else if (MessageType.END.equals(message.getChatType())) {
+            //TODO:강제종료 로직 :: 그냥 방 terminated로 바꾼다 아무 경험치 주지않는다
+
+            chatService.endGameRoom(message.getRoomId());
+
         }
-
-//        redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
     }
 
     ///pub/chat

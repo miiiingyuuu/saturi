@@ -243,4 +243,18 @@ public class ChatService {
 
         return message;
     }
+
+    @Transactional
+    public void endGameRoom(String topicId) {
+
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(topicId);
+        if (chatRoomOptional.isPresent()) {
+            ChatRoom chatRoom = chatRoomOptional.get();
+            long roomId = chatRoom.getRoomId();
+
+            GameRoomEntity gameRoomEntity = gameRoomRepository.findById(roomId).orElseThrow();
+            gameRoomEntity.setStatus(Status.TERMINATED);
+            gameRoomEntity.setEndDt(LocalDateTime.now());
+        }
+    }
 }

@@ -32,6 +32,10 @@ public class GameRoomParticipantEntity {
     @ColumnDefault("0")
     private int correctCount;
 
+    @Column(name="isExited")
+    @ColumnDefault("false")
+    private boolean isExited;
+
     public GameRoomParticipantEntity() {}
 
     public GameRoomParticipantEntity(GameRoomEntity gameRoom, UserEntity user) {

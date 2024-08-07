@@ -3,6 +3,7 @@ package com.tunapearl.saturi.service.game;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
+import com.tunapearl.saturi.dto.game.ExitMessage;
 import com.tunapearl.saturi.dto.game.GameParticipantResponseDTO;
 import com.tunapearl.saturi.dto.game.GameQuizResponseDTO;
 import com.tunapearl.saturi.dto.game.QuizMessage;
@@ -55,6 +56,11 @@ public class RedisPublisher {
         message.put("subType", "QUIZ");
         message.put("roomId",roomId);
         message.put("data", quizList);
+        redisTemplate.convertAndSend(topic.getTopic(), message);
+    }
+
+    public void gameExitPublish(ChannelTopic topic, ExitMessage message){
+
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }
 }

@@ -2,7 +2,6 @@ package com.tunapearl.saturi.service.game;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tunapearl.saturi.domain.game.MessageType;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
@@ -16,9 +15,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -104,6 +101,11 @@ public class RedisSubscriber implements MessageListener {
                     log.info("RedisSubscriber START:::::: Dto:{}", gprDto);
                     log.info("roomId: {}", roomId);
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, gprDto);
+                } else if ("EXIT".equals(subType)) {
+
+                    ExitMessage exitMessage = objectMapper.readValue(publishMessage, ExitMessage.class);
+                    messagingTemplate.convertAndSend("/sub/room/" + exitMessage.getRoomId(), exitMessage);
+
                 } else {
 
                     ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
