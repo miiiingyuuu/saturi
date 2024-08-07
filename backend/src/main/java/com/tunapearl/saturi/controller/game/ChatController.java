@@ -1,5 +1,7 @@
 package com.tunapearl.saturi.controller.game;
 
+import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
+import com.tunapearl.saturi.domain.game.MessageType;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
@@ -7,6 +9,7 @@ import com.tunapearl.saturi.dto.game.*;
 import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
+import com.tunapearl.saturi.service.GameRoomParticipantService;
 import com.tunapearl.saturi.service.game.ChatService;
 import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.service.game.RedisPublisher;
@@ -34,6 +37,7 @@ public class ChatController {
     private final GameService gameService;
     private final GameRoomQuizRepository gameRoomQuizRepository;
     private final UserService userService;
+    private final GameRoomParticipantService gameRoomParticipantService;
 
     /**
      * 게임방 매칭용
@@ -61,14 +65,38 @@ public class ChatController {
     public void progressGame(@Header("Authorization") String authorization, @ModelAttribute ChatMessage message) throws UnAuthorizedException {
 
         Long userId = jwtUtil.getUserId(authorization);
-        message.setSenderId(userId);
+        UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
+        message.setSenderNickName(userProfile.getNickname());
 
-        if (ChatMessage.MessageType.ENTER.equals(message.getChatType())) {
+        if (MessageType.ENTER.equals(message.getChatType())) {
 
-            chatService.enterGameRoom(message.getRoomId());
-            message.setMessage(message.getSenderId() + "님이 입장하셨습니다.");
+            if (chatService.enterGameRoom(message.getRoomId())) {//다 모였다
 
-        } else if (ChatMessage.MessageType.QUIZ.equals(message.getChatType())) {
+                GameParticipantResponseDTO dto = new GameParticipantResponseDTO();
+//                message.setChatType(MessageType.START);
+                dto.setChatType(MessageType.START);
+                dto.setMessage(message.getSenderNickName() + "님이 입장하셨습니다.");
+                dto.setSenderNickName(message.getSenderNickName());
+
+                //참여자정보 가져와
+                List<GameRoomParticipantEntity> participantEntityList = gameRoomParticipantService.findByRoomId(message.getRoomId());
+                List<GameParticipantDTO> participantDTOList = new ArrayList<>();
+                for(GameRoomParticipantEntity participant: participantEntityList) {
+                    GameParticipantDTO participantDTO = new GameParticipantDTO();
+
+                    participantDTO.setNickName(participant.getUser().getNickname());
+                    participantDTO.setBirdId(participant.getUser().getBird().getId());
+                    participantDTOList.add(participantDTO);
+                }
+                dto.setParticipants(participantDTOList);
+
+                redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());
+            } else {
+                message.setMessage(message.getSenderNickName() + "님이 입장하셨습니다.");
+                redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
+            }
+
+        } else if (MessageType.QUIZ.equals(message.getChatType())) {
 
 
             List<QuizEntity> quizEntityList = chatService.getquizList(message.getRoomId());
@@ -88,16 +116,17 @@ public class ChatController {
             }
             redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizResponseDTOS, message.getRoomId());
 
-        } else if (ChatMessage.MessageType.EXIT.equals(message.getChatType())) {//퇴장
+        } else if (MessageType.EXIT.equals(message.getChatType())) {//퇴장
 
 
-            message.setMessage(message.getSenderId() + "님이 퇴장하셨습니다.");
+            message.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
+            redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
         }
 
-        redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
+//        redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
     }
 
-    ///pub/quiz
+    ///pub/chat
     @MessageMapping("/chat")
     public void progressGame(@Header("Authorization") String authorization, @ModelAttribute QuizMessage quiz) throws UnAuthorizedException {
 

@@ -3,6 +3,7 @@ package com.tunapearl.saturi.service.game;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
+import com.tunapearl.saturi.dto.game.GameParticipantResponseDTO;
 import com.tunapearl.saturi.dto.game.GameQuizResponseDTO;
 import com.tunapearl.saturi.dto.game.QuizMessage;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,16 @@ public class RedisPublisher {
         redisTemplate.convertAndSend(topic.getTopic(), message);
     }
 
+    public void gameStartPublish(ChannelTopic topic, GameParticipantResponseDTO responseDTO, String roomId){
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("type", "ROOM");
+        message.put("subType", "START");
+        message.put("roomId",roomId);
+        message.put("data", responseDTO);
+        redisTemplate.convertAndSend(topic.getTopic(), message);
+    }
+    
     public void gamePublish(ChannelTopic topic, ChatMessage message){
 
         redisTemplate.convertAndSend(topic.getTopic(), message);
@@ -39,7 +50,6 @@ public class RedisPublisher {
 
     public void quizListPublish(ChannelTopic topic, List<GameQuizResponseDTO> quizList, String roomId){
 
-//        redisTemplate.convertAndSend(topic.getTopic(), quizList);
         Map<String, Object> message = new HashMap<>();
         message.put("type", "ROOM");
         message.put("subType", "QUIZ");
