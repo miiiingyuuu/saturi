@@ -17,8 +17,8 @@ import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import useConfirmLeave from "@/hooks/useConfirmLeave";
 
-// Sample data for Autocomplete options
 interface Option {
   label: string;
   id: number;
@@ -41,16 +41,17 @@ const locationOptions: Option[] = [
 ];
 
 const ageRangeOptions: Option[] = [
-  { label: "10대 이하", id: 0 },
-  { label: "10대", id: 1 },
-  { label: "20대", id: 2 },
-  { label: "30대", id: 3 },
-  { label: "40대", id: 4 },
-  { label: "50대", id: 5 },
-  { label: "60대", id: 6 },
-  { label: "70대", id: 7 },
-  { label: "80대", id: 8 },
-  { label: "90대", id: 9 },
+  { label: "알려주고 싶지 않아요", id: 0 },
+  { label: "10대 이하", id: 1 },
+  { label: "10대", id: 2 },
+  { label: "20대", id: 3 },
+  { label: "30대", id: 4 },
+  { label: "40대", id: 5 },
+  { label: "50대", id: 6 },
+  { label: "60대", id: 7 },
+  { label: "70대", id: 8 },
+  { label: "80대", id: 9 },
+  { label: "90대", id: 10 },
 ];
 
 const steps = [
@@ -74,14 +75,15 @@ export default function App() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+
+
   // 어케함 여기?? 물어보기
   // handleNext 에 axios 걸어서 하나씩 보내기
-  const handleUpdateUser = () => {
+  function handleUpdateUser() {
     const genderId = gender?.id ?? null;
     const locationId = location?.id ?? null;
     const ageRangeId = ageRange?.id ?? null;
     const nickname = getCookie("nickname")
-    // TODO: 여기서 안들어온 값 함수 단에서 처리하기
     api.put("/user/auth", {
       gender: genderId,
       locationId,
@@ -96,10 +98,12 @@ export default function App() {
 
   // 네비가드 형태로 사용 ( 여기서는 기본정보가 default인 사람들만 들어오게하기 )
   useEffect(() => {
-    if (typeof window !== "undefined" && getCookie("gender")==="DEFAULT" && getCookie("location")==="default" && getCookie("ageRange")==="DEFAULT") {
+    if (typeof window !== "undefined" && !(getCookie("gender")==="DEFAULT" || getCookie("location")==="default" || getCookie("ageRange")==="DEFAULT")) {
       router.push("/")
     }
   }, []);
+
+  useConfirmLeave()
   return (
     <Container component="main" maxWidth="sm">
       <Box
@@ -177,6 +181,7 @@ export default function App() {
             </Typography>
             <Button
               onClick={() => {
+                handleUpdateUser()
                 router.push("/");
               }}
               sx={{ mt: 1, mr: 1 }}
