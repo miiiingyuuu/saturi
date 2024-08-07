@@ -21,9 +21,15 @@ public class LessonResultForSaveGroupResultDTO {
 
     public LessonResultForSaveGroupResultDTO(LessonResultEntity lessonResult, Boolean isBeforeResult) {
         this.lessonId = lessonResult.getLesson().getLessonId();
-        this.userVoicePath = lessonResult.getLessonRecordFile().getUserVoiceFilePath();
-        this.userVoiceName = lessonResult.getLessonRecordFile().getUserVoiceFileName();
-        this.userScript = lessonResult.getLessonRecordFile().getUserVoiceScript();
+        if(lessonResult.getLessonRecordFile() == null) {
+            this.userVoicePath = null;
+            this.userVoiceName = null;
+            this.userScript = null;
+        } else {
+            this.userVoicePath = lessonResult.getLessonRecordFile().getUserVoiceFilePath();
+            this.userVoiceName = lessonResult.getLessonRecordFile().getUserVoiceFileName();
+            this.userScript = lessonResult.getLessonRecordFile().getUserVoiceScript();
+        }
         this.accentSimilarity = lessonResult.getAccentSimilarity();
         this.pronunciationAccuracy = lessonResult.getPronunciationAccuracy();
         this.lessonDt = lessonResult.getLessonDt();

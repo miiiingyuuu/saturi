@@ -119,7 +119,7 @@ public class LessonService {
         List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonGroupId);
         log.info("너 널이지 {}", lessonGroupResultId);
-        // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다.
+        // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다. (add) 학습 시간도 초기화
         // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
         Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
         if(lessonResultsOpt.isPresent()) {
@@ -132,6 +132,7 @@ public class LessonService {
         LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
         lessonResultSkipped.setIsSkipped(true);
         lessonResultSkipped.setLesson(findLesson);
+        lessonResultSkipped.setLessonDt(LocalDateTime.now());
         lessonResultSkipped.setLessonGroupResult(lessonGroupResult);
 
         // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
@@ -217,9 +218,9 @@ public class LessonService {
 
         // 녹음 파일 관련, 파형 관련 추가
         LessonRecordFileEntity lessonRecordFile = createLessonRecordFile(request, lessonResult);
-        Long lessonRecordFileId = lessonRepository.saveLessonRecordFile(lessonRecordFile).orElse(null);
+        lessonRepository.saveLessonRecordFile(lessonRecordFile).orElse(null);
         LessonRecordGraphEntity lessonRecordGraph = createLessonRecordGraph(request, lessonResult);
-        Long lessonRecordGraphId = lessonRepository.saveLessonRecordGraph(lessonRecordGraph).orElse(null);
+        lessonRepository.saveLessonRecordGraph(lessonRecordGraph).orElse(null);
 
         Long lessonResultId = lessonRepository.saveLessonResult(lessonResult).orElse(null);
         return lessonResultId;
@@ -351,7 +352,6 @@ public class LessonService {
         // isBeforeResult 설정을 위해 DTO를 미리 만들자.
         List<LessonResultForSaveGroupResultDTO> lessonResultDtoLst = new ArrayList<>();
         for (Long lessonId : lessonResultMap.keySet()) {
-            log.info("lessonResultMap in {}", lessonResultMap.get(lessonId));
             LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), false);
             lessonResultDtoLst.add(lessonResultDto);
         }
@@ -376,8 +376,16 @@ public class LessonService {
             sumSimilarity += maxSimilarityMap.get(lessonId); // 누적
             sumAccuracy += maxAccuracyMap.get(lessonId); // 누적
         }
-        Long avgSimilarity = sumSimilarity / lessonResultCnt; // 평균
-        Long avgAccuracy = sumAccuracy / lessonResultCnt; // 평균
+        Long avgSimilarity; // 평균
+        Long avgAccuracy; // 평균
+        if(lessonResultCnt != 0) {
+            avgSimilarity = sumSimilarity / lessonResultCnt; // 평균
+            avgAccuracy = sumAccuracy / lessonResultCnt; // 평균
+        } else {
+            avgSimilarity = 0L;
+            avgAccuracy = 0L;
+        }
+
         lessonGroupResult.setAvgSimilarity(avgSimilarity); // score 갱신
         lessonGroupResult.setAvgAccuracy(avgAccuracy); // score 갱신
         if(lessonResultCnt == 5) { // 건너뛰기한게 없으면
