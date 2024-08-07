@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -346,8 +347,7 @@ public class UserService {
         return new UserExpInfoDTO(currentExp, UserRank);
     }
 
-    public UserRecentLessonGroupDTO getUserRecentLessonGroup(Long userId) {
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+    public UserRecentLessonGroupDTO getUserRecentLessonGroup(Long userId, List<LessonGroupResultEntity> lessonGroupResults) {
         if(lessonGroupResults == null) return null;
         lessonGroupResults.sort(Comparator.comparing(LessonGroupResultEntity::getStartDt).reversed());
 
@@ -355,13 +355,11 @@ public class UserService {
         return new UserRecentLessonGroupDTO(recentLessonGroup);
     }
 
-    public UserContinuousLearnDayDTO getUserContinuousLearnDay(Long userId) {
+    public UserContinuousLearnDayDTO getUserContinuousLearnDay(Long userId, List<LessonGroupResultEntity> lessonGroupResults, List<LessonResultEntity> findLessonResult) {
         /**
          * 연속 학습 일 수 구하기
          */
         Long learnDays = 0L;
-        // 유저 아이디로 모든 레슨 그룹 결과 조회
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
         if(lessonGroupResults == null) {
             LocalDate today = LocalDate.now();
 
@@ -379,10 +377,8 @@ public class UserService {
 
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
         List<LessonResultEntity> lessonResults = new ArrayList<>();
-        for (LessonGroupResultEntity lgr : lessonGroupResults) {
-            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
-            lessonResults.addAll(findLessonResult);
-        }
+
+        lessonResults.addAll(findLessonResult);
 
         // 레슨 학습 일시를 최근 순으로 정렬한 뒤, 오늘 학습 했으면 오늘 기준으로 계산하고, 어제 학습했으면 어제 기준으로 계산
         lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
@@ -410,6 +406,7 @@ public class UserService {
         // 이번 주 첫째날 구하기
         WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 1);
         LocalDate startOfWeek = today.with(weekFields.getFirstDayOfWeek());
+        boolean[] isExistDay = new boolean[7];
         for (LessonResultEntity lessonResult : lessonResults) {
             LocalDate learnDate = lessonResult.getLessonDt().toLocalDate();
 
@@ -417,7 +414,10 @@ public class UserService {
             if(!learnDate.isBefore(startOfWeek) && !learnDate.isAfter(startOfWeek.plusDays(6))) {
                 DayOfWeek dayOfWeek = learnDate.getDayOfWeek();
                 int dayValue = dayOfWeek.getValue() - 1; // 월요일을 0으로 설정 (일요일이 6)
-                daysOfTheWeek.add(dayValue);
+                if(!isExistDay[dayValue]) {
+                    daysOfTheWeek.add(dayValue);
+                    isExistDay[dayValue] = true;
+                }
             } else {
                 break; // 최근 순으로 조회하기 때문에, 이번주에 해당되지 않으면 바로 break 해도됨
             }
@@ -435,18 +435,14 @@ public class UserService {
         return new UserContinuousLearnDayDTO(learnDays, daysOfTheWeek, weekAndMonth);
     }
 
-    public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId) {
+    public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId, List<LessonGroupResultEntity> lessonGroupResults, List<LessonResultEntity> findLessonResult) {
         List<UserStreakInfoDaysDTO> result = new ArrayList<>();
-        // 유저 아이디로 모든 레슨 그룹 결과 조회
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
         if(lessonGroupResults == null) return null;
 
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
         List<LessonResultEntity> lessonResults = new ArrayList<>();
-        for (LessonGroupResultEntity lgr : lessonGroupResults) {
-            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
-            lessonResults.addAll(findLessonResult);
-        }
+
+        lessonResults.addAll(findLessonResult);
 
         // 레슨 학습 일시를 최근 순으로 정렬, 올 해가 아니면 break
         Map<LocalDate, Integer> streakDays = new HashMap<>();
@@ -465,27 +461,23 @@ public class UserService {
         return result;
     }
 
-    public UserTotalLessonInfoDTO getUserTotalLessonInfo(Long userId) {
-        // 유저 아이디로 모든 레슨 그룹 결과 조회
-        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+    public UserTotalLessonInfoDTO getUserTotalLessonInfo(Long userId, List<LessonGroupResultEntity> lessonGroupResults, List<LessonResultEntity> findLessonResult) {
         if(lessonGroupResults == null) return null;
         int totalLessonGroupResultCnt = lessonGroupResults.size();
-        for (LessonGroupResultEntity lessonGroupResult : lessonGroupResults) {
-            if(!lessonGroupResult.getIsCompleted()) totalLessonGroupResultCnt--;
+        for (LessonGroupResultEntity lgr : lessonGroupResults) {
+            if(!lgr.getIsCompleted()) totalLessonGroupResultCnt--;
         }
 
         // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
         Map<LessonGroupResultIdAndLessonId, Integer> lessonGroupResultIdAndLessonIdMap = new HashMap<>(); // 복습한 레슨은 거르기 용
         List<LessonResultEntity> lessonResults = new ArrayList<>();
-        for (LessonGroupResultEntity lgr : lessonGroupResults) {
-            List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lgr.getLessonGroupResultId());
-            for (LessonResultEntity lr : findLessonResult) {
-                LessonGroupResultIdAndLessonId lesson = new LessonGroupResultIdAndLessonId(
-                        lr.getLessonGroupResult().getLessonGroupResultId(), lr.getLesson().getLessonId());
-                if(lessonGroupResultIdAndLessonIdMap.containsKey(lesson)) continue;
-                lessonGroupResultIdAndLessonIdMap.put(lesson, 1);
-                lessonResults.add(lr);
-            }
+
+        for (LessonResultEntity lr : findLessonResult) {
+            LessonGroupResultIdAndLessonId lesson = new LessonGroupResultIdAndLessonId(
+                    lr.getLessonGroupResult().getLessonGroupResultId(), lr.getLesson().getLessonId());
+            if(lessonGroupResultIdAndLessonIdMap.containsKey(lesson)) continue;
+            lessonGroupResultIdAndLessonIdMap.put(lesson, 1);
+            lessonResults.add(lr);
         }
         return new UserTotalLessonInfoDTO(totalLessonGroupResultCnt, lessonResults.size());
     }

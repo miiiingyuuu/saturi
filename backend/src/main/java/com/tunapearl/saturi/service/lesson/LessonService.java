@@ -174,11 +174,7 @@ public class LessonService {
         // 유저 아이디와 레슨 그룹 아이디로 레슨 그룹 결과 조회
         Optional<List<LessonGroupResultEntity>> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId);
         if(lessonGroupResults.isEmpty()) return Optional.empty();
-        // FIXME lessonGroupId를 넣어야함
         Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults.get(), lessonGroupId);
-        for (LessonGroupResultEntity lr : lessonGroupResults.get()) {
-            log.info("lr = {}. {}", lr.getLessonGroup().getLessonGroupId(), lr.getLessonGroup().getName());
-        }
 
         // 레슨 아이디랑 레슨 그룹 결과 아이디로 레슨 결과 조회
         Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
@@ -414,8 +410,8 @@ public class LessonService {
         return lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
     }
 
-    public List<LessonResultEntity> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
-        return lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
+    public List<LessonResultEntity> findLessonResultByLessonGroupResultId(List<Long> lessonGroupResultIds) {
+        return lessonRepository.findLessonResultByLessonGroupResultIdList(lessonGroupResultIds).orElse(null);
     }
 
     public List<LessonResultEntity> findAllLessonResult() {
