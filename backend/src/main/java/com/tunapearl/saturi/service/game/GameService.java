@@ -105,7 +105,7 @@ public class GameService {
         Optional<List<GameRoomParticipantEntity>> Optionalparticipants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
         if (Optionalparticipants.isPresent()) {
             List<GameRoomParticipantEntity> participants = Optionalparticipants.get();
-            if (participants.size() == 5) {
+            if (participants.size() == 2) {
                 gameRoomEntity.setStatus(Status.IN_PROGRESS);
                 gameRoomEntity.setStartDt(LocalDateTime.now());
             }
@@ -126,51 +126,32 @@ public class GameService {
         gameRoomParticipantEntity.setExited(true);
     }
 
-    public List<GameResultResponseDTO> getGameResult(GameResultRequestDTO requestdDto) {
+    public List<GameResultResponseDTO> getGameResult(GameResultRequestDTO requestDto) {
 
-
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(requestdDto.getRoomId());
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(requestDto.getRoomId());
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
             long roomId = chatRoom.getRoomId();
 
-
             List<GameRoomParticipantEntity> participants = gameRoomParticipantService.findParticipantByRoomIdOrderByCorrectCount(roomId);
             List<GameResultResponseDTO> resultList = new ArrayList<>();
 
-            int rank = 1;
-            int pre = -1;//이전 참가자 맞춘 횟수
-            int same=0;//점수 같은 사람 수
-            for (GameRoomParticipantEntity participant : participants) {
+            for (GameRoomParticipantEntity participant : participants)
+            {
                 GameResultResponseDTO resultDTO = new GameResultResponseDTO();
-
-                if (pre > participant.getCorrectCount()) {
-                    rank+=same;
-                    same=1;
-                }else{//동점자
-                    same++;
-                }
-                pre=participant.getCorrectCount();
-
-                resultDTO.setRank(rank);
+                resultDTO.setRank(participant.getMatchRank());
                 UserEntity user = participant.getUser();
                 resultDTO.setNickName(user.getNickname());
-                participant.setMatchRank(rank);
 
-
-                if (user.getUserId() == requestdDto.getUserId()) {//본인임
+                if (user.getUserId() == requestDto.getUserId()) {//본인임
                     resultDTO.setUser(true);
                 }
 
-                long nowExp = user.getExp();
-                int count = participant.getCorrectCount();
-                resultDTO.setExp(nowExp);
+                resultDTO.setExp(participant.getBeforeExp());
+                int count=participant.getCorrectCount();
                 resultDTO.setAnsCount(count);
                 resultDTO.setEarnedExp(count * 2);//개당 2exp임
 
-                user.setExp(user.getExp() + count * 2);
-
-                log.info("resultDTO : {}", resultDTO);
                 resultList.add(resultDTO);
             }
 

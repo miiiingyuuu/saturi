@@ -100,16 +100,6 @@ public class RoomController {
         long userId = jwtUtil.getUserId(authorization);
         gameResultRequestDTO.setUserId(userId);
 
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(gameResultRequestDTO.getRoomId());
-        if (chatRoomOptional.isPresent()) {
-            ChatRoom chatRoom = chatRoomOptional.get();
-            long roomId = chatRoom.getRoomId();
-
-            GameRoomEntity gameRoomEntity = gameRoomRepository.findById(roomId).orElseThrow();
-            gameRoomEntity.setStatus(Status.COMPLETED);
-            gameRoomEntity.setEndDt(LocalDateTime.now());
-        }
-
         return ResponseEntity.ok().body(gameService.getGameResult(gameResultRequestDTO));
     }
 }
