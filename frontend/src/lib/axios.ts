@@ -29,7 +29,7 @@ api.interceptors.request.use(
     const refreshToken = sessionStorage.getItem("refreshToken");
     // 토큰이 있으면 토큰을 넣어서 요청을 보냅니다.
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      config.headers.Authorization = `${accessToken}`;
       config.headers.accessToken = `${accessToken}`;
       config.headers.refreshToken = `${refreshToken}`;
     }

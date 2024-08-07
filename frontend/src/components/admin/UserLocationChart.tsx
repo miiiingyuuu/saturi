@@ -42,11 +42,7 @@ const UserLocationChart: React.FC = () => {
           throw new Error('Access token not found');
         }
 
-        const response = await api.get<StatisticsData>('/admin/statistics/user-location', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
+        const response = await api.get<StatisticsData>('/admin/statistics/user-location');
 
         setData(response.data);
       } catch (error) {
