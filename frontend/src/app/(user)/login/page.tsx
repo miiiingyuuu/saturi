@@ -88,7 +88,17 @@ export default function App() {
           >
             로그인
           </Button>
-          <Grid container justifyContent="flex-end">
+          <Grid
+              container
+              sx={{
+              display: "flex",
+                  justifyContent: "space-between"
+          }}>
+            <Grid item>
+              <Link href="/user/auth/confirmation" variant="body2">
+                비밀번호 찾기
+              </Link>
+            </Grid>
             <Grid item>
               <Link href="/register" variant="body2">
                 계정이 없으신가요?

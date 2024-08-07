@@ -81,17 +81,18 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         });
 
         client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
-          const body = JSON.parse(message.body);
+          const body = JSON.parse(message.body)
+          console.log(body)
           if (Array.isArray(body)) {
             setQuizzes(body);
           } else if (!isStart && body.chatType === "START") {
-            console.log(body)
             setIsStart(true);
           }
         });
 
         client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body);
+          console.log(body)
           if (body.correct) {
             if (you === body.senderNickName) {
               setResult("정답입니다!");
@@ -106,6 +107,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             }, 5000);
 
             if (body.quizId>=10) {
+              // 그리고 게임이 종료가되면 "END"
+
               setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
               setIsAnswerTime(true);
               setTimeout(() => {
@@ -119,7 +122,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             hour: "2-digit",
             minute: "2-digit",
           });
-          
+
           const newMsg: MessagesProps = {
             timestamp,
             message: body.message,
@@ -129,20 +132,35 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         });
       };
 
+      const onDisconnect = () => {
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            roomId,
+            chatType: "TERMINATED"
+          })
+        });
+      };
+
+      // onDisconnect 이벤트 리스너 추가
+      const handleBeforeUnload = () => {
+        onDisconnect();
+      };
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      window.addEventListener("unload", handleBeforeUnload);
+
+      client.onDisconnect = onDisconnect;
       client.onConnect = onConnect;
+
       if (client.connected) {
         onConnect();
       }
-    }
-    
-    return () => {
-      if (client && client.connected) {
-        // 여기서 퇴장 처리
-        // 퇴장 직전에 "END" PUBLISH
-        //
-        client.deactivate()
-            .then(() => console.log(client))
-      }
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        window.removeEventListener("unload", handleBeforeUnload);
+      };
     }
   }, [roomId, clientRef]);
 
@@ -163,193 +181,192 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   useConfirmLeave();
 
-
-
   return (
-      <Box>
-        {!isStart ? (
+    <Box>
+      {now}
+      {!isStart ? (
+        <Typography
+          component="h1"
+          variant="h5"
+          sx={{
+            textAlign: "center",
+            mb: 3,
+          }}
+        >
+          대기중입니다.
+        </Typography>
+      ) : (
+        <>
+          {isAnswerTime && (
+            <Typography>{result}</Typography>
+          )}
+          {time ? (
             <Typography
-                component="h1"
-                variant="h5"
-                sx={{
-                  textAlign: "center",
-                  mb: 3,
-                }}
+              component="h1"
+              variant="h5"
+              sx={{
+                textAlign: "center",
+                mb: 3,
+              }}
             >
-              대기중입니다.
+              {time}초 뒤 게임이 시작됩니다
             </Typography>
-        ) : (
-            <>
-              {isAnswerTime && (
-                  <Typography>{result}</Typography>
-              )}
-              {time ? (
+          ) : (
+            <Box
+              sx={{
+                display: "grid",
+                placeItems: "center",
+                marginBottom: "150px",
+              }}
+            >
+              {!isAnswerTime && nowQuiz && (
+                <>
                   <Typography
-                      component="h1"
-                      variant="h5"
-                      sx={{
-                        textAlign: "center",
-                        mb: 3,
-                      }}
+                    sx={{
+                      fontSize: "39px",
+                      fontWeight: "bold",
+                    }}
                   >
-                    {time}초 뒤 게임이 시작됩니다
+                    {nowQuiz.quizId}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
                   </Typography>
-              ) : (
-                  <Box
+                  <Typography>{nowQuiz.question}</Typography>
+                  {nowQuiz.isObjective ? (
+                    <Box
                       sx={{
-                        display: "grid",
-                        placeItems: "center",
-                        marginBottom: "150px",
+                        marginTop: "50px",
+                        display: "flex",
+                        justifyContent: "space-between",
                       }}
-                  >
-                    {!isAnswerTime && nowQuiz && (
-                        <>
-                          <Typography
+                    >
+                      <Box
+                        sx={{
+                          width: "100%",
+                          maxWidth: "600px",
+                          mx: "auto",
+                        }}
+                      >
+                        <ToggleButtonGroup
+                          exclusive
+                          value={message}
+                          onChange={(_, value) => setMessage(value)}
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: 2,
+                          }}
+                        >
+                          {nowQuiz.quizChoiceList.map((choiceList) => (
+                            <ToggleButton
+                              key={choiceList.choiceId}
+                              value={choiceList.choiceId.toString()}
                               sx={{
-                                fontSize: "39px",
-                                fontWeight: "bold",
+                                minWidth: 300,
+                                maxWidth: "100%",
                               }}
-                          >
-                            {nowQuiz.quizId}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
-                          </Typography>
-                          <Typography>{nowQuiz.question}</Typography>
-                          {nowQuiz.isObjective ? (
-                              <Box
-                                  sx={{
-                                    marginTop: "50px",
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                  }}
-                              >
-                                <Box
-                                    sx={{
-                                      width: "100%",
-                                      maxWidth: "600px",
-                                      mx: "auto",
-                                    }}
-                                >
-                                  <ToggleButtonGroup
-                                      exclusive
-                                      value={message}
-                                      onChange={(_, value) => setMessage(value)}
-                                      sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        gap: 2,
-                                      }}
-                                  >
-                                    {nowQuiz.quizChoiceList.map((choiceList) => (
-                                        <ToggleButton
-                                            key={choiceList.choiceId}
-                                            value={choiceList.choiceId.toString()}
-                                            sx={{
-                                              minWidth: 300,
-                                              maxWidth: "100%",
-                                            }}
-                                        >
-                                          {choiceList.choiceId}번. {choiceList.choiceText}
-                                        </ToggleButton>
-                                    ))}
-                                  </ToggleButtonGroup>
-                                </Box>
-                              </Box>
-                          ) : (
-                              <Box sx={{ display: "flex" }}>
-                                <TextField variant="outlined" fullWidth />
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    sx={{
-                                      ml: 1,
-                                    }}
-                                >
-                                  <SendIcon />
-                                </Button>
-                              </Box>
-                          )}
-                        </>
-                    )}
-                  </Box>
+                            >
+                              {choiceList.choiceId}번. {choiceList.choiceText}
+                            </ToggleButton>
+                          ))}
+                        </ToggleButtonGroup>
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box sx={{ display: "flex" }}>
+                      <TextField variant="outlined" fullWidth />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                          ml: 1,
+                        }}
+                      >
+                        <SendIcon />
+                      </Button>
+                    </Box>
+                  )}
+                </>
               )}
-            </>
-        )}
+            </Box>
+          )}
+        </>
+      )}
 
+      <Box
+        sx={{
+          display: "grid",
+          placeItems: "center",
+        }}
+      >
         <Box
-            sx={{
-              display: "grid",
-              placeItems: "center",
-            }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "1100px",
+          }}
         >
-          <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "1100px",
-              }}
-          >
-            {/* TODO: 닉네임이랑 프사 받아오기 */}
-            {/* {participants?.map((participant) => ( */}
-            {/*   <Card sx={{ width: "200px", height: "300px" }}> {participant.nickname} </Card> */}
-            {/*   ) */}
-            {/* )} */}
-            {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
-            {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
-            {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
-            {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
-          </Box>
-        </Box>
-
-        <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100vh",
-              p: 2,
-              backgroundColor: "#f5f5f5",
-            }}
-        >
-          <Paper
-              sx={{
-                flex: 1,
-                p: 2,
-                overflowY: "auto",
-                mb: 2,
-              }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Chat
-            </Typography>
-            <List>
-              {messages.map((msg, index) => (
-                  <ListItem key={index}>
-                    <ListItemText primary={msg.timestamp} />
-                    <ListItemText primary={msg.nickname} />
-                    <ListItemText primary={msg.message} />
-                  </ListItem>
-              ))}
-            </List>
-          </Paper>
-          <Box sx={{ display: "flex" }}>
-            <TextField
-                variant="outlined"
-                fullWidth
-                value={message}
-                onChange={(event) => handleValueChange(event, setMessage)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") sendMessage();
-                }}
-            />
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={sendMessage}
-                sx={{ ml: 1 }}
-            >
-              <SendIcon />
-            </Button>
-          </Box>
+          {/* TODO: 닉네임이랑 프사 받아오기 */}
+          {/* {participants?.map((participant) => ( */}
+          {/*   <Card sx={{ width: "200px", height: "300px" }}> {participant.nickname} </Card> */}
+          {/*   ) */}
+          {/* )} */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
+          {/* <Card sx={{ width: "200px", height: "300px" }}> 플레이어 </Card> */}
         </Box>
       </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          p: 2,
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <Paper
+          sx={{
+            flex: 1,
+            p: 2,
+            overflowY: "auto",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Chat
+          </Typography>
+          <List>
+            {messages.map((msg, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={msg.timestamp} />
+                <ListItemText primary={msg.nickname} />
+                <ListItemText primary={msg.message} />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+        <Box sx={{ display: "flex" }}>
+          <TextField
+            variant="outlined"
+            fullWidth
+            value={message}
+            onChange={(event) => handleValueChange(event, setMessage)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage();
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={sendMessage}
+            sx={{ ml: 1 }}
+          >
+            <SendIcon />
+          </Button>
+        </Box>
+      </Box>
+    </Box>
   );
 }

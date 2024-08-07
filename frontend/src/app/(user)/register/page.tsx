@@ -3,7 +3,7 @@
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/utils/authutils";
-import { FormEvent, useMemo, useState, MouseEvent, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   validateEmail,
   passwordConfirm,
@@ -40,11 +40,12 @@ export default function App() {
   const isPasswordValid = useMemo(() => validatePassword(password), [password]);
   const isPasswordConfirmed = useMemo(
     () => passwordConfirm({ password, passwordConf }),
-    [passwordConf]
+    [password, passwordConf]
   );
   const isNicknameValid = useMemo(() => validateNickname(nickname), [nickname]);
 
   useEffect(() => {
+    // @ts-expect-error : 타이머가 종류가 많아.. 엄청 많아
     let timer;
     if (isEmailSend && validationTime > 0) {
       timer = setInterval(() => {
@@ -53,6 +54,7 @@ export default function App() {
     } else if (validationTime === 0) {
       setIsEmailSend(false);
     }
+    // @ts-expect-error : 타이머가 종류가 많아.. 엄청 많아
     return () => clearInterval(timer);
   }, [isEmailSend, validationTime]);
 
@@ -60,16 +62,15 @@ export default function App() {
     if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
-  const formatTime = (seconds) => {
+  function formatTime(seconds: number) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
+  }
 
-  function handleRegister(e: FormEvent) {
-    e.preventDefault();
+  function handleRegister() {
     let error = "";
 
     switch (true) {
@@ -84,6 +85,8 @@ export default function App() {
         break;
       case !isNicknameChecked:
         error = "별명 중복 확인을 해주세요.";
+        break;
+      default:
         break;
     }
 
@@ -111,16 +114,12 @@ export default function App() {
       setIsLoading(true);
       api
         .get("/user/auth/email-dupcheck", {
-          params: {
-            email,
-          },
+          params: { email },
         })
         .then((response) => {
           if (response.status === 200) {
             api
-              .post("/user/auth/email-valid", {
-                email,
-              })
+              .post("/user/auth/email-valid", { email })
               .then((res) => {
                 if (res.status === 200) {
                   setIsLoading(false);
@@ -142,17 +141,15 @@ export default function App() {
     }
   }
 
-  function handleAuthEmailNumber(event: MouseEvent) {
-    const data = new FormData((event.currentTarget as HTMLButtonElement).form!);
+  function handleAuthEmailNumber(event: any) {
+    const data = new FormData(event.currentTarget.form);
     const authNum = data.get("authNum");
     api
-      .post("user/auth/email-valid-code", {
-        email,
-        authNum,
-      })
+      .post("user/auth/email-valid-code", { email, authNum })
       .then((response) => {
         if (response.status === 200) {
           setIsAuthEmail(true);
+          setIsEmailSend(false); // 타이머 멈춤
           alert("인증되었습니다.");
         }
       })
@@ -162,14 +159,11 @@ export default function App() {
       });
   }
 
-  function handleAuthNickname(event: MouseEvent) {
-    event.preventDefault();
+  function handleAuthNickname() {
     if (nickname && isNicknameValid) {
       api
         .get("/user/auth/nickname-dupcheck", {
-          params: {
-            nickname,
-          },
+          params: { nickname },
         })
         .then((response) => {
           if (response) {
@@ -206,7 +200,10 @@ export default function App() {
         <Box
           component="form"
           noValidate
-          onSubmit={handleRegister}
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleRegister()
+          }}
           sx={{ mt: 3 }}
         >
           <Grid container spacing={2}>
@@ -242,8 +239,10 @@ export default function App() {
                     </InputAdornment>
                   ),
                 }}
-                error={validationTime===0}
-                helperText={validationTime===0 ? "인증번호를 다시 받아주세요." : "" }
+                error={validationTime === 0}
+                helperText={
+                  validationTime === 0 ? "인증번호를 다시 받아주세요." : ""
+                }
               />
             </Grid>
             <Grid item xs={4}>
@@ -262,7 +261,9 @@ export default function App() {
                 </Button>
               ) : (
                 <Button
-                  onClick={validationTime > 0 ? handleAuthEmailNumber : handleAuthEmail}
+                  onClick={
+                    validationTime > 0 ? handleAuthEmailNumber : handleAuthEmail
+                  }
                   fullWidth
                   disabled={isAuthEmail}
                   variant="contained"
@@ -325,7 +326,10 @@ export default function App() {
                 fullWidth
                 variant="contained"
                 disabled={isNicknameChecked}
-                onClick={handleAuthNickname}
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleAuthNickname();
+                }}
                 sx={{
                   fontSize: "0.75rem",
                   height: "56px",
