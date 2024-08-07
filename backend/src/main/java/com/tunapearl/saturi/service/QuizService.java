@@ -42,7 +42,7 @@ public class QuizService {
     
     // 랜덤 퀴즈 id 조회(10개)
     public List<Long> findRandomIdByLocation(Long locationId) throws RuntimeException{
-        List<Long> idList = quizRepository.getAvailableQuizId();
+        List<Long> idList = quizRepository.getAvailableQuizId(locationId);
         if(idList.size() < 10) throw new RuntimeException(String.format("Find Ten Quiz Randomly: 문제가 부족합니다: %d", locationId));
 
         Collections.shuffle(idList);
