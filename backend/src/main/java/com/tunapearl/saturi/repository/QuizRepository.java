@@ -66,14 +66,22 @@ public class QuizRepository {
     }
 
     public void deleteQuizById(Long quizId){
-        em.remove(em.find(QuizEntity.class, quizId));
+        em.createQuery("delete from QuizEntity q where q.quizId = :quizId")
+                .setParameter("quizId", quizId)
+                .executeUpdate();
     }
 
-    public void deleteChoiceByQuizId(Long quizId){
+    public void deleteChoicesByQuizId(Long quizId){
         em.createQuery("delete from QuizChoiceEntity c where c.quizChoicePK.quizId = :quizId")
                 .setParameter("quizId", quizId)
                 .executeUpdate();
         em.clear();
+    }
+
+    public void deleteChoicesByQuiz(QuizEntity quiz){
+        em.createQuery("delete from QuizChoiceEntity c where c.quiz = :quiz")
+                .setParameter("quiz", quiz)
+                .executeUpdate();
     }
 
     private BooleanExpression quizIdEq(QQuizEntity quiz, Long quizIdCond){

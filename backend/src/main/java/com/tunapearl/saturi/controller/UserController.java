@@ -1,10 +1,13 @@
 package com.tunapearl.saturi.controller;
 
 
+import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
+import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.user.*;
 import com.tunapearl.saturi.exception.*;
 import com.tunapearl.saturi.repository.UserRepository;
+import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.service.user.SocialUserService;
 import com.tunapearl.saturi.service.user.TokenService;
 import com.tunapearl.saturi.service.user.UserService;
@@ -20,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,7 +38,7 @@ public class UserController {
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
     private final UserRepository userRepository;
-
+    private final LessonService lessonService;
 
     /**
      * 일반회원 회원가입
@@ -214,10 +218,23 @@ public class UserController {
         log.info("Received normal user dashboard request for {}", authorization);
         Long userId = jwtUtil.getUserId(authorization);
         UserExpInfoDTO userExpInfo = userService.getUserExpInfo(userId);
-        UserRecentLessonGroupDTO recentLessonGroup = userService.getUserRecentLessonGroup(userId);
-        UserContinuousLearnDayDTO continuousLearnDay = userService.getUserContinuousLearnDay(userId);
-        List<UserStreakInfoDaysDTO> streakInfoDays = userService.getUserStreakInfoDays(userId);
-        UserTotalLessonInfoDTO totalLessonInfo = userService.getUserTotalLessonInfo(userId);
+
+        // 유저 아이디로 모든 레슨 그룹 결과 조회
+        List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+        if(lessonGroupResults == null) {
+            return ResponseEntity.ok().body(new UserDashboardResponseDTO(userExpInfo, new UserRecentLessonGroupDTO(), new UserContinuousLearnDayDTO(), new ArrayList<>(), new UserTotalLessonInfoDTO()));
+        }
+
+        // 레슨 그룹 키 in절로 한번에 하기 위한 id list
+        List<Long> lessonGroupResultIds = lessonGroupResults.stream()
+                .map(LessonGroupResultEntity::getLessonGroupResultId)
+                .toList();
+        List<LessonResultEntity> findLessonResult = lessonService.findLessonResultByLessonGroupResultId(lessonGroupResultIds);
+
+        UserRecentLessonGroupDTO recentLessonGroup = userService.getUserRecentLessonGroup(userId, lessonGroupResults);
+        UserContinuousLearnDayDTO continuousLearnDay = userService.getUserContinuousLearnDay(userId, lessonGroupResults, findLessonResult);
+        List<UserStreakInfoDaysDTO> streakInfoDays = userService.getUserStreakInfoDays(userId, lessonGroupResults, findLessonResult);
+        UserTotalLessonInfoDTO totalLessonInfo = userService.getUserTotalLessonInfo(userId, lessonGroupResults, findLessonResult);
 
         return ResponseEntity.ok().body(new UserDashboardResponseDTO(userExpInfo, recentLessonGroup,
                 continuousLearnDay, streakInfoDays, totalLessonInfo));

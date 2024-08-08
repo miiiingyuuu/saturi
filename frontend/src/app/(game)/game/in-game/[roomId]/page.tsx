@@ -24,6 +24,12 @@ import useConfirmLeave from "@/hooks/useConfirmLeave";
 import { useRouter } from "next/navigation"
 import { styled } from "@mui/material/styles"
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import AnnouncementIcon from '@mui/icons-material/Announcement';
+import api from "@/lib/axios";
+
+type IsClickedState = {
+  [key: number]: boolean;
+};
 
 export default function App({ params: { roomId } }: RoomIdProps) {
   const router = useRouter()
@@ -40,6 +46,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [participants, setParticipants] = useState<ParticipantsProps[]>([]);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [highlightedNick, setHighlightedNick] = useState<string | null>(null);
+  const [isClicked, setIsClicked] = useState<IsClickedState>({});
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -87,6 +94,13 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     setMessage("");
   }
 
+  function reportChat(chatLogId: number) {
+    api.post(`/game/user/${chatLogId}`)
+        .then(response => {
+          setIsClicked(prev => ({...prev, [chatLogId]: true}))
+          alert("신고 완료되었습니다.")
+        })
+  }
 
   useEffect(() => {
     const you = getCookie("nickname");
@@ -130,6 +144,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           const body = JSON.parse(message.body);
           console.log(body)
           if (body.correct) {
+            setMessage("")
             if (you === body.senderNickName) {
               setResult("정답입니다!");
             } else {
@@ -170,6 +185,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             timestamp,
             message: body.message,
             nickname: body.senderNickName,
+            chatLogId: body.chatLogId
           };
           setMessages((prevMsg) => [newMsg, ...prevMsg]);
         });
@@ -409,6 +425,11 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 <ListItemText primary={msg.timestamp} />
                 <ListItemText primary={msg.nickname} />
                 <ListItemText primary={msg.message} />
+                {!(msg.nickname===getCookie("nickname"))&&!isClicked[msg.chatLogId] && (
+                <AnnouncementIcon
+                  onClick={() => reportChat(msg.chatLogId)}
+                />
+                    )}
               </ListItem>
             ))}
           </List>
