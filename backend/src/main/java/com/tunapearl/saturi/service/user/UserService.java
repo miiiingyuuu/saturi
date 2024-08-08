@@ -272,7 +272,7 @@ public class UserService {
 
     public String setEmailSend(String email) throws MessagingException {
         String authCode = makeRandomAuthCode();
-        String setFromEmail = "gkwo7108@gmail.com";
+        String setFromEmail = "saturi0422@gmail.com";
         //FIXME 인증 보내는 내용 수정 필요(디자인)
         String title = "사투리가 서툴러유 인증번호";
         String content = "사투리가 서툴러유를 방문해주셔서 감사합니다😊" + "<br><br>" + "인증 번호는 [ " + authCode + " ] 입니다." + "<br>" + "인증번호를 홈페이지에서 입력해주세요";
