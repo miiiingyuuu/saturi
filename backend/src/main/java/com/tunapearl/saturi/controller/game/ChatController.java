@@ -76,32 +76,31 @@ public class ChatController {
         message.setSenderNickName(userProfile.getNickname());
 
         if (MessageType.ENTER.equals(message.getChatType())) {
+            GameParticipantResponseDTO dto = new GameParticipantResponseDTO();
 
+            dto.setChatType(MessageType.ENTER);
             if (chatService.enterGameRoom(message.getRoomId())) {//다 모였다
 
-                GameParticipantResponseDTO dto = new GameParticipantResponseDTO();
-//                message.setChatType(MessageType.START);
                 dto.setChatType(MessageType.START);
-                dto.setMessage(message.getSenderNickName() + "님이 입장하셨습니다.");
-                dto.setSenderNickName(message.getSenderNickName());
-
-                //참여자정보 가져와
-                List<GameRoomParticipantEntity> participantEntityList = gameRoomParticipantService.findByRoomId(message.getRoomId());
-                List<GameParticipantDTO> participantDTOList = new ArrayList<>();
-                for (GameRoomParticipantEntity participant : participantEntityList) {
-                    GameParticipantDTO participantDTO = new GameParticipantDTO();
-
-                    participantDTO.setNickName(participant.getUser().getNickname());
-                    participantDTO.setBirdId(participant.getUser().getBird().getId());
-                    participantDTOList.add(participantDTO);
-                }
-                dto.setParticipants(participantDTOList);
-
-                redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());
-            } else {
-                message.setMessage(message.getSenderNickName() + "님이 입장하셨습니다.");
-                redisPublisher.gamePublish(chatService.getRoomTopic(message.getRoomId()), message);
             }
+
+            dto.setMessage(message.getSenderNickName() + "님이 입장하셨습니다.");
+            dto.setSenderNickName(message.getSenderNickName());
+
+            //참여자정보 가져와
+            List<GameRoomParticipantEntity> participantEntityList = gameRoomParticipantService.findByRoomId(message.getRoomId());
+            List<GameParticipantDTO> participantDTOList = new ArrayList<>();
+            for (GameRoomParticipantEntity participant : participantEntityList) {
+                GameParticipantDTO participantDTO = new GameParticipantDTO();
+
+                participantDTO.setNickName(participant.getUser().getNickname());
+                participantDTO.setBirdId(participant.getUser().getBird().getId());
+                participantDTO.setExited(participant.isExited());
+                participantDTOList.add(participantDTO);
+            }
+            dto.setParticipants(participantDTOList);
+
+            redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());
 
         } else if (MessageType.QUIZ.equals(message.getChatType())) {
 

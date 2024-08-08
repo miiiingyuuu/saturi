@@ -76,12 +76,12 @@ public class RedisSubscriber implements MessageListener {
                     }
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, quizList);
 
-                } else if ("START".equals(subType)) {
+                } else if ("START".equals(subType)||"ENTER".equals(subType)) {
                     JsonNode data = jsonNode.get("data");
                     String roomId = jsonNode.get("roomId").asText();
 
                     GameParticipantResponseDTO gprDto = GameParticipantResponseDTO.builder()
-                            .chatType(MessageType.START)
+                            .chatType(jsonNode.get("subType").asText().equals("START")?MessageType.START:MessageType.ENTER)
                             .senderNickName(data.get("senderNickName").asText())
                             .message(data.get("message").asText())
                             .build();

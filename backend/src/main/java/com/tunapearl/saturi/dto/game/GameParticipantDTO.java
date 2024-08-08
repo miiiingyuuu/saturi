@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class GameParticipantDTO {
     private String nickName;
     private long birdId;
+    private boolean isExited;
 }
