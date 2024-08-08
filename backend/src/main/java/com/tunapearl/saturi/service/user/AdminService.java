@@ -50,8 +50,8 @@ public class AdminService {
         return lessonRepository.findLessonGroupByLocationId(locationId).orElse(null);
     }
 
-    public List<LessonGroupResultEntity> findLessonGroupResultByLessonGroupId(Long lessonGroupId) {
-        return lessonRepository.findLessonGroupResultByLessonGroupId(lessonGroupId).orElse(null);
+    public List<LessonGroupResultEntity> findLessonGroupResultByLessonGroupId(List<Long> lessonGroupIds) {
+        return lessonRepository.findLessonGroupResultByLessonGroupId(lessonGroupIds).orElse(null);
     }
 
     public List<LessonClaimEntity> findAllLessonClaim() {
