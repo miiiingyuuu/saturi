@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -220,6 +221,9 @@ public class UserController {
 
         // 유저 아이디로 모든 레슨 그룹 결과 조회
         List<LessonGroupResultEntity> lessonGroupResults = lessonService.findLessonGroupResultWithoutIsCompletedAllByUserId(userId);
+        if(lessonGroupResults == null) {
+            return ResponseEntity.ok().body(new UserDashboardResponseDTO(userExpInfo, new UserRecentLessonGroupDTO(), new UserContinuousLearnDayDTO(), new ArrayList<>(), new UserTotalLessonInfoDTO()));
+        }
 
         // 레슨 그룹 키 in절로 한번에 하기 위한 id list
         List<Long> lessonGroupResultIds = lessonGroupResults.stream()

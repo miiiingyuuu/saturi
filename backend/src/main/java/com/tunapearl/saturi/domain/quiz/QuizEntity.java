@@ -70,17 +70,17 @@ public class QuizEntity {
     /*
     *  수정 메서드
     */
-    public static QuizEntity updateQuiz(QuizEntity quiz, QuizUpdateRequestDTO updateDto, LocationEntity location) {
-        quiz.location = location;
-        quiz.question = updateDto.getQuestion();
-        quiz.creationDt = LocalDateTime.now();
-        quiz.isObjective = updateDto.getIsObjective();
+    public QuizEntity updateQuiz(QuizUpdateRequestDTO updateDto, LocationEntity location) {
+        this.location = location;
+        this.question = updateDto.getQuestion();
+        this.creationDt = LocalDateTime.now();
+        this.isObjective = updateDto.getIsObjective();
 
-        quiz.quizChoiceList.clear();
+        this.quizChoiceList.clear();
         for(QuizUpdateRequestDTO.Choice choice: updateDto.getChoiceList()){
             QuizChoiceEntity entity = QuizChoiceEntity.createQuizChoice(choice.getChoiceId(), choice.getContent(), choice.getIsAnswer());
-            quiz.addQuizChoice(entity);
+            this.addQuizChoice(entity);
         }
-        return quiz;
+        return this;
     }
 }
