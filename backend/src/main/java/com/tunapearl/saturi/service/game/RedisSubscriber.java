@@ -92,13 +92,13 @@ public class RedisSubscriber implements MessageListener {
                             GameParticipantDTO gpDto = GameParticipantDTO.builder()
                                     .nickName(e.get("nickName").asText())
                                     .birdId(e.get("birdId").asLong())
+                                    .isExited(e.get("isExited").asBoolean())
                                     .build();
                             log.info("gprDto: {}", gpDto);
                             gprDto.addParticipant(gpDto);
                         }
                     }
 
-                    log.info("RedisSubscriber START:::::: Dto:{}", gprDto);
                     log.info("roomId: {}", roomId);
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, gprDto);
                 } else if ("EXIT".equals(subType)) {
