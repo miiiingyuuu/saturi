@@ -159,7 +159,7 @@ public class ChatService {
     @Transactional
     public QuizMessage playGame(QuizMessage message) {
 
-        if (message.getQuizId() > 0) {
+        if (message.getQuizId() > 1) {
 
             //정답판단 로직
             QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
