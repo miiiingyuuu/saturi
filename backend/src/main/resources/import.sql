@@ -69,7 +69,10 @@ INSERT INTO lesson_group (lesson_category_id, location_id, name) VALUES
                     (2, 3, '경기도 드라마 대사 첫번째 퍼즐'), (2, 3, '경기도 드라마 대사 두번째 퍼즐'), (2, 3, '경기도 드라마 대사 세번째 퍼즐'), (2, 3, '경기도 드라마 대사 네번째 퍼즐'), (2, 3, '경기도 드라마 대사 다섯번째 퍼즐'),
                     (3, 3, '경기도 영화 대사 첫번째 퍼즐'), (3, 3, '경기도 영화 대사 두번째 퍼즐'), (3, 3, '경기도 영화 대사 세번째 퍼즐'), (3, 3, '경기도 영화 대사 네번째 퍼즐'), (3, 3, '경기도 영화 대사 다섯번째 퍼즐'),
                     (4, 3, '경기도 밈 첫번째 퍼즐'), (4, 3, '경기도 밈 두번째 퍼즐'), (4, 3, '경기도 밈 세번째 퍼즐'), (4, 3, '경기도 밈 네번째 퍼즐'), (4, 3, '경기도 밈 다섯번째 퍼즐'),
-                    (1, 3, '경기도 일상 첫번째 퍼즐'), (1, 3, '경기도 일상 두번째 퍼즐'), (1, 3, '경기도 일상 세번째 퍼즐'), (1, 3, '경기도 일상 네번째 퍼즐'), (1, 3, '경기도 일상 다섯번째 퍼즐');
+                    (1, 3, '경기도 일상 첫번째 퍼즐'), (1, 3, '경기도 일상 두번째 퍼즐'), (1, 3, '경기도 일상 세번째 퍼즐'), (1, 3, '경기도 일상 네번째 퍼즐'), (1, 3, '경기도 일상 다섯번째 퍼즐'),
+
+                    (2, 4, '강원도 드라마 첫번째 퍼즐'), (2, 4, '강원도 드라마 두번째 퍼즐'), (2, 5, '충청도 드라마 첫번째 퍼즐'), (2, 5, '충청도 드라마 두번째 퍼즐'),
+                    (2, 6, '전라도 드라마 첫번째 퍼즐'), (2, 6, '전라도 드라마 두번째 퍼즐'), (2, 7, '제주도 드라마 첫번째 퍼즐'), (2, 7, '제주도 드라마 두번째 퍼즐');
 
 /*레슨_경상도_드라마*/
 INSERT INTO lesson (lesson_group_id, sample_voice_path, sample_voice_name, script, last_update_dt, is_deleted) VALUES
@@ -197,46 +200,64 @@ INSERT INTO lesson_group_result (is_completed,avg_accuracy,avg_similarity,end_dt
 
         /* 개별 레슨 결과 */
 INSERT INTO lesson_result (is_skipped, accent_similarity, lesson_dt, lesson_group_result_id, lesson_id, pronunciation_accuracy) VALUES
-(false, 77, now(), 3, 46, 88), (false, 77, date_sub(now(), interval 1 day), 3, 47, 88), (false, 77, date_sub(now(), interval 2 day), 3, 48, 88), (false, 77, date_sub(now(), interval 3 day), 3, 49, 88), (false, 77, date_sub(now(), interval 4 day), 3, 50, 88),
-(false, 77, date_sub(now(), interval 5 day), 2, 51, 88), (false, 77, date_sub(now(), interval 6 day), 2, 52, 88), (true, null, date_sub(now(), interval 6 day), 2, 53, null), (true, null, date_sub(now(), interval 6 day), 2, 54, null), (true, null, date_sub(now(), interval 6 day), 2, 55, null),
-(false, 77, date_sub(now(), interval 7 day), 1, 56, 88), (false, 77, date_sub(now(), interval 8 day), 1, 57, 88),
+                        (false, 77, now(), 3, 46, 88), (false, 77, date_sub(now(), interval 1 day), 3, 47, 88), (false, 77, date_sub(now(), interval 2 day), 3, 48, 88), (false, 77, date_sub(now(), interval 3 day), 3, 49, 88), (false, 77, date_sub(now(), interval 4 day), 3, 50, 88),
+                        (false, 77, date_sub(now(), interval 5 day), 2, 51, 88), (false, 77, date_sub(now(), interval 6 day), 2, 52, 88), (true, null, date_sub(now(), interval 6 day), 2, 53, null), (true, null, date_sub(now(), interval 6 day), 2, 54, null), (true, null, date_sub(now(), interval 6 day), 2, 55, null),
+                        (false, 77, date_sub(now(), interval 7 day), 1, 56, 88), (false, 77, date_sub(now(), interval 8 day), 1, 57, 88),
 
-(false, 77, now(), 4, 1, 88), (false, 77, now(), 4, 2, 88), (false, 77, now(), 4, 3, 88), (false, 77, now(), 4, 4, 88), (false, 77, now(), 4, 5, 88),
-(false, 77, date_sub(now(), interval 1 day), 5, 6, 88), (false, 77, date_sub(now(), interval 2 day), 5, 7, 88), (false, 77, date_sub(now(), interval 2 day), 5, 8, 88), (false, 77, date_sub(now(), interval 3 day), 5, 9, 88), (false, 77, date_sub(now(), interval 4 day), 5, 10, 88),
-(false, 77, date_sub(now(), interval 5 day), 6, 11, 88), (false, 77, date_sub(now(), interval 5 day), 6, 12, 88), (false, 77, date_sub(now(), interval 6 day), 6, 13, 88), (false, 77, date_sub(now(), interval 7 day), 6, 14, 88), (false, 77, date_sub(now(), interval 8 day), 6, 15, 88),
-(false, 77, date_sub(now(), interval 9 day), 7, 16, 88), (false, 77, date_sub(now(), interval 9 day), 7, 17, 88), (false, 77, date_sub(now(), interval 9 day), 7, 18, 88), (false, 77, date_sub(now(), interval 10 day), 7, 19, 88), (false, 77, date_sub(now(), interval 11 day), 7, 20, 88),
-(false, 77, date_sub(now(), interval 12 day), 8, 21, 88), (false, 77, date_sub(now(), interval 13 day), 8, 22, 88), (false, 77, date_sub(now(), interval 14 day), 8, 23, 88), (false, 77, date_sub(now(), interval 15 day), 8, 24, 88), (false, 77, date_sub(now(), interval 16 day), 8, 25, 88),
-(false, 77, date_sub(now(), interval 17 day), 9, 26, 88), (false, 77, date_sub(now(), interval 18 day), 9, 27, 88), (false, 77, date_sub(now(), interval 18 day), 9, 28, 88), (false, 77, date_sub(now(), interval 19 day), 9, 29, 88), (false, 77, date_sub(now(), interval 20 day), 9, 30, 88),
-(false, 77, date_sub(now(), interval 21 day), 10, 31, 88), (false, 77, date_sub(now(), interval 22 day), 10, 32, 88), (false, 77, date_sub(now(), interval 23 day), 10, 33, 88), (false, 77, date_sub(now(), interval 24 day), 10, 34, 88), (false, 77, date_sub(now(), interval 25 day), 10, 35, 88),
-(false, 77, date_sub(now(), interval 26 day), 11, 36, 88), (false, 77, date_sub(now(), interval 27 day), 11, 37, 88), (false, 77, date_sub(now(), interval 28 day), 11, 38, 88), (false, 77, date_sub(now(), interval 29 day), 11, 39, 88), (false, 77, date_sub(now(), interval 30 day), 11, 40, 88),
-(false, 77, date_sub(now(), interval 31 day), 12, 41, 88), (false, 77, date_sub(now(), interval 32 day), 12, 42, 88), (false, 77, date_sub(now(), interval 33 day), 12, 43, 88), (false, 77, date_sub(now(), interval 34 day), 12, 44, 88), (false, 77, date_sub(now(), interval 34 day), 12, 45, 88);
+                        (false, 77, now(), 4, 1, 88), (false, 77, now(), 4, 2, 88), (false, 77, now(), 4, 3, 88), (false, 77, now(), 4, 4, 88), (false, 77, now(), 4, 5, 88),
+                        (false, 77, date_sub(now(), interval 1 day), 5, 6, 88), (false, 77, date_sub(now(), interval 2 day), 5, 7, 88), (false, 77, date_sub(now(), interval 2 day), 5, 8, 88), (false, 77, date_sub(now(), interval 3 day), 5, 9, 88), (false, 77, date_sub(now(), interval 4 day), 5, 10, 88),
+                        (false, 77, date_sub(now(), interval 5 day), 6, 11, 88), (false, 77, date_sub(now(), interval 5 day), 6, 12, 88), (false, 77, date_sub(now(), interval 6 day), 6, 13, 88), (false, 77, date_sub(now(), interval 7 day), 6, 14, 88), (false, 77, date_sub(now(), interval 8 day), 6, 15, 88),
+                        (false, 77, date_sub(now(), interval 9 day), 7, 16, 88), (false, 77, date_sub(now(), interval 9 day), 7, 17, 88), (false, 77, date_sub(now(), interval 9 day), 7, 18, 88), (false, 77, date_sub(now(), interval 10 day), 7, 19, 88), (false, 77, date_sub(now(), interval 11 day), 7, 20, 88),
+                        (false, 77, date_sub(now(), interval 12 day), 8, 21, 88), (false, 77, date_sub(now(), interval 13 day), 8, 22, 88), (false, 77, date_sub(now(), interval 14 day), 8, 23, 88), (false, 77, date_sub(now(), interval 15 day), 8, 24, 88), (false, 77, date_sub(now(), interval 16 day), 8, 25, 88),
+                        (false, 77, date_sub(now(), interval 17 day), 9, 26, 88), (false, 77, date_sub(now(), interval 18 day), 9, 27, 88), (false, 77, date_sub(now(), interval 18 day), 9, 28, 88), (false, 77, date_sub(now(), interval 19 day), 9, 29, 88), (false, 77, date_sub(now(), interval 20 day), 9, 30, 88),
+                        (false, 77, date_sub(now(), interval 21 day), 10, 31, 88), (false, 77, date_sub(now(), interval 22 day), 10, 32, 88), (false, 77, date_sub(now(), interval 23 day), 10, 33, 88), (false, 77, date_sub(now(), interval 24 day), 10, 34, 88), (false, 77, date_sub(now(), interval 25 day), 10, 35, 88),
+                        (false, 77, date_sub(now(), interval 26 day), 11, 36, 88), (false, 77, date_sub(now(), interval 27 day), 11, 37, 88), (false, 77, date_sub(now(), interval 28 day), 11, 38, 88), (false, 77, date_sub(now(), interval 29 day), 11, 39, 88), (false, 77, date_sub(now(), interval 30 day), 11, 40, 88),
+                        (false, 77, date_sub(now(), interval 31 day), 12, 41, 88), (false, 77, date_sub(now(), interval 32 day), 12, 42, 88), (false, 77, date_sub(now(), interval 33 day), 12, 43, 88), (false, 77, date_sub(now(), interval 34 day), 12, 44, 88), (false, 77, date_sub(now(), interval 34 day), 12, 45, 88);
 
 INSERT INTO lesson_record_file (lesson_result_id, user_voice_file_name, user_voice_file_path, user_voice_script) VALUES
-(1, 'file_sample.wav', 'no path', '보며안되니'), (2, 'file_sample.wav', 'no path', '왜이래'), (3, 'file_sample.wav', 'no path', '나도가호가있잖니'), (4, 'file_sample.wav', 'no path', '이제곧추석이네'), (5, 'file_sample.wav', 'no path', '쥬스마셔야지'),
-(6, 'file_sample.wav', 'no path', '사연있나'), (7, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (11, 'file_sample.wav', 'no path', '사연있나'), (12, 'file_sample.wav', 'no path', '사연있나'),
+                            (1, 'file_sample.wav', 'no path', '보며안되니'), (2, 'file_sample.wav', 'no path', '왜이래'), (3, 'file_sample.wav', 'no path', '나도가호가있잖니'), (4, 'file_sample.wav', 'no path', '이제곧추석이네'), (5, 'file_sample.wav', 'no path', '쥬스마셔야지'),
+                            (6, 'file_sample.wav', 'no path', '사연있나'), (7, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (11, 'file_sample.wav', 'no path', '사연있나'), (12, 'file_sample.wav', 'no path', '사연있나'),
 
-(13, 'file_sample.wav', 'no path', '가시내운동하나도안했니'), (14, 'file_sample.wav', 'no path', '그거 내만 안되는거 아니거든'), (15, 'file_sample.wav', 'no path', '그거 하나 몬해주나'), (16, 'file_sample.wav', 'no path', '그런거 아이다'),
-(17, 'file_sample.wav', 'no path', '난 당신이 싫습니다'), (18, 'file_sample.wav', 'no path', '난 당신이 좋습니다'), (19, 'file_sample.wav', 'no path', '니같은 금수한테 뮤지컬이 웬말이고'), (20, 'file_sample.wav', 'no path', '니하고 아무 상관없다'),
-(21, 'file_sample.wav', 'no path', '떡볶이나 쳐먹자'), (22, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (23, 'file_sample.wav', 'no path', '사연있나'), (24, 'file_sample.wav', 'no path', '사연있나'),
-(25, 'file_sample.wav', 'no path', '사연있나'), (26, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (27, 'file_sample.wav', 'no path', '사연있나'), (28, 'file_sample.wav', 'no path', '사연있나'),
-(29, 'file_sample.wav', 'no path', '사연있나'), (30, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (31, 'file_sample.wav', 'no path', '사연있나'), (32, 'file_sample.wav', 'no path', '사연있나'),
-(33, 'file_sample.wav', 'no path', '사연있나'), (34, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (35, 'file_sample.wav', 'no path', '사연있나'), (36, 'file_sample.wav', 'no path', '사연있나'),
-(37, 'file_sample.wav', 'no path', '사연있나'), (38, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (39, 'file_sample.wav', 'no path', '사연있나'), (40, 'file_sample.wav', 'no path', '사연있나'),
-(41, 'file_sample.wav', 'no path', '사연있나'), (42, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (43, 'file_sample.wav', 'no path', '사연있나'), (44, 'file_sample.wav', 'no path', '사연있나'),
-(45, 'file_sample.wav', 'no path', '사연있나'), (46, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (47, 'file_sample.wav', 'no path', '사연있나'), (48, 'file_sample.wav', 'no path', '사연있나'),
-(49, 'file_sample.wav', 'no path', '사연있나'), (50, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (51, 'file_sample.wav', 'no path', '사연있나'), (52, 'file_sample.wav', 'no path', '사연있나'),
-(53, 'file_sample.wav', 'no path', '사연있나'), (54, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (55, 'file_sample.wav', 'no path', '사연있나'), (56, 'file_sample.wav', 'no path', '사연있나'),
-(57, 'file_sample.wav', 'no path', '사연있나');
+                            (13, 'file_sample.wav', 'no path', '가시내운동하나도안했니'), (14, 'file_sample.wav', 'no path', '그거 내만 안되는거 아니거든'), (15, 'file_sample.wav', 'no path', '그거 하나 몬해주나'), (16, 'file_sample.wav', 'no path', '그런거 아이다'),
+                            (17, 'file_sample.wav', 'no path', '난 당신이 싫습니다'), (18, 'file_sample.wav', 'no path', '난 당신이 좋습니다'), (19, 'file_sample.wav', 'no path', '니같은 금수한테 뮤지컬이 웬말이고'), (20, 'file_sample.wav', 'no path', '니하고 아무 상관없다'),
+                            (21, 'file_sample.wav', 'no path', '떡볶이나 쳐먹자'), (22, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (23, 'file_sample.wav', 'no path', '사연있나'), (24, 'file_sample.wav', 'no path', '사연있나'),
+                            (25, 'file_sample.wav', 'no path', '사연있나'), (26, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (27, 'file_sample.wav', 'no path', '사연있나'), (28, 'file_sample.wav', 'no path', '사연있나'),
+                            (29, 'file_sample.wav', 'no path', '사연있나'), (30, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (31, 'file_sample.wav', 'no path', '사연있나'), (32, 'file_sample.wav', 'no path', '사연있나'),
+                            (33, 'file_sample.wav', 'no path', '사연있나'), (34, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (35, 'file_sample.wav', 'no path', '사연있나'), (36, 'file_sample.wav', 'no path', '사연있나'),
+                            (37, 'file_sample.wav', 'no path', '사연있나'), (38, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (39, 'file_sample.wav', 'no path', '사연있나'), (40, 'file_sample.wav', 'no path', '사연있나'),
+                            (41, 'file_sample.wav', 'no path', '사연있나'), (42, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (43, 'file_sample.wav', 'no path', '사연있나'), (44, 'file_sample.wav', 'no path', '사연있나'),
+                            (45, 'file_sample.wav', 'no path', '사연있나'), (46, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (47, 'file_sample.wav', 'no path', '사연있나'), (48, 'file_sample.wav', 'no path', '사연있나'),
+                            (49, 'file_sample.wav', 'no path', '사연있나'), (50, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (51, 'file_sample.wav', 'no path', '사연있나'), (52, 'file_sample.wav', 'no path', '사연있나'),
+                            (53, 'file_sample.wav', 'no path', '사연있나'), (54, 'file_sample.wav', 'no path', '장구오늘첫날이니'), (55, 'file_sample.wav', 'no path', '사연있나'), (56, 'file_sample.wav', 'no path', '사연있나'),
+                            (57, 'file_sample.wav', 'no path', '사연있나');
 
 
 INSERT INTO lesson_record_graph (lesson_result_id, graphx, graphy) VALUES
-(1, '[x]', '[y]'), (2, '[x]', '[y]'), (3, '[x]', '[y]'), (4, '[x]', '[y]'), (5, '[x]', '[y]'), (6, '[x]', '[y]'), (7, '[x]', '[y]'), (11, '[x]', '[y]'), (12, '[x]', '[y]'),
+                            (1, '[x]', '[y]'), (2, '[x]', '[y]'), (3, '[x]', '[y]'), (4, '[x]', '[y]'), (5, '[x]', '[y]'), (6, '[x]', '[y]'), (7, '[x]', '[y]'), (11, '[x]', '[y]'), (12, '[x]', '[y]'),
 
-(13, '[x]', '[y]'), (14, '[x]', '[y]'), (15, '[x]', '[y]'), (16, '[x]', '[y]'), (17, '[x]', '[y]'), (18, '[x]', '[y]'), (19, '[x]', '[y]'), (20, '[x]', '[y]'), (21, '[x]', '[y]'),
-(22, '[x]', '[y]'), (23, '[x]', '[y]'), (24, '[x]', '[y]'), (25, '[x]', '[y]'), (26, '[x]', '[y]'), (27, '[x]', '[y]'), (28, '[x]', '[y]'), (29, '[x]', '[y]'), (30, '[x]', '[y]'),
-(31, '[x]', '[y]'), (32, '[x]', '[y]'), (33, '[x]', '[y]'), (34, '[x]', '[y]'), (35, '[x]', '[y]'), (36, '[x]', '[y]'), (37, '[x]', '[y]'), (38, '[x]', '[y]'), (39, '[x]', '[y]'),
-(40, '[x]', '[y]'), (41, '[x]', '[y]'), (42, '[x]', '[y]'), (43, '[x]', '[y]'), (44, '[x]', '[y]'), (45, '[x]', '[y]'), (46, '[x]', '[y]'), (47, '[x]', '[y]'), (48, '[x]', '[y]'),
-(49, '[x]', '[y]'), (50, '[x]', '[y]'), (51, '[x]', '[y]'), (52, '[x]', '[y]'), (53, '[x]', '[y]'), (54, '[x]', '[y]'), (55, '[x]', '[y]'), (56, '[x]', '[y]'), (57, '[x]', '[y]');
+                            (13, '[x]', '[y]'), (14, '[x]', '[y]'), (15, '[x]', '[y]'), (16, '[x]', '[y]'), (17, '[x]', '[y]'), (18, '[x]', '[y]'), (19, '[x]', '[y]'), (20, '[x]', '[y]'), (21, '[x]', '[y]'),
+                            (22, '[x]', '[y]'), (23, '[x]', '[y]'), (24, '[x]', '[y]'), (25, '[x]', '[y]'), (26, '[x]', '[y]'), (27, '[x]', '[y]'), (28, '[x]', '[y]'), (29, '[x]', '[y]'), (30, '[x]', '[y]'),
+                            (31, '[x]', '[y]'), (32, '[x]', '[y]'), (33, '[x]', '[y]'), (34, '[x]', '[y]'), (35, '[x]', '[y]'), (36, '[x]', '[y]'), (37, '[x]', '[y]'), (38, '[x]', '[y]'), (39, '[x]', '[y]'),
+                            (40, '[x]', '[y]'), (41, '[x]', '[y]'), (42, '[x]', '[y]'), (43, '[x]', '[y]'), (44, '[x]', '[y]'), (45, '[x]', '[y]'), (46, '[x]', '[y]'), (47, '[x]', '[y]'), (48, '[x]', '[y]'),
+                            (49, '[x]', '[y]'), (50, '[x]', '[y]'), (51, '[x]', '[y]'), (52, '[x]', '[y]'), (53, '[x]', '[y]'), (54, '[x]', '[y]'), (55, '[x]', '[y]'), (56, '[x]', '[y]'), (57, '[x]', '[y]');
+
+/* 레슨 신고 기록 */
+INSERT INTO lesson_claim (claim_dt, lesson_id, user_id, content) VALUES
+                        (date_sub(now(), interval 5 day), 13, 5, '문제가 너무 길어요'),(date_sub(now(), interval 4 day), 13, 7, '문제가 너무 무서워요'),(date_sub(now(), interval 7 day), 13, 9, 'so hard'),
+                        (date_sub(now(), interval 3 day), 13, 2, '개어렵네요'),(date_sub(now(), interval 1 day), 13, 14, '문제 좀 바꿔라 에휴'),(date_sub(now(), interval 1 day), 20, 4, '너무 짧아서 음성인식이 안돼요'),
+                        (date_sub(now(), interval 2 day), 20, 6, '뭐라하는지 모르겠습니다'),(date_sub(now(), interval 3 day), 20, 8, '뭘 모르는데'),(date_sub(now(), interval 7 day), 28, 3, '사람이 왜 두명입니까'),
+                        (date_sub(now(), interval 11 day), 28, 15, '저는 조용히 하고싶은데요'),(date_sub(now(), interval 5 day), 28, 6, '별로'),(date_sub(now(), interval 2 day), 49, 3, '너무 길다고요'),
+                        (date_sub(now(), interval 5 day), 49, 2, '문제 차이가 너무 심한데'),(date_sub(now(), interval 6 day), 69, 3, '녹음하신분 목소리가 킹받아요'),(date_sub(now(), interval 1 day), 69, 16, '아 열받네요'),
+                        (date_sub(now(), interval 1 day), 69, 13, '킹받네'),(date_sub(now(), interval 1 day), 73, 21, '발음이 너무 안좋은데요');
+
+/* 지역별 레슨 평균 유사도/정확도 통계를 위한 레슨 그룹 결과 */
+INSERT INTO lesson_group_result (is_completed,avg_accuracy,avg_similarity,end_dt,lesson_group_id,start_dt,user_id) VALUES
+                               (1,87,79,date_sub(now(), interval 1 day),37,date_sub(now(), interval 179 day), 34),
+                               (1,85,81,date_sub(now(), interval 1 day),57,date_sub(now(), interval 179 day), 34),
+                               (1,83,77,date_sub(now(), interval 1 day),59,date_sub(now(), interval 179 day), 34),
+                               (1,81,82,date_sub(now(), interval 1 day),61,date_sub(now(), interval 179 day), 34),
+                               (1,79,74,date_sub(now(), interval 1 day),63,date_sub(now(), interval 179 day), 34);
+
 
 
 
