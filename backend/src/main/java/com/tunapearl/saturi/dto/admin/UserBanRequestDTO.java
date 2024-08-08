@@ -8,4 +8,5 @@ import lombok.Getter;
 public class UserBanRequestDTO {
     private Long userId;
     private Long banDate;
+    private Long chatClaimId;
 }
