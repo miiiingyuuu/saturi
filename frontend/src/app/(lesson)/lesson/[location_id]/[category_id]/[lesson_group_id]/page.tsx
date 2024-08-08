@@ -142,14 +142,17 @@ export default function LessonPage() {
         .then(response => {
           if (response.status === 200) {
             console.log("category의 lessonGroups: ", response);
-            if (
-              response.data.length > 0 &&
-              response.data[lessonGroupId - 1].lessons
-            ) {
-              console.log(response.data[lessonGroupId - 1].lessons);
-              const fetchedLessons = response.data[lessonGroupId - 1].lessons;
+
+            // Find the lesson group that matches the lessonGroupId
+            const matchedGroup = response.data.find(
+              group => group.lessonGroupId === lessonGroupId,
+            );
+
+            if (matchedGroup) {
+              const fetchedLessons = matchedGroup.lessons;
               setLessons(fetchedLessons);
-              // 첫 번째 레슨의 lessonId로 currentLessonId 설정
+
+              // Set the currentLessonId to the first lesson's lessonId
               if (fetchedLessons.length > 0) {
                 setCurrentLessonId(fetchedLessons[0].lessonId);
               }
@@ -203,7 +206,7 @@ export default function LessonPage() {
           answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
           userVoiceFileName: `${result.filename}`,
         });
-        console.log(analysisResponse)
+        console.log(analysisResponse);
         if (analysisResponse.status !== 200) {
           throw new Error("Failed to analyze audio");
         }
