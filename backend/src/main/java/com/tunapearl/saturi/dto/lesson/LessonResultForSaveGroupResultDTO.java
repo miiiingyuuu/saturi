@@ -46,6 +46,7 @@ public class LessonResultForSaveGroupResultDTO {
         this.sampleGraphX = null;
         if(sampleLesson.getGraphY() == null) this.sampleGraphY = null;
         else this.sampleGraphY = sampleLesson.getGraphY();
+
         this.sampleScript = sampleLesson.getScript();
         this.accentSimilarity = lessonResult.getAccentSimilarity();
         this.pronunciationAccuracy = lessonResult.getPronunciationAccuracy();
