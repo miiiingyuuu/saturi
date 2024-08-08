@@ -177,14 +177,20 @@ export default function CategorySelectPage() {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container 
+      maxWidth="lg" 
+      sx={{
+        height: "90vh",    
+        minHeight: "700px",
+        display:"flex",
+        alignItems:"center",        
+    }}>
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          width: "100%%",
-          height: "700px",
-          marginTop: "10px",
+          width: "100%",
+          height: "560px",
         }}
       >
         {/* 맨 왼쪽 */}
@@ -195,7 +201,7 @@ export default function CategorySelectPage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            border: "1px solid",
+            border: "1px groove",
             borderRadius: "8px",
           }}
         >
@@ -212,7 +218,7 @@ export default function CategorySelectPage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            border: "1px solid",
+            border: "1px groove",
             borderRadius: "8px",
           }}
         >
@@ -235,7 +241,7 @@ export default function CategorySelectPage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            border: "1px solid",
+            border: "1px groove",
             borderRadius: "8px",
           }}
         >
