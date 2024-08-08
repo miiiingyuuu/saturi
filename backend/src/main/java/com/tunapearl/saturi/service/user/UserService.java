@@ -447,12 +447,17 @@ public class UserService {
         // 레슨 학습 일시를 최근 순으로 정렬, 올 해가 아니면 break
         Map<LocalDate, Integer> streakDays = new HashMap<>();
         lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
+
+        // 스트릭 만들기
         for (LessonResultEntity lessonResult : lessonResults) {
             int year = lessonResult.getLessonDt().getYear();
-            if(LocalDate.now().getYear() != year) break;
+            if(LocalDate.now().getYear() != year) break; // 올 해가 아니면 break
             LocalDate currentDate = lessonResult.getLessonDt().toLocalDate();
+
             streakDays.put(currentDate, streakDays.getOrDefault(currentDate, 0) + 1);
         }
+
+        // result 생성
         for (LocalDate d : streakDays.keySet()) {
             UserStreakDateDTO userStreakDate = new UserStreakDateDTO(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
             Integer solvedNum = streakDays.get(d);

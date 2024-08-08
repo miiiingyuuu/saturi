@@ -95,6 +95,7 @@ public class LessonRepository {
 
     public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdList(List<Long> lessonGroupResultIds) {
         List<LessonResultEntity> lessonGroupResult = em.createQuery("select lr from LessonResultEntity lr" +
+                        " join fetch lr.lesson" +
                         " join fetch lr.lessonGroupResult" +
                         " join fetch lr.lessonRecordFile " +
                         " join fetch lr.lessonRecordGraph " +
