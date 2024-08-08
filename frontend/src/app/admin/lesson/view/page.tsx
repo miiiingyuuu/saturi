@@ -71,54 +71,55 @@ export default function App() {
         </TableHead>
         <TableBody>
           {lessons.map((lesson) => (
-            <Accordion
-              key={lesson.lessonId}
-              expanded={expanded === lesson.lessonId}
-              onChange={handleAccordionChange(lesson.lessonId)}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-              >
-                <TableRow>
-                  <TableCell>{lesson.lessonId}</TableCell>
-                  <TableCell>{lesson.lessonGroupName}</TableCell>
-                  <TableCell>{lesson.sampleVoicePath}</TableCell>
-                  <TableCell>{lesson.script}</TableCell>
-                  <TableCell>{new Date(lesson.lastUpdateDt).toLocaleString()}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      onClick={() => handleEdit(lesson.lessonId)}
-                      sx={{ mr: 1 }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      size="small"
-                      onClick={() => handleDelete(lesson.lessonId)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </AccordionSummary>
-              <AccordionDetails>
-                {lessonDetails[lesson.lessonId] && (
-                  <>
-                    <Typography variant="h6">상세 정보</Typography>
-                    <Typography>레슨 그룹: {lessonDetails[lesson.lessonId].lessonGroupName}</Typography>
-                    <Typography>원본 음성 파일 경로: {lessonDetails[lesson.lessonId].sampleVoicePath}</Typography>
-                    <Typography>원본 음성 파일 이름: {lessonDetails[lesson.lessonId].sampleVoiceName}</Typography>
-                    <Typography>스크립트: {lessonDetails[lesson.lessonId].script}</Typography>
-                    <Typography>최근 수정된 내역: {new Date(lessonDetails[lesson.lessonId].lastUpdateDt).toLocaleString()}</Typography>
-                  </>
-                )}
-              </AccordionDetails>
-            </Accordion>
+            <TableRow key={lesson.lessonId}>
+              <TableCell colSpan={6} style={{ padding: 0 }}>
+                <Accordion
+                  expanded={expanded === lesson.lessonId}
+                  onChange={handleAccordionChange(lesson.lessonId)}
+                >
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <TableRow>
+                      <TableCell>{lesson.lessonId}</TableCell>
+                      <TableCell>{lesson.lessonGroupName}</TableCell>
+                      <TableCell>{lesson.sampleVoicePath}</TableCell>
+                      <TableCell>{lesson.script}</TableCell>
+                      <TableCell>{new Date(lesson.lastUpdateDt).toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          onClick={() => handleEdit(lesson.lessonId)}
+                          sx={{ mr: 1 }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="small"
+                          onClick={() => handleDelete(lesson.lessonId)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {lessonDetails[lesson.lessonId] && (
+                      <Box>
+                        <Typography variant="h6">상세 정보</Typography>
+                        <Typography>레슨 그룹: {lessonDetails[lesson.lessonId].lessonGroupName}</Typography>
+                        <Typography>원본 음성 파일 경로: {lessonDetails[lesson.lessonId].sampleVoicePath}</Typography>
+                        <Typography>원본 음성 파일 이름: {lessonDetails[lesson.lessonId].sampleVoiceName}</Typography>
+                        <Typography>스크립트: {lessonDetails[lesson.lessonId].script}</Typography>
+                        <Typography>최근 수정된 내역: {new Date(lessonDetails[lesson.lessonId].lastUpdateDt).toLocaleString()}</Typography>
+                      </Box>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              </TableCell>
+            </TableRow>
           ))}
         </TableBody>
       </Table>

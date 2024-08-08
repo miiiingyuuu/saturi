@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation"
+import { Backdrop, CircularProgress } from "@mui/material";
 
 export default function App() {
   const router = useRouter()
@@ -16,8 +17,11 @@ export default function App() {
       })
   }, []);
   return (
-    <div>
-      ㄱㄷ
-    </div>
+    <Backdrop
+      sx={{ color: "#fff", zIndex: theme => theme.zIndex.drawer + 1 }}
+      open
+    >
+      <CircularProgress color="inherit" />
+    </Backdrop>
   )
 }

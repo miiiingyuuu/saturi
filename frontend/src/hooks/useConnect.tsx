@@ -13,9 +13,11 @@ export default function useConnect() {
       connectHeaders: {
         Authorization: `${sessionStorage.getItem("accessToken")}`,
       },
-      reconnectDelay: 60000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      reconnectDelay: 5000,
+      heartbeatIncoming: 1000,
+      heartbeatOutgoing: 1000,
+
+      debug: msg => console.log(msg)
     });
 
     clientRef.current.activate();

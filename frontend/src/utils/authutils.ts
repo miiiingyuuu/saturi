@@ -98,10 +98,7 @@ export function authToken(router: any) {
   api.get("/user/auth/token-check")
     .then(response => {
       if (response.status === 200) getUserInfo()
-      if (getCookie("nickname") === "null") {
-        alert("닉네임을 설정해주세요.")
-        router.push("/user/profile/update")
-      }}
+      }
     )
     .catch(err => {
       // 401 에러 발생 시

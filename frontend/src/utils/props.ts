@@ -94,6 +94,11 @@ export interface GameQuizProps<T> {
   quizChoiceList: T[];
 }
 
+export interface ParticipantsProps {
+  nickName: string
+  birdId: number
+  latestMessage?: string
+}
 // MainPart
 
 export interface LeftPartProps {

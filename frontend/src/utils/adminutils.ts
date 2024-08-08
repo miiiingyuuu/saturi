@@ -18,7 +18,7 @@ export function handleAdminLogin(value: string, router: any) {
   if (value === process.env.NEXT_PUBLIC_ADMIN_PASS) {
     if (process.env.NEXT_PUBLIC_ADMIN_TOKEN) {
     sessionStorage.setItem("adminToken", process.env.NEXT_PUBLIC_ADMIN_TOKEN);
-    router.push("/admin");
+    window.location.href = `${process.env.NEXT_PUBLIC_FRONTURL}/admin`;
     }
   } else {
     alert("비밀번호를 확인해주세요.");
