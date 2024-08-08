@@ -145,7 +145,7 @@ export default function LessonPage() {
 
             // Find the lesson group that matches the lessonGroupId
             const matchedGroup = response.data.find(
-              group => group.lessonGroupId === lessonGroupId,
+              (group: { lessonGroupId: number; }) => group.lessonGroupId === lessonGroupId ,
             );
 
             if (matchedGroup) {
