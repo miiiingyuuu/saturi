@@ -96,6 +96,7 @@ export interface GameQuizProps<T> {
 }
 
 export interface ParticipantsProps {
+  isExited: boolean;
   nickName: string
   birdId: number
   latestMessage?: string
