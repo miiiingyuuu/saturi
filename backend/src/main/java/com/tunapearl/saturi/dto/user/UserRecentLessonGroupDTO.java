@@ -30,4 +30,6 @@ public class UserRecentLessonGroupDTO {
         endDt = lgr.getEndDt();
         isCompleted = lgr.getIsCompleted();
     }
+    public UserRecentLessonGroupDTO() {
+    }
 }
