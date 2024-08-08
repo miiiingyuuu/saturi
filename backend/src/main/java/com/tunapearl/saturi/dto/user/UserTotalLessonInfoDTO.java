@@ -10,4 +10,8 @@ import java.util.Objects;
 public class UserTotalLessonInfoDTO {
     private int totalLessonGroup;
     private int totalLesson;
+
+    public UserTotalLessonInfoDTO() {
+
+    }
 }
