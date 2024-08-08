@@ -3,9 +3,9 @@ import { Box, Typography, Grid } from "@mui/material";
 import { FaFire } from "react-icons/fa";
 
 interface ContinuousLearnDay {
-  learnDays: number;
-  daysOfTheWeek: number[];
-  weekAndMonth: number[];
+  learnDays: number | null;
+  daysOfTheWeek: number[] | null;
+  weekAndMonth: number[] | null;
 }
 
 interface WeeklyStreakProps {
@@ -13,7 +13,7 @@ interface WeeklyStreakProps {
   isLoading: boolean;
 }
 
-const formatWeekAndMonth = (weekAndMonth: number[] | undefined): string => {
+const formatWeekAndMonth = (weekAndMonth: number[] | null | undefined): string => {
   if (!weekAndMonth || weekAndMonth.length !== 2) {
     return '날짜 정보 없음';
   }
@@ -35,6 +35,10 @@ const WeeklyStreak: React.FC<WeeklyStreakProps> = ({ data, isLoading }) => {
   const daysOfWeek = ['월', '화', '수', '목', '금', '토', '일'];
   const formattedDate = formatWeekAndMonth(data?.weekAndMonth);
 
+  // 기본값 설정
+  const learnDays = data?.learnDays ?? 0;
+  const daysOfTheWeek = data?.daysOfTheWeek ?? [];
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>주간 스트릭</Typography>
@@ -47,18 +51,18 @@ const WeeklyStreak: React.FC<WeeklyStreakProps> = ({ data, isLoading }) => {
             {daysOfWeek.map((day, index) => (
               <Box key={day} textAlign="center" sx={{ minWidth: '50px' }}>
                 <Typography variant="body2">{day}</Typography>
-                <FaFire color={data && data.daysOfTheWeek.includes(index) ? "orange" : "gray"} />
+                <FaFire color={daysOfTheWeek.includes(index) ? "orange" : "gray"} />
               </Box>
             ))}
           </Box>
         </Grid>
         <Grid item xs={12} md={5}>
           <Box sx={{ textAlign: { xs: 'left', md: 'right' } }}>
-            {data ? (
+            {learnDays > 0 ? (
               <>
                 <Typography>사투리가 서툴러유와 함께한지</Typography>
                 <Typography variant="h5" fontWeight="bold">
-                  {data.learnDays > 0 ? ` ${data.learnDays}일!` : ''}
+                  {`${learnDays}일!`}
                 </Typography>
               </>
             ) : (
