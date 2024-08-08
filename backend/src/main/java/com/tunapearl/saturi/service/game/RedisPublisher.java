@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.service.game;
 
+import com.tunapearl.saturi.domain.game.MessageType;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
@@ -33,7 +34,11 @@ public class RedisPublisher {
 
         Map<String, Object> message = new HashMap<>();
         message.put("type", "ROOM");
-        message.put("subType", "START");
+
+        if(responseDTO.getChatType()== MessageType.ENTER)
+            message.put("subType", "ENTER");
+        else message.put("subType", "START");
+
         message.put("roomId",roomId);
         message.put("data", responseDTO);
         redisTemplate.convertAndSend(topic.getTopic(), message);

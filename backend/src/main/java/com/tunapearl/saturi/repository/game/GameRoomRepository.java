@@ -39,9 +39,6 @@ public class GameRoomRepository {
         return Optional.of(em.find(GameRoomEntity.class, roomId));
     }
 
-    public GameRoomEntity updateGameRoom(GameRoomEntity gameRoom) {
-        return em.merge(gameRoom);
-    }
 
     /**
      * 통계용 게임방 조회
