@@ -27,6 +27,10 @@ import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
 import api from "@/lib/axios";
 
+type IsClickedState = {
+  [key: number]: boolean;
+};
+
 export default function App({ params: { roomId } }: RoomIdProps) {
   const router = useRouter()
   const clientRef = useConnect();
@@ -42,6 +46,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [participants, setParticipants] = useState<ParticipantsProps[]>([]);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [highlightedNick, setHighlightedNick] = useState<string | null>(null);
+  const [isClicked, setIsClicked] = useState<IsClickedState>({});
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -90,9 +95,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   }
 
   function reportChat(chatLogId: number) {
-    api.post(`/admin/claim/user/${chatLogId}`)
+    api.post(`/game/user/${chatLogId}`)
         .then(response => {
-          console.log("신고 완")
+          setIsClicked(prev => ({...prev, [chatLogId]: true}))
+          alert("신고 완료되었습니다.")
         })
   }
 
@@ -418,9 +424,11 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 <ListItemText primary={msg.timestamp} />
                 <ListItemText primary={msg.nickname} />
                 <ListItemText primary={msg.message} />
+                {!isClicked[msg.chatLogId] && (
                 <AnnouncementIcon
-                onClick={() => reportChat(msg.chatLogId)}
+                  onClick={() => reportChat(msg.chatLogId)}
                 />
+                    )}
               </ListItem>
             ))}
           </List>
