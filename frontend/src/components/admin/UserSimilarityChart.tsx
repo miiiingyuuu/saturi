@@ -4,10 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Box } from '@mui/material';
 import api from '@/lib/axios';
 import dynamic from 'next/dynamic';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-// Chart.js 관련 컴포넌트를 동적으로 임포트
-const Chart = dynamic(() => import('chart.js/auto'), { ssr: false });
-const BarChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Bar), { ssr: false });
+// Chart.js 컴포넌트 등록
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+// Bar 컴포넌트 동적으로 임포트
+const Bar = dynamic(() => import('react-chartjs-2').then(mod => mod.Bar), { ssr: false });
 
 interface SimilarityData {
   locationId: number;
@@ -92,7 +95,7 @@ const UserSimilarityChart: React.FC = () => {
       <Typography variant="h6" gutterBottom>
         지역별 평균 유사도 및 정확도
       </Typography>
-      {chartData.labels.length > 0 && <BarChart options={options} data={chartData} />}
+      {chartData.labels.length > 0 && <Bar options={options} data={chartData} />}
     </Box>
   );
 };
