@@ -1,5 +1,6 @@
 package com.tunapearl.saturi.dto.lesson;
 
+import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonResultEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,15 +14,18 @@ public class LessonResultForSaveGroupResultDTO {
     private String userVoicePath;
     private String userVoiceName;
     private String userScript;
-    private String graphX;
-    private String graphY;
+    private String UserGraphX;
+    private String UserGraphY;
+    private String sampleScript;
+    private String sampleGraphX;
+    private String sampleGraphY;
     private Long accentSimilarity;
     private Long pronunciationAccuracy;
     private LocalDateTime lessonDt;
     private Boolean isSkipped;
     private Boolean isBeforeResult;
 
-    public LessonResultForSaveGroupResultDTO(LessonResultEntity lessonResult, Boolean isBeforeResult) {
+    public LessonResultForSaveGroupResultDTO(LessonResultEntity lessonResult, Boolean isBeforeResult, LessonEntity sampleLesson) {
         this.lessonId = lessonResult.getLesson().getLessonId();
         if(lessonResult.getLessonRecordFile() == null) {
             this.userVoicePath = null;
@@ -33,12 +37,16 @@ public class LessonResultForSaveGroupResultDTO {
             this.userScript = lessonResult.getLessonRecordFile().getUserVoiceScript();
         }
         if(lessonResult.getLessonRecordGraph() == null) {
-            this.graphX = null;
-            this.graphY = null;
+            this.UserGraphX = null;
+            this.UserGraphY = null;
         } else {
-            this.graphX = lessonResult.getLessonRecordGraph().getGraphX();
-            this.graphY = lessonResult.getLessonRecordGraph().getGraphY();
+            this.UserGraphX = lessonResult.getLessonRecordGraph().getGraphX();
+            this.UserGraphY = lessonResult.getLessonRecordGraph().getGraphY();
         }
+        this.sampleGraphX = null;
+        if(sampleLesson.getGraphY() == null) this.sampleGraphY = null;
+        else this.sampleGraphY = sampleLesson.getGraphY();
+        this.sampleScript = sampleLesson.getScript();
         this.accentSimilarity = lessonResult.getAccentSimilarity();
         this.pronunciationAccuracy = lessonResult.getPronunciationAccuracy();
         this.lessonDt = lessonResult.getLessonDt();

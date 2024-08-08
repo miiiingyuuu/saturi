@@ -278,6 +278,15 @@ public class LessonService {
         if(lessonGroupResult == null) throw new IllegalArgumentException();
         LocalDateTime lessonGroupResultStartDt = lessonGroupResult.getStartDt();
 
+        // 240808 lessonEntity 조회 추가
+        List<LessonEntity> lessons = lessonRepository.findAllByLessonGroupResultId().orElse(null);
+        Map<Long, LessonEntity> lessonsMap = new HashMap<>();
+        if(lessons != null) {
+            for (LessonEntity lesson : lessons) {
+                lessonsMap.put(lesson.getLessonId(), lesson);
+            }
+        }
+
         // 최근순으로 정렬된 레슨 결과 조회(건너뛰기 포함)
         Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonGroupResultIdSortedByRecentDt(lessonGroupResultId);
         if(lessonResultsOpt.isEmpty()) throw new IllegalArgumentException();
@@ -348,7 +357,7 @@ public class LessonService {
         // isBeforeResult 설정을 위해 DTO를 미리 만들자.
         List<LessonResultForSaveGroupResultDTO> lessonResultDtoLst = new ArrayList<>();
         for (Long lessonId : lessonResultMap.keySet()) {
-            LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), false);
+            LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), false, lessonsMap.get(lessonId));
             lessonResultDtoLst.add(lessonResultDto);
         }
 
@@ -358,7 +367,7 @@ public class LessonService {
             // pq의 최고 우선순위를 빼서 lessonResultMap에 넣는다.
             lessonResultMap.put(first.getLesson().getLessonId(), first);
             // isBeforeResult를 true로 해야한다.
-            LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), true);
+            LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), true, lessonsMap.get(lessonId));
             lessonResultDtoLst.add(lessonResultDto);
         }
 
@@ -402,6 +411,14 @@ public class LessonService {
         // DTO를 만들자
         UserExpInfoCurExpAndEarnExp userExpDto = new UserExpInfoCurExpAndEarnExp(prevUserExp, sumExp, curUserExp);
         LessonGroupResultForSaveLessonGroupDTO lessonGroupResultForSaveLessonGroup = new LessonGroupResultForSaveLessonGroupDTO(lessonGroupResult);
+
+        // lessonResultDtoLst 정렬시키기(레슨 순서 유지)
+        lessonResultDtoLst.sort(new Comparator<LessonResultForSaveGroupResultDTO>() {
+            @Override
+            public int compare(LessonResultForSaveGroupResultDTO o1, LessonResultForSaveGroupResultDTO o2) {
+                return Long.compare(o1.getLessonId(), o2.getLessonId());
+            }
+        });
 
         return new LessonGroupResultSaveResponseDTO(userExpDto, lessonResultDtoLst, lessonGroupResultForSaveLessonGroup);
     }

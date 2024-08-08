@@ -29,6 +29,10 @@ public class LessonEntity {
 
     private String script;
 
+    private String graphX;
+
+    private String graphY;
+
     private LocalDateTime lastUpdateDt;
 
     private Boolean isDeleted = false;
