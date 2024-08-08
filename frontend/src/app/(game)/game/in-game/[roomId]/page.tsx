@@ -148,7 +148,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   body: JSON.stringify({
                     chatType: "END",
                     roomId
-                  })
+                  }),
+                  headers: {
+                    Authorization: sessionStorage.getItem("accessToken") as string,
+                  },
                 })
                 setTimeout(() => {
                   router.push(`/game/in-game/${roomId}/result`)
@@ -178,7 +181,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           body: JSON.stringify({
             roomId,
             chatType: "TERMINATED"
-          })
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
         });
       };
 
