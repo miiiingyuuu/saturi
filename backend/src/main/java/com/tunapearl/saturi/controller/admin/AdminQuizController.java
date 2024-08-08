@@ -65,7 +65,7 @@ public class AdminQuizController {
             , @RequestBody QuizUpdateRequestDTO quizUpdateRequestDto) {
 
         quizUpdateRequestDto.setQuizId(quizId);
-        log.info("POST, update quiz: {}", quizUpdateRequestDto);
+        log.info("PUT, update quiz: {}", quizUpdateRequestDto);
         QuizDetailReadResponseDTO responseDto = quizService.updateQuiz(quizUpdateRequestDto);
         return ResponseEntity.ok(responseDto);
     }

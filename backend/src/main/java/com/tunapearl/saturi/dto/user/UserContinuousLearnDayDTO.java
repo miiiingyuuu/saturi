@@ -11,4 +11,8 @@ public class UserContinuousLearnDayDTO {
     private Long learnDays;
     private List<Integer> daysOfTheWeek;
     private List<Integer> weekAndMonth;
+
+    public UserContinuousLearnDayDTO() {
+
+    }
 }

@@ -1,10 +1,7 @@
 package com.tunapearl.saturi.service.game;
 
 import com.tunapearl.saturi.domain.LocationEntity;
-import com.tunapearl.saturi.domain.game.GameRoomEntity;
-import com.tunapearl.saturi.domain.game.GameRoomParticipantEntity;
-import com.tunapearl.saturi.domain.game.GameTipEntity;
-import com.tunapearl.saturi.domain.game.Status;
+import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameMatchingRequestDTO;
@@ -20,12 +17,12 @@ import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.service.GameRoomParticipantService;
 import com.tunapearl.saturi.service.GameRoomQuizService;
 import com.tunapearl.saturi.service.QuizService;
-import com.tunapearl.saturi.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +42,6 @@ public class GameService {
     private final GameRoomQuizService gameRoomQuizService;
     private final QuizService quizService;
     private final GameRoomParticipantService gameRoomParticipantService;
-    private final RedisPublisher redisPublisher;
 
     /**
      * 팁 추가
@@ -106,10 +102,13 @@ public class GameService {
         GameRoomParticipantEntity gameRoomParticipantEntity = new GameRoomParticipantEntity(gameRoomEntity, user);
         gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
 
-        List<GameRoomParticipantEntity> participants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
-
-        if (participants.size() == 5) {
-            gameRoomEntity.setStatus(Status.IN_PROGRESS);
+        Optional<List<GameRoomParticipantEntity>> Optionalparticipants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
+        if (Optionalparticipants.isPresent()) {
+            List<GameRoomParticipantEntity> participants = Optionalparticipants.get();
+            if (participants.size() == 5) {
+                gameRoomEntity.setStatus(Status.IN_PROGRESS);
+                gameRoomEntity.setStartDt(LocalDateTime.now());
+            }
         }
 
         //게임방토픽Id 넘겨주자
@@ -118,10 +117,18 @@ public class GameService {
         return responseDTO;
     }
 
-    public List<GameResultResponseDTO> getGameResult(GameResultRequestDTO requestdDto) {
+    /**
+     * 게임 퇴장
+     */
+    public void changeParticipantStatus(GameRoomParticipantId id){
+        //게임 탈주
+        GameRoomParticipantEntity gameRoomParticipantEntity=gameRoomParticipantRepository.findParticipantByGameRoomParticipantId(id);
+        gameRoomParticipantEntity.setExited(true);
+    }
 
+    public List<GameResultResponseDTO> getGameResult(GameResultRequestDTO requestDto) {
 
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(requestdDto.getRoomId());
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(requestDto.getRoomId());
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
             long roomId = chatRoom.getRoomId();
@@ -129,27 +136,22 @@ public class GameService {
             List<GameRoomParticipantEntity> participants = gameRoomParticipantService.findParticipantByRoomIdOrderByCorrectCount(roomId);
             List<GameResultResponseDTO> resultList = new ArrayList<>();
 
-            int rank = 1;
-            for (GameRoomParticipantEntity participant : participants) {
+            for (GameRoomParticipantEntity participant : participants)
+            {
                 GameResultResponseDTO resultDTO = new GameResultResponseDTO();
-                resultDTO.setRank(rank);
+                resultDTO.setRank(participant.getMatchRank());
                 UserEntity user = participant.getUser();
                 resultDTO.setNickName(user.getNickname());
-                participant.setMatchRank(rank++);
 
-                if (user.getUserId() == requestdDto.getUserId()) {//본인임
+                if (user.getUserId() == requestDto.getUserId()) {//본인임
                     resultDTO.setUser(true);
                 }
 
-                long nowExp = user.getExp();
+                resultDTO.setExp(participant.getBeforeExp());
                 int count=participant.getCorrectCount();
-                resultDTO.setExp(nowExp);
                 resultDTO.setAnsCount(count);
-                resultDTO.setEarnedExp(count*2);//개당 2exp임
+                resultDTO.setEarnedExp(count * 2);//개당 2exp임
 
-                user.setExp(user.getExp() + count*2);
-
-                log.info("resultDTO : {}", resultDTO);
                 resultList.add(resultDTO);
             }
 

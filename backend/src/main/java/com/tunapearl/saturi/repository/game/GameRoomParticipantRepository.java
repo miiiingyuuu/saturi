@@ -5,6 +5,7 @@ import com.tunapearl.saturi.domain.game.GameRoomParticipantId;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -27,10 +28,14 @@ public class GameRoomParticipantRepository {
         em.persist(gameRoomParticipantEntity);
     }
 
-    public List<GameRoomParticipantEntity> findByRoomId(Long roomId) {
-        return em.createQuery("select p from GameRoomParticipantEntity p where p.id.roomId = :roomId", GameRoomParticipantEntity.class)
+    public Optional<List<GameRoomParticipantEntity>> findByRoomId(Long roomId) {
+
+        List<GameRoomParticipantEntity> results =
+                em.createQuery("select p from GameRoomParticipantEntity p where p.id.roomId = :roomId", GameRoomParticipantEntity.class)
                 .setParameter("roomId", roomId)
                 .getResultList();
+        return results.isEmpty() ? Optional.empty() : Optional.of(results);
+
     }
 
     public List<GameRoomParticipantEntity> findByRoomIdOrderByCorrectCount(Long roomId) {
@@ -42,8 +47,15 @@ public class GameRoomParticipantRepository {
     public GameRoomParticipantEntity findParticipantByGameRoomParticipantId(GameRoomParticipantId id) {
         return em.createQuery("select  p from GameRoomParticipantEntity p where p.gameRoom.roomId = :roomId and p.user.userId=:userId", GameRoomParticipantEntity.class)
                 .setParameter("roomId", id.getRoomId())
-                .setParameter("userId",id.getUserId())
+                .setParameter("userId", id.getUserId())
                 .getSingleResult();
 
+    }
+
+    public long countActiveParticipantsByRoomId(Long roomId){
+
+        String query = "SELECT COUNT(p) FROM GameRoomParticipantEntity p WHERE p.gameRoom.roomId = :roomId AND p.isExited = false";
+        TypedQuery<Long> countQuery = em.createQuery(query, Long.class).setParameter("roomId", roomId);
+        return countQuery.getSingleResult();
     }
 }

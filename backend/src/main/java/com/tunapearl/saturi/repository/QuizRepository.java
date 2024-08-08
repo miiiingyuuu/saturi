@@ -6,6 +6,7 @@ import com.tunapearl.saturi.domain.quiz.QQuizEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.quiz.QuizReadRequestDTO;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -57,19 +58,30 @@ public class QuizRepository {
                 .fetch();
     }
 
-    public List<Long> getAvailableQuizId(){
-        return em.createQuery("select q.quizId from QuizEntity q order by q.quizId asc").getResultList();
+    public List<Long> getAvailableQuizId(Long locationId){
+        return em.createQuery("select q.quizId from QuizEntity q where q.location.id = :locationId", Long.class)
+                .setParameter("locationId", locationId)
+                .getResultList();
+
     }
 
     public void deleteQuizById(Long quizId){
-        em.remove(em.find(QuizEntity.class, quizId));
+        em.createQuery("delete from QuizEntity q where q.quizId = :quizId")
+                .setParameter("quizId", quizId)
+                .executeUpdate();
     }
 
-    public void deleteChoiceByQuizId(Long quizId){
+    public void deleteChoicesByQuizId(Long quizId){
         em.createQuery("delete from QuizChoiceEntity c where c.quizChoicePK.quizId = :quizId")
                 .setParameter("quizId", quizId)
                 .executeUpdate();
         em.clear();
+    }
+
+    public void deleteChoicesByQuiz(QuizEntity quiz){
+        em.createQuery("delete from QuizChoiceEntity c where c.quiz = :quiz")
+                .setParameter("quiz", quiz)
+                .executeUpdate();
     }
 
     private BooleanExpression quizIdEq(QQuizEntity quiz, Long quizIdCond){

@@ -93,11 +93,13 @@ public class LessonRepository {
         return lessonGroupResult.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResult);
     }
 
-    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdList(List<Long> lessonGroupResultIds) {
         List<LessonResultEntity> lessonGroupResult = em.createQuery("select lr from LessonResultEntity lr" +
                         " join fetch lr.lessonGroupResult" +
-                        " where lr.isSkipped = false and lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
-                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                        " join fetch lr.lessonRecordFile " +
+                        " join fetch lr.lessonRecordGraph " +
+                        " where lr.isSkipped = false and lr.lessonGroupResult.lessonGroupResultId in :lessonGroupResultIds", LessonResultEntity.class)
+                .setParameter("lessonGroupResultIds", lessonGroupResultIds)
                 .getResultList();
 
         return lessonGroupResult.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResult);
@@ -120,7 +122,9 @@ public class LessonRepository {
     public Optional<List<LessonResultEntity>> findLessonResultByLessonIdAndLessonGroupResultId(Long lessonId, Long lessonGroupResultId) {
         List<LessonResultEntity> resultList = em.createQuery("select lr from LessonResultEntity lr " +
                         " join fetch lr.lesson" +
-                        " join fetch lr.lessonGroupResult" +
+                        " join fetch lr.lessonGroupResult " +
+                        " left join fetch lr.lessonRecordFile" +
+                        " left join fetch lr.lessonRecordGraph" +
                         " where lr.lesson.lessonId = :lessonId and" +
                         " lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
                 .setParameter("lessonId", lessonId)
@@ -187,16 +191,19 @@ public class LessonRepository {
         return lessonGroups.isEmpty() ? Optional.empty() : Optional.of(lessonGroups);
     }
 
-    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByLessonGroupId(Long lessonGroupId) {
-        List<LessonGroupResultEntity> lessonGroupResults = em.createQuery("select lgr from LessonGroupResultEntity lgr where lgr.lessonGroup.lessonGroupId = :lessonGroupId", LessonGroupResultEntity.class)
-                .setParameter("lessonGroupId", lessonGroupId)
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByLessonGroupId(List<Long> lessonGroupIds) {
+        List<LessonGroupResultEntity> lessonGroupResults = em.createQuery("select lgr from LessonGroupResultEntity lgr" +
+                        " where lgr.lessonGroup.lessonGroupId in :lessonGroupIds", LessonGroupResultEntity.class)
+                .setParameter("lessonGroupIds", lessonGroupIds)
                 .getResultList();
 
         return lessonGroupResults.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResults);
     }
 
     public Optional<List<LessonResultEntity>> findAllLessonResult() {
-        List<LessonResultEntity> lessonResults = em.createQuery("select lr from LessonResultEntity lr", LessonResultEntity.class)
+        List<LessonResultEntity> lessonResults = em.createQuery("select lr from LessonResultEntity lr" +
+                        " join fetch lr.lessonRecordFile" +
+                        " join fetch lr.lessonRecordGraph ", LessonResultEntity.class)
                 .getResultList();
 
         return lessonResults.isEmpty() ? Optional.empty() : Optional.of(lessonResults);
@@ -214,7 +221,9 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdSortedByRecentDt(Long lessonGroupResultId) {
-        List<LessonResultEntity> result = em.createQuery("select lr from LessonResultEntity lr" +
+        List<LessonResultEntity> result = em.createQuery("select lr from LessonResultEntity lr " +
+                        " left join fetch lr.lessonRecordFile " +
+                        " left join fetch lr.lessonRecordGraph " +
                         " where lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId" +
                         " order by lr.lessonDt desc", LessonResultEntity.class)
                 .setParameter("lessonGroupResultId", lessonGroupResultId)
@@ -227,5 +236,17 @@ public class LessonRepository {
         List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr", LessonGroupResultEntity.class)
                 .getResultList();
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
+        List<LessonResultEntity> lessonGroupResult = em.createQuery("select lr from LessonResultEntity lr" +
+                        " join fetch lr.lessonGroupResult" +
+                        " join fetch lr.lessonRecordFile " +
+                        " join fetch lr.lessonRecordGraph " +
+                        " where lr.isSkipped = false and lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
+                .setParameter("lessonGroupResultId", lessonGroupResultId)
+                .getResultList();
+
+        return lessonGroupResult.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResult);
     }
 }

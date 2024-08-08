@@ -38,16 +38,6 @@ public class AdminChatClaimController {
     }
 
     /*
-    * 채팅 신고
-    */
-    @PostMapping("/user/{gameLogId}")
-    public ResponseEntity<?> claimUserChat(@PathVariable Long gameLogId){
-        log.info("Received claim user chatting for {}", gameLogId);
-        chatClaimService.saveClaim(gameLogId);
-        return new ResponseEntity<String>(String.format("신고 완료 %d", gameLogId), HttpStatus.CREATED);
-    }
-
-    /*
     * 채팅 신고 조회
     */
     @GetMapping("/user")

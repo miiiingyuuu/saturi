@@ -4,10 +4,10 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKURL,
   timeout: 10000,
   // 기본으로 넣어줘야할 헤더
-  // headers: {
-  //   "Content-Type": "application/json",
+  headers: {
+    "Content-Type": "application/json",
   },
-);
+});
 
 /*
 request

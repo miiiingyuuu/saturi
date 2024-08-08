@@ -24,7 +24,7 @@ export default function Start() {
   };
 
   return (
-    <Box className="flex flex-col justify-center items-center bg-cover bg-center text-white max-w-[1200px] w-full px-5 box-border mx-auto">   
+    <Box className="flex flex-col justify-center items-center bg-cover bg-center text-white max-w-[1200px] w-full px-5 box-border mx-auto">
       <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
         <Box className="content">
           <Typography variant="h1" sx = {{ fontWeight:"bold" }} className="text-5xl m-0">실시간 음성 분석, 채팅으로</Typography>

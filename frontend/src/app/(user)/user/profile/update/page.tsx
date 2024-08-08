@@ -2,7 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardActions, Divider, Avatar, Button, Menu, MenuItem, Link, TextField, Dialog, DialogTitle, DialogContent, Grid, CircularProgress } from "@mui/material";
+import { 
+  Card, CardHeader, CardActions, 
+  Divider, 
+  Avatar, 
+  Button, 
+  List, ListItem, ListItemText, 
+  Link, 
+  TextField, 
+  Dialog, DialogTitle, DialogContent, 
+  Grid, 
+  CircularProgress, 
+  Typography} from "@mui/material";
+import { validateNickname } from "@/utils/utils";
 import api from "@/lib/axios";
 
 // type 선언
@@ -99,9 +111,11 @@ export default function EditProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
-  const [dialectAnchorEl, setDialectAnchorEl] = useState<null | HTMLElement>(null);
-  const [genderAnchorEl, setGenderAnchorEl] = useState<null | HTMLElement>(null);
-  const [ageRangeAnchorEl, setAgeRangeAnchorEl] = useState<null | HTMLElement>(null);
+  const [dialectModalOpen, setDialectModalOpen] = useState(false);
+  const [genderModalOpen, setGenderModalOpen] = useState(false);
+  const [ageRangeModalOpen, setAgeRangeModalOpen] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     // 프로필 가져오기
@@ -139,16 +153,16 @@ export default function EditProfilePage() {
     }
   };
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, type: 'dialect' | 'gender' | 'ageRange') => {
-    if (type === 'dialect') setDialectAnchorEl(event.currentTarget);
-    else if (type === 'gender') setGenderAnchorEl(event.currentTarget);
-    else setAgeRangeAnchorEl(event.currentTarget);
+  const handleModalOpen = (type: 'dialect' | 'gender' | 'ageRange') => {
+    if (type === 'dialect') setDialectModalOpen(true);
+    else if (type === 'gender') setGenderModalOpen(true);
+    else setAgeRangeModalOpen(true);
   };
 
-  const handleMenuClose = (type: 'dialect' | 'gender' | 'ageRange') => {
-    if (type === 'dialect') setDialectAnchorEl(null);
-    else if (type === 'gender') setGenderAnchorEl(null);
-    else setAgeRangeAnchorEl(null);
+  const handleModalClose = (type: 'dialect' | 'gender' | 'ageRange') => {
+    if (type === 'dialect') setDialectModalOpen(false);
+    else if (type === 'gender') setGenderModalOpen(false);
+    else setAgeRangeModalOpen(false);
   };
 
   const handleSelect = (type: 'dialect' | 'gender' | 'ageRange', value: LocationId | Gender | AgeRange) => {
@@ -161,7 +175,7 @@ export default function EditProfilePage() {
         setUserProfile({ ...userProfile, ageRange: value as AgeRange });
       }
     }
-    handleMenuClose(type);
+    handleModalClose(type);
   };
 
   const handleImageClick = () => {
@@ -175,8 +189,6 @@ export default function EditProfilePage() {
     setIsImageDialogOpen(false);
   };
 
-  const router = useRouter();
-
   // 수정 요청
   const handleSave = async () => {
     if (!userProfile) return;
@@ -185,6 +197,11 @@ export default function EditProfilePage() {
       const accessToken = sessionStorage.getItem('accessToken');
       if (!accessToken) {
         throw new Error('Access token not found');
+      }
+
+      if (!validateNickname(userProfile.nickname)) {
+        alert('닉네임은 한글, 영문, 숫자를 포함하여 10글자 미만으로 해주세요.');
+        return;
       }
 
       const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
@@ -212,7 +229,7 @@ export default function EditProfilePage() {
     } catch {
       console.error('프로필 수정 중 오류가 발생했습니다:', error);
       // eslint-disable-next-line no-alert
-      alert('프로필 수정에 실패했습니다.');
+      alert('이미 존재하는 닉네임입니다.');
     }
   };  
 
@@ -247,54 +264,22 @@ export default function EditProfilePage() {
                 fullWidth
                 margin="normal"
               />
+              <Typography sx= {{ fontSize: '11px', color: 'red', ml: 1 }}>닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
-              <p className="text-default-500">{userProfile.email}</p>
+              <p className="text-default-500" style={{ fontSize: '20px' }}>{userProfile.email}</p>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'dialect')}>
+              <Button variant="outlined" onClick={() => handleModalOpen('dialect')}>
                 사용하는 사투리: {getFormattedLocationId(userProfile.locationId)}
               </Button>
-              <Menu
-                anchorEl={dialectAnchorEl}
-                open={Boolean(dialectAnchorEl)}
-                onClose={() => handleMenuClose('dialect')}
-              >
-                {[1, 2, 3, 4, 5, 6, 7].map((id) => (
-                <MenuItem key={id} onClick={() => handleSelect('dialect', id as LocationId)}>
-                  {getFormattedLocationId(id)}
-                </MenuItem>
-                ))}
-              </Menu>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'gender')}>
+              <Button variant="outlined" onClick={() => handleModalOpen('gender')}>
                 성별: {getFormattedGender(userProfile.gender)}
               </Button>
-              <Menu
-                anchorEl={genderAnchorEl}
-                open={Boolean(genderAnchorEl)}
-                onClose={() => handleMenuClose('gender')}
-              >
-                {['DEFAULT', 'MALE', 'FEMALE'].map((gender) => (
-                  <MenuItem key={gender} onClick={() => handleSelect('gender', gender as Gender)}>
-                    {getFormattedGender(gender)}
-                  </MenuItem>
-                ))}
-              </Menu>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={(e) => handleMenuClick(e, 'ageRange')}>
+              <Button variant="outlined" onClick={() => handleModalOpen('ageRange')}>
                 연령대: {getFormattedAgeRange(userProfile.ageRange)}
               </Button>
-              <Menu
-                anchorEl={ageRangeAnchorEl}
-                open={Boolean(ageRangeAnchorEl)}
-                onClose={() => handleMenuClose('ageRange')}
-              >
-                {['DEFAULT', 'CHILD', 'TEENAGER', 'TWENTEEN', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'].map((age) => (
-                <MenuItem key={age} onClick={() => handleSelect('ageRange', age as AgeRange)}>
-                  {getFormattedAgeRange(age)}
-                </MenuItem>
-              ))}
-              </Menu>
             </div>
           }
         />
@@ -313,9 +298,12 @@ export default function EditProfilePage() {
             </Link>
           </div>
         </CardActions>
-        <Dialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)}>
+      </Card>
+
+      {/* 프로필 이미지 선택 다이얼로그 */}
+      <Dialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)}>
         <DialogTitle textAlign="center" fontWeight="bold">프로필 이미지를 선택하세요!</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ alignItems: 'center' }}>
           <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
             {profileImages.map((img) => (
               <Grid item key={img.id} xs={4}>
@@ -330,7 +318,52 @@ export default function EditProfilePage() {
           </Grid>
         </DialogContent>
       </Dialog>
-      </Card>
+
+      {/* 사투리 선택 모달 */}
+      <Dialog open={dialectModalOpen} onClose={() => handleModalClose('dialect')}>
+        <DialogTitle>사용하는 사투리 선택</DialogTitle>
+        <Divider/>
+        <DialogContent>
+          <List>
+            {[1, 2, 3, 4, 5, 6, 7].map((id) => (
+              <ListItem button key={id} onClick={() => handleSelect('dialect', id as LocationId)}>
+                
+                <ListItemText primary={getFormattedLocationId(id)} />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+      </Dialog>
+
+      {/* 성별 선택 모달 */}
+      <Dialog open={genderModalOpen} onClose={() => handleModalClose('gender')}>
+        <DialogTitle>성별 선택</DialogTitle>
+        <Divider/>
+        <DialogContent>
+          <List>
+            {['DEFAULT', 'MALE', 'FEMALE'].map((gender) => (
+              <ListItem button key={gender} onClick={() => handleSelect('gender', gender as Gender)}>
+                <ListItemText primary={getFormattedGender(gender)} />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+      </Dialog>
+
+      {/* 연령대 선택 모달 */}
+      <Dialog open={ageRangeModalOpen} onClose={() => handleModalClose('ageRange')}>
+        <DialogTitle>연령대 선택</DialogTitle>
+        <Divider/>
+        <DialogContent>
+          <List>
+            {['DEFAULT', 'CHILD', 'TEENAGER', 'TWENTEEN', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'].map((age) => (
+              <ListItem button key={age} onClick={() => handleSelect('ageRange', age as AgeRange)}>
+                <ListItemText primary={getFormattedAgeRange(age)} />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

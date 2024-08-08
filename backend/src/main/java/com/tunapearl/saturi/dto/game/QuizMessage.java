@@ -12,6 +12,7 @@ public class QuizMessage {
     private Long senderId;
     private String senderNickName;
     private long quizId;
+    private long chatLogId;
     private String message;
     private boolean isCorrect=false;
 }

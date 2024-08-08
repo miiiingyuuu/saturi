@@ -13,9 +13,9 @@ public class LessonRecordGraphEntity {
     @Column(name = "lesson_record_graph_id")
     private Long lessonRecordGraphId;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "lesson_result_id")
-//    private LessonResultEntity lessonResult;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_result_id")
+    private LessonResultEntity lessonResult;
 
     private String graphX;
 

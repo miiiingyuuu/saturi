@@ -13,9 +13,9 @@ public class LessonRecordFileEntity {
     @Column(name = "lesson_record_file_id")
     private Long lessonRecordFileId;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "lesson_result_id")
-//    private LessonResultEntity lessonResult;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_result_id")
+    private LessonResultEntity lessonResult;
 
     private String userVoiceFileName;
 

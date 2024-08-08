@@ -76,8 +76,29 @@ export interface RoomIdProps {
 }
 
 export interface MessagesProps {
+  timestamp: string
   nickname: string
   message: string
+  chatLogId: number
+}
+
+export interface GameQuizChoiceProps {
+  choiceId: number;
+  choiceText: string;
+  isCorrect: boolean;
+}
+
+export interface GameQuizProps<T> {
+  quizId: number;
+  question: string;
+  isObjective: boolean;
+  quizChoiceList: T[];
+}
+
+export interface ParticipantsProps {
+  nickName: string
+  birdId: number
+  latestMessage?: string
 }
 // MainPart
 

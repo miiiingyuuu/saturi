@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,11 +8,13 @@ import {
   Button, Divider, Menu, MenuItem, Box, Avatar, IconButton, 
   Tooltip, ListItemIcon, Typography, CircularProgress 
 } from "@mui/material";
-import { Person, Logout } from '@mui/icons-material';
+import { Logout } from '@mui/icons-material';
 import { authToken } from "@/utils/authutils";
 import useLogout from "@/hooks/useLogout";
 import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { styleText } from "util";
 
 
 export default function Header() {
@@ -34,13 +36,13 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  const handleLogoClick = useCallback(() => {
+  function handleLogoClick() {
     const accessToken = sessionStorage.getItem("accessToken");
     const targetPath = accessToken ? '/main' : '/start';
     if (pathname !== targetPath) {
       router.push(targetPath);
     }
-  }, [pathname, router]);
+  }
 
   const updateUserInfo = async () => {
     setProfileLoading(true);
@@ -90,15 +92,21 @@ export default function Header() {
 
   return (
     <header className="w-full">
-      <div className="flex items-center justify-between px-8 py-4">
-        <Image
-          src="/SSLogo.png"
-          alt="SSLogo"
-          width={127.5}
-          height={85}
+      <Box 
+        className="flex items-center justify-between px-8" 
+        sx={{
+          height:"10vh",
+          borderBottom: "1px solid",
+      }}>
+        <Box 
+          component="img"   
           className="cursor-pointer"
+          src = "/SSLogo.png"
+          alt = "SSLogo"
           onClick={handleLogoClick}
-        />
+          sx={{
+            width:"100px"
+        }}/>          
         <div className="flex items-center">
           {isAuthChecked ? (
             <CircularProgress size={24} />
@@ -162,12 +170,11 @@ export default function Header() {
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                style={{ marginRight: '20px' }} // 여기에 오른쪽 마진 추가
               >
                 <Box sx={{ p: 2 }}>
                   <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>{nickname}님, 안녕하세요!</Typography>
                   <Box
-sx={{ 
+                  sx={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
                     alignItems: 'center', 
@@ -175,33 +182,37 @@ sx={{
                     width: '100%',
                     mt: 2
                   }}>
-                    <UserTierRank />
+                    <UserTierRank layout="horizontal"/>
                   </Box>
                 </Box>
                 <Divider />
-                <MenuItem
-                  onClick={() => {
-                  router.push("/user/profile")
-                }}>
-                    <Person fontSize="large" />
-                  내 프로필
-                </MenuItem>
-                
-                <MenuItem
-                  onClick={() => {
-                  logout()
-                    .then(() => router.push("/start"))
+                <Box sx={{ mt: 1 }}>
+                  <MenuItem
+                    onClick={() => {
+                    router.push("/user/profile")
                   }}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
+                    <ListItemIcon sx={{ mr: 1 }}>
+                      <AccountBoxIcon fontSize="large" />
+                    </ListItemIcon>
+                    My Profile
+                  </MenuItem>
+                  
+                  <MenuItem
+                    onClick={() => {
+                    logout()
+                      .then(() => router.push("/start"))
+                    }}>
+                    <ListItemIcon sx={{ mr: 1 }}>
+                      <Logout fontSize="large" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Box>
               </Menu>
             </Box>
           )}
         </div>
-      </div>
+      </Box>
     </header>
   );
 }

@@ -42,7 +42,7 @@ public class QuizService {
     
     // 랜덤 퀴즈 id 조회(10개)
     public List<Long> findRandomIdByLocation(Long locationId) throws RuntimeException{
-        List<Long> idList = quizRepository.getAvailableQuizId();
+        List<Long> idList = quizRepository.getAvailableQuizId(locationId);
         if(idList.size() < 10) throw new RuntimeException(String.format("Find Ten Quiz Randomly: 문제가 부족합니다: %d", locationId));
 
         Collections.shuffle(idList);
@@ -65,25 +65,24 @@ public class QuizService {
     // 퀴즈 수정
     public QuizDetailReadResponseDTO updateQuiz(QuizUpdateRequestDTO updateDto) {
 
-        // 퀴즈의 답 삭제
-        quizRepository.deleteChoiceByQuizId(updateDto.getQuizId());
-
         // 수정하기 위한 퀴즈 조회
         QuizEntity quiz = quizRepository.findById(updateDto.getQuizId())
                 .orElseThrow(()-> new RuntimeException("Quiz not found"));
         LocationEntity location = locationRepository.findById(updateDto.getLocationId())
                 .orElseThrow(()-> new RuntimeException("Location not found"));
 
-        // 명시적으로 지연로딩된 컬렉션 초기화
-        quiz.getQuizChoiceList().size();
+        // 퀴즈 리스트 삭제
+        quizRepository.deleteChoicesByQuiz(quiz);
 
         // 퀴즈 수정
-        quiz = QuizEntity.updateQuiz(quiz, updateDto, location);
+        quiz = quiz.updateQuiz(updateDto, location);
+
         return convertEntityToDetailDto(quiz);
     }
 
     // 퀴즈 삭제
     public void removeOne(Long quizId) {
+        quizRepository.deleteChoicesByQuizId(quizId);
         quizRepository.deleteQuizById(quizId);
     }
 

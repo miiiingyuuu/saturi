@@ -1,5 +1,10 @@
-import { Box } from "@mui/material";
+import UserLocationChart from '@/components/admin/UserLocationChart';
 
-export default function App() {
-  return <Box>여기에 기본 통계 넣으면 될 것 같아요</Box>;
+export default function StatisticsPage() {
+  return (
+    <div>
+      <h1>사용자 지역 통계</h1>
+      <UserLocationChart />
+    </div>
+  );
 }
