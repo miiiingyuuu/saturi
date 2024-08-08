@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { 
   Button, Divider, Menu, MenuItem, Box, Avatar, IconButton, 
@@ -14,7 +13,6 @@ import useLogout from "@/hooks/useLogout";
 import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import { styleText } from "util";
 
 
 export default function Header() {
@@ -70,13 +68,13 @@ export default function Header() {
   };
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const accessToken = sessionStorage.getItem("accessToken");
-      if (accessToken) {
-        setIsLoggedIn(true);
+    async function checkAuth() {
+      if (sessionStorage.getItem("accessToken")) {
         await updateUserInfo();
+        setIsLoggedIn(true);
+
         if (pathname !== '/start') {
-          authToken(router);
+          authToken();
         }
       } else {
         setIsLoggedIn(false);

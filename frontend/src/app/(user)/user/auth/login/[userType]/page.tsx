@@ -28,11 +28,10 @@ export default function App() {
       .then(response => {
         sessionStorage.setItem("accessToken", response.data.accessToken);
         sessionStorage.setItem("refreshToken", response.data.refreshToken);
-        authToken(router)
+        authToken()
 
         api.get("user/auth/profile")
           .then(response => {
-            console.log(response.data.nickname)
             if (response.data.nickname === null) {
               alert("닉네임을 설정해주세요.")
               router.push("/user/profile/update")

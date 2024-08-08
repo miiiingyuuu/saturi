@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
-      authToken(router)
+      authToken()
     }
   },[router])
 

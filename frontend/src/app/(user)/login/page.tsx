@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useMemo, useState, useEffect } from "react";
-import { validateEmail, handleValueChange } from "@/utils/utils";
+import { grey } from "@mui/material/colors";
+import { useMemo, useState, useEffect } from "react";
 import { goSocialLogin, handleLogin } from "@/utils/authutils";
+import { validateEmail, handleValueChange } from "@/utils/utils";
 import {
   Box,
   Container,
@@ -14,8 +16,6 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
-import Image from "next/image";
 
 export default function App() {
   const router = useRouter();
