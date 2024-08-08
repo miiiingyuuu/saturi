@@ -72,13 +72,13 @@ const YearlyStreak: React.FC<YearlyStreakProps> = ({ data, totalLessonInfo, isLo
       )}
       <Grid container spacing={2} sx={{ mt: 2, textAlign: 'center' }}>
         <Grid item xs={12} sm={6}>
-          <Typography>
-            총 {totalLessonInfo ? totalLessonInfo.totalLessonGroup : 0}개의 레슨 그룹을 완료했습니다.
+          <Typography sx={{ fontWeight: 'bold' }}>
+            총 {totalLessonInfo ? totalLessonInfo.totalLessonGroup : 0}개의 레슨 그룹을 완료했습니다!
           </Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Typography>
-            총 {totalLessonInfo ? totalLessonInfo.totalLesson : 0}개의 문제를 풀었습니다.
+          <Typography sx={{ fontWeight: 'bold' }}>
+            총 {totalLessonInfo ? totalLessonInfo.totalLesson : 0}개의 문제를 풀었습니다!
           </Typography>
         </Grid>
       </Grid>
