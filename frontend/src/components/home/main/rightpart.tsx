@@ -1,8 +1,9 @@
 import { useRouter } from 'next/navigation';
-import { Button, Box, Card, Typography, useMediaQuery, Container, Grid } from "@mui/material";
+import { Button, Box, Card, Typography, useMediaQuery, Container, Grid, Avatar } from "@mui/material";
 import { RightPartProps } from '@/utils/props';
 import Image from "next/image"
 import api from '@/lib/axios';
+import UserTierRank from '@/components/profile/userTierRank';
 
 export default function RightPart({selectedRegion} : RightPartProps) {
   const router = useRouter();
@@ -77,7 +78,11 @@ export default function RightPart({selectedRegion} : RightPartProps) {
                 {/* 게임 프로필 */}
                 <Box sx={{  }}>
                   <Card sx={{ width:"250px", height: "350px", display: 'grid', placeItems: 'center' }}>
-                    <Image src="/MainPage/myLevel.png" alt="button food" width={200} height={200} />
+                    <UserTierRank layout="horizontal"/>
+                    <Avatar
+                      sizes="large" 
+                      src={"/default-profile.png"} 
+                    />
                   </Card>                  
                 </Box>
 
