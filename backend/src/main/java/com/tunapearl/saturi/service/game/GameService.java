@@ -105,7 +105,7 @@ public class GameService {
         Optional<List<GameRoomParticipantEntity>> Optionalparticipants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
         if (Optionalparticipants.isPresent()) {
             List<GameRoomParticipantEntity> participants = Optionalparticipants.get();
-            if (participants.size() == 2) {
+            if (participants.size() == 5) {
                 gameRoomEntity.setStatus(Status.IN_PROGRESS);
                 gameRoomEntity.setStartDt(LocalDateTime.now());
             }
