@@ -5,5 +5,6 @@ public enum MessageType {
     START,
     QUIZ,
     EXIT,
+    TERMINATED,
     END
 }

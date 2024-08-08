@@ -43,7 +43,6 @@ public class GameRoomParticipantService {
         return gameRoomParticipantRepository.findParticipantByGameRoomParticipantId(id);
     }
 
-
     @Transactional
     public void updateParticipant(GameRoomParticipantEntity gameRoomParticipantEntity) {
 
