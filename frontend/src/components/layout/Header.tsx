@@ -80,7 +80,7 @@ export default function Header() {
         }
       } else {
         setIsLoggedIn(false);
-        if (pathname&&!['/start', '/login', '/register'].includes(pathname)) {
+        if (pathname&&!['/start', '/login', '/register', '/findpassword', '/findpassword/tmppassword'].includes(pathname)) {
           router.push('/start');
         }
       }
@@ -95,6 +95,7 @@ export default function Header() {
       <Box 
         className="flex items-center justify-between px-8" 
         sx={{
+          minHeight:"50px",
           height:"10vh",
           borderBottom: "1px solid",
       }}>

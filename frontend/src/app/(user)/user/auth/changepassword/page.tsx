@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Box, 
@@ -21,11 +21,22 @@ const PasswordChangeForm: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
+  const [isNewPasswordValid, setIsNewPasswordValid] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsNewPasswordValid(validatePassword(newPassword) || newPassword === '');
+  }, [newPassword]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsError(false);
+
+    if (!validatePassword(newPassword)) {
+      setMessage('새 비밀번호가 요구사항을 충족하지 않습니다.');
+      setIsError(true);
+      return;
+    }
 
     const result = await changePassword({ currentPassword, newPassword });
     setMessage(result.message);
@@ -73,8 +84,25 @@ const PasswordChangeForm: React.FC = () => {
             autoComplete="new-password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            error={!isNewPasswordValid && newPassword !== ''}
+            helperText={!isNewPasswordValid && newPassword !== '' ? "비밀번호 요구사항을 충족하지 않습니다." : ""}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: isNewPasswordValid || newPassword === '' ? 'rgba(0, 0, 0, 0.23)' : 'red',
+                },
+                '&:hover fieldset': {
+                  borderColor: isNewPasswordValid || newPassword === '' ? 'rgba(0, 0, 0, 0.23)' : 'red',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: isNewPasswordValid || newPassword === '' ? '#1976d2' : 'red',
+                },
+              },
+            }}
           />
-          <Typography sx={{ fontSize: '12px', ml: 1, color: 'red' }}>새 비밀번호는 숫자, 소문자, 특수문자를 포함한 8자 이상</Typography>
+          <Typography sx={{ fontSize: '12px', ml: 1, color: 'text.secondary' }}>
+            새 비밀번호는 숫자, 소문자, 특수문자를 포함한 8자 이상
+          </Typography>
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
               <Button
@@ -91,6 +119,7 @@ const PasswordChangeForm: React.FC = () => {
                 type="submit"
                 variant="contained"
                 fullWidth
+                disabled={!isNewPasswordValid || newPassword === ''}
               >
                 비밀번호 변경
               </Button>
