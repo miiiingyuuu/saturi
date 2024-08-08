@@ -139,7 +139,7 @@ export default function App() {
 
   return (
     <Box style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
-      <Box style={{ position: 'relative', width: '100%', height: '90vh' }}>
+      <Box sx={{ position: 'relative', width: '100%', height: '90vh', minHeight: "700px" }}>
         <LeftPart
           middlePosition={middleToWhere}
           moveDirection={moveDirection.current}
