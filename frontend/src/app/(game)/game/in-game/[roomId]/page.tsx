@@ -144,6 +144,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           const body = JSON.parse(message.body);
           console.log(body)
           if (body.correct) {
+            setMessage("")
             if (you === body.senderNickName) {
               setResult("정답입니다!");
             } else {
@@ -424,7 +425,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 <ListItemText primary={msg.timestamp} />
                 <ListItemText primary={msg.nickname} />
                 <ListItemText primary={msg.message} />
-                {!isClicked[msg.chatLogId] && (
+                {!(msg.nickname===getCookie("nickname"))&&!isClicked[msg.chatLogId] && (
                 <AnnouncementIcon
                   onClick={() => reportChat(msg.chatLogId)}
                 />
