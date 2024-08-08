@@ -24,6 +24,8 @@ import useConfirmLeave from "@/hooks/useConfirmLeave";
 import { useRouter } from "next/navigation"
 import { styled } from "@mui/material/styles"
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import AnnouncementIcon from '@mui/icons-material/Announcement';
+import api from "@/lib/axios";
 
 export default function App({ params: { roomId } }: RoomIdProps) {
   const router = useRouter()
@@ -87,6 +89,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     setMessage("");
   }
 
+  function reportChat(chatLogId: number) {
+    api.post(`/admin/claim/user/${chatLogId}`)
+        .then(response => {
+          console.log("신고 완")
+        })
+  }
 
   useEffect(() => {
     const you = getCookie("nickname");
@@ -170,6 +178,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             timestamp,
             message: body.message,
             nickname: body.senderNickName,
+            chatLogId: body.chatLogId
           };
           setMessages((prevMsg) => [newMsg, ...prevMsg]);
         });
@@ -409,6 +418,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 <ListItemText primary={msg.timestamp} />
                 <ListItemText primary={msg.nickname} />
                 <ListItemText primary={msg.message} />
+                <AnnouncementIcon
+                onClick={() => reportChat(msg.chatLogId)}
+                />
               </ListItem>
             ))}
           </List>

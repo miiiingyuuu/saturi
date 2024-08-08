@@ -79,6 +79,7 @@ export interface MessagesProps {
   timestamp: string
   nickname: string
   message: string
+  chatLogId: number
 }
 
 export interface GameQuizChoiceProps {
