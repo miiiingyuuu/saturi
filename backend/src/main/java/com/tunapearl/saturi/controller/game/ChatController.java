@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -103,8 +104,6 @@ public class ChatController {
             redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());
 
         } else if (MessageType.QUIZ.equals(message.getChatType())) {
-
-
             List<QuizEntity> quizEntityList = chatService.getquizList(message.getRoomId());
 
             List<GameQuizResponseDTO> quizResponseDTOS = new ArrayList<>();
@@ -118,8 +117,11 @@ public class ChatController {
                         .map(choiceEntity -> new GameQuizChoiceDTO(choiceEntity.getQuizChoicePK().getChoiceId(), choiceEntity.getContent(), choiceEntity.getIsAnswer()))
                         .collect(Collectors.toList()));
 
+                Collections.shuffle(dto.getQuizChoiceList());
                 quizResponseDTOS.add(dto);
             }
+            Collections.shuffle(quizResponseDTOS);
+            log.info("전체 문제: {}", quizResponseDTOS.toString());
             redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizResponseDTOS, message.getRoomId());
 
         } else if (MessageType.EXIT.equals(message.getChatType())) {//퇴장
