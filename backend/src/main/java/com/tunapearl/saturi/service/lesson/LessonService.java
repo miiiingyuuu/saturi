@@ -76,7 +76,9 @@ public class LessonService {
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
         List<LessonGroupEntity> lessonGroups = lessonRepository.findLessonGroupByLocationAndCategory(locationId, lessonCategoryId).orElse(null);
+
         if(lessonGroups == null) throw new IllegalArgumentException("잘못된 지역 아이디 이거나 학습 유형 아이디 입니다.");
+
         if(lessonGroupResult == null) { // 아예 없으면
             for (LessonGroupEntity lg : lessonGroups) {
                 LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
@@ -85,23 +87,33 @@ public class LessonService {
             return result;
         }
         Set<Long> lessonGroupIdSet = new HashSet<>(); // front 요청으로 lessonGroupResult가 없어도 레슨그룹아이디, 레슨그룹이름을 dto에 추가
-        for (LessonGroupResultEntity lgResult : lessonGroupResult) {
+        Set<Long> lessonIdSet = new HashSet<>();
+
+        for (LessonGroupResultEntity lgr : lessonGroupResult) {
             // 지역과 카테고리가 일치하는 퍼즐결과가 아니면
-            if(!lgResult.getLessonGroup().getLocation().getLocationId().equals(locationId) || !lgResult.getLessonGroup().getLessonCategory().getLessonCategoryId().equals(lessonCategoryId)) continue;
+            if(!lgr.getLessonGroup().getLocation().getLocationId().equals(locationId) || !lgr.getLessonGroup().getLessonCategory().getLessonCategoryId().equals(lessonCategoryId)) continue;
             // lessonGroupId
-            Long lessonGroupId = lgResult.getLessonGroup().getLessonGroupId();
+            Long lessonGroupId = lgr.getLessonGroup().getLessonGroupId();
             lessonGroupIdSet.add(lessonGroupId);
             // groupProgress
-            Long lessonGroupResultId = lgResult.getLessonGroupResultId();
-            List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
             Long groupProcess = 0L;
             Long avgAccuracy = 0L;
+
+            Long lessonGroupResultId = lgr.getLessonGroupResultId();
+            List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
             if(lessonResults != null) {
-                groupProcess = (lessonResults.size() * 100) / 5L;
-                avgAccuracy = (lgResult.getAvgAccuracy() + lgResult.getAvgSimilarity()) / 2L;
+                for (LessonResultEntity lr : lessonResults) {
+                    if(lessonIdSet.contains(lr.getLesson().getLessonId())) continue;
+                    lessonIdSet.add(lr.getLesson().getLessonId());
+                }
             }
 
-            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgResult.getLessonGroup().getName(), groupProcess, avgAccuracy);
+            if(lessonResults != null) {
+                groupProcess = lessonIdSet.size() / 5L;
+                avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+            }
+
+            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgr.getLessonGroup().getName(), groupProcess, avgAccuracy);
             result.add(dto);
         }
         for (LessonGroupEntity lg : lessonGroups) {
