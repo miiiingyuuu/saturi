@@ -4,7 +4,7 @@ import { IMessage } from "@stomp/stompjs";
 import useConnect from "@/hooks/useConnect";
 import SendIcon from "@mui/icons-material/Send";
 import { handleValueChange } from "@/utils/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { GameQuizChoiceProps, GameQuizProps, MessagesProps, RoomIdProps, ParticipantsProps } from "@/utils/props";
 import {
   Box,
@@ -33,6 +33,7 @@ type IsClickedState = {
 };
 
 export default function App({ params: { roomId } }: RoomIdProps) {
+  const you = getCookie("nickname");
   const router = useRouter()
   const clientRef = useConnect();
   const [now, setNow] = useState(0);
@@ -49,6 +50,21 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [highlightedNick, setHighlightedNick] = useState<string | null>(null);
   const [isClicked, setIsClicked] = useState<IsClickedState>({});
 
+  function updateParticipantMessage(nickName: string, message: string) {
+    setParticipants((prevParticipants) =>
+      prevParticipants.map((participant) =>
+        participant.nickName === nickName
+          ? { ...participant, latestMessage: message }
+          : participant
+      )
+    );
+  }
+
+
+  const remainCount = useMemo(() =>
+    participants.filter(participant => participant.isExited).length
+  , [participants])
+
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
   ))({
@@ -56,7 +72,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       fontSize: '20px', // 원하는 폰트 사이즈로 변경
     },
   });
-
 
   function showTooltip() {
     setTooltipOpen(true);
@@ -68,7 +83,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       clientRef.current.publish({
         destination: "/pub/chat",
         body: JSON.stringify({
-          quizId: isStart&&nowQuiz?.quizId || 1 ,
+          quizId: (time===0)&&nowQuiz?.quizId || 1 ,
           message,
           roomId,
         }),
@@ -76,8 +91,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           Authorization: sessionStorage.getItem("accessToken") as string,
         },
       });
-      const you = getCookie("nickname");
+
       setHighlightedNick(you as string);
+      updateParticipantMessage(you as string, message);
       showTooltip();
       setTimeout(() => setHighlightedNick(null), 3000);
     }
@@ -91,6 +107,30 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           alert("신고 완료되었습니다.")
         })
   }
+
+  useEffect(() => {
+    if (now === 10) {
+      clientRef.current?.publish({
+        destination: "/pub/room",
+        body: JSON.stringify({
+          chatType: "END",
+          roomId
+        }),
+        headers : {
+          Authorization: sessionStorage.getItem("accessToken") as string,
+        }
+      })
+      setIsAnswerTime(true);
+      setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
+      setTimeout(() => {
+        router.push(`/game/in-game/${roomId}/result`)
+      },3000)
+    }
+    if (Array.isArray(quizzes)) {
+      const data = quizzes[now];
+      setNowQuiz(data);
+    }
+  }, [quizzes, now]);
 
   useEffect(() => {
     const you = getCookie("nickname");
@@ -121,17 +161,20 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
         client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
+          console.log(body)
+
           if (Array.isArray(body)) {
             setQuizzes(body);
           }
+
           if (!isStart && body.chatType === "START") {
             setIsStart(true);
             setParticipants(body.participants);
           } else if (body.chatType === "ENTER") {
             setParticipants(body.participants);
-          } else if (body.subType === "EXIT") {
-            setParticipants(prev => prev.filter(participant => participant.nickName !== body.exitNickName));
-            if (body.remainCount === 0) {
+          } else if (body.chatType === "EXIT") {
+            setParticipants(body.participants);
+            if (remainCount===1) {
               client.publish({
                 destination: "pub/room",
                 body: JSON.stringify({
@@ -148,7 +191,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
         client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body);
-          console.log(body)
           if (body.correct) {
             setMessage("")
             if (you === body.senderNickName) {
@@ -161,23 +203,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             setTimeout(() => {
               setIsAnswerTime(false);
               setNow((prev) => prev + 1);
-              if (body.quizId>10) {
-                setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
-                setIsAnswerTime(true);
-                client.publish({
-                  destination: "/pub/room",
-                  body: JSON.stringify({
-                    chatType: "END",
-                    roomId
-                  }),
-                  headers: {
-                    Authorization: sessionStorage.getItem("accessToken") as string,
-                  },
-                })
-                setTimeout(() => {
-                  router.push(`/game/in-game/${roomId}/result`)
-                }, 3000)
-              }
             }, 5000);
           }
 
@@ -229,18 +254,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     }
   }, [roomId, clientRef]);
 
-  useEffect(() => {
-    if (Array.isArray(quizzes)) {
-      const data = quizzes[now];
-      setNowQuiz(data);
-    }
-  }, [quizzes, now]);
 
   useEffect(() => {
     if (time && isStart) {
       setTimeout(() => setTime(time - 1), 1000);
-    } else if (time === 0 && isStart) {
-      setNow((prev) => prev + 1);
     }
   }, [time, isStart]);
 
@@ -248,10 +265,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   return (
     <Box>
-
       <Container maxWidth="lg">
         {/* 게임 파트 */}
-        <Box sx={{
+        <Box
+          sx={{
           height: "90vh",
           minHeight: "600px",
           backgroundImage: "url(/MainPage/background.webp)",
@@ -322,7 +339,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                             pb:"35px",
                           }}
                         >
-                          {nowQuiz.quizId-1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
+                          {now+1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
                         </Typography>
                         {/* Q 파트 */}
                         <Typography 
@@ -442,7 +459,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 width: "100%",
               }}
             >
-              {participants?.map((participant) => (
+              {participants?.map((participant) =>
+                !participant.isExited && (
                 <CustomTooltip
                   key={participant.nickName}
                   title={participant.latestMessage || ""}
@@ -450,34 +468,34 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   arrow
                   placement="top"
                 >
-                  <Card 
-                    sx={{ 
-                      // width: "170px", 
+                  <Card
+                    sx={{
+                      // width: "170px",
                       // height: "220px",
                       width: "15%",
-                      minWidth:"10%",
+                      minWidth: "10%",
                       maxWidth: "120px",
                       minHeight: "160px",
                       height: "23vh",
-                      position: "relative", 
-                      border:"3px groove #BDDD", 
+                      position: "relative",
+                      border: "3px groove #BDDD",
                       borderRadius: "15px",
-                      backgroundColor :"#ecf0f3",
-                    }}>                    
+                      backgroundColor: "#ecf0f3",
+                    }}>
                     <Box>
                       <img
                         src={`/main_profile/${participant.birdId}.png`}
                         alt={`${participant.nickName}'s bird`}
                         style={{ width: "100%", height: "auto" }}
                       />
-                      <hr/>
+                      <hr />
                       <Box sx={{
-                        display:"center",
-                        justifyContent:"center",
-                        height:"100%",
-                        alignItems:"center",                        
+                        display: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                        alignItems: "center",
                       }}>{participant.nickName}</Box>
-                      
+
                     </Box>
                   </Card>
                 </CustomTooltip>
