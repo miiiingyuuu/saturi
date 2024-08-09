@@ -248,12 +248,34 @@ public class UserController {
         log.info("Received normal find password request for {}", request);
         if (userService.checkAuthNum(request.getEmail(), request.getCode())) {
             String tmpPassword = userService.makeRandomTempPassword();
-            UserEntity user = userRepository.findByEmail(request.getEmail()).orElse(null).get(0);
-            userService.changePasswordByTmpPassword(user, tmpPassword);
+            List<UserEntity> user = userRepository.findByEmail(request.getEmail()).orElse(null);
+            if(user == null) throw new IllegalStateException("회원이 존재하지 않습니다");
+
+            userService.changePasswordByTmpPassword(user.get(0), tmpPassword);
 
             return ResponseEntity.ok().body(new TempPasswordResponseDTO(tmpPassword));
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    /**
+     * 비밀번호 찾기용 이메일 인증 메일 전송
+     */
+    @PostMapping("/auth/password-find/email-valid")
+    public ResponseEntity<String> emailSendForPasswordFind(@RequestBody @Valid EmailRequestDTO request) throws MessagingException {
+        log.info("Received normal user email send for password find request for {}", request.getEmail());
+        // 존재하는 회원인지
+        if(!userService.checkIsExistUserEmail(request.getEmail())) {
+            throw new IllegalStateException("존재하지 않는 회원 계정 입니다");
+        }
+        // 소셜로그인회원 인지
+        UserEntity findUserByEmail = userRepository.findByEmail(request.getEmail()).orElse(null).get(0);
+        if(findUserByEmail.getPassword() == null) {
+            throw new IllegalStateException("소셜 로그인 회원은 비밀번호를 찾을 수 없습니다");
+        }
+
+        return ResponseEntity.ok().body(userService.setEmailSend(request.getEmail()));
+
     }
 }
