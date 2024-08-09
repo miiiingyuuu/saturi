@@ -4,9 +4,10 @@ import { Box } from "@mui/material";
 
 interface SideNavbarProps {
   location: number | null;
+  categoryId: number | null;
 }
 // default 1, 경상도 2, 경기도 3
-export default function SideNavbar({ location }: SideNavbarProps) {
+export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
   const categories = [
     [],
     [ { id: 1, name: "일상", tag: "Daily" },

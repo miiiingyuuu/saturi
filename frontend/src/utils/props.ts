@@ -115,6 +115,10 @@ export interface MiddlePartProps {
   selectedRegion: string;
 }
 
+export interface RightPartProps {
+  selectedRegion: string;
+}
+
 export interface ButtonPartProps {
   onLeftClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onRightClick: (e: React.MouseEvent<HTMLButtonElement>) => void;

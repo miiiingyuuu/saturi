@@ -150,7 +150,9 @@ export default function App() {
           mainPageIndicator={mainPageIndicator}
           selectedRegion={selectedRegion}
         />
-        <RightPart />
+        <RightPart 
+          selectedRegion={selectedRegion}
+        />
         <ButtonPart
           onLeftClick={handleLeftClick}
           onRightClick={handleRightClick}

@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Box, Card, Container, Typography } from "@mui/material";
+import { Box, Card, Container, Typography, ToggleButton } from "@mui/material";
 import api from "@/lib/axios";
 import SideNavbar from "../../../../../components/lesson/sidebar";
 import Puzzle from "../../../../../components/lesson/puzzle";
@@ -207,7 +207,7 @@ export default function CategorySelectPage() {
         >
           {/* <h2>locationID = {locationId}</h2>
           <h2>CategoryName = {categoryName}</h2> */}
-          <SideNavbar location={locationId} />
+          <SideNavbar location={locationId} categoryId={categoryId} />
         </Card>
 
         {/* 중간 */}

@@ -12,7 +12,6 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Getter @Setter
 @Table(name = "lesson_result")
-@ToString
 public class LessonResultEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -129,7 +129,7 @@ public class LessonController {
     }
 
     /**
-     * 레슨 저장
+     * 개별 레슨 저장
      */
     @PostMapping("lesson")
     public ResponseEntity<LessonMsgResponseDTO> saveLessonResult(@RequestHeader("Authorization") String accessToken,

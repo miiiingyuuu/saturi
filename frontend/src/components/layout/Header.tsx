@@ -93,6 +93,7 @@ export default function Header() {
       <Box 
         className="flex items-center justify-between px-8" 
         sx={{
+          minHeight:"50px",
           height:"10vh",
           borderBottom: "1px solid",
       }}>
