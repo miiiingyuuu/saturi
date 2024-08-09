@@ -12,11 +12,16 @@ interface LessonResultProps {
   userVoicePath: string | null;
   userVoiceName: string | null;
   userScript: string | null;
+  sampleScript:string|null;
+  sampleGraphX: null;
+  sampleGraphY: string|null;
   accentSimilarity: number | null;
   pronunciationAccuracy: number | null;
   lessonDt: string;
   isSkipped: boolean;
-  isBeforeResult: boolean;
+  isBeforeResult: boolean;  
+  userGraphX: string | null;
+  userGraphY: string | null;
 }
 
 interface LessonGroupResultProps {
@@ -33,8 +38,7 @@ export default function LessonResultPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [lessonGroupResultId, setLessonGroupResultId] = useState<number | null>(
     null
-  );
-  
+  ); 
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -90,7 +94,7 @@ export default function LessonResultPage() {
           lessonGroupResult={lessonGroupResult}
         />
       )}
-      {currentStep === 2 && <SecondResult />}
+      {currentStep === 2 && <SecondResult lessonGroupResult={lessonGroupResult}/>}
       <div className="flex gap-4">
         {currentStep !== 1 && (
           <Button

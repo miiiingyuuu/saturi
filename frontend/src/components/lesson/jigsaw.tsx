@@ -72,55 +72,55 @@ export default function Icon({ dataGroup, progressData, onJigsawClick }: JigsawP
     selectedIndex.current = 0;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy: progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick2 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 1;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy: progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick3 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 2;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick4 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 3;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick5 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 4;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick6 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 5;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick7 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 6;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick8 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 7;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClick9 = (event: React.MouseEvent<SVGPathElement>) => {
     selectedIndex.current = 8;
     setAnchorEl(event.currentTarget);
     onJigsawClick({lessonGroupId: dataGroup[selectedIndex.current].lessonGroupId, avgAccuracy : progressData[selectedIndex.current].avgAccuracy})
-    console.log(dataGroup)    
+       
   };
   const jigsawClose = () => {
     setAnchorEl(null);

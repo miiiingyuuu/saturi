@@ -145,7 +145,7 @@ export default function LessonPage() {
 
             // Find the lesson group that matches the lessonGroupId
             const matchedGroup = response.data.find(
-              (group: { lessonGroupId: number; }) => group.lessonGroupId === lessonGroupId ,
+              ( group: { lessonGroupId: number; }) => group.lessonGroupId === lessonGroupId,
             );
 
             if (matchedGroup) {
@@ -174,10 +174,10 @@ export default function LessonPage() {
         const base64AudioData = btoa(
           new Uint8Array(arrayBuffer).reduce(
             (data, byte) => data + String.fromCharCode(byte),
-            "",
-          ),
+            ""
+          )
         );
-
+  
         // google-storage 에 저장
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
@@ -186,21 +186,21 @@ export default function LessonPage() {
           },
           body: JSON.stringify({ audioData: base64AudioData }),
         });
-
+  
         if (!uploadResponse.ok) {
           throw new Error("Failed to upload file");
         }
-
+  
         const result = await uploadResponse.json();
         console.log("File uploaded with name:", result.filename);
-
+  
         // 현재 레슨 정보 가져오기
         const currentLesson = lessons[currentIndex];
         if (!currentLesson) {
           console.error("Current lesson not found.");
           return;
         }
-
+  
         // 정답파일명, 음성파일명을 django 로 보내서 분석결과 수집
         const analysisResponse = await apiAi.post("/audio/analyze/", {
           answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
@@ -210,10 +210,10 @@ export default function LessonPage() {
         if (analysisResponse.status !== 200) {
           throw new Error("Failed to analyze audio");
         }
-
+  
         // 분석 결과
         console.log(analysisResponse.data);
-
+  
         // 개별 레슨 결과 전송
         const requestBody = {
           lessonId: currentLessonId,
@@ -222,19 +222,22 @@ export default function LessonPage() {
           pronunciationAccuracy: analysisResponse.data.scriptSimilarity,
           filePath: "this_is_not_file_path", // 임시 data 가능
           fileName: result.filename, // (추가) 유저 음성 파일 이름
-          graphInfoX: "time for voice",
-          graphInfoY: "pitch for voice",
+          graphInfoX: analysisResponse.data.userVoiceTime,
+          graphInfoY: analysisResponse.data.userVoicePitch,
+          // 이거 데이터가 안들어가요 :(
+          // graphInfoX: "voice_info_X",
+          // graphInfoY: "vocie_info_Y",
           script: analysisResponse.data.userScript,
         };
-
+  
         const lessonResponse = await api.post("/learn/lesson", requestBody);
-
+  
         if (lessonResponse.status !== 201) {
           throw new Error("Failed to save lesson result");
         }
-
+  
         console.log("Lesson result saved:", lessonResponse.data);
-
+  
         // 모든 레슨을 완료한 경우, 결과 보기로 이동
         if (currentIndex >= lessons.length - 1) {
           // 이 부분을 수정
@@ -243,23 +246,18 @@ export default function LessonPage() {
           const newIndex = currentIndex + 1;
           setCurrentIndex(newIndex);
           setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
+          audioBlobRef.current = null; // Move to next lesson only if audio is uploaded successfully
         }
       } catch (error) {
         const err = error as any; // error를 any 타입으로 캐스팅
-
-        console.error("Error in handleNext:", err.message);
+        alert("재녹음이 필요해요"); // 녹음 업로드 실패 시 경고창 표시
+        console.error("Error in handleNext:", err);
       }
     } else {
-      // 녹음 파일이 없으면 다음 문장으로 넘어가지 않고 결과로 이동
-      if (currentIndex >= lessons.length - 1) {
-        await handleResult();
-      } else {
-        const newIndex = currentIndex + 1;
-        setCurrentIndex(newIndex);
-        setCurrentLessonId(lessons[newIndex].lessonId);
-      }
+      alert("녹음이 되지 않았어요"); // 녹음이 없을 때 경고창 표시
     }
   };
+  
 
   // 녹음 후 구글 스토리지로 저장
   const handleRecording = async () => {
@@ -323,7 +321,7 @@ export default function LessonPage() {
       setCurrentIndex(newIndex);
       setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
     } else {
-      handleResult();
+      handleResult(); 
     }
   };
 
