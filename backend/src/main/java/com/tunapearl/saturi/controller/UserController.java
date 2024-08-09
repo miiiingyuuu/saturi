@@ -89,7 +89,7 @@ public class UserController {
      */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) throws Exception, UnAuthorizedException {
-        String accessToken = request.getHeader("accessToken");
+        String accessToken = request.getHeader("Authorization");
         log.info("Received normal user logout request for {}", accessToken);
 
         userService.logoutUser(accessToken);
