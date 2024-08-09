@@ -92,7 +92,6 @@ export default function App() {
       isChanged: 0,
       birdId: 1,
     })
-      .then(response => console.log(response))
   };
 
 

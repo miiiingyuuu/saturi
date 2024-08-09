@@ -35,7 +35,7 @@ type IsClickedState = {
 export default function App({ params: { roomId } }: RoomIdProps) {
   const router = useRouter()
   const clientRef = useConnect();
-  const [now, setNow] = useState(1);
+  const [now, setNow] = useState(0);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<MessagesProps[]>([]);
   const [quizzes, setQuizzes] = useState<GameQuizProps<GameQuizChoiceProps>[]>([]);
@@ -63,22 +63,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     setTimeout(() => setTooltipOpen(false), 3000); // 3초 후 Tooltip 닫기
   }
 
-  function updateParticipantMessage(nickName: string, message: string) {
-    setParticipants((prevParticipants) =>
-      prevParticipants.map((participant) =>
-        participant.nickName === nickName
-          ? { ...participant, latestMessage: message }
-          : participant
-      )
-    );
-  }
-
   function sendMessage(message: string) {
     if (message.trim() && clientRef.current) {
       clientRef.current.publish({
         destination: "/pub/chat",
         body: JSON.stringify({
-          quizId: now,
+          quizId: isStart&&nowQuiz?.quizId || 1 ,
           message,
           roomId,
         }),
@@ -88,7 +78,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       });
       const you = getCookie("nickname");
       setHighlightedNick(you as string);
-      updateParticipantMessage(you as string, message);
       showTooltip();
       setTimeout(() => setHighlightedNick(null), 3000);
     }
@@ -97,7 +86,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   function reportChat(chatLogId: number) {
     api.post(`/game/user/${chatLogId}`)
-        .then(response => {
+        .then(() => {
           setIsClicked(prev => ({...prev, [chatLogId]: true}))
           alert("신고 완료되었습니다.")
         })
@@ -132,7 +121,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
         client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
-          console.log(body)
           if (Array.isArray(body)) {
             setQuizzes(body);
           }
@@ -141,14 +129,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             setParticipants(body.participants);
           } else if (body.chatType === "ENTER") {
             setParticipants(body.participants);
-          } else if (body.chatType === "TERMINATED") {
+          } else if (body.subType === "EXIT") {
             setParticipants(prev => prev.filter(participant => participant.nickName !== body.exitNickName));
             if (body.remainCount === 0) {
               client.publish({
                 destination: "pub/room",
                 body: JSON.stringify({
                   roomId,
-                  chatType:"END"
+                  chatType:"TERMINATED"
                 }),
                 headers: {
                   Authorization : sessionStorage.getItem("accessToken") as string
@@ -214,7 +202,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           destination: "/pub/room",
           body: JSON.stringify({
             roomId,
-            chatType: "TERMINATED"
+            chatType: "EXIT"
           }),
           headers: {
             Authorization: sessionStorage.getItem("accessToken") as string,
@@ -226,7 +214,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         onDisconnect();
       };
 
-      window.addEventListener("beforeunload", handleBeforeUnload);
       window.addEventListener("unload", handleBeforeUnload);
 
       client.onDisconnect = onDisconnect;
@@ -237,7 +224,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       }
 
       return () => {
-        window.removeEventListener("beforeunload", handleBeforeUnload);
         window.removeEventListener("unload", handleBeforeUnload);
       };
     }
@@ -245,7 +231,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   useEffect(() => {
     if (Array.isArray(quizzes)) {
-      const data = quizzes.find((quiz) => quiz.quizId === now);
+      const data = quizzes[now];
       setNowQuiz(data);
     }
   }, [quizzes, now]);
@@ -383,17 +369,17 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                                   gap: 2,
                                 }}
                               >
-                                {nowQuiz.quizChoiceList.map((choiceList) => (
+                                {nowQuiz.quizChoiceList.map((choiceList, index) => (
                                   <ToggleButton
                                     key={choiceList.choiceId}
-                                    value={choiceList.choiceId.toString()}
+                                    value={(index+1).toString()}
                                     sx={{
                                       minWidth: 300,
                                       maxWidth: "100%",
                                       backgroundColor: "whitesmoke",                                      
                                     }}
                                   >
-                                    {choiceList.choiceId}번. {choiceList.choiceText}
+                                    {index+1}번. {choiceList.choiceText}
                                   </ToggleButton>
                                 ))}
                               </ToggleButtonGroup>
@@ -458,7 +444,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             >
               {participants?.map((participant) => (
                 <CustomTooltip
-                  key={participant.birdId}
+                  key={participant.nickName}
                   title={participant.latestMessage || ""}
                   open={tooltipOpen && highlightedNick === participant.nickName}
                   arrow
@@ -555,8 +541,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 Chat
               </Typography> */}
               <List>
-                {messages.map((msg, index) => (
-                  <ListItem key={index}>
+                {messages.map((msg) => (
+                  <ListItem key={msg.chatLogId}>
                     <ListItemText primary={msg.timestamp} />
                     <ListItemText primary={msg.nickname} />
                     <ListItemText primary={msg.message} />

@@ -1,6 +1,11 @@
 // auth-util
 import * as React from "react";
 
+export interface PasswordChangeProps {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface HandleLoginProps {
   email: string;
   password: string;

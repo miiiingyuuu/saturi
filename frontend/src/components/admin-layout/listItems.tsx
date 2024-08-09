@@ -12,7 +12,6 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ReportProblem from "@mui/icons-material/ReportProblem";
-import HomeIcon from "@mui/icons-material/Home"
 
 // Accordion Item Component with Custom Icon
 function AccordionItem({
