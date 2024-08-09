@@ -44,6 +44,16 @@ public class QuizRepository {
         return res;
     }
 
+    public Optional<List<QuizEntity>> findByRoomId(Long roomId) {
+        List<QuizEntity> list =
+                em.createQuery("select q from QuizEntity q " +
+                        "JOIN GameRoomQuizEntity grq ON q.quizId = grq.quiz.quizId " +
+                        "WHERE grq.room.roomId = :roomId", QuizEntity.class)
+                        .setParameter("roomId", roomId)
+                        .getResultList();
+        return list.isEmpty() ? Optional.empty() : Optional.of(list);
+    }
+
     public List<QuizEntity> findAll(QuizReadRequestDTO dto){
         QQuizEntity qQuiz = new QQuizEntity("q");
 

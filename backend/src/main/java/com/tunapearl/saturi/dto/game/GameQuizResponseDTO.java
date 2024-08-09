@@ -15,6 +15,7 @@ public class GameQuizResponseDTO {
     private String question;
     private Boolean isObjective;
     private List<GameQuizChoiceDTO> quizChoiceList = new ArrayList<>();
+    private Long sequence;
 
     // 기본 생성자
     public GameQuizResponseDTO() {
