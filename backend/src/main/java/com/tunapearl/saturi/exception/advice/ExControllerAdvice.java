@@ -31,6 +31,13 @@ public class ExControllerAdvice {
         return new ErrorResponseDTO("BAD_REQUEST", e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalAccessException.class)
+    public ErrorResponseDTO IllegalAccessExHandle(IllegalAccessException e) {
+        log.error("[exceptionHandle] ex", e);
+        return new ErrorResponseDTO("BAD_REQUEST", e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnAuthorizedException.class)
     public ErrorResponseDTO UnAuthorizedExHandle(UnAuthorizedException e) {

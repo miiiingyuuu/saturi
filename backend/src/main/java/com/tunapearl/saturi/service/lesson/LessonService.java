@@ -55,25 +55,16 @@ public class LessonService {
     }
 
     public Long getProgressByUserIdLocationAndCategory(Long userId, Long locationId, Long lessonCategoryId) {
-        int completedLessonGroupCnt = 0;
-        // 유저 아이디로 그룹 결과 조회(완료된거만)
-        List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserId(userId).orElse(null);
+        // 유저 아이디로 그룹 결과 조회(지역, 카테고리 맞는거, 완료된거만)
+        List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWhereLocationAndCategory(userId, locationId, lessonCategoryId).orElse(null);
         if(lessonGroupResult == null) return 0L;
-        // 조회된 그룹 결과를 그룹 아이디로 조회하며 지역과 대화유형이 맞는 개수를 셈
-        for (LessonGroupResultEntity lgResult : lessonGroupResult) {
-            LocationEntity location = lgResult.getLessonGroup().getLocation();
-            LessonCategoryEntity lessonCategory = lgResult.getLessonGroup().getLessonCategory();
-            if(location.getLocationId().equals(locationId) && lessonCategory.getLessonCategoryId().equals(lessonCategoryId)) {
-                completedLessonGroupCnt++;
-            }
-        }
-        // 그 개수 / 9 해서 진척도 리턴
-        return (completedLessonGroupCnt * 100) / 9L;
+        // 완료한 퍼즐 / 9개
+        return (lessonGroupResult.size() * 100L) / 9L;
     }
 
     public List<LessonGroupProgressByUserDTO> getLessonGroupProgressAndAvgAccuracy(Long userId, Long locationId, Long lessonCategoryId) {
         // lessonGroup 완성 여부에 상관없이 lessonGroupResult 받아오기
-        List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
+        List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId, locationId, lessonCategoryId).orElse(null);
         List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
         List<LessonGroupEntity> lessonGroups = lessonRepository.findLessonGroupByLocationAndCategory(locationId, lessonCategoryId).orElse(null);
 
@@ -87,11 +78,9 @@ public class LessonService {
             return result;
         }
         Set<Long> lessonGroupIdSet = new HashSet<>(); // front 요청으로 lessonGroupResult가 없어도 레슨그룹아이디, 레슨그룹이름을 dto에 추가
-        Set<Long> lessonIdSet = new HashSet<>();
 
         for (LessonGroupResultEntity lgr : lessonGroupResult) {
-            // 지역과 카테고리가 일치하는 퍼즐결과가 아니면
-            if(!lgr.getLessonGroup().getLocation().getLocationId().equals(locationId) || !lgr.getLessonGroup().getLessonCategory().getLessonCategoryId().equals(lessonCategoryId)) continue;
+            Set<Long> lessonIdSet = new HashSet<>();
             // lessonGroupId
             Long lessonGroupId = lgr.getLessonGroup().getLessonGroupId();
             lessonGroupIdSet.add(lessonGroupId);
@@ -106,7 +95,7 @@ public class LessonService {
                     if(lessonIdSet.contains(lr.getLesson().getLessonId())) continue;
                     lessonIdSet.add(lr.getLesson().getLessonId());
                 }
-                groupProcess = (lessonIdSet.size() * 100) / 5L;
+                groupProcess = (lessonIdSet.size() * 100L) / 5L;
                 avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
             }
 
@@ -128,28 +117,38 @@ public class LessonService {
         Long lessonGroupId = findLesson.getLessonGroup().getLessonGroupId();
 
         // 유저아이디와 레슨그룹 아이디로 레슨그룹결과 아이디를 찾는다.
-        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
-        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonGroupId);
+        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId).orElse(null);
+        if(lessonGroupResults == null) {
+            // 레슨그룹결과 없이 건너뛰기로 올 수 없음 -> 이상하게 온거
+            throw new IllegalStateException("잘못된 접근입니다.");
+        }
+        LessonGroupResultEntity findLessonGroupResult = findLessonGroupResult(lessonGroupResults, lessonGroupId);
+        Long lessonGroupResultId = findLessonGroupResult.getLessonGroupResultId();
+
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다. (add) 학습 시간도 초기화
-        // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
+        // 이미 학습했던 레슨이면 기존에 존재하는 레슨 결과 아이디를 반환
         Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
         if(lessonResultsOpt.isPresent()) {
             // 이미 레슨결과가 존재
             List<LessonResultEntity> lessonResults = lessonResultsOpt.orElse(null);
-            lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
-            return lessonResults.get(0).getLessonResultId();
+//            lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
+            return lessonResults.get(lessonResults.size()-1).getLessonResultId();
         }
+        LessonResultEntity lessonResultSkipped = createLessonResultSkipped(findLesson, findLessonGroupResult);
+
+        // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
+        return lessonRepository.saveLessonForSkipped(lessonResultSkipped).orElse(null);
+    }
+
+    private static LessonResultEntity createLessonResultSkipped(LessonEntity findLesson, LessonGroupResultEntity findLessonGroupResult) {
         LessonResultEntity lessonResultSkipped = new LessonResultEntity();
-        LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
         lessonResultSkipped.setIsSkipped(true);
         lessonResultSkipped.setAccentSimilarity(0L);
         lessonResultSkipped.setPronunciationAccuracy(0L);
         lessonResultSkipped.setLesson(findLesson);
         lessonResultSkipped.setLessonDt(LocalDateTime.now());
-        lessonResultSkipped.setLessonGroupResult(lessonGroupResult);
-
-        // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
-        return lessonRepository.saveLessonForSkipped(lessonResultSkipped).orElse(null);
+        lessonResultSkipped.setLessonGroupResult(findLessonGroupResult);
+        return lessonResultSkipped;
     }
 
     public Long createLessonGroupResult(Long userId, Long lessonGroupId) {
@@ -185,9 +184,9 @@ public class LessonService {
         Long lessonGroupId = lesson.getLessonGroup().getLessonGroupId();
 
         // 유저 아이디와 레슨 그룹 아이디로 레슨 그룹 결과 조회
-        Optional<List<LessonGroupResultEntity>> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId);
+        Optional<List<LessonGroupResultEntity>> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
         if(lessonGroupResults.isEmpty()) return Optional.empty();
-        Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults.get(), lessonGroupId);
+        Long lessonGroupResultId = findLessonGroupResult(lessonGroupResults.get(), lessonGroupId).getLessonGroupResultId();
 
         // 레슨 아이디랑 레슨 그룹 결과 아이디로 레슨 결과 조회
         Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
@@ -208,9 +207,9 @@ public class LessonService {
         return Optional.ofNullable(new LessonInfoDTO(false, lessonResult.getAccentSimilarity(), lessonResult.getPronunciationAccuracy()));
     }
 
-    private Long findLessonGroupResultId(List<LessonGroupResultEntity> lessonGroupResults, Long lessonId) {
+    private LessonGroupResultEntity findLessonGroupResult(List<LessonGroupResultEntity> lessonGroupResults, Long lessonId) {
         for (LessonGroupResultEntity lgr : lessonGroupResults) {
-            if(lgr.getLessonGroup().getLessonGroupId().equals(lessonId)) return lgr.getLessonGroupResultId();
+            if(lgr.getLessonGroup().getLessonGroupId().equals(lessonId)) return lgr;
         }
         return null;
     }
@@ -227,11 +226,11 @@ public class LessonService {
 
         // 녹음 파일 관련, 파형 관련 추가
         LessonRecordFileEntity lessonRecordFile = createLessonRecordFile(request, lessonResult);
-        lessonRepository.saveLessonRecordFile(lessonRecordFile).orElse(null);
         LessonRecordGraphEntity lessonRecordGraph = createLessonRecordGraph(request, lessonResult);
-        lessonRepository.saveLessonRecordGraph(lessonRecordGraph).orElse(null);
 
         Long lessonResultId = lessonRepository.saveLessonResult(lessonResult).orElse(null);
+        lessonRepository.saveLessonRecordFile(lessonRecordFile).orElse(null);
+        lessonRepository.saveLessonRecordGraph(lessonRecordGraph).orElse(null);
         return lessonResultId;
     }
 
