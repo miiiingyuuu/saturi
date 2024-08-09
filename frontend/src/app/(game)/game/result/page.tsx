@@ -1,13 +1,17 @@
 "use client";
 
+import api from "@/lib/axios";
+import { RoomIdProps } from "@/utils/props";
 import { Box, Container, Typography, Card, LinearProgress, Button } from "@mui/material";
 import { useState } from "react";
 
 
-export default function Result(){
+export default function Result({params: {roomId}}: RoomIdProps){
   // 마음대로 변경 가능 
   const progress = 50
 
+  api.post(`/game/result/${roomId}`)
+  .then(response => console.log(response))
 
   return(    
 

@@ -7,16 +7,23 @@ import { useRouter, useSearchParams } from "next/navigation";
 import FirstResult from "../../../../../../../components/lesson/result/firstResult";
 import SecondResult from "../../../../../../../components/lesson/result/secondResult";
 
+
+
 interface LessonResultProps {
   lessonId: number;
   userVoicePath: string | null;
   userVoiceName: string | null;
   userScript: string | null;
+  sampleScript:string|null;
+  sampleGraphX: null;
+  sampleGraphY: string|null;
   accentSimilarity: number | null;
   pronunciationAccuracy: number | null;
   lessonDt: string;
   isSkipped: boolean;
-  isBeforeResult: boolean;
+  isBeforeResult: boolean;  
+  userGraphX: string | null;
+  userGraphY: string | null;
 }
 
 interface LessonGroupResultProps {
@@ -33,8 +40,7 @@ export default function LessonResultPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [lessonGroupResultId, setLessonGroupResultId] = useState<number | null>(
     null
-  );
-  
+  ); 
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,7 +48,7 @@ export default function LessonResultPage() {
   const [lessonResult, setLessonResult] = useState<LessonResultProps[]>([]);
   const [userExpInfo, setUserExpInfo] = useState<object>({});
   const [lessonGroupResult, setLessonGroupResult] =
-    useState<LessonGroupResultProps | null>(null);
+    useState<LessonGroupResultProps>();
 
   // URL 파라미터로부터 lessonGroupResultId를 가져와 상태에 저장
   useEffect(() => {
@@ -62,7 +68,7 @@ export default function LessonResultPage() {
         .put(`learn/lesson-group-result/${lessonGroupResultId}`)
         .then((res) => {
           if (res.status === 200) {
-            console.log(res);
+            console.log("lessonGroupResult",res.data);
             setUserExpInfo(res.data.userExpInfo);
             setLessonResult(res.data.lessonResult);
             setLessonGroupResult(res.data.lessonGroupResult); // lessonGroupResult 설정
@@ -90,7 +96,9 @@ export default function LessonResultPage() {
           lessonGroupResult={lessonGroupResult}
         />
       )}
-      {currentStep === 2 && <SecondResult />}
+      {currentStep === 2 && lessonGroupResult && (
+        <SecondResult {...lessonGroupResult} />
+      )}
       <div className="flex gap-4">
         {currentStep !== 1 && (
           <Button

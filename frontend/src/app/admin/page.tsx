@@ -12,7 +12,7 @@ export default function StatisticsPage() {
         사용자 통계
       </Typography>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
             <Typography variant="h6" gutterBottom>
               지역별 사용자 현황
@@ -20,7 +20,7 @@ export default function StatisticsPage() {
             <UserLocationChart />
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
             <Typography variant="h6" gutterBottom>
               사용자 콘텐츠 통계
@@ -28,20 +28,20 @@ export default function StatisticsPage() {
             <UserContentsChart />
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" gutterBottom>
-              사용자 레슨 통계
-            </Typography>
-            <UserLessonChart />
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
             <Typography variant="h6" gutterBottom>
               사용자 유사도/정확도 통계
             </Typography>
             <UserSimilarityChart />
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>
+              사용자 레슨 통계
+            </Typography>
+            <UserLessonChart />
           </Paper>
         </Grid>
       </Grid>
