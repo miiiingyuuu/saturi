@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @Getter @Setter
 @Table(name = "lesson")
+@ToString
 public class LessonEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +30,12 @@ public class LessonEntity {
     private String sampleVoiceName;
 
     private String script;
+
+    @Column(name = "graph_x")
+    private String graphX;
+
+    @Column(name = "graph_y")
+    private String graphY;
 
     private LocalDateTime lastUpdateDt;
 
