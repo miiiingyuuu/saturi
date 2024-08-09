@@ -42,27 +42,8 @@ public class GameRoomQuizService {
     }
 
     public List<GameQuizResponseDTO> poseTenQuiz(Long roomId){
-        List<GameRoomQuizEntity> qrqList = grQuizRepository.findPosedQuizByRoomId(roomId)
-                .orElseThrow(() -> new RuntimeException(String.format("Not found posed quis list: %d", roomId)));
-        List<GameQuizResponseDTO> list = new ArrayList<>();
-
-        for(GameRoomQuizEntity grQuiz : qrqList){
-            // 문제 상세 조회
-            QuizEntity quiz = grQuiz.getQuiz();
-
-            // 객관식 문제 섞기
-            Collections.shuffle(quiz.getQuizChoiceList());
-
-            // 정답 찾기
-            Long ansIdx = Long.valueOf(findIndexWithIsAnswerTrue(quiz.getQuizChoiceList()));
-
-            // 수정하기
-            grQuiz.setSequence(Long.valueOf(ansIdx));
-
-            // 리스트 추가
-            list.add(convertQuizEntityToGameQuizResponseDTO(quiz, ansIdx));
-        }
-        return list;
+        List<QuizEntity> qList = grQuizRepository.findQuizByRoomId(roomId).orElseThrow(() -> new RuntimeException(String.format("Not found roomId: ", roomId)));
+        return qList.stream().map(this::convertQuizEntityToGameQuizResponseDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -71,19 +52,11 @@ public class GameRoomQuizService {
         gameRoomQuizEntity.setCorrectDt(LocalDateTime.now());
     }
 
-    private int findIndexWithIsAnswerTrue(List<QuizChoiceEntity> list){
-        return (IntStream.range(0, list.size())
-                .filter(i -> list.get(i).getIsAnswer())
-                .findFirst()
-                .orElse(-1) + 1);
-    }
-
-    private GameQuizResponseDTO convertQuizEntityToGameQuizResponseDTO(QuizEntity quizEntity, Long seq){
+    private GameQuizResponseDTO convertQuizEntityToGameQuizResponseDTO(QuizEntity quizEntity){
         GameQuizResponseDTO dto = new GameQuizResponseDTO();
         dto.setQuizId(quizEntity.getQuizId());
         dto.setIsObjective(quizEntity.getIsObjective());
         dto.setQuestion(quizEntity.getQuestion());
-        dto.setSequence(seq);
 
         dto.setQuizChoiceList(quizEntity.getQuizChoiceList().stream()
                 .map(choiceEntity -> new GameQuizChoiceDTO(choiceEntity.getQuizChoicePK().getChoiceId(), choiceEntity.getContent(), choiceEntity.getIsAnswer()))

@@ -18,9 +18,8 @@ public class GameRoomQuizRepository {
         em.persist(gameRoomQuiz);
     }
 
-
-    public Optional<List<Long>> findQuizIdsByRoomId(Long roomId){
-        List<Long> results = em.createQuery("select q.quiz.quizId from GameRoomQuizEntity q where q.room.roomId = :roomId", Long.class)
+    public Optional<List<QuizEntity>> findQuizByRoomId(Long roomId){
+        List<QuizEntity> results = em.createQuery("select q.quiz from GameRoomQuizEntity q where q.room.roomId = :roomId", QuizEntity.class)
                         .setParameter("roomId", roomId)
                         .getResultList();
         return results.isEmpty() ? Optional.empty() : Optional.of(results);

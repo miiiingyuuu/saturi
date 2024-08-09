@@ -137,21 +137,23 @@ public class ChatService {
         Long roomId = chatRoom.getRoomId();
         Long quizId = message.getQuizId();
 
+        log.info("message(playGame): {}", message.toString());
+
         if (message.getQuizId() > 1) {
-            //번호로 퀴즈 조회
+            // 방번호, 퀴즈번호로 조회
             GameRoomQuizEntity gameRoomQuiz = gameRoomQuizRepository.findPosedQuizByRoomAndQuizId(roomId, quizId)
-                    .orElseThrow(() -> new RuntimeException("Not fount game room quiz"));
+                    .orElseThrow(() -> new RuntimeException(String.format("Not found game room quiz: %d, %d", roomId, quizId)));
+            QuizEntity quiz = gameRoomQuiz.getQuiz();
 
             //정답판단 로직
             //객관식인 경우
             String answer = "";
-            if (gameRoomQuiz.getSequence() != 0L) {
-                answer = String.valueOf(gameRoomQuiz.getSequence());
+            if (quiz.getIsObjective()) {
+                answer = String.valueOf(findIndexWithIsAnswerTrue(quiz.getQuizChoiceList()));
             }
             //주관식인 경우
             else {
-                QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
-                answer = quizDetailReadResponseDTO.getChoiceList().get(0).getContent();
+                answer = quiz.getQuizChoiceList().get(0).getContent();
             }
 
             //정답을 제일 먼저 맞춤
