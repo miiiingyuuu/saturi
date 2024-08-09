@@ -106,10 +106,7 @@ public class LessonService {
                     if(lessonIdSet.contains(lr.getLesson().getLessonId())) continue;
                     lessonIdSet.add(lr.getLesson().getLessonId());
                 }
-            }
-
-            if(lessonResults != null) {
-                groupProcess = lessonIdSet.size() / 5L;
+                groupProcess = (lessonIdSet.size() * 100) / 5L;
                 avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
             }
 
