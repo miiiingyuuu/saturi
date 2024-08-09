@@ -55,6 +55,8 @@ public class RedisSubscriber implements MessageListener {
                             dto.setQuestion(e.get("question").asText());
                             dto.setQuizId(e.get("quizId").asLong());
                             dto.setIsObjective(e.get("isObjective").asBoolean());
+                            dto.setSequence(e.get("sequence").asLong());
+
 
                             List<GameQuizChoiceDTO> choices = new ArrayList<>();
 
