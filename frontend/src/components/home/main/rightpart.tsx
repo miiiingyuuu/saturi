@@ -4,9 +4,12 @@ import { RightPartProps } from '@/utils/props';
 import Image from "next/image"
 import api from '@/lib/axios';
 import UserTierRank from '@/components/profile/userTierRank';
+import { getCookie } from 'cookies-next';
 
 export default function RightPart({selectedRegion} : RightPartProps) {
   const router = useRouter();
+
+  const profileImage = `/main_profile/${getCookie("birdId")}.png`
 
   function GameStartButton() {
     let region = 1;    
@@ -78,10 +81,10 @@ export default function RightPart({selectedRegion} : RightPartProps) {
                 {/* 게임 프로필 */}
                 <Box sx={{  }}>
                   <Card sx={{ width:"250px", height: "350px", display: 'grid', placeItems: 'center' }}>
-                    <UserTierRank layout="horizontal"/>
+                    <UserTierRank layout='horizontal'/>
                     <Avatar
-                      sizes="large" 
-                      src={"/default-profile.png"} 
+                      sizes="large"                       
+                      src={`${profileImage}`} 
                     />
                   </Card>                  
                 </Box>
