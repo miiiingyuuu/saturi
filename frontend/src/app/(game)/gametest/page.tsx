@@ -188,7 +188,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             nickname: body.senderNickName,
             chatLogId: body.chatLogId
           };
-          setMessages((prevMsg) => [...prevMsg, newMsg]);
+          setMessages((prevMsg) => [newMsg, ...prevMsg]);
         });
       };
 
@@ -249,177 +249,135 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       <Container maxWidth="lg">
         {/* 게임 파트 */}
         <Box sx={{
-          height: "90vh",
-          minHeight: "600px",
-          backgroundImage: "url(/MainPage/background.webp)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          borderRadius: "15px",
-          border:"3px groove black",
+          height:"85vh",
+          backgroundColor:"white",
+          borderLeft:"3px solid black",
+          borderRight:"3px solid black",
         }}>         
-          <Box sx={{
-            minHeight: "390px",
-            height:"70%",
-
-          }}>
-            {/* 중요파트 */}
-            {!isStart ? (
-              <Typography
-                component="h1"
-                variant="h5"
-                sx={{
-                  display:"flex",
-                  justifyContent:"center",
-                  alignItems:"center",
-                  height:"100%",
-                }}
-              >
-                머기중입니다.
-              </Typography>
-            ) : (
-              <>
-                {isAnswerTime && (
-                  <Typography 
-                    sx={{
-                      fontSize:"20px",
-                      fontWeight:"bold",
-                      display:"flex",
-                      justifyContent:"center",
-                      alignItems:"center",
-                      height:"100%",
-                  }}>{result}</Typography>
-                )}
-                {time ? (
-                  <Typography
-                    component="h1"
-                    variant="h5"
-                    sx={{
-                      display:"flex",
-                      justifyContent:"center",
-                      alignItems:"center",
-                      height:"100%",
-                  }}>
-                    {time}초 뒤 게임이 시작됩니다
-                  </Typography>
-                ) : (
-                  <Box
-                    sx={{
-                      display: "grid",
-                      placeItems: "center",
-                    }}
-                  >
-                    {!isAnswerTime && nowQuiz && (
-                      <>
-                        <Typography
+        
+          {/* 중요파트 */}
+          {!isStart ? (
+            <Typography
+              component="h1"
+              variant="h5"
+              sx={{
+                display:"flex",
+                justifyContent:"center",
+                alignItems:"center",
+                height:"100%",
+              }}
+            >
+              머기중입니다.
+            </Typography>
+          ) : (
+            <>
+              {isAnswerTime && (
+                <Typography>{result}</Typography>
+              )}
+              {time ? (
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  sx={{
+                    display:"flex",
+                    justifyContent:"center",
+                    alignItems:"center",
+                    height:"100%",
+                  }}
+                >
+                  {time}초 뒤 게임이 시작됩니다
+                </Typography>
+              ) : (
+                <Box
+                  sx={{
+                    display: "grid",
+                    placeItems: "center",
+                    marginBottom: "150px",
+                  }}
+                >
+                  {!isAnswerTime && nowQuiz && (
+                    <>
+                      <Typography
+                        sx={{
+                          fontSize: "39px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {nowQuiz.quizId-1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
+                      </Typography>
+                      <Typography>{nowQuiz.question}</Typography>
+                      {nowQuiz.isObjective ? (
+                        <Box
                           sx={{
-                            pt:"20px",
-                            fontSize: "39px",
-                            fontWeight: "bold",
-                            pb:"35px",
+                            marginTop: "50px",
+                            display: "flex",
+                            justifyContent: "space-between",
                           }}
                         >
-                          {nowQuiz.quizId-1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
-                        </Typography>
-                        {/* Q 파트 */}
-                        <Typography 
-                        sx={{
-                          fontSize: "25px",
-                          textShadow: `
-                            1px 1px 0 #F08080,   /* 오른쪽 아래 */
-                            -1px 1px 0 #F08080,  /* 왼쪽 아래 */
-                            1px -1px 0 #F08080,  /* 오른쪽 위 */
-                            -1px -1px 0 #F08080  /* 왼쪽 위 */
-                          `,
-                          fontWeight: "bold",
-                        }}>
-                          {nowQuiz.question}
-                        </Typography>
-                        {nowQuiz.isObjective ? (
-
-                          // 객관식 파트 
                           <Box
                             sx={{
-                              marginTop: "25px",
-                              display: "flex",                              
-                              justifyContent: "space-between",
+                              width: "100%",
+                              maxWidth: "600px",
+                              mx: "auto",
                             }}
                           >
-                            <Box
-                              sx={{
-                                width: "100%",
-                                maxWidth: "600px",
-                                mx: "auto",
-                              }}
-                            >
-                              <ToggleButtonGroup
-                                exclusive
-                                value={message}
-                                onChange={(_, value) => {
-                                  sendMessage(value)
-                                }}
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  alignItems: "center",
-                                  borderRadius: "15px",
-                                  gap: 2,
-                                }}
-                              >
-                                {nowQuiz.quizChoiceList.map((choiceList) => (
-                                  <ToggleButton
-                                    key={choiceList.choiceId}
-                                    value={choiceList.choiceId.toString()}
-                                    sx={{
-                                      minWidth: 300,
-                                      maxWidth: "100%",
-                                      backgroundColor: "whitesmoke",                                      
-                                    }}
-                                  >
-                                    {choiceList.choiceId}번. {choiceList.choiceText}
-                                  </ToggleButton>
-                                ))}
-                              </ToggleButtonGroup>
-                            </Box>
-                          </Box>
-                        ) : (
-
-                          // 주관식 파트  
-                          <Box sx={{ display: "flex", pt:"20px" }}>
-                            <TextField
-                              variant="outlined"
-                              fullWidth
+                            <ToggleButtonGroup
+                              exclusive
                               value={message}
-                              onChange={(event) => handleValueChange(event, setMessage)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") sendMessage(message);
+                              onChange={(_, value) => {
+                                sendMessage(value)
                               }}
                               sx={{
-                                backgroundColor: "whitesmoke",
-                                borderRadius: "5px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 2,
                               }}
-                            />
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              sx={{
-                                ml: 1,
-                              }}
-                              onClick={() => sendMessage(message)}
                             >
-                              <SendIcon />
-                            </Button>
+                              {nowQuiz.quizChoiceList.map((choiceList) => (
+                                <ToggleButton
+                                  key={choiceList.choiceId}
+                                  value={choiceList.choiceId.toString()}
+                                  sx={{
+                                    minWidth: 300,
+                                    maxWidth: "100%",
+                                  }}
+                                >
+                                  {choiceList.choiceId}번. {choiceList.choiceText}
+                                </ToggleButton>
+                              ))}
+                            </ToggleButtonGroup>
                           </Box>
-                        )}
-                      </>
-                    )}
-                  </Box>
-                )}
-              </>
-            )}     
-
-          </Box>
-          
+                        </Box>
+                      ) : (
+                        <Box sx={{ display: "flex" }}>
+                          <TextField
+                            variant="outlined"
+                            fullWidth
+                            value={message}
+                            onChange={(event) => handleValueChange(event, setMessage)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") sendMessage(message);
+                            }}
+                          />
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{
+                              ml: 1,
+                            }}
+                            onClick={() => sendMessage(message)}
+                          >
+                            <SendIcon />
+                          </Button>
+                        </Box>
+                      )}
+                    </>
+                  )}
+                </Box>
+              )}
+            </>
+          )}     
 
 
           {/* 프로필 파트 */}
@@ -427,16 +385,13 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             sx={{
               display: "grid",
               placeItems: "center",
-              minHeight: "150px",
-              height: "30%",              
             }}
           >
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-evenly",
-                alignItems:"flex-end",
-                width: "100%",
+                justifyContent: "space-between",
+                width: "1100px",
               }}
             >
               {participants?.map((participant) => (
@@ -447,34 +402,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   arrow
                   placement="top"
                 >
-                  <Card 
-                    sx={{ 
-                      // width: "170px", 
-                      // height: "220px",
-                      width: "15%",
-                      minWidth:"10%",
-                      maxWidth: "120px",
-                      minHeight: "160px",
-                      height: "23vh",
-                      position: "relative", 
-                      border:"3px groove #BDDD", 
-                      borderRadius: "15px",
-                      backgroundColor :"#ecf0f3",
-                    }}>                    
+                  <Card sx={{ width: "200px", height: "300px", position: "relative" }}>
+                    {participant.nickName}
                     <Box>
                       <img
                         src={`/main_profile/${participant.birdId}.png`}
                         alt={`${participant.nickName}'s bird`}
                         style={{ width: "100%", height: "auto" }}
                       />
-                      <hr/>
-                      <Box sx={{
-                        display:"center",
-                        justifyContent:"center",
-                        height:"100%",
-                        alignItems:"center",                        
-                      }}>{participant.nickName}</Box>
-                      
                     </Box>
                   </Card>
                 </CustomTooltip>
@@ -491,41 +426,18 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
         {/* 채팅 파트 */}
         <Box sx={{
-          height:"20vh",
+          height:"15vh",
           backgroundColor:"blue",
         }}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              height: "20vh",
+              height: "100vh",
               p: 2,
               backgroundColor: "#f5f5f5",
-          }}>
-            
-
-            {/* 채팅을 입력하는 부분 */}
-            <Box sx={{ display: "flex"}}>
-              <TextField
-                variant="outlined"
-                fullWidth                
-                value={message}
-                onChange={(event) => handleValueChange(event, setMessage)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") sendMessage(message);
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => sendMessage(message)}
-                sx={{ ml: 1 }}
-              >
-                <SendIcon />
-              </Button>
-            </Box>
-
-            {/* 채팅이 보이는 부분 */}
+            }}
+          >
             <Paper
               sx={{
                 flex: 1,
@@ -534,9 +446,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 mb: 2,
               }}
             >
-              {/* <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom>
                 Chat
-              </Typography> */}
+              </Typography>
               <List>
                 {messages.map((msg, index) => (
                   <ListItem key={index}>
@@ -552,10 +464,37 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 ))}
               </List>
             </Paper>
+            <Box sx={{ display: "flex" }}>
+              <TextField
+                variant="outlined"
+                fullWidth
+                value={message}
+                onChange={(event) => handleValueChange(event, setMessage)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") sendMessage(message);
+                }}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => sendMessage(message)}
+                sx={{ ml: 1 }}
+              >
+                <SendIcon />
+              </Button>
+            </Box>
           </Box>
         </Box>
 
       </Container>
     </Box>
+
+    // <Box>
+
+
+
+
+
+    // </Box>
   );
 }

@@ -121,7 +121,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
                   <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginTop:"5px", marginLeft:"7px" }}>
                     <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                   </ButtonBase>
-                  <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginTop:"5px", marginRight:"7px" }}>
+                  <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ borderRadius:"5px", width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginTop:"5px", marginRight:"7px" }}>
                     <Box component="img" src="/MainPage/learnButton2.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                   </ButtonBase>
                   <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginBottom:"5px", marginLeft:"7px" }}>
