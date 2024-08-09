@@ -42,25 +42,7 @@ public class LessonService {
         return lessonRepository.findAllLessonGroup().orElse(null);
     }
 
-    public void updateLesson(Long lessonId, Long lessonGroupId, String script, String filePath) {
-        List<LessonEntity> allByLessonGroupId = findAllByLessonGroupId(lessonGroupId);
-        if(allByLessonGroupId.size() >= 5) {
-            throw new AlreadyMaxSizeException();
-        }
-        LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
-        LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
-        lesson.setLessonGroup(findLessonGroup);
-        lesson.setScript(script);
-        lesson.setSampleVoicePath(filePath);
-        lesson.setLastUpdateDt(LocalDateTime.now());
-    }
 
-    public void deleteLesson(Long lessonId) {
-        LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
-        findLesson.setLessonGroup(null);
-        findLesson.setIsDeleted(true);
-        findLesson.setLastUpdateDt(LocalDateTime.now());
-    }
 
     public List<LessonGroupEntity> findLessonGroupByLocationAndCategory(Long locationId, Long categoryId) {
         return lessonRepository.findLessonGroupByLocationAndCategory(locationId, categoryId).orElse(null);
