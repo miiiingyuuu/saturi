@@ -118,7 +118,6 @@ public class LessonService {
         // 유저아이디와 레슨그룹 아이디로 레슨그룹결과 아이디를 찾는다.
         List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         Long lessonGroupResultId = findLessonGroupResultId(lessonGroupResults, lessonGroupId);
-        log.info("너 널이지 {}", lessonGroupResultId);
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다. (add) 학습 시간도 초기화
         // 이미 학습했던 레슨이면 제일 최근에 학습한 레슨결과아이디 반환(건너뛰기 일때는 크게 레슨결과아이디가 필요하지 않아서 우선 제일 최근 레슨결과아이디 반환)
         Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
@@ -131,6 +130,8 @@ public class LessonService {
         LessonResultEntity lessonResultSkipped = new LessonResultEntity();
         LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
         lessonResultSkipped.setIsSkipped(true);
+        lessonResultSkipped.setAccentSimilarity(0L);
+        lessonResultSkipped.setPronunciationAccuracy(0L);
         lessonResultSkipped.setLesson(findLesson);
         lessonResultSkipped.setLessonDt(LocalDateTime.now());
         lessonResultSkipped.setLessonGroupResult(lessonGroupResult);
@@ -366,6 +367,10 @@ public class LessonService {
             LessonResultEntity first = pqMap.get(lessonId).poll();
             // pq의 최고 우선순위를 빼서 lessonResultMap에 넣는다.
             lessonResultMap.put(first.getLesson().getLessonId(), first);
+            // (추가) 레슨그룹결과 완료처리를 위한 테스트
+            maxAccuracyMap.put(lessonId, first.getAccentSimilarity());
+            maxSimilarityMap.put(lessonId, first.getPronunciationAccuracy());
+
             // isBeforeResult를 true로 해야한다.
             LessonResultForSaveGroupResultDTO lessonResultDto = new LessonResultForSaveGroupResultDTO(lessonResultMap.get(lessonId), true, lessonsMap.get(lessonId));
             lessonResultDtoLst.add(lessonResultDto);
