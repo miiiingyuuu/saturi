@@ -94,8 +94,9 @@ public class GameService {
             long roomId = gameRoomEntity.getRoomId();
             topic.setRoomId(roomId);
 
+            //방 생성과 동시에 문제 10개 랜덤 추출 및 저장 요청
             chatRoomRepository.save(topic);
-            gameRoomQuizService.poseTenQuiz(roomId, quizService.findRandomIdByLocation(gameMatchingRequestDTO.getLocationId()));
+            gameRoomQuizService.saveTenRandomQuiz(roomId, quizService.findRandomIdByLocation(gameMatchingRequestDTO.getLocationId()));
         }
 
         UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
@@ -105,7 +106,7 @@ public class GameService {
         Optional<List<GameRoomParticipantEntity>> Optionalparticipants = gameRoomParticipantRepository.findByRoomId(gameRoomEntity.getRoomId());
         if (Optionalparticipants.isPresent()) {
             List<GameRoomParticipantEntity> participants = Optionalparticipants.get();
-            if (participants.size() == 2) {
+            if (participants.size() == 5) {
                 gameRoomEntity.setStatus(Status.IN_PROGRESS);
                 gameRoomEntity.setStartDt(LocalDateTime.now());
             }

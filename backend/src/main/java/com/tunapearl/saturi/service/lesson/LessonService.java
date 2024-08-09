@@ -42,25 +42,7 @@ public class LessonService {
         return lessonRepository.findAllLessonGroup().orElse(null);
     }
 
-    public void updateLesson(Long lessonId, Long lessonGroupId, String script, String filePath) {
-        List<LessonEntity> allByLessonGroupId = findAllByLessonGroupId(lessonGroupId);
-        if(allByLessonGroupId.size() >= 5) {
-            throw new AlreadyMaxSizeException();
-        }
-        LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
-        LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
-        lesson.setLessonGroup(findLessonGroup);
-        lesson.setScript(script);
-        lesson.setSampleVoicePath(filePath);
-        lesson.setLastUpdateDt(LocalDateTime.now());
-    }
 
-    public void deleteLesson(Long lessonId) {
-        LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
-        findLesson.setLessonGroup(null);
-        findLesson.setIsDeleted(true);
-        findLesson.setLastUpdateDt(LocalDateTime.now());
-    }
 
     public List<LessonGroupEntity> findLessonGroupByLocationAndCategory(Long locationId, Long categoryId) {
         return lessonRepository.findLessonGroupByLocationAndCategory(locationId, categoryId).orElse(null);
@@ -93,20 +75,53 @@ public class LessonService {
         // lessonGroup 완성 여부에 상관없이 lessonGroupResult 받아오기
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
-        if(lessonGroupResult == null) return result;
-        for (LessonGroupResultEntity lgResult : lessonGroupResult) {
-            // lessonGroupId
-            Long lessonGroupId = lgResult.getLessonGroup().getLessonGroupId();
-            // groupProgress
-            Long lessonGroupResultId = lgResult.getLessonGroupResultId();
-            List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
-            Long groupProcess = (lessonResults.size() * 100) / 5L;
-            // avgAccuracy
-            Long avgAccuracy = (lgResult.getAvgAccuracy() + lgResult.getAvgSimilarity()) / 2L;
+        List<LessonGroupEntity> lessonGroups = lessonRepository.findLessonGroupByLocationAndCategory(locationId, lessonCategoryId).orElse(null);
 
-            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgResult.getLessonGroup().getName(), groupProcess, avgAccuracy);
+        if(lessonGroups == null) throw new IllegalArgumentException("잘못된 지역 아이디 이거나 학습 유형 아이디 입니다.");
+
+        if(lessonGroupResult == null) { // 아예 없으면
+            for (LessonGroupEntity lg : lessonGroups) {
+                LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
+                result.add(dto);
+            }
+            return result;
+        }
+        Set<Long> lessonGroupIdSet = new HashSet<>(); // front 요청으로 lessonGroupResult가 없어도 레슨그룹아이디, 레슨그룹이름을 dto에 추가
+        Set<Long> lessonIdSet = new HashSet<>();
+
+        for (LessonGroupResultEntity lgr : lessonGroupResult) {
+            // 지역과 카테고리가 일치하는 퍼즐결과가 아니면
+            if(!lgr.getLessonGroup().getLocation().getLocationId().equals(locationId) || !lgr.getLessonGroup().getLessonCategory().getLessonCategoryId().equals(lessonCategoryId)) continue;
+            // lessonGroupId
+            Long lessonGroupId = lgr.getLessonGroup().getLessonGroupId();
+            lessonGroupIdSet.add(lessonGroupId);
+            // groupProgress
+            Long groupProcess = 0L;
+            Long avgAccuracy = 0L;
+
+            Long lessonGroupResultId = lgr.getLessonGroupResultId();
+            List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
+            if(lessonResults != null) {
+                for (LessonResultEntity lr : lessonResults) {
+                    if(lessonIdSet.contains(lr.getLesson().getLessonId())) continue;
+                    lessonIdSet.add(lr.getLesson().getLessonId());
+                }
+            }
+
+            if(lessonResults != null) {
+                groupProcess = lessonIdSet.size() / 5L;
+                avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+            }
+
+            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgr.getLessonGroup().getName(), groupProcess, avgAccuracy);
             result.add(dto);
         }
+        for (LessonGroupEntity lg : lessonGroups) {
+            if(lessonGroupIdSet.contains(lg.getLessonGroupId())) continue;
+            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
+            result.add(dto);
+        }
+        result.sort(Comparator.comparing(LessonGroupProgressByUserDTO::getLessonGroupId));
         return result;
     }
 

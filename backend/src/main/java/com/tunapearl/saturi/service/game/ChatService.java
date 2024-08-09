@@ -3,6 +3,7 @@ package com.tunapearl.saturi.service.game;
 import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.game.person.PersonChatRoom;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
+import com.tunapearl.saturi.domain.quiz.QuizChoiceEntity;
 import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.game.GameResultResponseDTO;
@@ -29,8 +30,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -101,7 +104,6 @@ public class ChatService {
                 log.info("게임방은 있슈");
 
                 if (gameRoomEntity.getStatus().equals(Status.IN_PROGRESS)) {//모두 모임. 게임 시작하라
-
                     return true;//게임을 시작하라
                 }
             }
@@ -125,123 +127,64 @@ public class ChatService {
     }
 
     @Transactional
-    public List<QuizEntity> getquizList(String topicId) {
-
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(topicId);
-
-        if (chatRoomOptional.isPresent()) {
-            ChatRoom chatRoom = chatRoomOptional.get();
-            long roomId = chatRoom.getRoomId();
-
-            Optional<List<Long>> quizIdListOptional = gameRoomQuizRepository.findQuizIdsByRoomId(roomId);
-            if (quizIdListOptional.isPresent()) {
-
-                List<Long> quizIdList = quizIdListOptional.get();
-                List<QuizEntity> quizList = quizRepository.findByIdList(quizIdList);
-
-                for (QuizEntity quizEntity : quizList) {
-                    Hibernate.initialize((quizEntity.getLocation()));
-                    quizEntity.getQuizChoiceList().forEach(Hibernate::initialize);
-                }
-
-                return quizList;
-            }
-
-            return null;
-
-        } else {
-
-            log.info("roomId가 없슈");
-            return null;
-        }
-    }
-
-    @Transactional
     public QuizMessage playGame(QuizMessage message) {
 
+        //방 레디스
+        ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Not found chat room"));
+
+        //방 번호, 퀴즈 번호 추출
+        Long roomId = chatRoom.getRoomId();
+        Long quizId = message.getQuizId();
+
         if (message.getQuizId() > 1) {
+            //번호로 퀴즈 조회
+            GameRoomQuizEntity gameRoomQuiz = gameRoomQuizRepository.findPosedQuizByRoomAndQuizId(roomId, quizId)
+                    .orElseThrow(() -> new RuntimeException("Not fount game room quiz"));
 
             //정답판단 로직
-            QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
-
-            String answer = "";
             //객관식인 경우
-            if (quizDetailReadResponseDTO.getIsObjective()) {
-                for (QuizDetailReadResponseDTO.Choice choice : quizDetailReadResponseDTO.getChoiceList()) {
-
-                    if (choice.getIsAnswer()) {//정답 선지 찾기
-                        answer = choice.getChoiceId().toString();
-                    }
-                }
+            String answer = "";
+            if (gameRoomQuiz.getSequence() != 0L) {
+                answer = String.valueOf(gameRoomQuiz.getSequence());
             }
             //주관식인 경우
             else {
+                QuizDetailReadResponseDTO quizDetailReadResponseDTO = quizService.findOne(message.getQuizId());
                 answer = quizDetailReadResponseDTO.getChoiceList().get(0).getContent();
             }
 
-            log.info("answer:{}", answer);
-            log.info("message:{}", message.getMessage());
+            //정답을 제일 먼저 맞춤
+            if (message.getMessage().equals(answer) && gameRoomQuiz.getUser() == null) {
+                //정답자 추가
+                UserEntity user = userService.findById(message.getSenderId());
+                gameRoomQuizService.updateGameRoomQuiz(gameRoomQuiz, user);
 
-            if (message.getMessage().equals(answer)) {
+                //게임방에 몇개 맞췄는지 업뎃하셈
+                GameRoomParticipantEntity participant = gameRoomParticipantService.findById(roomId, message.getSenderId());
+                gameRoomParticipantService.updateParticipant(participant);
 
-                //최초정답자인경우만 GameRoomQuizEntity에 정답자 추가 및 GameRoomParticipantEntity count추가임
-                Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
-
-                if (chatRoomOptional.isPresent()) {
-                    ChatRoom chatRoom = chatRoomOptional.get();
-                    long roomId = chatRoom.getRoomId();
-                    Optional<GameRoomQuizEntity> gameRoomQuiz = gameRoomQuizRepository.findQuizById(message.getQuizId(), roomId);
-                    if (gameRoomQuiz.isPresent()) {
-                        GameRoomQuizEntity gameRoomQuizEntity = gameRoomQuiz.get();
-                        if (gameRoomQuizEntity.getUser() == null) {
-                            log.info("맞춘사람없슈!!");
-
-                            //정답자 추가
-                            UserEntity user = userService.findById(message.getSenderId());
-                            gameRoomQuizService.updateGameRoomQuiz(gameRoomQuizEntity, user);
-
-                            //게임방에 몇개 맞췄는지 업뎃하셈
-                            GameRoomParticipantEntity participant = gameRoomParticipantService.findById(roomId, message.getSenderId());
-                            gameRoomParticipantService.updateParticipant(participant);
-
-                            //message에 맞췄다고 표시
-                            message.setCorrect(true);
-                        } else {
-                            log.info("이미 누가 맞춤ㅋ");
-                        }
-                    }
-                } else {
-                    log.info("roomId가 없슈");
-                }
+                //message에 맞췄다고 표시
+                message.setCorrect(true);
             }
         }
 
         //게임 로그 저장
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(message.getRoomId());
-        if (chatRoomOptional.isPresent()) {
-            ChatRoom chatRoom = chatRoomOptional.get();
+        GameLogEntity gameLog = new GameLogEntity();
+        UserEntity user = userRepository.findByUserId(message.getSenderId()).orElseThrow();
+        gameLog.setUser(user);
 
-            GameLogEntity gameLog = new GameLogEntity();
-            UserEntity user = userRepository.findByUserId(message.getSenderId()).orElseThrow();
-            gameLog.setUser(user);
+        QuizEntity quiz = quizRepository.findById(message.getQuizId()).orElseThrow();
+        gameLog.setQuiz(quiz);
 
-            QuizEntity quiz = quizRepository.findById(message.getQuizId()).orElseThrow();
-            gameLog.setQuiz(quiz);
+        GameRoomEntity gameRoom = gameRoomRepository.findById(chatRoom.getRoomId()).orElseThrow();
+        gameLog.setRoom(gameRoom);
 
-            GameRoomEntity gameRoom = gameRoomRepository.findById(chatRoom.getRoomId()).orElseThrow();
-            gameLog.setRoom(gameRoom);
+        gameLog.setChatting(message.getMessage());
+        gameLog.setChattingDt(LocalDateTime.now());
+        long logId = gameLogRepository.save(gameLog);
 
-            gameLog.setChatting(message.getMessage());
-            gameLog.setChattingDt(LocalDateTime.now());
-            long logId = gameLogRepository.save(gameLog);
-
-            message.setChatLogId(logId);
-
-        } else {
-
-            log.info("ChatRoom with ID {} not found.", message.getRoomId());
-        }
-
+        message.setChatLogId(logId);
         return message;
     }
 
@@ -261,8 +204,6 @@ public class ChatService {
 
     @Transactional
     public void endGameRoom(String topicId) {
-
-        
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(topicId);
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
@@ -282,17 +223,17 @@ public class ChatService {
 
                 int rank = 1;
                 int pre = -1;//이전 참가자 맞춘 횟수
-                int same=0;//점수 같은 사람 수
+                int same = 0;//점수 같은 사람 수
                 for (GameRoomParticipantEntity participant : participants) {
 
                     if (pre > participant.getCorrectCount()) {
-                        rank+=same;
-                        same=1;
-                    }else{//동점자
+                        rank += same;
+                        same = 1;
+                    } else {//동점자
                         same++;
                     }
-                    pre=participant.getCorrectCount();
-                    
+                    pre = participant.getCorrectCount();
+
                     UserEntity user = participant.getUser();
                     participant.setMatchRank(rank);//순위 저장
 
@@ -301,5 +242,12 @@ public class ChatService {
                 }
             }
         }
+    }
+
+    private int findIndexWithIsAnswerTrue(List<QuizChoiceEntity> list){
+        return (IntStream.range(0, list.size())
+                .filter(i -> list.get(i).getIsAnswer())
+                .findFirst()
+                .orElse(-1) + 1);
     }
 }
