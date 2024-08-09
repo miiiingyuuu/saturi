@@ -86,6 +86,7 @@ public class LessonRepository {
 
     public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdWithoutIsCompleted(Long userId) {
         List<LessonGroupResultEntity> lessonGroupResult = em.createQuery("select gr from LessonGroupResultEntity gr" +
+                        " join fetch gr.user" +
                         " join fetch gr.lessonGroup lg" +
                         " where gr.user.userId = :userId", LessonGroupResultEntity.class)
                 .setParameter("userId", userId)
