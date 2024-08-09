@@ -73,19 +73,23 @@ public class AdminStatisticsController {
             Long accuracySum = 0L;
             int divided = 0;
             // 레슨 그룹 아이디로 레슨 그룹 결과 조회
-            for (LessonGroupEntity lessonGroup : lessonGroups) {
-                List<LessonGroupResultEntity> lessonGroupResults = adminService.findLessonGroupResultByLessonGroupId(lessonGroup.getLessonGroupId());
-                if(lessonGroupResults == null) continue;
-                int lessonGroupResultSize = lessonGroupResults.size();
-                for (LessonGroupResultEntity lgr : lessonGroupResults) {
-                    Long avgSimilarity = lgr.getAvgSimilarity();
-                    Long avgAccuracy = lgr.getAvgAccuracy();
-                    if(avgSimilarity == null || avgAccuracy == null) continue;
-                    similaritySum += avgSimilarity;
-                    accuracySum += avgAccuracy;
-                }
-                divided += lessonGroupResultSize;
+
+            // in 절 사용 위한 id List
+            List<Long> lessonGroupIds = lessonGroups.stream()
+                    .map(LessonGroupEntity::getLessonGroupId)
+                    .toList();
+
+            List<LessonGroupResultEntity> lessonGroupResults = adminService.findLessonGroupResultByLessonGroupId(lessonGroupIds);
+            if(lessonGroupResults == null) continue;
+            int lessonGroupResultSize = lessonGroupResults.size();
+            for (LessonGroupResultEntity lgr : lessonGroupResults) {
+                Long avgSimilarity = lgr.getAvgSimilarity();
+                Long avgAccuracy = lgr.getAvgAccuracy();
+                if(avgSimilarity == null || avgAccuracy == null) continue;
+                similaritySum += avgSimilarity;
+                accuracySum += avgAccuracy;
             }
+            divided += lessonGroupResultSize;
             if(divided == 0) result.add(new AvgSimilarityAndAccuracyByLocationIdResponseDTO(location.getLocationId(), null, null));
             else result.add(new AvgSimilarityAndAccuracyByLocationIdResponseDTO(location.getLocationId(), similaritySum/divided, accuracySum/divided));
         }
@@ -108,30 +112,37 @@ public class AdminStatisticsController {
             sortedByCompletedNum.add(new LessonIdAndValueDTO(l, lessonCompletedNumMap.get(l)));
         }
         sortedByCompletedNum.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
+        if(sortedByCompletedNum.size() > 10) sortedByCompletedNum = sortedByCompletedNum.subList(0, 10);
 
         // 레슨별 평균 파형 유사도
         List<LessonIdAndValueDTO> sortedByAvgSimilarity = new ArrayList<>();
         Map<Long, Long> lessonSimilarityMap = new HashMap<>();
         for (LessonResultEntity lr : lessonResults) {
             Long lessonId = lr.getLesson().getLessonId();
-            lessonSimilarityMap.put(lessonId, lessonSimilarityMap.getOrDefault(lessonId, 0L) + lr.getAccentSimilarity());
+            Long accentSimilarity = 0L;
+            if(lr.getAccentSimilarity() != null) accentSimilarity = lr.getAccentSimilarity();
+            lessonSimilarityMap.put(lessonId, lessonSimilarityMap.getOrDefault(lessonId, 0L) + accentSimilarity);
         }
         for (Long l : lessonSimilarityMap.keySet()) {
             sortedByAvgSimilarity.add(new LessonIdAndValueDTO(l, lessonSimilarityMap.get(l) / lessonCompletedNumMap.get(l)));
         }
         sortedByAvgSimilarity.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
+        if(sortedByAvgSimilarity.size() > 10) sortedByAvgSimilarity = sortedByAvgSimilarity.subList(0, 10);
 
         // 레슨별 평균 발음 정확도
         List<LessonIdAndValueDTO> sortedByAvgAccuracy = new ArrayList<>();
         Map<Long, Long> lessonAccuracyMap = new HashMap<>();
         for (LessonResultEntity lr : lessonResults) {
             Long lessonId = lr.getLesson().getLessonId();
-            lessonAccuracyMap.put(lessonId, lessonAccuracyMap.getOrDefault(lessonId, 0L) + lr.getPronunciationAccuracy());
+            Long pronunciationAccuracy = 0L;
+            if(lr.getPronunciationAccuracy() != null) pronunciationAccuracy = lr.getPronunciationAccuracy();
+            lessonAccuracyMap.put(lessonId, lessonAccuracyMap.getOrDefault(lessonId, 0L) + pronunciationAccuracy);
         }
         for (Long l : lessonAccuracyMap.keySet()) {
             sortedByAvgAccuracy.add(new LessonIdAndValueDTO(l, lessonAccuracyMap.get(l) / lessonCompletedNumMap.get(l)));
         }
         sortedByAvgAccuracy.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
+        if(sortedByAvgAccuracy.size() > 10) sortedByAvgAccuracy = sortedByAvgSimilarity.subList(0, 10);
 
         // 레슨별 신고횟수
         List<LessonIdAndValueDTO> sortedByClaimNum = new ArrayList<>();
@@ -146,6 +157,7 @@ public class AdminStatisticsController {
                 sortedByClaimNum.add(new LessonIdAndValueDTO(l, lessonClaimMap.get(l)));
             }
             sortedByClaimNum.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
+            if(sortedByClaimNum.size() > 10) sortedByClaimNum = sortedByClaimNum.subList(0, 10);
         }
 
 

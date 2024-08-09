@@ -14,11 +14,13 @@ import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.repository.redis.PersonChatRoomRepository;
+import com.tunapearl.saturi.service.ChatClaimService;
 import com.tunapearl.saturi.service.QuizService;
 import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +38,7 @@ public class RoomController {
     private final GameService gameService;
     private final JWTUtil jwtUtil;
     private final PersonChatRoomRepository personChatRoomRepository;
-    private final QuizService quizService;
-    private final GameRoomRepository gameRoomRepository;
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatClaimService chatClaimService;
 
     /**
      * 개인방 생성
@@ -83,13 +83,6 @@ public class RoomController {
         }
     }
 
-    @PostMapping("/quiz")
-    public ResponseEntity<?> registQuiz(@RequestBody QuizRegisterRequestDTO registerRequestDto) {
-
-        quizService.saveQuiz(registerRequestDto);
-        return null;
-    }
-
     /**
      * 게임 결과 조회 :: 게임 종료
      */
@@ -101,5 +94,15 @@ public class RoomController {
         gameResultRequestDTO.setUserId(userId);
 
         return ResponseEntity.ok().body(gameService.getGameResult(gameResultRequestDTO));
+    }
+
+    /*
+     * 채팅 신고
+    */
+    @PostMapping("/user/{gameLogId}")
+    public ResponseEntity<?> claimUserChat(@PathVariable Long gameLogId){
+        log.info("Received claim user chatting for {}", gameLogId);
+        chatClaimService.saveClaim(gameLogId);
+        return new ResponseEntity<String>(String.format("신고 완료 %d", gameLogId), HttpStatus.CREATED);
     }
 }

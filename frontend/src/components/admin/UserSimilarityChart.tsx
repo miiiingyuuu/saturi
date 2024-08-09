@@ -1,18 +1,21 @@
+'use client'
+
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'chart.js';
 import { Typography, Box } from '@mui/material';
 import api from '@/lib/axios';
+import dynamic from 'next/dynamic';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Chart.js 컴포넌트 등록
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+// Bar 컴포넌트 동적으로 임포트
+const Bar = dynamic(() => import('react-chartjs-2').then(mod => mod.Bar), { ssr: false });
 
 interface SimilarityData {
   locationId: number;
   avgSimilarity: number | null;
   avgAccuracy: number | null;
-}
-
-interface ChartData {
-  location: string;
-  avgSimilarity: number;
-  avgAccuracy: number;
 }
 
 const locationNames: { [key: number]: string } = {
@@ -25,18 +28,41 @@ const locationNames: { [key: number]: string } = {
 };
 
 const UserSimilarityChart: React.FC = () => {
-  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [chartData, setChartData] = useState<{
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor: string;
+    }[];
+  }>({
+    labels: [],
+    datasets: []
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await api.get<SimilarityData[]>('/admin/statistics/avg-similarity');
-        const processedData: ChartData[] = response.data.map(item => ({
-          location: locationNames[item.locationId] || `Unknown (${item.locationId})`,
-          avgSimilarity: item.avgSimilarity || 0,
-          avgAccuracy: item.avgAccuracy || 0
-        }));
-        setChartData(processedData);
+        const labels = response.data.map(item => locationNames[item.locationId] || `Unknown (${item.locationId})`);
+        const similarityData = response.data.map(item => item.avgSimilarity || 0);
+        const accuracyData = response.data.map(item => item.avgAccuracy || 0);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: '평균 유사도',
+              data: similarityData,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            },
+            {
+              label: '평균 정확도',
+              data: accuracyData,
+              backgroundColor: 'rgba(153, 102, 255, 0.6)',
+            }
+          ]
+        });
       } catch (error) {
         console.error('Error fetching similarity data:', error);
       }
@@ -45,30 +71,31 @@ const UserSimilarityChart: React.FC = () => {
     fetchData();
   }, []);
 
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: '지역별 평균 유사도 및 정확도',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+      },
+    },
+  };
+
   return (
     <Box sx={{ width: '100%', height: 400 }}>
       <Typography variant="h6" gutterBottom>
         지역별 평균 유사도 및 정확도
       </Typography>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={chartData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="location" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="avgSimilarity" fill="#8884d8" name="평균 유사도" />
-          <Bar dataKey="avgAccuracy" fill="#82ca9d" name="평균 정확도" />
-        </BarChart>
-      </ResponsiveContainer>
+      {chartData.labels.length > 0 && <Bar options={options} data={chartData} />}
     </Box>
   );
 };

@@ -7,10 +7,12 @@ import com.tunapearl.saturi.domain.lesson.LessonGroupResultEntity;
 import com.tunapearl.saturi.domain.user.Role;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.admin.UserBanRequestDTO;
+import com.tunapearl.saturi.dto.admin.claim.ClaimDeleteRequestDto;
 import com.tunapearl.saturi.dto.user.UserMsgResponseDTO;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
+import com.tunapearl.saturi.service.ChatClaimService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,13 +30,14 @@ public class AdminService {
     private final UserRepository userRepository;
     private final LessonRepository lessonRepository;
     private final GameRoomRepository gameRoomRepository;
+    private final ChatClaimService chatClaimService;
 
     public UserMsgResponseDTO banUser(UserBanRequestDTO request) {
         UserEntity findUser = userRepository.findByUserId(request.getUserId()).get();
         findUser.setRole(Role.BANNED);
         LocalDateTime returnDt = LocalDateTime.now().plusDays(request.getBanDate());
         findUser.setReturnDt(returnDt);
-
+        chatClaimService.updateClaim(new ClaimDeleteRequestDto(request.getChatClaimId()));
         return new UserMsgResponseDTO("ok");
     }
 
@@ -50,8 +53,8 @@ public class AdminService {
         return lessonRepository.findLessonGroupByLocationId(locationId).orElse(null);
     }
 
-    public List<LessonGroupResultEntity> findLessonGroupResultByLessonGroupId(Long lessonGroupId) {
-        return lessonRepository.findLessonGroupResultByLessonGroupId(lessonGroupId).orElse(null);
+    public List<LessonGroupResultEntity> findLessonGroupResultByLessonGroupId(List<Long> lessonGroupIds) {
+        return lessonRepository.findLessonGroupResultByLessonGroupId(lessonGroupIds).orElse(null);
     }
 
     public List<LessonClaimEntity> findAllLessonClaim() {
