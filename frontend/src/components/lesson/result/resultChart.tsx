@@ -40,10 +40,11 @@ const LessonChart: React.FC<LessonChartProps> = ({
 
   if (!userGraphY && !sampleGraphY) {
     return <Typography>No data available</Typography>;
-  } else {
-    console.log(userGraphY);
-    console.log(sampleGraphY);
-  }
+  } 
+  // else {
+  //   console.log(userGraphY);
+  //   console.log(sampleGraphY);
+  // }
 
   // graphY 문자열을 배열로 파싱합니다.
   const userDataPoints: number[] = userGraphY ? JSON.parse(userGraphY) : [];
@@ -108,7 +109,7 @@ const LessonChart: React.FC<LessonChartProps> = ({
         },
       },
       y: {
-        display: false, // y축 레이블을 숨깁니다.
+        display: true, // y축 레이블을 숨깁니다.
         title: {
           display: false,
           text: 'Value',

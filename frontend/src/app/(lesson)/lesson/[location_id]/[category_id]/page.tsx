@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Box, Card, Container, Typography, ToggleButton } from "@mui/material";
+import { Box, Card, Container, Typography } from "@mui/material";
 import api from "@/lib/axios";
 import SideNavbar from "../../../../../components/lesson/sidebar";
 import Puzzle from "../../../../../components/lesson/puzzle";
@@ -93,6 +93,7 @@ export default function CategorySelectPage() {
       avgAccuracy: 0,
     },
   ];
+  
   const [progressData, setProgressData] = useState<
     {
       lessonGroupId: number;
