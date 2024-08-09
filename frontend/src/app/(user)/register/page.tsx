@@ -282,13 +282,6 @@ export default function App() {
                 onChange={(event) => {
                   handleValueChange(event, setPassword);
                 }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <PasswordValidation password={password} />
-                    </InputAdornment>
-                  ),
-                }}
                 error={!isPasswordValid}
               />
             </Grid>
@@ -306,6 +299,9 @@ export default function App() {
                 }}
                 error={!isPasswordConfirmed}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <PasswordValidation password={password} />
             </Grid>
             <Grid item xs={8}>
               <TextField

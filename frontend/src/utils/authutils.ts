@@ -1,7 +1,7 @@
 import api from "@/lib/axios";
-import { HandleLoginProps } from "@/utils/props";
-import { deleteCookie, getCookies, setCookie } from "cookies-next";
 import { AxiosResponse } from "axios";
+import { deleteCookie, getCookies, setCookie } from "cookies-next";
+import { HandleLoginProps } from "@/utils/props";
 
 // 쿠키 삽입
 export function insertCookie(response: AxiosResponse) {

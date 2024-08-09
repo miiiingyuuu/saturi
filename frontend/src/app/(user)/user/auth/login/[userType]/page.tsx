@@ -2,10 +2,9 @@
 
 import api from "@/lib/axios";
 import { useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { authToken } from "@/utils/authutils";
 import { Backdrop, CircularProgress } from "@mui/material";
-import { authToken, insertCookie } from "@/utils/authutils";
-import { getCookie } from "cookies-next";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function App() {
   const router = useRouter();

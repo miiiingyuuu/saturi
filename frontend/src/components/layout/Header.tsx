@@ -50,11 +50,7 @@ export default function Header() {
         throw new Error('Access token not found');
       }
 
-      const response = await api.get('/user/auth/profile', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      const response = await api.get('/user/auth/profile')
       
       const userData = response.data;
       setProfileImage(userData.birdId);
@@ -197,10 +193,7 @@ export default function Header() {
                   </MenuItem>
                   
                   <MenuItem
-                    onClick={() => {
-                    logout()
-                      .then(() => router.push("/start"))
-                    }}>
+                    onClick={() => logout()}>
                     <ListItemIcon sx={{ mr: 1 }}>
                       <Logout fontSize="large" />
                     </ListItemIcon>
