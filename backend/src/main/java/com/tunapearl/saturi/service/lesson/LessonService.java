@@ -93,10 +93,20 @@ public class LessonService {
         // lessonGroup 완성 여부에 상관없이 lessonGroupResult 받아오기
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId).orElse(null);
         List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
-        if(lessonGroupResult == null) return result;
+        List<LessonGroupEntity> lessonGroups = lessonRepository.findLessonGroupByLocationAndCategory(locationId, lessonCategoryId).orElse(null);
+        if(lessonGroups == null) throw new IllegalArgumentException("잘못된 지역 아이디 이거나 학습 유형 아이디 입니다.");
+        if(lessonGroupResult == null) { // 아예 없으면
+            for (LessonGroupEntity lg : lessonGroups) {
+                LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
+                result.add(dto);
+            }
+            return result;
+        }
+        Set<Long> lessonGroupIdSet = new HashSet<>(); // front 요청으로 lessonGroupResult가 없어도 레슨그룹아이디, 레슨그룹이름을 dto에 추가
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
             // lessonGroupId
             Long lessonGroupId = lgResult.getLessonGroup().getLessonGroupId();
+            lessonGroupIdSet.add(lessonGroupId);
             // groupProgress
             Long lessonGroupResultId = lgResult.getLessonGroupResultId();
             List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
@@ -107,6 +117,12 @@ public class LessonService {
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgResult.getLessonGroup().getName(), groupProcess, avgAccuracy);
             result.add(dto);
         }
+        for (LessonGroupEntity lg : lessonGroups) {
+            if(lessonGroupIdSet.contains(lg.getLessonGroupId())) continue;
+            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
+            result.add(dto);
+        }
+        result.sort(Comparator.comparing(LessonGroupProgressByUserDTO::getLessonGroupId));
         return result;
     }
 
