@@ -75,8 +75,8 @@ public class AdminLessonController {
          * 임시로 파일을 생성해서 그걸 올리는데, 그걸 찾을 수 없다는 오류가 발생함
          * 그래서 그 방식을 그대로 구현함(내가 파일 로컬 폴더에 저장하고 그걸 올리고 파일 삭제)
          */
-        String filePath = attachFile.getStoreFileName();
-        Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript(), filePath, attachFile.getStoreFileName());
+        String storeFileName = attachFile.getStoreFileName(); // 저장된 파일 경로를 받아옴
+        Long lessonId = adminLessonService.createLesson(findLessonGroup, request.getScript(), storeFileName);
         return ResponseEntity.created(URI.create("/lesson")).body(new AdminMsgResponseDTO("ok"));
     }
 
@@ -115,14 +115,17 @@ public class AdminLessonController {
     public ResponseEntity<AdminMsgResponseDTO> updateLesson(@PathVariable Long lessonId,
                                                             @ModelAttribute LessonRegisterRequestDTO request) throws IOException {
         //TODO 레슨 수정을 수정(파일을 안올리면 null로 오는지 확인, null로 오면 원래 그대로 놔두기(원래껄로 덮어쓰기)
-        log.info("received request to update lesson {}", lessonId);
+        log.info("received request to update lesson {}, fileInfo = {}", lessonId, request.getSampleVoice().getName());
         LessonGroupEntity findLessonGroup = lessonService.findByIdLessonGroup(request.getLessonGroupId());
-//        if(request.getSampleVoice() != null) {
+        if(request.getSampleVoice() != null) {
             UploadFile attachFile = fileStoreUtil.storeFile(request.getSampleVoice());
-            String filePath = attachFile.getStoreFileName();
-//        }
+            String storeFileName = attachFile.getStoreFileName();
+            adminLessonService.updateLesson(lessonId, request.getLessonGroupId(), request.getScript(), storeFileName);
+        } else {
+            // 파일을 업로드 하지 않았다
+            adminLessonService.updateLesson(lessonId, request.getLessonGroupId(), request.getScript(), null);
+        }
 
-        lessonService.updateLesson(lessonId, request.getLessonGroupId(), request.getScript(), filePath);
         return ResponseEntity.ok(new AdminMsgResponseDTO("ok"));
     }
 
@@ -132,7 +135,7 @@ public class AdminLessonController {
     @DeleteMapping("/{lessonId}")
     public ResponseEntity<AdminMsgResponseDTO> deleteLesson(@PathVariable Long lessonId) {
         log.info("received request to delete lesson {}", lessonId);
-        lessonService.deleteLesson(lessonId);
+        adminLessonService.deleteLesson(lessonId);
         return ResponseEntity.ok(new AdminMsgResponseDTO("ok"));
     }
 
