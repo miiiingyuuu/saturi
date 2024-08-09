@@ -86,15 +86,20 @@ public class LessonService {
         }
         Set<Long> lessonGroupIdSet = new HashSet<>(); // front 요청으로 lessonGroupResult가 없어도 레슨그룹아이디, 레슨그룹이름을 dto에 추가
         for (LessonGroupResultEntity lgResult : lessonGroupResult) {
+            // 지역과 카테고리가 일치하는 퍼즐결과가 아니면
+            if(!lgResult.getLessonGroup().getLocation().getLocationId().equals(locationId) || !lgResult.getLessonGroup().getLessonCategory().getLessonCategoryId().equals(lessonCategoryId)) continue;
             // lessonGroupId
             Long lessonGroupId = lgResult.getLessonGroup().getLessonGroupId();
             lessonGroupIdSet.add(lessonGroupId);
             // groupProgress
             Long lessonGroupResultId = lgResult.getLessonGroupResultId();
             List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
-            Long groupProcess = (lessonResults.size() * 100) / 5L;
-            // avgAccuracy
-            Long avgAccuracy = (lgResult.getAvgAccuracy() + lgResult.getAvgSimilarity()) / 2L;
+            Long groupProcess = 0L;
+            Long avgAccuracy = 0L;
+            if(lessonResults != null) {
+                groupProcess = (lessonResults.size() * 100) / 5L;
+                avgAccuracy = (lgResult.getAvgAccuracy() + lgResult.getAvgSimilarity()) / 2L;
+            }
 
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgResult.getLessonGroup().getName(), groupProcess, avgAccuracy);
             result.add(dto);
