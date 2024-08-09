@@ -196,35 +196,37 @@ INSERT INTO quiz_choice (is_answer, choice_id, quiz_id, content) VALUES
 /* 대쉬보드 용 */
 /* 레슨 그룹 결과 */
 INSERT INTO lesson_group_result (is_completed,avg_accuracy,avg_similarity,end_dt,lesson_group_id,start_dt,user_id) VALUES
-                               (0,88,77,null,12,date_sub(now(), interval 179 day), 32),
-                               (0,88,77,null,11,date_sub(now(), interval 179 day), 32),
-                               (1,88,77,now(),10,date_sub(now(), interval 179 day), 32),
+                               (0,72,75,null,12,date_sub(now(), interval 179 day), 32),
+                               (0,29,42,null,11,date_sub(now(), interval 179 day), 32),
+                               (1,64,39,now(),10,date_sub(now(), interval 179 day), 32),
 
-                               (1,88,77,now(),1,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 1 day),2,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 5 day),3,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 9 day),4,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 12 day),5,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 17 day),6,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 21 day),7,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 26 day),8,date_sub(now(), interval 179 day), 33),
-                               (1,88,77,date_sub(now(), interval 31 day),9,date_sub(now(), interval 179 day), 33);
+                               (1,25,77,now(),1,date_sub(now(), interval 179 day), 33),
+                               (1,60,64,date_sub(now(), interval 1 day),2,date_sub(now(), interval 179 day), 33),
+                               (1,75,60,date_sub(now(), interval 5 day),3,date_sub(now(), interval 179 day), 33),
+                               (1,23,97,date_sub(now(), interval 9 day),4,date_sub(now(), interval 179 day), 33),
+                               (1,86,72,date_sub(now(), interval 12 day),5,date_sub(now(), interval 179 day), 33),
+                               (1,23,57,date_sub(now(), interval 17 day),6,date_sub(now(), interval 179 day), 33),
+                               (1,73,24,date_sub(now(), interval 21 day),7,date_sub(now(), interval 179 day), 33),
+                               (1,88,90,date_sub(now(), interval 26 day),8,date_sub(now(), interval 179 day), 33),
+                               (1,35,32,date_sub(now(), interval 31 day),9,date_sub(now(), interval 179 day), 33);
+
 
 /* 개별 레슨 결과 */
 INSERT INTO lesson_result (is_skipped, accent_similarity, lesson_dt, lesson_group_result_id, lesson_id, pronunciation_accuracy) VALUES
-                        (false, 77, now(), 3, 46, 88), (false, 77, date_sub(now(), interval 1 day), 3, 47, 88), (false, 77, date_sub(now(), interval 2 day), 3, 48, 88), (false, 77, date_sub(now(), interval 3 day), 3, 49, 88), (false, 77, date_sub(now(), interval 4 day), 3, 50, 88),
-                        (false, 77, date_sub(now(), interval 5 day), 2, 51, 88), (false, 77, date_sub(now(), interval 6 day), 2, 52, 88), (true, null, date_sub(now(), interval 6 day), 2, 53, null), (true, null, date_sub(now(), interval 6 day), 2, 54, null), (true, null, date_sub(now(), interval 6 day), 2, 55, null),
-                        (false, 77, date_sub(now(), interval 7 day), 1, 56, 88), (false, 77, date_sub(now(), interval 8 day), 1, 57, 88),
+                        (false, 43, now(), 3, 46, 71), (false, 95, date_sub(now(), interval 1 day), 3, 47, 36), (false, 79, date_sub(now(), interval 2 day), 3, 48, 54), (false, 38, date_sub(now(), interval 3 day), 3, 49, 74), (false, 23, date_sub(now(), interval 4 day), 3, 50, 25),
+                        (false, 55, date_sub(now(), interval 5 day), 2, 51, 59), (false, 85, date_sub(now(), interval 6 day), 2, 52, 45), (true, 67, date_sub(now(), interval 6 day), 2, 53, 27), (true, 31, date_sub(now(), interval 6 day), 2, 54, 57), (true, 97, date_sub(now(), interval 6 day), 2, 55, 22),
+                        (false, 57, date_sub(now(), interval 7 day), 1, 56, 23), (false, 71, date_sub(now(), interval 8 day), 1, 57, 73),
 
-                        (false, 77, now(), 4, 1, 88), (false, 77, now(), 4, 2, 88), (false, 77, now(), 4, 3, 88), (false, 77, now(), 4, 4, 88), (false, 77, now(), 4, 5, 88),
-                        (false, 77, date_sub(now(), interval 1 day), 5, 6, 88), (false, 77, date_sub(now(), interval 2 day), 5, 7, 88), (false, 77, date_sub(now(), interval 2 day), 5, 8, 88), (false, 77, date_sub(now(), interval 3 day), 5, 9, 88), (false, 77, date_sub(now(), interval 4 day), 5, 10, 88),
-                        (false, 77, date_sub(now(), interval 5 day), 6, 11, 88), (false, 77, date_sub(now(), interval 5 day), 6, 12, 88), (false, 77, date_sub(now(), interval 6 day), 6, 13, 88), (false, 77, date_sub(now(), interval 7 day), 6, 14, 88), (false, 77, date_sub(now(), interval 8 day), 6, 15, 88),
-                        (false, 77, date_sub(now(), interval 9 day), 7, 16, 88), (false, 77, date_sub(now(), interval 9 day), 7, 17, 88), (false, 77, date_sub(now(), interval 9 day), 7, 18, 88), (false, 77, date_sub(now(), interval 10 day), 7, 19, 88), (false, 77, date_sub(now(), interval 11 day), 7, 20, 88),
-                        (false, 77, date_sub(now(), interval 12 day), 8, 21, 88), (false, 77, date_sub(now(), interval 13 day), 8, 22, 88), (false, 77, date_sub(now(), interval 14 day), 8, 23, 88), (false, 77, date_sub(now(), interval 15 day), 8, 24, 88), (false, 77, date_sub(now(), interval 16 day), 8, 25, 88),
-                        (false, 77, date_sub(now(), interval 17 day), 9, 26, 88), (false, 77, date_sub(now(), interval 18 day), 9, 27, 88), (false, 77, date_sub(now(), interval 18 day), 9, 28, 88), (false, 77, date_sub(now(), interval 19 day), 9, 29, 88), (false, 77, date_sub(now(), interval 20 day), 9, 30, 88),
-                        (false, 77, date_sub(now(), interval 21 day), 10, 31, 88), (false, 77, date_sub(now(), interval 22 day), 10, 32, 88), (false, 77, date_sub(now(), interval 23 day), 10, 33, 88), (false, 77, date_sub(now(), interval 24 day), 10, 34, 88), (false, 77, date_sub(now(), interval 25 day), 10, 35, 88),
-                        (false, 77, date_sub(now(), interval 26 day), 11, 36, 88), (false, 77, date_sub(now(), interval 27 day), 11, 37, 88), (false, 77, date_sub(now(), interval 28 day), 11, 38, 88), (false, 77, date_sub(now(), interval 29 day), 11, 39, 88), (false, 77, date_sub(now(), interval 30 day), 11, 40, 88),
-                        (false, 77, date_sub(now(), interval 31 day), 12, 41, 88), (false, 77, date_sub(now(), interval 32 day), 12, 42, 88), (false, 77, date_sub(now(), interval 33 day), 12, 43, 88), (false, 77, date_sub(now(), interval 34 day), 12, 44, 88), (false, 77, date_sub(now(), interval 34 day), 12, 45, 88);
+                        (false, 89, now(), 4, 1, 62), (false, 26, now(), 4, 2, 85), (false, 28, now(), 4, 3, 70), (false, 91, now(), 4, 4, 52), (false, 69, now(), 4, 5, 38),
+                        (false, 49, date_sub(now(), interval 1 day), 5, 6, 93), (false, 77, date_sub(now(), interval 2 day), 5, 7, 82), (false, 21, date_sub(now(), interval 2 day), 5, 8, 68), (false, 83, date_sub(now(), interval 3 day), 5, 9, 62), (false, 65, date_sub(now(), interval 4 day), 5, 10, 63),
+                        (false, 34, date_sub(now(), interval 5 day), 6, 11, 53), (false, 47, date_sub(now(), interval 5 day), 6, 12, 96), (false, 81, date_sub(now(), interval 6 day), 6, 13, 88), (false, 50, date_sub(now(), interval 7 day), 6, 14, 36), (false, 30, date_sub(now(), interval 8 day), 6, 15, 58),
+                        (false, 66, date_sub(now(), interval 9 day), 7, 16, 72), (false, 39, date_sub(now(), interval 9 day), 7, 17, 74), (false, 43, date_sub(now(), interval 9 day), 7, 18, 58), (false, 99, date_sub(now(), interval 10 day), 7, 19, 77), (false, 51, date_sub(now(), interval 11 day), 7, 20, 49),
+                        (false, 41, date_sub(now(), interval 12 day), 8, 21, 50), (false, 82, date_sub(now(), interval 13 day), 8, 22, 23), (false, 57, date_sub(now(), interval 14 day), 8, 23, 49), (false, 49, date_sub(now(), interval 15 day), 8, 24, 89), (false, 55, date_sub(now(), interval 16 day), 8, 25, 57),
+                        (false, 72, date_sub(now(), interval 17 day), 9, 26, 25), (false, 97, date_sub(now(), interval 18 day), 9, 27, 63), (false, 35, date_sub(now(), interval 18 day), 9, 28, 56), (false, 98, date_sub(now(), interval 19 day), 9, 29, 22), (false, 84, date_sub(now(), interval 20 day), 9, 30, 90),
+                        (false, 98, date_sub(now(), interval 21 day), 10, 31, 98), (false, 26, date_sub(now(), interval 22 day), 10, 32, 81), (false, 76, date_sub(now(), interval 23 day), 10, 33, 71), (false, 78, date_sub(now(), interval 24 day), 10, 34, 60), (false, 92, date_sub(now(), interval 25 day), 10, 35, 68),
+                        (false, 67, date_sub(now(), interval 26 day), 11, 36, 75), (false, 20, date_sub(now(), interval 27 day), 11, 37, 62), (false, 99, date_sub(now(), interval 28 day), 11, 38, 29), (false, 77, date_sub(now(), interval 29 day), 11, 39, 81), (false, 78, date_sub(now(), interval 30 day), 11, 40, 34),
+                        (false, 21, date_sub(now(), interval 31 day), 12, 41, 21), (false, 42, date_sub(now(), interval 32 day), 12, 42, 71), (false, 36, date_sub(now(), interval 33 day), 12, 43, 79), (false, 93, date_sub(now(), interval 34 day), 12, 44, 83), (false, 45, date_sub(now(), interval 34 day), 12, 45, 43);
+
 
 INSERT INTO lesson_record_file (lesson_result_id, user_voice_file_name, user_voice_file_path, user_voice_script) VALUES
                          (1, 'file_sample.wav', 'no path', '보며안되니'), (2, 'file_sample.wav', 'no path', '왜이래'), (3, 'file_sample.wav', 'no path', '나도가호가있잖니'), (4, 'file_sample.wav', 'no path', '이제곧추석이네'), (5, 'file_sample.wav', 'no path', '쥬스마셔야지'),
@@ -264,9 +266,16 @@ INSERT INTO lesson_claim (claim_dt, lesson_id, user_id, content) VALUES
 
 /* 지역별 레슨 평균 유사도/정확도 통계를 위한 레슨 그룹 결과 */
 INSERT INTO lesson_group_result (is_completed,avg_accuracy,avg_similarity,end_dt,lesson_group_id,start_dt,user_id) VALUES
-                           (1,87,79,date_sub(now(), interval 1 day),37,date_sub(now(), interval 179 day), 34),
-                           (1,85,81,date_sub(now(), interval 1 day),57,date_sub(now(), interval 179 day), 34),
-                           (1,83,77,date_sub(now(), interval 1 day),59,date_sub(now(), interval 179 day), 34),
-                           (1,81,82,date_sub(now(), interval 1 day),61,date_sub(now(), interval 179 day), 34),
-                           (1,79,74,date_sub(now(), interval 1 day),63,date_sub(now(), interval 179 day), 34);
+                           (1,91,82,date_sub(now(), interval 1 day),37,date_sub(now(), interval 179 day), 34),
+                           (1,86,89,date_sub(now(), interval 1 day),57,date_sub(now(), interval 179 day), 34),
+                           (1,81,73,date_sub(now(), interval 1 day),59,date_sub(now(), interval 179 day), 34),
+                           (1,80,94,date_sub(now(), interval 1 day),61,date_sub(now(), interval 179 day), 34),
+                           (1,75,79,date_sub(now(), interval 1 day),63,date_sub(now(), interval 179 day), 34);
 
+/* 콘텐츠 이용 비율 통계를 위한 게임방 개설 */
+INSERT INTO game_room (location_id, start_dt, end_dt, topic_id, status) VALUES
+                    (2, NOW(), date_add(now(), interval 1 day), '321r-f323-fdsf-f23v', 'COMPLETED'),
+                    (2, NOW(), date_add(now(), interval 1 day), '142g-f323-fdff-f23v', 'COMPLETED'),
+                    (2, NOW(), date_add(now(), interval 1 day), 'vfsd-f323-1fh4-f23v', 'COMPLETED'),
+                    (2, NOW(), date_add(now(), interval 1 day), 'bfgf-f323-2vd4-f23v', 'COMPLETED'),
+                    (2, NOW(), date_add(now(), interval 1 day), '4h6j-f323-4g7h-f23v', 'COMPLETED');

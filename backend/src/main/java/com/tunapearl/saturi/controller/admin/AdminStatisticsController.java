@@ -28,6 +28,7 @@ public class AdminStatisticsController {
     private final AdminService adminService;
     private final LocationService locationService;
     private final LessonService lessonService;
+    private static final int LESSON_MAX_SIZE = 20;
 
     @GetMapping("/user-location")
     public ResponseEntity<UserLocationResponseDTO> getUserLocation() {
@@ -112,7 +113,7 @@ public class AdminStatisticsController {
             sortedByCompletedNum.add(new LessonIdAndValueDTO(l, lessonCompletedNumMap.get(l)));
         }
         sortedByCompletedNum.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
-        if(sortedByCompletedNum.size() > 10) sortedByCompletedNum = sortedByCompletedNum.subList(0, 10);
+        if(sortedByCompletedNum.size() > LESSON_MAX_SIZE) sortedByCompletedNum = sortedByCompletedNum.subList(0, LESSON_MAX_SIZE);
 
         // 레슨별 평균 파형 유사도
         List<LessonIdAndValueDTO> sortedByAvgSimilarity = new ArrayList<>();
@@ -127,7 +128,7 @@ public class AdminStatisticsController {
             sortedByAvgSimilarity.add(new LessonIdAndValueDTO(l, lessonSimilarityMap.get(l) / lessonCompletedNumMap.get(l)));
         }
         sortedByAvgSimilarity.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
-        if(sortedByAvgSimilarity.size() > 10) sortedByAvgSimilarity = sortedByAvgSimilarity.subList(0, 10);
+        if(sortedByAvgSimilarity.size() > LESSON_MAX_SIZE) sortedByAvgSimilarity = sortedByAvgSimilarity.subList(0, LESSON_MAX_SIZE);
 
         // 레슨별 평균 발음 정확도
         List<LessonIdAndValueDTO> sortedByAvgAccuracy = new ArrayList<>();
@@ -142,7 +143,7 @@ public class AdminStatisticsController {
             sortedByAvgAccuracy.add(new LessonIdAndValueDTO(l, lessonAccuracyMap.get(l) / lessonCompletedNumMap.get(l)));
         }
         sortedByAvgAccuracy.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
-        if(sortedByAvgAccuracy.size() > 10) sortedByAvgAccuracy = sortedByAvgSimilarity.subList(0, 10);
+        if(sortedByAvgAccuracy.size() > LESSON_MAX_SIZE) sortedByAvgAccuracy = sortedByAvgSimilarity.subList(0, LESSON_MAX_SIZE);
 
         // 레슨별 신고횟수
         List<LessonIdAndValueDTO> sortedByClaimNum = new ArrayList<>();
@@ -157,9 +158,8 @@ public class AdminStatisticsController {
                 sortedByClaimNum.add(new LessonIdAndValueDTO(l, lessonClaimMap.get(l)));
             }
             sortedByClaimNum.sort(Comparator.comparing(LessonIdAndValueDTO::getValue).reversed());
-            if(sortedByClaimNum.size() > 10) sortedByClaimNum = sortedByClaimNum.subList(0, 10);
+            if(sortedByClaimNum.size() > LESSON_MAX_SIZE) sortedByClaimNum = sortedByClaimNum.subList(0, LESSON_MAX_SIZE);
         }
-
 
         return ResponseEntity.ok(new LessonStatisticsResponseDTO(sortedByCompletedNum, sortedByAvgSimilarity,
                 sortedByAvgAccuracy, sortedByClaimNum));
