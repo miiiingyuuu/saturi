@@ -13,6 +13,7 @@ import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.service.GameRoomParticipantService;
+import com.tunapearl.saturi.service.GameRoomQuizService;
 import com.tunapearl.saturi.service.game.ChatService;
 import com.tunapearl.saturi.service.game.GameService;
 import com.tunapearl.saturi.service.game.RedisPublisher;
@@ -38,14 +39,16 @@ public class ChatController {
 
     private final RedisPublisher redisPublisher;
     private final JWTUtil jwtUtil;
+
     private final ChatService chatService;
     private final GameService gameService;
-    private final GameRoomQuizRepository gameRoomQuizRepository;
     private final UserService userService;
+    private final GameRoomQuizService gameRoomQuizService;
     private final GameRoomParticipantService gameRoomParticipantService;
+
     private final ChatRoomRepository chatRoomRepository;
-    private final GameRoomRepository gameRoomRepository;
     private final GameRoomParticipantRepository gameRoomParticipantRepository;
+
 
     /**
      * 게임방 매칭용
@@ -81,7 +84,6 @@ public class ChatController {
 
             dto.setChatType(MessageType.ENTER);
             if (chatService.enterGameRoom(message.getRoomId())) {//다 모였다
-
                 dto.setChatType(MessageType.START);
             }
 
@@ -104,25 +106,14 @@ public class ChatController {
             redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());
 
         } else if (MessageType.QUIZ.equals(message.getChatType())) {
-            List<QuizEntity> quizEntityList = chatService.getquizList(message.getRoomId());
 
-            List<GameQuizResponseDTO> quizResponseDTOS = new ArrayList<>();
-            for (QuizEntity quizEntity : quizEntityList) {
+            ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId())
+                    .orElseThrow(() -> new RuntimeException("Not found chat room"));
 
-                GameQuizResponseDTO dto = new GameQuizResponseDTO();
-                dto.setQuizId(quizEntity.getQuizId());
-                dto.setQuestion(quizEntity.getQuestion());
-                dto.setIsObjective(quizEntity.getIsObjective());
-                dto.setQuizChoiceList(quizEntity.getQuizChoiceList().stream()
-                        .map(choiceEntity -> new GameQuizChoiceDTO(choiceEntity.getQuizChoicePK().getChoiceId(), choiceEntity.getContent(), choiceEntity.getIsAnswer()))
-                        .collect(Collectors.toList()));
-
-                Collections.shuffle(dto.getQuizChoiceList());
-                quizResponseDTOS.add(dto);
-            }
-            Collections.shuffle(quizResponseDTOS);
-            log.info("전체 문제: {}", quizResponseDTOS.toString());
-            redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizResponseDTOS, message.getRoomId());
+            Long roomId = chatRoom.getRoomId();
+            List<GameQuizResponseDTO> quizDTOList = gameRoomQuizService.poseTenQuiz(roomId);
+            log.info("quizDTOList: {}", quizDTOList.toString());
+            redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizDTOList, message.getRoomId());
 
         } else if (MessageType.EXIT.equals(message.getChatType())) {//퇴장
 
@@ -167,16 +158,13 @@ public class ChatController {
     ///pub/chat
     @MessageMapping("/chat")
     public void progressGame(@Header("Authorization") String authorization, @ModelAttribute QuizMessage quiz) throws UnAuthorizedException {
-
         Long userId = jwtUtil.getUserId(authorization);
         UserInfoResponseDTO userProfile = userService.getUserProfile(userId);
         quiz.setSenderNickName(userProfile.getNickname());
         quiz.setSenderId(userId);
 
-
         chatService.enterGameRoom(quiz.getRoomId());
         quiz = chatService.playGame(quiz);
-
 
         redisPublisher.quizChattingPublish(chatService.getRoomTopic(quiz.getRoomId()), quiz);
     }
