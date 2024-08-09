@@ -199,7 +199,6 @@ export default function Header() {
                   <MenuItem
                     onClick={() => {
                     logout()
-                      .then(() => router.push("/start"))
                     }}>
                     <ListItemIcon sx={{ mr: 1 }}>
                       <Logout fontSize="large" />

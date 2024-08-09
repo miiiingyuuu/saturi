@@ -89,19 +89,19 @@ const UserLessonChart: React.FC = () => {
   return (
     <Box sx={{ width: '100%' }}>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Typography variant="h6">완료 횟수 순</Typography>
           <Bar data={createChartData(chartData.sortedByCompletedNum, '완료 횟수')} options={options} />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Typography variant="h6">평균 파형 유사도 순</Typography>
           <Bar data={createChartData(chartData.sortedByAvgSimilarity, '평균 파형 유사도')} options={options} />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Typography variant="h6">평균 발음 정확도 순</Typography>
           <Bar data={createChartData(chartData.sortedByAvgAccuracy, '평균 발음 정확도')} options={options} />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Typography variant="h6">레슨 신고횟수 순</Typography>
           <Bar data={createChartData(chartData.sortedByClaimNum, '레슨 신고횟수')} options={options} />
         </Grid>

@@ -91,10 +91,7 @@ const UserSimilarityChart: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', height: 400 }}>
-      <Typography variant="h6" gutterBottom>
-        지역별 평균 유사도 및 정확도
-      </Typography>
+    <Box>
       {chartData.labels.length > 0 && <Bar options={options} data={chartData} />}
     </Box>
   );
