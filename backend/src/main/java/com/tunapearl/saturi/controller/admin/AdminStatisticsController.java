@@ -183,6 +183,9 @@ public class AdminStatisticsController {
         Long total = lessonRate + gameRate;
         lessonRate = lessonRate * 100 / total;
         gameRate = gameRate * 100 / total;
+        // 100 맞추기
+        lessonRate = lessonRate + (100 - (lessonRate + gameRate));
+
         return ResponseEntity.ok(new LessonAndGameRateResponseDTO(lessonRate, gameRate));
     }
 }
