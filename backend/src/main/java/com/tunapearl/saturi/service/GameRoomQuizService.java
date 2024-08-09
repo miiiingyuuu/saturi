@@ -83,6 +83,7 @@ public class GameRoomQuizService {
         dto.setQuizId(quizEntity.getQuizId());
         dto.setIsObjective(quizEntity.getIsObjective());
         dto.setQuestion(quizEntity.getQuestion());
+        dto.setSequence(seq);
 
         dto.setQuizChoiceList(quizEntity.getQuizChoiceList().stream()
                 .map(choiceEntity -> new GameQuizChoiceDTO(choiceEntity.getQuizChoicePK().getChoiceId(), choiceEntity.getContent(), choiceEntity.getIsAnswer()))

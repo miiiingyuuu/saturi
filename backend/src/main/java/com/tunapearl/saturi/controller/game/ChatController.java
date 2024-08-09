@@ -107,7 +107,12 @@ public class ChatController {
 
         } else if (MessageType.QUIZ.equals(message.getChatType())) {
 
-            List<GameQuizResponseDTO> quizDTOList = gameRoomQuizService.poseTenQuiz(Long.valueOf(message.getRoomId()));
+            ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId())
+                    .orElseThrow(() -> new RuntimeException("Not found chat room"));
+
+            Long roomId = chatRoom.getRoomId();
+            List<GameQuizResponseDTO> quizDTOList = gameRoomQuizService.poseTenQuiz(roomId);
+            log.info("quizDTOList: {}", quizDTOList.toString());
             redisPublisher.quizListPublish(chatService.getRoomTopic(message.getRoomId()), quizDTOList, message.getRoomId());
 
         } else if (MessageType.EXIT.equals(message.getChatType())) {//퇴장
