@@ -25,7 +25,7 @@ public class GameRoomQuizRepository {
         return results.isEmpty() ? Optional.empty() : Optional.of(results);
     }
 
-    public Optional<GameRoomQuizEntity> findPosedQuizByRoomAndQuizId(Long quizId, Long roomId){
+    public Optional<GameRoomQuizEntity> findPosedQuizByRoomAndQuizId(Long roomId, Long quizId){
         List<GameRoomQuizEntity> gameRoomQuiz = em.createQuery("select q from GameRoomQuizEntity q where q.room.roomId = :roomId and q.quiz.quizId = :quizId", GameRoomQuizEntity.class)
                 .setParameter("roomId", roomId)
                 .setParameter("quizId", quizId)
