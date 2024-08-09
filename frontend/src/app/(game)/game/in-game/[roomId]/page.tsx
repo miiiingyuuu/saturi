@@ -140,6 +140,20 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             setParticipants(body.participants);
           } else if (body.chatType === "ENTER") {
             setParticipants(body.participants);
+          } else if (body.chatType === "TERMINATED") {
+            setParticipants(prev => prev.filter(participant => participant.nickName !== body.exitNickName));
+            if (body.remainCount === 0) {
+              client.publish({
+                destination: "pub/room",
+                body: JSON.stringify({
+                  roomId,
+                  chatType:"END"
+                }),
+                headers: {
+                  Authorization : sessionStorage.getItem("accessToken") as string
+                }
+              })
+            }
           }
         });
 
