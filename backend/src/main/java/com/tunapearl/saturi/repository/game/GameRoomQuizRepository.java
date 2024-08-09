@@ -26,11 +26,11 @@ public class GameRoomQuizRepository {
     }
 
     public Optional<GameRoomQuizEntity> findPosedQuizByRoomAndQuizId(Long quizId, Long roomId){
-        GameRoomQuizEntity gameRoomQuiz = em.createQuery("select q from GameRoomQuizEntity q where q.room.roomId = :roomId and q.quiz.quizId = :quizId", GameRoomQuizEntity.class)
+        List<GameRoomQuizEntity> gameRoomQuiz = em.createQuery("select q from GameRoomQuizEntity q where q.room.roomId = :roomId and q.quiz.quizId = :quizId", GameRoomQuizEntity.class)
                 .setParameter("roomId", roomId)
                 .setParameter("quizId", quizId)
-                .getSingleResult();
-        return Optional.ofNullable(gameRoomQuiz);
+                .getResultList();
+        return gameRoomQuiz.isEmpty() ? Optional.empty() : Optional.of(gameRoomQuiz.get(0));
     }
 
     public Optional<List<GameRoomQuizEntity>> findPosedQuizByRoomId(long roomId) {

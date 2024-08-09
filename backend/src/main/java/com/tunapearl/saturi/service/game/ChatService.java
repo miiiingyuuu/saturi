@@ -143,6 +143,7 @@ public class ChatService {
 
         if (message.getQuizId() > 1) {
             // 방번호, 퀴즈번호로 조회
+            log.info("find(playGame): {}, {}", roomId, quizId);
             GameRoomQuizEntity gameRoomQuiz = gameRoomQuizRepository.findPosedQuizByRoomAndQuizId(roomId, quizId)
                     .orElseThrow(() -> new RuntimeException(String.format("Not found game room quiz: %d, %d", roomId, quizId)));
             QuizEntity quiz = gameRoomQuiz.getQuiz();
