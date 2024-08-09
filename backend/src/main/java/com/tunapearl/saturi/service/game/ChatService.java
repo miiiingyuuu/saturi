@@ -129,6 +129,8 @@ public class ChatService {
     @Transactional
     public QuizMessage playGame(QuizMessage message) {
 
+        log.info("message(playGame): {}", message.toString());
+
         //방 레디스
         ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Not found chat room"));
@@ -137,7 +139,7 @@ public class ChatService {
         Long roomId = chatRoom.getRoomId();
         Long quizId = message.getQuizId();
 
-        log.info("message(playGame): {}", message.toString());
+        log.info("chatRoom(playGame): {}", chatRoom.toString());
 
         if (message.getQuizId() > 1) {
             // 방번호, 퀴즈번호로 조회
