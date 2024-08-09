@@ -32,68 +32,18 @@ export default function CategorySelectPage() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [categoryName, setCategoryName] = useState<string>("not yet");
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<number | null>(null);
-  const [selectedPuzzleAccuracy, setSelectedPuzzleAccuracy] = useState<
-    number | null
-  >(null);
+  const [selectedPuzzleAccuracy, setSelectedPuzzleAccuracy] = useState<number | null>(null);
+  const [selectedLessonGroup, setSelectedLessonGroup] = useState<LessonGroup | null>(null);
   const [categoryProgress, setCategoryProgress] = useState<number>(0);
   const [lessonGroup, setLessonGroup] = useState<LessonGroup[]>([]);
-  const dummyProgressdata = [
-    {
-      lessonGroupId: 1,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 2,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 3,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 4,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 5,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 6,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 7,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 8,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-    {
-      lessonGroupId: 9,
-      lessonGroupName: "미상",
-      groupProgress: 0,
-      avgAccuracy: 0,
-    },
-  ];
-  
+
+  const dummyProgressdata = Array.from({ length: 9 }, (_, i) => ({
+    lessonGroupId: i + 1,
+    lessonGroupName: "미상",
+    groupProgress: 0,
+    avgAccuracy: 0,
+  }));
+
   const [progressData, setProgressData] = useState<
     {
       lessonGroupId: number;
@@ -102,23 +52,15 @@ export default function CategorySelectPage() {
       avgAccuracy: number;
     }[]
   >(dummyProgressdata);
+
   // 선택된 지역, 카테고리 할당
   useEffect(() => {
     if (pathname) {
       const pathSegments = pathname.split("/");
-      const selectedLocation = parseInt(
-        pathSegments[pathSegments.length - 2],
-        10,
-      );
-      const selectedCategory = parseInt(
-        pathSegments[pathSegments.length - 1],
-        10,
-      );
+      const selectedLocation = parseInt(pathSegments[pathSegments.length - 2], 10);
+      const selectedCategory = parseInt(pathSegments[pathSegments.length - 1], 10);
 
-      if (
-        ![1, 2, 3].includes(selectedLocation) ||
-        Number.isNaN(selectedCategory)
-      ) {
+      if (![1, 2, 3].includes(selectedLocation) || Number.isNaN(selectedCategory)) {
         router.push("/lesson/2/2");
       } else {
         setLocationId(selectedLocation);
@@ -128,53 +70,59 @@ export default function CategorySelectPage() {
   }, [pathname, router]);
 
   useEffect(() => {
-    if (locationId !== null && categoryId !== null) {
-      // 카테고리별 진척도, 레슨그룹 당 opover 에 표시할 lessonGroupId, groupProgress, avgAcuuracy 가져오기
-      console.log(locationId, categoryId);
-      // 레슨 그룹들의 정보를 받아오기
-      api
-        .get(
-          `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`,
-        )
-        .then(response => {
-          if (response.status === 200) {
-            setLessonGroup(response.data);
-            console.log(response.data);
+    const fetchData = async () => {
+      try {
+        if (locationId !== null && categoryId !== null) {
+          // 레슨 그룹들의 정보를 받아오기
+          const lessonGroupResponse = await api.get(
+            `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`
+          );
+          if (lessonGroupResponse.status === 200) {
+            setLessonGroup(lessonGroupResponse.data);
+            console.log("Lesson Group Data:", lessonGroupResponse.data);
           }
-        })
-        .catch(err=>{
-          console.log(err)
-        });
-        
-      api
-        .get(
-          `learn/lesson-group/progress?locationId=${locationId}&categoryId=${categoryId}`,
-        )
-        .then(response => {
-          if (response.status === 200) {
-            if (response.data.length > 0) {
-              setCategoryProgress(response.data.progress);
-              if (response.data.lessonGroup !== null){
-                setProgressData(response.data.lessonGroup);
-              } 
-              console.log(progressData);
-              console.log(response);
+
+          // Progress API 요청
+          const progressResponse = await api.get(
+            `learn/lesson-group/progress?locationId=${locationId}&categoryId=${categoryId}`
+          );
+          if (progressResponse.status === 200) {
+            console.log("Progress API Response:", progressResponse.data);
+
+            if (Array.isArray(progressResponse.data) && progressResponse.data.length > 0) {
+              setCategoryProgress(progressResponse.data[0].progress);
+              if (progressResponse.data[0].lessonGroup !== null) {
+                setProgressData(progressResponse.data[0].lessonGroup);
+              }
+            } else if (progressResponse.data && typeof progressResponse.data === 'object') {
+              setCategoryProgress(progressResponse.data.progress || 0);
+              if (progressResponse.data.lessonGroup !== null) {
+                setProgressData(progressResponse.data.lessonGroup);
+              }
+            } else {
+              setCategoryProgress(0);
             }
           }
-        })
-        .catch(error => {
-          console.error("progress API 요청 중 오류 발생:", error);
-          console.log(progressData);
-          setCategoryProgress(0);
-        });
+        }
+      } catch (error) {
+        console.error("API 요청 중 오류 발생:", error);
+        setCategoryProgress(0);
+      }
+    };
 
-    }
+    fetchData();
   }, [locationId, categoryId]);
 
   // 새로운 onSelect 함수 구현
   const handlePuzzleSelect = (pieceId: number, avgAccuracy: number) => {
     setSelectedPuzzleId(pieceId);
     setSelectedPuzzleAccuracy(avgAccuracy);
+
+    // Find the selected lesson group by ID
+    const selectedGroup = lessonGroup.find(group => group.lessonGroupId === pieceId);
+    if (selectedGroup) {
+      setSelectedLessonGroup(selectedGroup);
+    }
   };
 
   return (
@@ -206,8 +154,6 @@ export default function CategorySelectPage() {
             borderRadius: "8px",
           }}
         >
-          {/* <h2>locationID = {locationId}</h2>
-          <h2>CategoryName = {categoryName}</h2> */}
           <SideNavbar location={locationId} categoryId={categoryId} />
         </Card>
 
@@ -227,7 +173,7 @@ export default function CategorySelectPage() {
             <Puzzle
               id={locationId}
               totalProgress={categoryProgress}
-              onSelect={handlePuzzleSelect} // 새로운 onSelect 핸들러 사용
+              onSelect={handlePuzzleSelect}
               lessonGroup={lessonGroup}
               progressData={progressData}
             />
@@ -240,25 +186,26 @@ export default function CategorySelectPage() {
             width: "25%",
             height: "100%",
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center", // Center content vertically
+            alignItems: "center", // Center content horizontally
+            overflowY: "auto", // Allow scrolling if content overflows
             border: "1px groove",
             borderRadius: "8px",
+            padding: "10px", // Ensure there is padding inside the card
           }}
         >
           {selectedPuzzleId == null && (
             <Typography> 퍼즐을 선택하세요. </Typography>
           )}
 
-          <Box>
-            {selectedPuzzleId !== null && selectedPuzzleAccuracy !== null && (
-              <PuzzleInfo
-                locationId={locationId}
-                id={selectedPuzzleId}
-                avgAccuracy={selectedPuzzleAccuracy} // avgAccuracy 전달
-              />
-            )}
-          </Box>
+          {selectedLessonGroup && (
+            <PuzzleInfo
+              locationId={locationId}
+              lessonGroup={selectedLessonGroup}
+              avgAccuracy={selectedPuzzleAccuracy ?? 0} // Ensure avgAccuracy is a number
+            />
+          )}
         </Card>
       </Box>
     </Container>

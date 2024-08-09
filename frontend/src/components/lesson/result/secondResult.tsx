@@ -1,6 +1,6 @@
 "use client";
 
-import { LinearProgress, Button, Box } from "@mui/material";
+import { LinearProgress, Button, Box, Typography } from "@mui/material";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -148,7 +148,7 @@ export default function SecondResult({
       clearInterval(timer);
     };
   }, [userInfo.earnExp]); // Dependency on earnExp to reset on changes
-  
+
   const handlePrevClick = () => {
     if (!isPrevDisabled && locationId !== null && categoryId !== null) {
       router.push(
@@ -194,6 +194,9 @@ export default function SecondResult({
             className="w-full"
           />
         </Box>
+        <Typography variant="h6" className="ml-4">
+          {`+${userInfo.earnExp} XP`}
+        </Typography>
       </Box>
       <Box className="flex justify-center mx-24 py-4">
         <Button

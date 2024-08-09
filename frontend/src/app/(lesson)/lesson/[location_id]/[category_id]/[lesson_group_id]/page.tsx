@@ -167,6 +167,10 @@ export default function LessonPage() {
 
   // 녹음 파일을 GCR 에 저장,
   const handleNext = async () => {
+    if (isRecording) {
+      alert("녹음을 완료해주세요");
+      return;
+    }
     if (audioBlobRef.current) {
       try {
         const wavBlob = await convertToWav(audioBlobRef.current);
@@ -304,6 +308,10 @@ export default function LessonPage() {
   };
 
   const handleSkip = () => {
+    if (isRecording) {
+      alert("녹음을 완료해주세요");
+      return;
+    }
     // 건너뛰기
     api
       .put(`learn/lesson/${currentLessonId}`)
