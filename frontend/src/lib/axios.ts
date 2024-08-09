@@ -3,10 +3,6 @@ import axios from "axios";
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKURL,
   timeout: 10000,
-  // 기본으로 넣어줘야할 헤더
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 /*
@@ -26,12 +22,9 @@ api.interceptors.request.use(
   config => {
     // 엑세스 토큰을 세션 스토리지에서 가져오고,
     const accessToken = sessionStorage.getItem("accessToken");
-    const refreshToken = sessionStorage.getItem("refreshToken");
     // 토큰이 있으면 토큰을 넣어서 요청을 보냅니다.
     if (accessToken) {
       config.headers.Authorization = `${accessToken}`;
-      config.headers.accessToken = `${accessToken}`;
-      config.headers.refreshToken = `${refreshToken}`;
     }
     return config;
   },

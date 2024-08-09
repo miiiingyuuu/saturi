@@ -135,9 +135,26 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           console.log(body)
           if (Array.isArray(body)) {
             setQuizzes(body);
-          } else if (!isStart && body.chatType === "START") {
+          }
+          if (!isStart && body.chatType === "START") {
             setIsStart(true);
             setParticipants(body.participants);
+          } else if (body.chatType === "ENTER") {
+            setParticipants(body.participants);
+          } else if (body.chatType === "TERMINATED") {
+            setParticipants(prev => prev.filter(participant => participant.nickName !== body.exitNickName));
+            if (body.remainCount === 0) {
+              client.publish({
+                destination: "pub/room",
+                body: JSON.stringify({
+                  roomId,
+                  chatType:"END"
+                }),
+                headers: {
+                  Authorization : sessionStorage.getItem("accessToken") as string
+                }
+              })
+            }
           }
         });
 

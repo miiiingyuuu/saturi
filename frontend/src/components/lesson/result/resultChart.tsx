@@ -11,6 +11,7 @@ import {
 } from 'chart.js';
 import { Box, Typography } from '@mui/material';
 
+// ChartJS를 등록합니다.
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -32,7 +33,7 @@ const LessonChart: React.FC<LessonChartProps> = ({
   sampleGraphY,
   lessonId,
 }) => {
-  // Treat "vocie_info_Y" as null
+  // "vocie_info_Y"를 null로 처리합니다.
   if (userGraphY === "vocie_info_Y") {
     userGraphY = null;
   }
@@ -44,57 +45,57 @@ const LessonChart: React.FC<LessonChartProps> = ({
     console.log(sampleGraphY);
   }
 
-  // Parse the graphY strings to arrays
+  // graphY 문자열을 배열로 파싱합니다.
   const userDataPoints: number[] = userGraphY ? JSON.parse(userGraphY) : [];
   const sampleDataPoints: number[] = sampleGraphY ? JSON.parse(sampleGraphY) : [];
 
-  // Determine the length of the longest dataset for labeling
+  // 라벨링을 위한 가장 긴 데이터셋의 길이를 결정합니다.
   const maxLength = Math.max(userDataPoints.length, sampleDataPoints.length);
 
   const data = {
-    labels: Array.from({ length: maxLength }, (_, index) => index + 1), // X-axis labels as time index
+    labels: Array.from({ length: maxLength }, (_, index) => index + 1), // X축 라벨을 시간 인덱스로 설정합니다.
     datasets: [
       {
-        label: `User`, // Set the label for the user dataset
+        label: `User`, // 사용자 데이터셋에 대한 레이블 설정
         data: userDataPoints,
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderWidth: 1,
         fill: true,
-        pointRadius: 0, // Hide the points on the line
+        pointRadius: 0, // 라인의 점을 숨깁니다.
       },
       {
-        label: `Answer`, // Set the label for the sample dataset
+        label: `Answer`, // 샘플 데이터셋에 대한 레이블 설정
         data: sampleDataPoints,
         borderColor: 'rgba(255, 99, 132, 1)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderWidth: 1,
         fill: true,
-        pointRadius: 0, // Hide the points on the line
+        pointRadius: 0, // 라인의 점을 숨깁니다.
       },
     ],
   };
 
   const options = {
     responsive: true,
-    maintainAspectRatio: true, // Maintain chart aspect ratio
-    aspectRatio: 4, // Set width to height ratio
+    maintainAspectRatio: true, // 차트의 종횡비를 유지합니다.
+    aspectRatio: 4, // 너비 대 높이 비율을 설정합니다.
     plugins: {
       legend: {
-        display: true, // Display the legend
-        position: 'left', // Position the legend on the left
-        align: 'start', // Align the legend to the start (top-left)
+        display: true, // 범례를 표시합니다.
+        position: 'left' as const, // 올바른 값으로 설정
+        align: 'start' as const, // 범례를 시작 위치(좌측 상단)에 정렬합니다.
         labels: {
-          boxWidth: 20, // Width of the colored box
+          boxWidth: 20, // 색상 박스의 너비
           font: {
-            size: 12, // Font size of the legend text
+            size: 12, // 범례 텍스트의 폰트 크기
           },
-          color: '#000', // Font color
+          color: '#000', // 폰트 색상
         },
       },
       tooltip: {
         callbacks: {
-          label: (tooltipItem) => `${tooltipItem.raw}`,
+          label: (tooltipItem: { raw: any; }) => `${tooltipItem.raw}`,
         },
       },
     },
@@ -107,7 +108,7 @@ const LessonChart: React.FC<LessonChartProps> = ({
         },
       },
       y: {
-        display: false, // Ensure y-axis labels are hidden
+        display: false, // y축 레이블을 숨깁니다.
         title: {
           display: false,
           text: 'Value',
@@ -117,7 +118,7 @@ const LessonChart: React.FC<LessonChartProps> = ({
   };
 
   return (
-    <Box className="w-full"> {/* Adjust chart container size */}
+    <Box className="w-full"> {/* 차트 컨테이너 크기 조정 */}
       <Line data={data} options={options} />
     </Box>
   );

@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 
-interface LessonGroupResult {
+interface LessonGroupResultProps {
   lessonGroupId: number;
   lessonGroupName: string;
   avgAccuracy: number;
@@ -14,15 +14,15 @@ interface LessonGroupResult {
   isCompleted: boolean;
 }
 
-export default function SecondResult(lessonGroupResult: LessonGroupResult) {
+export default function SecondResult(lessonGroupResult: LessonGroupResultProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [locationId, setLocationId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [currentLessonGroupId, setCurrentLessonGroupId] = useState<number | null>(
-    lessonGroupResult.lessonGroupResult.lessonGroupId
+  const [currentLessonGroupId, setCurrentLessonGroupId] = useState<number>(
+    lessonGroupResult.lessonGroupId
   );
-  const [currentCategory, setCurrentCategory] = useState<LessonGroupResult[]>([]);
+  const [currentCategory, setCurrentCategory] = useState<LessonGroupResultProps[]>([]);
 
   // State to track if buttons should be disabled
   const [isPrevDisabled, setIsPrevDisabled] = useState<boolean>(true);
