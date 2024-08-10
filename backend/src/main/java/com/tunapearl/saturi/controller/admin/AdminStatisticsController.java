@@ -60,7 +60,7 @@ public class AdminStatisticsController {
 
         List<LocationEntity> locations = locationService.findAll();
         for (LocationEntity location : locations) {
-            if(location.getLocationId() == 1) continue;
+            if(location.getLocationId() == 1) continue; // 1은 default라 패스
             // 지역 아이디로 레슨 그룹 조회
             List<LessonGroupEntity> lessonGroups = adminService.findLessonGroupByLocationId(location.getLocationId());
             if(lessonGroups == null) {
