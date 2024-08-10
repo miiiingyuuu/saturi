@@ -146,6 +146,7 @@ def analyze_audio(request):
     if serializer.is_valid():
         answer_voice_file = serializer.validated_data['answerVoiceFileName']
         user_voice_file = serializer.validated_data['userVoiceFileName']
+        answer_script = serializer.validated_data['answerScript']
 
         try:
             # Google Cloud Storage에서 파일 데이터를 메모리에 로드
@@ -175,14 +176,18 @@ def analyze_audio(request):
             voice_similarity = cross_correlation_similarity(answer_pitch, user_pitch)
 
             # 음원 텍스트 변환
-            transcript1 = transcribe_audio(answer_voice_data)
+            transcript1 = answer_script
             transcript2 = transcribe_audio(user_voice_data)
 
             if transcript1 is None or transcript2 is None:
                 return JsonResponse({'error': 'Transcription failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             # 텍스트 유사도
-            script_similarity = script_similarity_ratio(transcript1, transcript2) * 100
+            script01 = transcript1.replace(" ","")
+            transcript01 = script01.replace(".","")
+            script02 = transcript2.replace(" ","")
+            transcript02 = script02.replace(".","")
+            script_similarity = script_similarity_ratio(transcript01, transcript02) * 100
 
             # 데이터 생성
             sending_data = {

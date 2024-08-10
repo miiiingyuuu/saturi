@@ -3,6 +3,7 @@ from django.db import models
 class CommingData(models.Model):
     answerVoiceFileName = models.TextField()
     userVoiceFileName = models.TextField()
+    answerScript = models.TextField()
 
 
 class SendingData(models.Model):
