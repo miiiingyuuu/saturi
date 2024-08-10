@@ -501,11 +501,4 @@ public class LessonService {
     public List<LessonResultEntity> findLessonResultByLessonGroupResultId(List<Long> lessonGroupResultIds) {
         return lessonRepository.findLessonResultByLessonGroupResultIdList(lessonGroupResultIds).orElse(null);
     }
-
-    public List<LessonResultEntity> findAllLessonResult() {
-        return lessonRepository.findAllLessonResult().orElse(null);
-
-    }
-
-
 }
