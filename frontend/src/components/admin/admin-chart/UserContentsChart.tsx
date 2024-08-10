@@ -79,15 +79,13 @@ const UserContentsChart: React.FC = () => {
       },
       title: {
         display: true,
-        text: '레슨 vs 게임 사용 비율',
+        text: '사용자 컨텐츠 통계',
       },
     },
   };
 
   return (
-    <Box sx={{ width: '100%', height: 300 }}>
       <Pie data={chartData} options={options} />
-    </Box>
   );
 };
 

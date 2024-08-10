@@ -193,7 +193,9 @@ export default function Header() {
                   </MenuItem>
                   
                   <MenuItem
-                    onClick={() => logout()}>
+                    onClick={() => {
+                    logout()
+                    }}>
                     <ListItemIcon sx={{ mr: 1 }}>
                       <Logout fontSize="large" />
                     </ListItemIcon>

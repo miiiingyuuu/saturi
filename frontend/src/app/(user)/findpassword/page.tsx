@@ -32,11 +32,25 @@ const FindPasswordPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await api.post('/user/auth/email-valid', { email });
+      await api.post('/user/auth/password-find/email-valid', { email });
       setMessage('인증 코드가 이메일로 전송되었습니다.');
       setActiveStep(1);
-    } catch (error) {
-      setMessage('이메일 전송에 실패했습니다. 다시 시도해주세요.');
+    } catch (error: any) {
+      console.error('Error details:', error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        
+        if (error.response.status === 400) {
+          setMessage('이메일 계정이 존재하지 않습니다.');
+        } else {
+          setMessage(error.response.data.message || '이메일 전송에 실패했습니다. 다시 시도해주세요.');
+        }
+      } else if (error.request) {
+        setMessage('서버에서 응답이 없습니다. 네트워크 연결을 확인해주세요.');
+      } else {
+        setMessage('오류가 발생했습니다. 다시 시도해주세요.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -46,15 +60,26 @@ const FindPasswordPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      console.log(email, code)
       const response = await api.post('/user/auth/password-find', { email, code });
       const { tempPassword: newTempPassword } = response.data;
       setTempPassword(newTempPassword);
       setActiveStep(2);
     } catch (error: any) {
+      console.error('Error details:', error);
       if (error.response) {
-        setMessage(error.response.data.message || '인증에 실패했습니다. 다시 시도해주세요.');
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        
+        if (error.response.status === 400) {
+          setMessage('인증코드가 일치하지 않습니다.');
+        } else {
+          setMessage(error.response.data.message || '이메일 전송에 실패했습니다. 다시 시도해주세요.');
+        }
+      } else if (error.request) {
+        setMessage('서버에서 응답이 없습니다. 네트워크 연결을 확인해주세요.');
       } else {
-        setMessage('인증에 실패했습니다. 다시 시도해주세요.');
+        setMessage('오류가 발생했습니다. 다시 시도해주세요.');
       }
     } finally {
       setIsLoading(false);
@@ -77,8 +102,8 @@ const FindPasswordPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, margin: 'auto', padding: 3 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+    <Box sx={{ maxWidth: 500, margin: 'auto', padding: 3 }}>
+      <Typography variant="h4" component="h1" gutterBottom textAlign="center" sx={{ mb: 3 }}>
         비밀번호 찾기
       </Typography>
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
@@ -134,12 +159,12 @@ const FindPasswordPage: React.FC = () => {
         </form>
       )}
       {activeStep === 2 && (
-        <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
-          <Typography variant="h6" gutterBottom>
+        <Paper elevation={4} sx={{ width: '100%', p: 3, mt: 2 }}>
+          <Typography variant="h5" gutterBottom>
             임시 비밀번호
           </Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            아래의 임시 비밀번호를 사용하여 로그인하세요. 로그인 후 즉시 비밀번호를 변경하는 것을 권장합니다.
+          <Typography variant="body1" sx={{ mb: 2, whiteSpace: 'pre-line' }}>
+            {`아래의 임시 비밀번호를 사용하여 로그인하세요.\n로그인 후 즉시 비밀번호를 변경하는 것을 권장합니다.`}
           </Typography>
           <TextField
             fullWidth

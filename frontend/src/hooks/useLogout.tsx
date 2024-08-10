@@ -9,9 +9,9 @@ import { frontLogOut } from "@/utils/authutils";
 export default function useLogout() {
   const router = useRouter();
 
-  return useCallback(async () => {
-    await api.post("/user/logout");
-    await frontLogOut()
+  return useCallback(() => {
+    api.post("/user/logout");
+    frontLogOut()
 
     window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}`
 
