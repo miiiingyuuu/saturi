@@ -213,6 +213,7 @@ export default function LessonPage() {
         const analysisResponse = await apiAi.post("/audio/analyze/", {
           answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
           userVoiceFileName: `${result.filename}`,
+          answerScript: `${currentLesson.script}`
         });
         console.log(analysisResponse);
         if (analysisResponse.status !== 200) {
