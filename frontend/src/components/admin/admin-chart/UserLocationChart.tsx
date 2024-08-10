@@ -83,7 +83,7 @@ const UserLocationChart: React.FC = () => {
       },
       title: {
         display: true,
-        text: '사용자 지역 분포'
+        text: '지역별 사용자 현황'
       },
       tooltip: {
         callbacks: {

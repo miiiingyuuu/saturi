@@ -171,6 +171,10 @@ export default function LessonPage() {
 
   // 녹음 파일을 GCR 에 저장,
   const handleNext = async () => {
+    if (isRecording) {
+      alert("녹음을 완료해주세요");
+      return;
+    }
     if (audioBlobRef.current) {
       try {
         const wavBlob = await convertToWav(audioBlobRef.current);
@@ -209,6 +213,7 @@ export default function LessonPage() {
         const analysisResponse = await apiAi.post("/audio/analyze/", {
           answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
           userVoiceFileName: `${result.filename}`,
+          answerScript: `${currentLesson.script}`
         });
         console.log(analysisResponse);
         if (analysisResponse.status !== 200) {
@@ -308,6 +313,10 @@ export default function LessonPage() {
   };
 
   const handleSkip = () => {
+    if (isRecording) {
+      alert("녹음을 완료해주세요");
+      return;
+    }
     // 건너뛰기
     api
       .put(`learn/lesson/${currentLessonId}`)
