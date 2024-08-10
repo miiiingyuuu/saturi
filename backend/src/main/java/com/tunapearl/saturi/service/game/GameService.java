@@ -63,43 +63,48 @@ public class GameService {
     }
 
     /**
-     * 게임 매칭,
-     * 도중에 매칭취소한다면 participant에서 삭제할 것
+     * 게임 매칭
      */
     public GameMatchingResponseDTO matching(GameMatchingRequestDTO gameMatchingRequestDTO) {
 
         LocationEntity location = locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow();
         Optional<List<GameRoomEntity>> findRooms = gameRoomRepository.findByLocationAndStatus(location, Status.MATCHING);
-        GameRoomEntity gameRoomEntity;
-        ChatRoom topic;
+        GameRoomEntity gameRoomEntity = new GameRoomEntity();
+        UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
 
+        //TODO: 한사람이 자주 매칭 시도하면 막아야함
         if (findRooms.isPresent()) {
+            List<GameRoomEntity> rooms = findRooms.get();
+            boolean isRoom=true;
+            for (GameRoomEntity room : rooms) {
 
-            gameRoomEntity = findRooms.get().get(0);
+                isRoom = true;
+                //방마다 참여자 보고 내가 없다면 그 방에 날 넣는다, 끝까지 못 넣었으면 방을 만들어야함
+                List<GameRoomParticipantEntity> participantList = gameRoomParticipantRepository.findByRoomId(room.getRoomId()).orElseThrow();
+                for (GameRoomParticipantEntity participant : participantList) {
+                    if (participant.getUser().getUserId() == user.getUserId()) {
+                        //이미 그 방에 내가 매칭되어 있다는 말
+                        isRoom = false;
+                        break;//다음 방으로
+                    }
+                }
+                if (isRoom) {
+                    //내가 없다는 말==매칭
+                    gameRoomEntity = room;
+                    break;
+                }
+            }
+            if (!isRoom) {
+                //들어갈 방이 없다는 말
+                gameRoomEntity = createGameRoom(gameMatchingRequestDTO.getLocationId());
+            }
 
         } else {
-            //방 생성
-            gameRoomEntity = new GameRoomEntity();
-            gameRoomEntity.setStatus(Status.MATCHING);
-            gameRoomEntity.setLocation(locationRepository.findById(gameMatchingRequestDTO.getLocationId()).orElseThrow());
-
-
-            //Topic생성해서 redis에 저장
-            topic = ChatRoom.create();
-            log.info("created roomId : {}", topic.getRoomId());
-
-            gameRoomEntity.setTopicId(topic.getTopicId());
-            gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
-
-            long roomId = gameRoomEntity.getRoomId();
-            topic.setRoomId(roomId);
-
-            //방 생성과 동시에 문제 10개 랜덤 추출 및 저장 요청
-            chatRoomRepository.save(topic);
-            gameRoomQuizService.saveTenRandomQuiz(roomId, quizService.findRandomIdByLocation(gameMatchingRequestDTO.getLocationId()));
+            //방이 없다
+            gameRoomEntity = createGameRoom(gameMatchingRequestDTO.getLocationId());
         }
 
-        UserEntity user = userRepository.findByUserId(gameMatchingRequestDTO.getUserId()).orElseThrow();
+
         GameRoomParticipantEntity gameRoomParticipantEntity = new GameRoomParticipantEntity(gameRoomEntity, user);
         gameRoomParticipantRepository.saveGameRoomParticipant(gameRoomParticipantEntity);
 
@@ -119,11 +124,40 @@ public class GameService {
     }
 
     /**
+     * 방 생성
+     */
+    public GameRoomEntity createGameRoom(long locationId) {
+        //방 생성
+        ChatRoom topic;
+
+        GameRoomEntity gameRoomEntity = new GameRoomEntity();
+        gameRoomEntity.setStatus(Status.MATCHING);
+        gameRoomEntity.setLocation(locationRepository.findById(locationId).orElseThrow());
+
+
+        //Topic생성해서 redis에 저장
+        topic = ChatRoom.create();
+        log.info("created roomId : {}", topic.getRoomId());
+
+        gameRoomEntity.setTopicId(topic.getTopicId());
+        gameRoomEntity = gameRoomRepository.saveGameRoom(gameRoomEntity);
+
+        long roomId = gameRoomEntity.getRoomId();
+        topic.setRoomId(roomId);
+
+        //방 생성과 동시에 문제 10개 랜덤 추출 및 저장 요청
+        chatRoomRepository.save(topic);
+        gameRoomQuizService.saveTenRandomQuiz(roomId, quizService.findRandomIdByLocation(locationId));
+
+        return gameRoomEntity;
+    }
+
+    /**
      * 게임 퇴장
      */
-    public void changeParticipantStatus(GameRoomParticipantId id){
+    public void changeParticipantStatus(GameRoomParticipantId id) {
         //게임 탈주
-        GameRoomParticipantEntity gameRoomParticipantEntity=gameRoomParticipantRepository.findParticipantByGameRoomParticipantId(id);
+        GameRoomParticipantEntity gameRoomParticipantEntity = gameRoomParticipantRepository.findParticipantByGameRoomParticipantId(id);
         gameRoomParticipantEntity.setExited(true);
     }
 
@@ -137,8 +171,7 @@ public class GameService {
             List<GameRoomParticipantEntity> participants = gameRoomParticipantService.findParticipantByRoomIdOrderByCorrectCount(roomId);
             List<GameResultResponseDTO> resultList = new ArrayList<>();
 
-            for (GameRoomParticipantEntity participant : participants)
-            {
+            for (GameRoomParticipantEntity participant : participants) {
                 GameResultResponseDTO resultDTO = new GameResultResponseDTO();
                 resultDTO.setRank(participant.getMatchRank());
                 UserEntity user = participant.getUser();
@@ -149,7 +182,7 @@ public class GameService {
                 }
 
                 resultDTO.setExp(participant.getBeforeExp());
-                int count=participant.getCorrectCount();
+                int count = participant.getCorrectCount();
                 resultDTO.setAnsCount(count);
                 resultDTO.setEarnedExp(count * 2);//개당 2exp임
 
