@@ -7,21 +7,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import FirstResult from "../../../../../../../components/lesson/result/firstResult";
 import SecondResult from "../../../../../../../components/lesson/result/secondResult";
 
-
-
 interface LessonResultProps {
   lessonId: number;
   userVoicePath: string | null;
   userVoiceName: string | null;
   userScript: string | null;
-  sampleScript:string|null;
+  sampleScript: string | null;
   sampleGraphX: null;
-  sampleGraphY: string|null;
+  sampleGraphY: string | null;
   accentSimilarity: number | null;
   pronunciationAccuracy: number | null;
   lessonDt: string;
   isSkipped: boolean;
-  isBeforeResult: boolean;  
+  isBeforeResult: boolean;
   userGraphX: string | null;
   userGraphY: string | null;
 }
@@ -36,19 +34,25 @@ interface LessonGroupResultProps {
   isCompleted: boolean;
 }
 
+interface UserInfo {
+  currentExp: number;
+  earnExp: number;
+  resultExp: number;
+}
+
 export default function LessonResultPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [lessonGroupResultId, setLessonGroupResultId] = useState<number | null>(
     null
-  ); 
+  );
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [lessonResult, setLessonResult] = useState<LessonResultProps[]>([]);
-  const [userExpInfo, setUserExpInfo] = useState<object>({});
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null); // Initialize as null
   const [lessonGroupResult, setLessonGroupResult] =
-    useState<LessonGroupResultProps>();
+    useState<LessonGroupResultProps | null>(null); // Initialize as null
 
   // URL 파라미터로부터 lessonGroupResultId를 가져와 상태에 저장
   useEffect(() => {
@@ -57,9 +61,7 @@ export default function LessonResultPage() {
     if (lessonGroupResultIdParam) {
       setLessonGroupResultId(Number(lessonGroupResultIdParam));
     }
-    
   }, [searchParams]);
-  
 
   // lessonGroupResultId가 설정된 후에 API 요청 보내기
   useEffect(() => {
@@ -68,8 +70,8 @@ export default function LessonResultPage() {
         .put(`learn/lesson-group-result/${lessonGroupResultId}`)
         .then((res) => {
           if (res.status === 200) {
-            console.log("lessonGroupResult",res.data);
-            setUserExpInfo(res.data.userExpInfo);
+            console.log("lessonGroupResult", res.data);
+            setUserInfo(res.data.userInfo);
             setLessonResult(res.data.lessonResult);
             setLessonGroupResult(res.data.lessonGroupResult); // lessonGroupResult 설정
           }
@@ -96,8 +98,8 @@ export default function LessonResultPage() {
           lessonGroupResult={lessonGroupResult}
         />
       )}
-      {currentStep === 2 && lessonGroupResult && (
-        <SecondResult {...lessonGroupResult} />
+      {currentStep === 2 && lessonGroupResult && userInfo && (
+        <SecondResult lessonGroupResult={lessonGroupResult} userInfo={userInfo} />
       )}
       <div className="flex gap-4">
         {currentStep !== 1 && (

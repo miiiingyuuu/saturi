@@ -1,4 +1,6 @@
-import { LinearProgress, Button, Box } from "@mui/material";
+"use client";
+
+import { LinearProgress, Button, Box, Typography } from "@mui/material";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,7 +16,21 @@ interface LessonGroupResultProps {
   isCompleted: boolean;
 }
 
-export default function SecondResult(lessonGroupResult: LessonGroupResultProps) {
+interface UserInfo {
+  currentExp: number;
+  earnExp: number;
+  resultExp: number;
+}
+
+interface SecondResultProps {
+  lessonGroupResult: LessonGroupResultProps;
+  userInfo: UserInfo;
+}
+
+export default function SecondResult({
+  lessonGroupResult,
+  userInfo,
+}: SecondResultProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [locationId, setLocationId] = useState<number | null>(null);
@@ -22,13 +38,39 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
   const [currentLessonGroupId, setCurrentLessonGroupId] = useState<number>(
     lessonGroupResult.lessonGroupId
   );
-  const [currentCategory, setCurrentCategory] = useState<LessonGroupResultProps[]>([]);
-
-  // State to track if buttons should be disabled
+  const [currentCategory, setCurrentCategory] = useState<
+    LessonGroupResultProps[]
+  >([]);
+  const [progress, setProgress] = useState<number>(0);
   const [isPrevDisabled, setIsPrevDisabled] = useState<boolean>(true);
   const [isNextDisabled, setIsNextDisabled] = useState<boolean>(true);
 
-  // Parse URL to get locationId and categoryId
+  // 이미지 경로가 public 폴더 아래에 있어야 함
+  const tierImages = {
+    stone: "/tier/stone1.gif",
+    bronze: "/tier/bronze1.gif",
+    silver: "/tier/silver1.gif",
+    gold: "/tier/gold1.gif",
+    sapphire: "/tier/sapphire1.gif",
+    platinum: "/tier/platinum1.gif",
+    diamond: "/tier/diamond1.gif",
+  };
+
+  type TierKey = keyof typeof tierImages;
+
+  const getTierFromExp = (exp: number): TierKey => {
+    if (exp === 0) return "stone";
+    if (exp < 100) return "bronze";
+    if (exp < 500) return "silver";
+    if (exp < 1500) return "gold";
+    if (exp < 3000) return "platinum";
+    if (exp < 5000) return "sapphire";
+    return "diamond";
+  };
+
+  const tierKey = getTierFromExp(userInfo.resultExp);
+  const imageSrc = tierImages[tierKey];
+
   useEffect(() => {
     if (pathname) {
       const pathSegments = pathname.split("/");
@@ -52,9 +94,12 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
     }
   }, [pathname, router]);
 
-  // Fetch current category data
   useEffect(() => {
-    if (locationId !== null && categoryId !== null && currentLessonGroupId !== undefined) {
+    if (
+      locationId !== null &&
+      categoryId !== null &&
+      currentLessonGroupId !== undefined
+    ) {
       api
         .get(
           `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`
@@ -71,7 +116,6 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
     }
   }, [locationId, categoryId, currentLessonGroupId]);
 
-  // Check for previous and next lesson groups
   useEffect(() => {
     if (currentLessonGroupId !== null) {
       const hasPrev = currentCategory.some(
@@ -86,26 +130,48 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
     }
   }, [currentCategory, currentLessonGroupId]);
 
-  // Event handlers for button clicks
+  // Animate progress from 0 to earnExp
+  useEffect(() => {
+    setProgress(0); // Reset progress on remount
+
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress >= userInfo.earnExp) {
+          clearInterval(timer);
+          return userInfo.earnExp;
+        }
+        return Math.min(oldProgress + 1, userInfo.earnExp);
+      });
+    }, 20); // Adjust the speed of the animation
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [userInfo.earnExp]); // Dependency on earnExp to reset on changes
+
   const handlePrevClick = () => {
     if (!isPrevDisabled && locationId !== null && categoryId !== null) {
-      router.push(`/lesson/${locationId}/${categoryId}/${currentLessonGroupId - 1}`);
+      router.push(
+        `/lesson/${locationId}/${categoryId}/${currentLessonGroupId - 1}`
+      );
     }
   };
 
   const handleNextClick = () => {
     if (!isNextDisabled && locationId !== null && categoryId !== null) {
-      router.push(`/lesson/${locationId}/${categoryId}/${currentLessonGroupId + 1}`);
+      router.push(
+        `/lesson/${locationId}/${categoryId}/${currentLessonGroupId + 1}`
+      );
     }
   };
 
   const handleHome = () => {
-    router.push("/main")
-  }
+    router.push("/main");
+  };
 
   const handleAgain = () => {
     if (locationId !== null && categoryId !== null) {
-      console.log()
+      console.log();
       router.push(`/lesson/${locationId}/${categoryId}/${currentLessonGroupId}`);
     }
   };
@@ -114,7 +180,7 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
     <Box className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-6">
       <Box className="flex items-center m-5">
         <Image
-          src="/images/Alopias.jpg"
+          src={imageSrc}
           alt="티어 이미지"
           width={80}
           height={80}
@@ -123,11 +189,14 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
         <Box className="px-4 flex-grow">
           <LinearProgress
             variant="determinate"
-            value={60}
-            color="warning"
+            value={progress}
+            color="primary"
             className="w-full"
           />
         </Box>
+        <Typography variant="h6" className="ml-4">
+          {`+${userInfo.earnExp} XP`}
+        </Typography>
       </Box>
       <Box className="flex justify-center mx-24 py-4">
         <Button
@@ -139,7 +208,12 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
         >
           이전 조각
         </Button>
-        <Button variant="contained" color="success" className="mx-2" onClick={handleAgain}>
+        <Button
+          variant="contained"
+          color="success"
+          className="mx-2"
+          onClick={handleAgain}
+        >
           다시하기
         </Button>
         <Button
@@ -153,7 +227,12 @@ export default function SecondResult(lessonGroupResult: LessonGroupResultProps) 
         </Button>
       </Box>
       <Box className="flex justify-center mx-24 py-4">
-        <Button variant="contained" color="success" className="w-full" onClick={handleHome}>
+        <Button
+          variant="contained"
+          color="success"
+          className="w-full"
+          onClick={handleHome}
+        >
           Home
         </Button>
       </Box>
