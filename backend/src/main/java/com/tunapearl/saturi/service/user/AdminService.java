@@ -123,6 +123,7 @@ public class AdminService {
             Long sumSimilarity = 0L;
             Long sumAccuracy = 0L;
             for (LessonGroupResultEntity lgr : lessonGroupResultsByLocation) {
+                if(lgr.getAvgAccuracy() == null || lgr.getAvgSimilarity() == null) continue;
                 sumSimilarity += lgr.getAvgSimilarity();
                 sumAccuracy += lgr.getAvgAccuracy();
             }
