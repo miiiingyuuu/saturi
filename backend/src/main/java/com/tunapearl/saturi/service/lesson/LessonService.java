@@ -65,10 +65,10 @@ public class LessonService {
     public List<LessonGroupProgressByUserDTO> getLessonGroupProgressAndAvgAccuracy(Long userId, Long locationId, Long lessonCategoryId) {
         // lessonGroup 완성 여부에 상관없이 lessonGroupResult 받아오기
         List<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdWithoutIsCompleted(userId, locationId, lessonCategoryId).orElse(null);
-        List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
         List<LessonGroupEntity> lessonGroups = lessonRepository.findLessonGroupByLocationAndCategory(locationId, lessonCategoryId).orElse(null);
+        List<LessonGroupProgressByUserDTO> result = new ArrayList<>();
 
-        if(lessonGroups == null) throw new IllegalArgumentException("잘못된 지역 아이디 이거나 학습 유형 아이디 입니다.");
+        if(lessonGroups == null) throw new IllegalArgumentException("잘못된 지역이거나 학습 유형입니다.");
 
         if(lessonGroupResult == null) { // 아예 없으면
             for (LessonGroupEntity lg : lessonGroups) {
@@ -79,34 +79,66 @@ public class LessonService {
         }
         Set<Long> lessonGroupIdSet = new HashSet<>(); // front 요청으로 lessonGroupResult가 없어도 레슨그룹아이디, 레슨그룹이름을 dto에 추가
 
+        // lessonGroupResult score 계산을 위해 lessonGroupResult를 맵으로 구성
+        Map<Long, LessonGroupResultEntity> lessonGroupResultMap = new HashMap<>();
+
+        // in 절 조회를 위한 id list
+        List<Long> lessonGroupResultIdList = new ArrayList<>();
         for (LessonGroupResultEntity lgr : lessonGroupResult) {
-            Set<Long> lessonIdSet = new HashSet<>();
-            // lessonGroupId
-            Long lessonGroupId = lgr.getLessonGroup().getLessonGroupId();
-            lessonGroupIdSet.add(lessonGroupId);
-            // groupProgress
-            Long groupProcess = 0L;
-            Long avgAccuracy = 0L;
+            lessonGroupResultIdList.add(lgr.getLessonGroupResultId());
+            lessonGroupIdSet.add(lgr.getLessonGroup().getLessonGroupId());
+            lessonGroupResultMap.put(lgr.getLessonGroupResultId(), lgr);
+        }
 
-            Long lessonGroupResultId = lgr.getLessonGroupResultId();
-            List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultId).orElse(null);
-            if(lessonResults != null) {
-                for (LessonResultEntity lr : lessonResults) {
-                    if(lessonIdSet.contains(lr.getLesson().getLessonId())) continue;
-                    lessonIdSet.add(lr.getLesson().getLessonId());
-                }
-                groupProcess = (lessonIdSet.size() * 100L) / 5L;
-                avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+        // 퍼즐 9개의 결과 id로 조회한 lessonResult list
+        List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultIdList).orElse(null);
+
+        // key = lessonGroupResultId, value = LessonResults
+        Map<Long, List<LessonResultEntity>> lessonResultMap = new HashMap<>();
+
+        // Map에 넣기
+        for (LessonResultEntity lr : lessonResults) {
+            Long lessonGroupResultId = lr.getLessonGroupResult().getLessonGroupResultId();
+            if(lessonResultMap.containsKey(lessonGroupResultId)) {
+                lessonResultMap.get(lessonGroupResultId).add(lr);
+            } else {
+                lessonResultMap.put(lessonGroupResultId, new ArrayList<>());
+                lessonResultMap.get(lessonGroupResultId).add(lr);
             }
+        }
 
-            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lessonGroupId, lgr.getLessonGroup().getName(), groupProcess, avgAccuracy);
+        // 각 Map을 돌면서 결과 구하기
+        for (Long lessonGroupResultId : lessonResultMap.keySet()) {
+            // 이미 나왔던 lessonId는 거르기
+            Set<Long> lessonIdSet = new HashSet<>();
+
+            List<LessonResultEntity> lessonResultList = lessonResultMap.get(lessonGroupResultId);
+
+            // 이미 나온 lessonId는 거르고 set에 넣기
+            for (LessonResultEntity lr : lessonResultList) {
+                if(lessonIdSet.contains(lr.getLesson().getLessonId())) continue;
+                lessonIdSet.add(lr.getLesson().getLessonId());
+            }
+            // lessonGroup progress
+            Long groupProcess = (lessonIdSet.size() * 100L) / 5L;
+
+            // lessonGroup score
+            LessonGroupResultEntity lgr = lessonGroupResultMap.get(lessonGroupResultId);
+            Long avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+
+            // DTO 변환
+            LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lgr.getLessonGroup().getLessonGroupId(), lgr.getLessonGroup().getName(), groupProcess, avgAccuracy);
             result.add(dto);
         }
+
+        // 유저가 학습하지 않은 레슨 그룹은 progress, score를 0으로 한 후 result에 추가
         for (LessonGroupEntity lg : lessonGroups) {
             if(lessonGroupIdSet.contains(lg.getLessonGroupId())) continue;
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
             result.add(dto);
         }
+        // 유저가 학습하지 않은 레슨 그룹은 마지막에 추가하기 때문에 퍼즐의 순서가 섞임
+        // lessonGroupId가 애초에 추가할 때 퍼즐 순서대로 넣어서 lessonGroupId로 정렬 -> 운영중일 때는 id 순대로 안 넣을 수도 있음
         result.sort(Comparator.comparing(LessonGroupProgressByUserDTO::getLessonGroupId));
         return result;
     }

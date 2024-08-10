@@ -271,7 +271,7 @@ public class LessonRepository {
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
-    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(List<Long> lessonGroupResultIdList) {
         QLessonResultEntity qlr = new QLessonResultEntity("lr");
         List<LessonResultEntity> result = queryFactory.selectFrom(qlr)
                 .join(qlr.lesson).fetchJoin()
@@ -279,7 +279,7 @@ public class LessonRepository {
                 .leftJoin(qlr.lessonRecordFile).fetchJoin()
                 .leftJoin(qlr.lessonRecordGraph).fetchJoin()
                 .where(
-                        qlr.lessonGroupResult.lessonGroupResultId.eq(lessonGroupResultId),
+                        qlr.lessonGroupResult.lessonGroupResultId.in(lessonGroupResultIdList),
                         qlr.isSkipped.eq(false)
                 )
                 .fetch();
