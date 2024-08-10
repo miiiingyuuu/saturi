@@ -3,6 +3,7 @@ package com.tunapearl.saturi.service.lesson;
 import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
+import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
 import com.tunapearl.saturi.dto.lesson.*;
 import com.tunapearl.saturi.dto.user.UserExpInfoCurExpAndEarnExp;
 import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
@@ -52,6 +53,12 @@ public class LessonService {
         LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
         if(findLesson == null) throw new IllegalArgumentException("존재하지 않는 레슨입니다.");
         return findLesson;
+    }
+
+    public LessonResponseDTO createLessonDTO(LessonEntity findLesson) {
+        return new LessonResponseDTO(findLesson.getLessonId(), findLesson.getLessonGroup().getLessonGroupId(),
+                findLesson.getLessonGroup().getName(), findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(),
+                findLesson.getScript(), findLesson.getGraphX(), findLesson.getGraphY(), findLesson.getLastUpdateDt());
     }
 
     public Long getProgressByUserIdLocationAndCategory(Long userId, Long locationId, Long lessonCategoryId) {
@@ -156,13 +163,12 @@ public class LessonService {
         Long lessonGroupId = findLesson.getLessonGroup().getLessonGroupId();
 
         // 유저아이디와 레슨그룹 아이디로 레슨그룹결과 아이디를 찾는다.
-        List<LessonGroupResultEntity> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId).orElse(null);
-        if(lessonGroupResults == null) {
+        LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId).orElse(null);
+        if(lessonGroupResult == null) {
             // 레슨그룹결과 없이 건너뛰기로 올 수 없음 -> 이상하게 온거
             throw new IllegalStateException("잘못된 접근입니다.");
         }
-        LessonGroupResultEntity findLessonGroupResult = findLessonGroupResult(lessonGroupResults, lessonGroupId);
-        Long lessonGroupResultId = findLessonGroupResult.getLessonGroupResultId();
+        Long lessonGroupResultId = lessonGroupResult.getLessonGroupResultId();
 
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다. (add) 학습 시간도 초기화
         // 이미 학습했던 레슨이면 기존에 존재하는 레슨 결과 아이디를 반환
@@ -173,7 +179,7 @@ public class LessonService {
 //            lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
             return lessonResults.get(lessonResults.size()-1).getLessonResultId();
         }
-        LessonResultEntity lessonResultSkipped = createLessonResultSkipped(findLesson, findLessonGroupResult);
+        LessonResultEntity lessonResultSkipped = createLessonResultSkipped(findLesson, lessonGroupResult);
 
         // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
         return lessonRepository.saveLessonForSkipped(lessonResultSkipped).orElse(null);
@@ -191,16 +197,17 @@ public class LessonService {
     }
 
     public Long createLessonGroupResult(Long userId, Long lessonGroupId) {
-        // userId로 유저 객체 찾기
+        // userId로 유저 조회
         UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
-        // lessonGroupId로 레슨 그룹 객체 찾기
+
+        // lessonGroupId로 레슨 그룹 조회
         LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
 
         // 이미 레슨그룹결과가 있는지 확인
-        Optional<List<LessonGroupResultEntity>> getLessonGroupResult = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
+        Optional<LessonGroupResultEntity> getLessonGroupResult = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
         if(getLessonGroupResult.isPresent()) {
-            getLessonGroupResult.get().get(0).setStartDt(LocalDateTime.now()); // 복습이면 시간 현재로 갱신
-            return getLessonGroupResult.get().get(0).getLessonGroupResultId();
+            getLessonGroupResult.get().setStartDt(LocalDateTime.now()); // 복습이면 시간 현재로 갱신
+            return getLessonGroupResult.get().getLessonGroupResultId();
         }
 
         // 유저, 레슨그룹, 레슨 그룹 시작 일시 설정, 완료 여부 false
@@ -223,9 +230,9 @@ public class LessonService {
         Long lessonGroupId = lesson.getLessonGroup().getLessonGroupId();
 
         // 유저 아이디와 레슨 그룹 아이디로 레슨 그룹 결과 조회
-        Optional<List<LessonGroupResultEntity>> lessonGroupResults = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
-        if(lessonGroupResults.isEmpty()) return Optional.empty();
-        Long lessonGroupResultId = findLessonGroupResult(lessonGroupResults.get(), lessonGroupId).getLessonGroupResultId();
+        Optional<LessonGroupResultEntity> lessonGroupResult = lessonRepository.findLessonGroupResultByUserIdAndLessonGroupId(userId, lessonGroupId);
+        if(lessonGroupResult.isEmpty()) return Optional.empty();
+        Long lessonGroupResultId = lessonGroupResult.get().getLessonGroupResultId();
 
         // 레슨 아이디랑 레슨 그룹 결과 아이디로 레슨 결과 조회
         Optional<List<LessonResultEntity>> lessonResults = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
@@ -490,4 +497,6 @@ public class LessonService {
         return lessonRepository.findAllLessonResult().orElse(null);
 
     }
+
+
 }

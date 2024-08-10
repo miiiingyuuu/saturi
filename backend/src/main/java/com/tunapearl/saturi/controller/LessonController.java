@@ -63,9 +63,8 @@ public class LessonController {
     public ResponseEntity<LessonResponseDTO> getLesson(@PathVariable Long lessonId) {
         log.info("received request to find Lesson {}", lessonId);
         LessonEntity findLesson = lessonService.findById(lessonId);
-        return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
-                findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
-                findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(), findLesson.getScript(), findLesson.getLastUpdateDt()));
+        LessonResponseDTO lessonDTO = lessonService.createLessonDTO(findLesson);
+        return ResponseEntity.ok(lessonDTO);
     }
 
     /**

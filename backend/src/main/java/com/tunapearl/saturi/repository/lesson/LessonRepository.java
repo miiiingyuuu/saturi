@@ -167,17 +167,29 @@ public class LessonRepository {
         return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList);
     }
 
-    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdAndLessonGroupId(Long userId, Long lessonGroupId) {
-        List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr" +
-                        " join fetch lgr.user" +
-                        " join fetch lgr.lessonGroup " +
-                        " where lgr.user.userId = :userId" +
-                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId", LessonGroupResultEntity.class)
-                .setParameter("userId", userId)
-                .setParameter("lessonGroupId", lessonGroupId)
-                .getResultList();
+    public Optional<LessonGroupResultEntity> findLessonGroupResultByUserIdAndLessonGroupId(Long userId, Long lessonGroupId) {
+        QLessonGroupResultEntity qlgr = new QLessonGroupResultEntity("lgr");
 
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        LessonGroupResultEntity result = queryFactory.selectFrom(qlgr)
+                .join(qlgr.user).fetchJoin()
+                .join(qlgr.lessonGroup).fetchJoin()
+                .where(
+                        qlgr.user.userId.eq(userId),
+                        qlgr.lessonGroup.lessonGroupId.eq(lessonGroupId))
+                .fetchOne();
+
+        return result == null ? Optional.empty() : Optional.of(result);
+
+//        List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr" +
+//                        " join fetch lgr.user" +
+//                        " join fetch lgr.lessonGroup " +
+//                        " where lgr.user.userId = :userId" +
+//                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId", LessonGroupResultEntity.class)
+//                .setParameter("userId", userId)
+//                .setParameter("lessonGroupId", lessonGroupId)
+//                .getResultList();
+//
+//        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<Long> saveLessonResult(LessonResultEntity lessonResult) {
