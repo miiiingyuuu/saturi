@@ -91,11 +91,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           Authorization: sessionStorage.getItem("accessToken") as string,
         },
       });
-
-      setHighlightedNick(you as string);
-      updateParticipantMessage(you as string, message);
-      showTooltip();
-      setTimeout(() => setHighlightedNick(null), 3000);
     }
     setMessage("");
   }
@@ -206,6 +201,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             }, 5000);
           }
 
+
           const timestamp = new Date().toLocaleTimeString("ko-KR", {
             hour12: true,
             hour: "2-digit",
@@ -219,6 +215,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             chatLogId: body.chatLogId
           };
           setMessages((prevMsg) => [...prevMsg, newMsg]);
+          setHighlightedNick(body.senderNickName);
+          updateParticipantMessage(body.senderNickName, body.message);
+          showTooltip();
+          setTimeout(() => setHighlightedNick(null), 3000);
         });
       };
 
@@ -235,11 +235,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         });
       };
 
-      const handleBeforeUnload = () => {
-        onDisconnect();
-      };
-
-      window.addEventListener("unload", handleBeforeUnload);
+      window.addEventListener("unload", onDisconnect);
 
       client.onDisconnect = onDisconnect;
       client.onConnect = onConnect;
@@ -249,8 +245,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       }
 
       return () => {
-        window.removeEventListener("unload", handleBeforeUnload);
-      };
+        onDisconnect()
+      }
     }
   }, [roomId, clientRef]);
 
@@ -277,7 +273,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           backgroundRepeat: "no-repeat",
           borderRadius: "15px",
           border:"3px groove black",
-        }}>         
+        }}>
           <Box sx={{
             minHeight: "390px",
             height:"70%",
@@ -300,7 +296,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             ) : (
               <>
                 {isAnswerTime && (
-                  <Typography 
+                  <Typography
                     sx={{
                       fontSize:"20px",
                       fontWeight:"bold",
@@ -342,7 +338,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                           {now+1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
                         </Typography>
                         {/* Q 파트 */}
-                        <Typography 
+                        <Typography
                         sx={{
                           fontSize: "25px",
                           textShadow: `
@@ -357,11 +353,11 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                         </Typography>
                         {nowQuiz.isObjective ? (
 
-                          // 객관식 파트 
+                          // 객관식 파트
                           <Box
                             sx={{
                               marginTop: "25px",
-                              display: "flex",                              
+                              display: "flex",
                               justifyContent: "space-between",
                             }}
                           >
@@ -393,7 +389,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                                     sx={{
                                       minWidth: 300,
                                       maxWidth: "100%",
-                                      backgroundColor: "whitesmoke",                                      
+                                      backgroundColor: "whitesmoke",
                                     }}
                                   >
                                     {index+1}번. {choiceList.choiceText}
@@ -404,7 +400,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                           </Box>
                         ) : (
 
-                          // 주관식 파트  
+                          // 주관식 파트
                           <Box sx={{ display: "flex", pt:"20px" }}>
                             <TextField
                               variant="outlined"
@@ -436,10 +432,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   </Box>
                 )}
               </>
-            )}     
+            )}
 
           </Box>
-          
+
 
 
           {/* 프로필 파트 */}
@@ -448,7 +444,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               display: "grid",
               placeItems: "center",
               minHeight: "150px",
-              height: "30%",              
+              height: "30%",
             }}
           >
             <Box
@@ -505,9 +501,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
 
 
-        </Box> 
-        
-      
+        </Box>
+
+
 
 
         {/* 채팅 파트 */}
@@ -523,13 +519,13 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               p: 2,
               backgroundColor: "#f5f5f5",
           }}>
-            
+
 
             {/* 채팅을 입력하는 부분 */}
             <Box sx={{ display: "flex"}}>
               <TextField
                 variant="outlined"
-                fullWidth                
+                fullWidth
                 value={message}
                 onChange={(event) => handleValueChange(event, setMessage)}
                 onKeyDown={(e) => {
