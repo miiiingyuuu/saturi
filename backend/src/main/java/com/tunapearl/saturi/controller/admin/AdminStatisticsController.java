@@ -4,13 +4,10 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.game.GameRoomEntity;
 import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
-import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
 import com.tunapearl.saturi.dto.admin.statistics.*;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.service.user.AdminService;
 import com.tunapearl.saturi.service.user.LocationService;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +60,7 @@ public class AdminStatisticsController {
 
         List<LocationEntity> locations = locationService.findAll();
         for (LocationEntity location : locations) {
-            if(location.getLocationId() == 1) continue;
+            if(location.getLocationId() == 1) continue; // 1은 default라 패스
             // 지역 아이디로 레슨 그룹 조회
             List<LessonGroupEntity> lessonGroups = adminService.findLessonGroupByLocationId(location.getLocationId());
             if(lessonGroups == null) {

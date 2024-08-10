@@ -2,9 +2,7 @@ package com.tunapearl.saturi.controller.admin;
 
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.admin.UserInfoDTO;
-import com.tunapearl.saturi.dto.admin.lesson.LessonGroupResponseDTO;
 import com.tunapearl.saturi.service.user.AdminService;
-import com.tunapearl.saturi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

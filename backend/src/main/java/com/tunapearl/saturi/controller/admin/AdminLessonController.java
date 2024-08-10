@@ -91,7 +91,7 @@ public class AdminLessonController {
         lessons.forEach((lesson) -> allLessonDTO.add(new LessonResponseDTO(
                 lesson.getLessonId(), lesson.getLessonGroup().getLessonGroupId(),
                 lesson.getLessonGroup().getName(), lesson.getSampleVoicePath(), lesson.getSampleVoiceName(),
-                lesson.getScript(), lesson.getLastUpdateDt())));
+                lesson.getScript(), lesson.getGraphX(), lesson.getGraphY(), lesson.getLastUpdateDt())));
         return ResponseEntity.ok(allLessonDTO);
     }
 
@@ -105,7 +105,7 @@ public class AdminLessonController {
         LessonEntity findLesson = adminLessonService.findById(lessonId);
         return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
                 findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
-                findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(), findLesson.getScript(), findLesson.getLastUpdateDt()));
+                findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(), findLesson.getScript(), findLesson.getGraphX(), findLesson.getGraphY(), findLesson.getLastUpdateDt()));
     }
 
     /**
