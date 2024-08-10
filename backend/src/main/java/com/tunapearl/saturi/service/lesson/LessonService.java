@@ -1,15 +1,12 @@
 package com.tunapearl.saturi.service.lesson;
 
-import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
 import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.admin.lesson.LessonResponseDTO;
 import com.tunapearl.saturi.dto.lesson.*;
 import com.tunapearl.saturi.dto.user.UserExpInfoCurExpAndEarnExp;
-import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.repository.UserRepository;
 import com.tunapearl.saturi.repository.lesson.LessonRepository;
-import com.tunapearl.saturi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +23,10 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
+
+    // 상수 정의
+    private static final Long FIRST_LEARN_LESSON_EXP = 20L;
+    private static final Long REVIEW_LEARN_LESSON_EXP = 10L;
 
     public LessonCategoryEntity findByIdLessonCategory(Long lessonCategoryId) {
         return lessonRepository.findByIdLessonCategory(lessonCategoryId).orElse(null);
@@ -171,14 +172,17 @@ public class LessonService {
         Long lessonGroupResultId = lessonGroupResult.getLessonGroupResultId();
 
         // 레슨아이디와 레슨그룹결과아이디로 레슨결과를 생성한다. 이 때 isSkipped만 true로 해서 생성한다. (add) 학습 시간도 초기화
-        // 이미 학습했던 레슨이면 기존에 존재하는 레슨 결과 아이디를 반환
-        Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId);
+        // 이미 학습했던 레슨이면 기존에 존재하는 레슨 결과 아이디를 반환(현재는 ok 메시지만 반환)
+        // 이미 학습한게 아닌 이전에 그냥 건너뛰기만 했어도 새로 일단 만들어줌
+        Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonIdAndLessonGroupResultId(lessonId, lessonGroupResultId, false);
         if(lessonResultsOpt.isPresent()) {
             // 이미 레슨결과가 존재
-            List<LessonResultEntity> lessonResults = lessonResultsOpt.orElse(null);
+            List<LessonResultEntity> lessonResults = lessonResultsOpt.get();
 //            lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
-            return lessonResults.get(lessonResults.size()-1).getLessonResultId();
+            return lessonResults.get(lessonResults.size()-1).getLessonResultId(); // 최근 레슨 결과를 반환
         }
+
+        //
         LessonResultEntity lessonResultSkipped = createLessonResultSkipped(findLesson, lessonGroupResult);
 
         // 생성한 레슨결과를 저장하고 레슨결과아이디를 리턴한다.
@@ -251,13 +255,6 @@ public class LessonService {
             return Optional.ofNullable(new LessonInfoDTO(true, null, null));
         }
         return Optional.ofNullable(new LessonInfoDTO(false, lessonResult.getAccentSimilarity(), lessonResult.getPronunciationAccuracy()));
-    }
-
-    private LessonGroupResultEntity findLessonGroupResult(List<LessonGroupResultEntity> lessonGroupResults, Long lessonId) {
-        for (LessonGroupResultEntity lgr : lessonGroupResults) {
-            if(lgr.getLessonGroup().getLessonGroupId().equals(lessonId)) return lgr;
-        }
-        return null;
     }
 
     public Long saveLesson(LessonSaveRequestDTO request) {
@@ -333,11 +330,13 @@ public class LessonService {
     public LessonGroupResultSaveResponseDTO saveLessonGroupResult(Long userId, Long lessonGroupResultId) {
         // leesonGroupResult 조회
         LessonGroupResultEntity lessonGroupResult = lessonRepository.findLessonGroupResultById(lessonGroupResultId).orElse(null);
-        if(lessonGroupResult == null) throw new IllegalArgumentException();
+        if(lessonGroupResult == null) throw new IllegalArgumentException("lessonGroupResultId가 올바르지 않습니다");
+
+        // 레슨그룹 학습 시작 시간을 기준으로 학습과 복습을 구분
         LocalDateTime lessonGroupResultStartDt = lessonGroupResult.getStartDt();
 
-        // 240808 lessonEntity 조회 추가
-        List<LessonEntity> lessons = lessonRepository.findAllByLessonGroupResultId().orElse(null);
+        // 240808 lessonEntity 조회 추가 (프론트 - 결과페이지에서 원본 음성 파형이 필요하다)
+        List<LessonEntity> lessons = lessonRepository.findAllByLessonGroupResultId(lessonGroupResult.getLessonGroup().getLessonGroupId()).orElse(null);
         Map<Long, LessonEntity> lessonsMap = new HashMap<>();
         if(lessons != null) {
             for (LessonEntity lesson : lessons) {
@@ -347,20 +346,24 @@ public class LessonService {
 
         // 최근순으로 정렬된 레슨 결과 조회(건너뛰기 포함)
         Optional<List<LessonResultEntity>> lessonResultsOpt = lessonRepository.findLessonResultByLessonGroupResultIdSortedByRecentDt(lessonGroupResultId);
-        if(lessonResultsOpt.isEmpty()) throw new IllegalArgumentException();
-        List<LessonResultEntity> lessonResults = lessonResultsOpt.orElse(null);
+        if(lessonResultsOpt.isEmpty()) throw new IllegalStateException("잘못된 접근입니다.");
+        List<LessonResultEntity> lessonResults = lessonResultsOpt.get();
 
-        // 필요한 map
+        //// 필요한 map 정의 ////
+        // 일단 이번에 학습한 얘들을 넣고, 저번에 했어서 이번에 건너뛰기한거는 저번에 한 결과를 넣음
         Map<Long, LessonResultEntity> lessonResultMap = new HashMap<>(); // lessonId : LessonResult
         Map<Long, Long> expMap = new HashMap<>(); // lessonId : exp
         Map<Long, Long> maxSimilarityMap = new HashMap<>(); // lessonId : similarity
         Map<Long, Long> maxAccuracyMap = new HashMap<>(); // lessonId : accuracy
-        Map<Long, PriorityQueue<LessonResultEntity>> pqMap = new HashMap<>(); // lessonId : PQ(LessonResultEntity) -> 사용할 때 pq 초기환 필요
+        Map<Long, PriorityQueue<LessonResultEntity>> pqMap = new HashMap<>(); // lessonId : PQ(LessonResultEntity) -> 사용할 때 pq 초기화 필요
 
-        outer: for (LessonResultEntity lr : lessonResults) { // 레슨결과 하나씩 조회
+        for (LessonResultEntity lr : lessonResults) { // 레슨결과 하나씩 본다
+            // 레슨 아이디와 학습한 시각(혹은 건너뛰기한 시각)
             Long lessonId = lr.getLesson().getLessonId();
             LocalDateTime lessonResultDt = lr.getLessonDt();
-            if(lessonGroupResultStartDt.isBefore(lessonResultDt)) { // 이번에 학습한 레슨결과다
+
+            // 이번에 학습한 레슨 결과다.
+            if(lessonGroupResultStartDt.isBefore(lessonResultDt)) {
                 if(lr.getIsSkipped()) { // 건너뛰기 한 레슨결과다
                     lessonResultMap.put(lessonId, lr);
                     expMap.put(lessonId, 0L);
@@ -368,20 +371,24 @@ public class LessonService {
                     maxAccuracyMap.put(lessonId, 0L);
                 } else { // 건너뛰기 하지 않았다
                     lessonResultMap.put(lessonId, lr);
-                    expMap.put(lessonId, 20L);
+                    expMap.put(lessonId, FIRST_LEARN_LESSON_EXP);
                     maxSimilarityMap.put(lessonId, lr.getAccentSimilarity());
                     maxAccuracyMap.put(lessonId, lr.getPronunciationAccuracy());
                 }
-            } else { // 저번에 학습한 레슨결과다 -> 처음 학습한거, 건너뛰기한 결과는 여기 올 수 없다.
-                if(lessonResultMap.containsKey(lessonId)) { // lessonResultMap에 조회가 된다 -> 이전에 학습한 결과가 있다.
+                // 결과적으로 건너뛰기했든 안했든 lessonResultMap에 이번에 한 5개의 레슨결과가 담긴다.
+            }
+            // 저번에 학습한 레슨 결과다. -> 처음 학습(복습이 아닌)한 결과는 여기 올 수 없다. 근데 이전에 건너뛰기한 결과는 올 수도 있다.
+            else {
+                // lessonResultMap에 조회가 된다 -> 이전에 학습한 결과가 있거나, 이전에 그냥 건너뛰기만 했던 결과가 있다.
+                if(lessonResultMap.containsKey(lessonId)) {
                     Long currentScore = (lessonResultMap.get(lessonId).getAccentSimilarity() + lessonResultMap.get(lessonId).getPronunciationAccuracy()) / 2;
                     Long prevScore = (lr.getAccentSimilarity() + lr.getPronunciationAccuracy()) / 2;
                     if(currentScore > prevScore) { // 이번에 학습한 score가 더 높다
                         if(expMap.get(lessonId).equals(0L)) { // 경험치가 0exp 이다.
                             // 이미 복습을 실패했다. 그리고 score에도 이미 더 높은 수치가 들어가있다.
-                            continue outer;
+                            continue;
                         }
-                        expMap.replace(lessonId, 10L);
+                        expMap.replace(lessonId, REVIEW_LEARN_LESSON_EXP);
                     } else { // 이전에 학습한 score가 더 높다
                         expMap.replace(lessonId, 0L);
                         Long prevMaxScore = (maxAccuracyMap.get(lessonId) + maxSimilarityMap.get(lessonId)) / 2;
@@ -392,8 +399,11 @@ public class LessonService {
                             maxAccuracyMap.replace(lessonId, lr.getPronunciationAccuracy());
                         }
                     }
-
-                } else { // lessonResultMap에 조회가 안된다 -> 사용자가 이전에 학습했어서 건너뛰기 했다.
+                }
+                // lessonResultMap에 조회가 안된다 -> 사용자가 이전에 학습했어서 건너뛰기 했다.
+                else {
+                    // 아니 여기 안오는데?
+                    log.info("==========================여기 오냐?=========================");
                     // pq에 추가해야한다.
                     if(pqMap.containsKey(lessonId)) { // pq에 이미 추가된 레슨결과가 있으면
                         pqMap.get(lessonId).offer(lr); // lessonResult 넣기

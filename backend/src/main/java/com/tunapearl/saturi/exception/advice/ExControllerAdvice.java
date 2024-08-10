@@ -1,6 +1,5 @@
 package com.tunapearl.saturi.exception.advice;
 
-import com.tunapearl.saturi.controller.UserController;
 import com.tunapearl.saturi.dto.error.ErrorResponseDTO;
 import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.exception.UnAuthorizedException;

@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -139,10 +138,9 @@ public class LessonController {
     @PostMapping("lesson")
     public ResponseEntity<LessonMsgResponseDTO> saveLessonResult(@RequestHeader("Authorization") String accessToken,
                                                                  @RequestBody LessonSaveRequestDTO request) throws UnAuthorizedException {
-
         log.info("received request to save lesson result {}", request.getLessonId());
         Long userId = jwtUtil.getUserId(accessToken);
-        Long savelessonId = lessonService.saveLesson(request);
+        Long saveLessonId = lessonService.saveLesson(request);
         return ResponseEntity.created(URI.create("/learn/lesson")).body(new LessonMsgResponseDTO("ok"));
     }
 
