@@ -259,12 +259,16 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonResultEntity>> findAllLessonResult() {
-        List<LessonResultEntity> lessonResults = em.createQuery("select lr from LessonResultEntity lr" +
-                        " join fetch lr.lessonRecordFile" +
-                        " join fetch lr.lessonRecordGraph ", LessonResultEntity.class)
-                .getResultList();
+        QLessonResultEntity qlr = new QLessonResultEntity("lr");
 
-        return lessonResults.isEmpty() ? Optional.empty() : Optional.of(lessonResults);
+        List<LessonResultEntity> result = queryFactory.selectFrom(qlr)
+                .join(qlr.lesson).fetchJoin()
+                .join(qlr.lessonGroupResult).fetchJoin()
+                .join(qlr.lessonRecordFile).fetchJoin()
+                .join(qlr.lessonRecordGraph).fetchJoin()
+                .fetch();
+
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(Long lessonGroupResultId) {
@@ -294,8 +298,13 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonGroupResultEntity>> findAllLessonGroupResult() {
-        List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr", LessonGroupResultEntity.class)
-                .getResultList();
+        QLessonGroupResultEntity qlgr = new QLessonGroupResultEntity("lgr");
+
+        List<LessonGroupResultEntity> result = queryFactory.selectFrom(qlgr)
+                .join(qlgr.lessonGroup).fetchJoin()
+                .join(qlgr.lessonGroup.location).fetchJoin()
+                .fetch();
+
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
