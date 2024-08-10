@@ -84,9 +84,15 @@ public class LessonService {
 
         // in 절 조회를 위한 id list
         List<Long> lessonGroupResultIdList = new ArrayList<>();
+
         for (LessonGroupResultEntity lgr : lessonGroupResult) {
+            // id list에 추가
             lessonGroupResultIdList.add(lgr.getLessonGroupResultId());
+
+            // lessonGroupId Set에 각 레슨 그룹 아이디 추가(유저가 학습하지 않은 레슨 그룹도 레슨 그룹의 정보를 반환)
             lessonGroupIdSet.add(lgr.getLessonGroup().getLessonGroupId());
+
+            // 각 레슨 그룹 결과를 돌면서 레슨 결과를 조회하기 위함
             lessonGroupResultMap.put(lgr.getLessonGroupResultId(), lgr);
         }
 
@@ -94,6 +100,7 @@ public class LessonService {
         List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultIdList).orElse(null);
 
         // key = lessonGroupResultId, value = LessonResults
+        // 각 레슨 그룹 결과 아이디에 매핑된 레슨결과들 저장(복습이나 건너뛰기로 레슨 결과가 여러 개 일 수 있어서 리스트로)
         Map<Long, List<LessonResultEntity>> lessonResultMap = new HashMap<>();
 
         // Map에 넣기
@@ -138,7 +145,7 @@ public class LessonService {
             result.add(dto);
         }
         // 유저가 학습하지 않은 레슨 그룹은 마지막에 추가하기 때문에 퍼즐의 순서가 섞임
-        // lessonGroupId가 애초에 추가할 때 퍼즐 순서대로 넣어서 lessonGroupId로 정렬 -> 운영중일 때는 id 순대로 안 넣을 수도 있음
+        // lessonGroupId가 애초에 추가할 때 퍼즐 순서대로 넣어서 lessonGroupId로 정렬 -> 실제 운영단계일 때는 id 순서대로 안 되어있을 수도 있음
         result.sort(Comparator.comparing(LessonGroupProgressByUserDTO::getLessonGroupId));
         return result;
     }

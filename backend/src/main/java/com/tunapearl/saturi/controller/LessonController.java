@@ -10,6 +10,7 @@ import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.service.user.UserService;
 import com.tunapearl.saturi.utils.JWTUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +46,11 @@ public class LessonController {
      */
     @GetMapping("/lesson-group")
     public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroupIdByLocationAndCategory(@ModelAttribute LocationIdAndCategoryIdDTO request) {
-        log.info("received request to get lesson group id by location and category {}, {}", request.getLocationId(), request.getCategoryId());
-        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(request.getLocationId(), request.getCategoryId());
+        Long locationId = request.getLocationId();
+        Long lessonCategoryId = request.getCategoryId();
+        if(locationId == null || lessonCategoryId == null) throw new IllegalArgumentException("지역 혹은 유형이 올바르지 않습니다.");
+        log.info("received request to get lesson group id by location and category {}, {}", locationId, lessonCategoryId);
+        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(locationId, lessonCategoryId);
         List<LessonGroupResponseDTO> result = lessonGroupByLocationAndCategory.stream()
                 .map(g -> new LessonGroupResponseDTO(g)).toList();
         return ResponseEntity.ok(result);
@@ -70,8 +74,10 @@ public class LessonController {
      */
     @GetMapping("/lesson-group/progress")
     public ResponseEntity<LessonGroupProgressResponseDTO> getLessonGroupProgressByUser(@RequestHeader("Authorization") String authorization,
-                                                                                       @RequestParam("locationId") Long locationId,
-                                                                                       @RequestParam("categoryId") Long lessonCategoryId) throws UnAuthorizedException {
+                                                                                       @ModelAttribute @Valid LocationIdAndCategoryIdDTO request) throws UnAuthorizedException {
+        Long locationId = request.getLocationId();
+        Long lessonCategoryId = request.getCategoryId();
+        if(locationId == null || lessonCategoryId == null) throw new IllegalArgumentException("지역 혹은 유형이 올바르지 않습니다.");
         log.info("received request to get lessonGroup progress by user {}, {}", locationId, lessonCategoryId);
         Long userId = jwtUtil.getUserId(authorization);
 
