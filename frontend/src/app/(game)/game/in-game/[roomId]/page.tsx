@@ -32,6 +32,14 @@ type IsClickedState = {
   [key: number]: boolean;
 };
 
+const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    fontSize: '20px', // 원하는 폰트 사이즈로 변경
+  },
+});
+
 export default function App({ params: { roomId } }: RoomIdProps) {
   const you = getCookie("nickname");
   const router = useRouter()
@@ -42,13 +50,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [quizzes, setQuizzes] = useState<GameQuizProps<GameQuizChoiceProps>[]>([]);
   const [nowQuiz, setNowQuiz] = useState<GameQuizProps<GameQuizChoiceProps>>();
   const [isAnswerTime, setIsAnswerTime] = useState(false);
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState("틀렸습니다!");
   const [time, setTime] = useState(10);
   const [isStart, setIsStart] = useState(false);
   const [participants, setParticipants] = useState<ParticipantsProps[]>([]);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [highlightedNick, setHighlightedNick] = useState<string | null>(null);
   const [isClicked, setIsClicked] = useState<IsClickedState>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
@@ -60,18 +69,13 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     );
   }
 
-
-  const remainCount = useMemo(() =>
-    participants.filter(participant => participant.isExited).length
-  , [participants])
-
-  const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))({
-    [`& .${tooltipClasses.tooltip}`]: {
-      fontSize: '20px', // 원하는 폰트 사이즈로 변경
-    },
-  });
+  function reportChat(chatLogId: number) {
+    api.post(`/game/user/${chatLogId}`)
+        .then(() => {
+          setIsClicked(prev => ({...prev, [chatLogId]: true}))
+          alert("신고 완료되었습니다.")
+        })
+  }
 
   function showTooltip() {
     setTooltipOpen(true);
@@ -83,6 +87,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       clientRef.current.publish({
         destination: "/pub/chat",
         body: JSON.stringify({
+          // 메시지를 보낼 때, 대기 시간이 지나지 않았거나, 퀴즈 번호가 없는 경우 기본값인 1로 quizId를 전송한다.
           quizId: (time===0)&&nowQuiz?.quizId || 1 ,
           message,
           roomId,
@@ -95,15 +100,37 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     setMessage("");
   }
 
-  function reportChat(chatLogId: number) {
-    api.post(`/game/user/${chatLogId}`)
-        .then(() => {
-          setIsClicked(prev => ({...prev, [chatLogId]: true}))
-          alert("신고 완료되었습니다.")
-        })
-  }
+  // 잔여 인원 수
+  const remainCount = useMemo(() =>
+    participants?.filter(participant => !participant.isExited).length
+  , [participants])
+  // 잔여 인원 수를 세어 방에 2명 이상이 있었다가, 1명만 남은 경우 방을 폭파시킨다.
 
   useEffect(() => {
+    const client = clientRef.current;
+    if (participants?.length>1 && remainCount===1) {
+      client?.publish({
+        destination: "/pub/room",
+        body: JSON.stringify({
+          chatType: "TERMINATED",
+          roomId,
+        }),
+        headers: {
+          Authorization : sessionStorage.getItem("accessToken") as string
+        }
+      })
+      alert("인원이 부족해 게임이 종료되었습니다. \n 메인 화면으로 되돌아갑니다.")
+      router.replace("/")
+    }
+  }, [remainCount]);
+
+  // now(현재 문제 번호)가 바뀔때마다 quizzes 배열에서 문제를 갱신하고,
+  // 문제 번호가 10인 경우(마지막 문제까지 다 푼 경우) 게임을 종료시킨다.
+  useEffect(() => {
+    if (Array.isArray(quizzes)) {
+      const data = quizzes[now];
+      setNowQuiz(data);
+    }
     if (now === 10) {
       clientRef.current?.publish({
         destination: "/pub/room",
@@ -121,28 +148,27 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         router.push(`/game/in-game/${roomId}/result`)
       },3000)
     }
-    if (Array.isArray(quizzes)) {
-      const data = quizzes[now];
-      setNowQuiz(data);
-    }
   }, [quizzes, now]);
 
   useEffect(() => {
-    const you = getCookie("nickname");
     const client = clientRef.current;
     if (client) {
       const onConnect = () => {
-        client.publish({
-          destination: "/pub/room",
-          body: JSON.stringify({
-            chatType: "QUIZ",
-            roomId,
-          }),
-          headers: {
-            Authorization: sessionStorage.getItem("accessToken") as string,
-          },
-        });
+        // 방 정보 구독
+        client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
+          const body = JSON.parse(message.body)
+          console.log(body)
+          // 바디가 배열의 형태로 주어지는 경우 (퀴즈 전송 시에만 해당)
+          if (Array.isArray(body)) {
+            setQuizzes(body);
+          } else {
+            if (!isStart && body.chatType === "START") {
+              setIsStart(true)
+            }
+            setParticipants(body.participants);
+          }});
 
+        // 입장
         client.publish({
           destination: "/pub/room",
           body: JSON.stringify({
@@ -153,68 +179,62 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             Authorization: sessionStorage.getItem("accessToken") as string,
           },
         });
+        // 퀴즈 정보 요청
+        console.log(quizzes)
+        if (!quizzes.length) {
+        client.publish({
+          destination: "/pub/room",
+          body: JSON.stringify({
+            chatType: "QUIZ",
+            roomId,
+          }),
+          headers: {
+            Authorization: sessionStorage.getItem("accessToken") as string,
+          },
+        })}
 
-        client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
-          const body = JSON.parse(message.body)
-          console.log(body)
-
-          if (Array.isArray(body)) {
-            setQuizzes(body);
-          }
-
-          if (!isStart && body.chatType === "START") {
-            setIsStart(true);
-            setParticipants(body.participants);
-          } else if (body.chatType === "ENTER") {
-            setParticipants(body.participants);
-          } else if (body.chatType === "EXIT") {
-            setParticipants(body.participants);
-            if (remainCount===1) {
-              client.publish({
-                destination: "pub/room",
-                body: JSON.stringify({
-                  roomId,
-                  chatType:"TERMINATED"
-                }),
-                headers: {
-                  Authorization : sessionStorage.getItem("accessToken") as string
-                }
-              })
-            }
-          }
-        });
-
+        // 채팅 구독
         client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body);
+          console.log(body)
+          // 방에서 정답이 나오면
           if (body.correct) {
+            // 채팅 관련 정보를 초기화 하고
+            setIsSubmitted(false)
             setMessage("")
+            // 정답자 축하 타임 ( 이때 꺼짐 )
+            setIsAnswerTime(true);
+
+            // 니가 정답자라면
             if (you === body.senderNickName) {
               setResult("정답입니다!");
             } else {
-              setResult(`${body.senderNickName}님이 정답을 맞추셨습니다ㅋ`);
+              setResult(`${body.senderNickName}님이 정답을 맞추셨습니다`);
             }
-            setIsAnswerTime(true);
-
+            // 5초 후, 다음 문제로 넘어가기
             setTimeout(() => {
               setIsAnswerTime(false);
+              setResult("틀렸습니다!")
               setNow((prev) => prev + 1);
             }, 5000);
           }
-
-
+          // 시간
           const timestamp = new Date().toLocaleTimeString("ko-KR", {
             hour12: true,
             hour: "2-digit",
             minute: "2-digit",
           });
-
+          // 메시지 구성 요소
           const newMsg: MessagesProps = {
             timestamp,
             message: body.message,
             nickname: body.senderNickName,
             chatLogId: body.chatLogId
           };
+          // 메시지 로그에 뒤에서부터 채워넣고
           setMessages((prevMsg) => [...prevMsg, newMsg]);
+
+          // 말풍선 관련 호출 함수
           setHighlightedNick(body.senderNickName);
           updateParticipantMessage(body.senderNickName, body.message);
           showTooltip();
@@ -222,6 +242,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         });
       };
 
+      // 게임 종료 시
       const onDisconnect = () => {
         client.publish({
           destination: "/pub/room",
@@ -243,22 +264,21 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       if (client.connected) {
         onConnect();
       }
-
       return () => {
         onDisconnect()
       }
     }
   }, [roomId, clientRef]);
 
-
+  // 타이머 작동
   useEffect(() => {
     if (time && isStart) {
       setTimeout(() => setTime(time - 1), 1000);
     }
   }, [time, isStart]);
 
+  // 빡종 방지
   useConfirmLeave();
-
   return (
     <Box>
       <Container maxWidth="lg">
@@ -295,7 +315,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               </Typography>
             ) : (
               <>
-                {isAnswerTime && (
+                {(isSubmitted || isAnswerTime) && (
                   <Typography
                     sx={{
                       fontSize:"20px",
@@ -325,7 +345,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       placeItems: "center",
                     }}
                   >
-                    {!isAnswerTime && nowQuiz && (
+                    {!isSubmitted && !isAnswerTime && nowQuiz && (
                       <>
                         <Typography
                           sx={{
@@ -372,6 +392,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                                 exclusive
                                 value={message}
                                 onChange={(_, value) => {
+                                  setIsSubmitted(true);
                                   sendMessage(value)
                                 }}
                                 sx={{
@@ -408,7 +429,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                               value={message}
                               onChange={(event) => handleValueChange(event, setMessage)}
                               onKeyDown={(e) => {
-                                if (e.key === "Enter") sendMessage(message);
+                                if (e.key === "Enter") {
+                                  setIsSubmitted(true);
+                                  sendMessage(message);
+                                };
                               }}
                               sx={{
                                 backgroundColor: "whitesmoke",
@@ -421,7 +445,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                               sx={{
                                 ml: 1,
                               }}
-                              onClick={() => sendMessage(message)}
+                              onClick={() => {
+                                setIsSubmitted(true);
+                                sendMessage(message);
+                              }}
                             >
                               <SendIcon />
                             </Button>
@@ -529,13 +556,13 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 value={message}
                 onChange={(event) => handleValueChange(event, setMessage)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") sendMessage(message);
+                  if (e.key === "Enter") sendMessage(` ${message}`);
                 }}
               />
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => sendMessage(message)}
+                onClick={() => sendMessage(` ${message}`)}
                 sx={{ ml: 1 }}
               >
                 <SendIcon />
