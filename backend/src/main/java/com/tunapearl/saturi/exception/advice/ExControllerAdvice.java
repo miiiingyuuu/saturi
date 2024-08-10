@@ -1,11 +1,11 @@
 package com.tunapearl.saturi.exception.advice;
 
-import com.tunapearl.saturi.controller.UserController;
 import com.tunapearl.saturi.dto.error.ErrorResponseDTO;
 import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.exception.UnAuthorizedUserException;
 import jakarta.mail.MessagingException;
+import jakarta.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,6 +31,20 @@ public class ExControllerAdvice {
         return new ErrorResponseDTO("BAD_REQUEST", e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalAccessException.class)
+    public ErrorResponseDTO IllegalAccessExHandle(IllegalAccessException e) {
+        log.error("[exceptionHandle] ex", e);
+        return new ErrorResponseDTO("BAD_REQUEST", e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UnexpectedTypeException.class)
+    public ErrorResponseDTO UnexpectedTypeExHandle(IllegalAccessException e) {
+        log.error("[exceptionHandle] ex", e);
+        return new ErrorResponseDTO("BAD_REQUEST", e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnAuthorizedException.class)
     public ErrorResponseDTO UnAuthorizedExHandle(UnAuthorizedException e) {
@@ -49,7 +63,8 @@ public class ExControllerAdvice {
     @ExceptionHandler(Exception.class)
     public ErrorResponseDTO ExHandle(Exception e) {
         log.error("[exceptionHandle] ex", e);
-        return new ErrorResponseDTO("INTER_SERVER_ERROR", "서버 내부 오류");
+//        return new ErrorResponseDTO("INTER_SERVER_ERROR", "서버 내부 오류");
+        return new ErrorResponseDTO("INTER_SERVER_ERROR", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

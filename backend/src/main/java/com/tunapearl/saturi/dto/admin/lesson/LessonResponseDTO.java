@@ -14,5 +14,7 @@ public class LessonResponseDTO {
     private String sampleVoicePath;
     private String sampleVoiceName;
     private String script;
+    private String sampleVoicePitchX;
+    private String sampleVoicePitchY;
     private LocalDateTime lastUpdateDt;
 }

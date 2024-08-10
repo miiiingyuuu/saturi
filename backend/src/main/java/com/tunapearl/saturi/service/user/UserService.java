@@ -389,8 +389,7 @@ public class UserService {
             mostRecentLessonResult.getLessonDt().toLocalDate().equals(LocalDate.now().minusDays(1))) { // 혹은 어제 학습했는지
             learnDays++;
             LocalDate currentDate = mostRecentLessonResult.getLessonDt().toLocalDate();
-            for (int i = 0; i < lessonResults.size(); i++) {
-                if(i == 0) continue;
+            for (int i = 1; i < lessonResults.size(); i++) {
                 if(lessonResults.get(i).getLessonDt().toLocalDate().equals(currentDate.minusDays(1))) {
                     learnDays++;
                     currentDate = lessonResults.get(i).getLessonDt().toLocalDate();
