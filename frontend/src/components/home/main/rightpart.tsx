@@ -78,14 +78,8 @@ export default function RightPart({selectedRegion} : RightPartProps) {
                 <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold", marginBottom:"10px" }}>게임 페이지</Typography>
 
                 {/* 게임 프로필 */}
-                <Box sx={{  }}>
-                  <Card sx={{ width:"250px", height: "350px", display: 'grid', placeItems: 'center' }}>
-                    <UserTierRank layout='horizontal'/>
-                    <Avatar
-                      sizes="large"                       
-                      src={`${profileImage}`} 
-                    />
-                  </Card>                  
+                <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
+                  <UserTierRank/>                    
                 </Box>
 
                 {/* 게임 시작 버튼 */}

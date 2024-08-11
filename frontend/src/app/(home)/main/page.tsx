@@ -33,9 +33,17 @@ import KoreaMap from '../../../components/home/main/koreaMap';
 // 버튼 부분과 맵 파트
 function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }: ButtonPartProps) {
   return (
-    <Box>
-      {selectedRegion !== "_" && middleToWhere !== 2 && (
-        <Button type="button" className='buttonLeft' onClick={onLeftClick}>
+    <Box 
+      sx={{
+        display:"flex",
+        alignItems:"center",  
+        justifyContent:"space-between",
+        width: "100%",
+        height: "100%",
+    }}>
+      {/* 왼쪽 버튼은 공간은 차지하게 함 (클릭이나 보이지는 않게만) */}
+      {selectedRegion !== "_" && (
+        <Button type="button" className={`buttonLeft ${middleToWhere == 2 ? 'invisible pointer-events-none' : ''}`} onClick={onLeftClick}>
           <Image src="/MainPage/buttonLeft.png" alt="button" width={60} height={60} />
         </Button>
       )}
@@ -51,8 +59,8 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
 
 function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: MiddleMapProps) {
   // 반응형 부분 
-  const isDesktop = useMediaQuery('(min-width:768px)');
-  if (!isDesktop && middleToWhere !== 1) {
+  const isMd = useMediaQuery('(min-width:960px)');
+  if (!isMd && middleToWhere !== 1) {
     return null;    
   }
   
@@ -127,7 +135,7 @@ export default function App() {
     e.preventDefault();
     moveDirection.current = "right";
     if (currentMainPageRef.current === 1) {
-      setMapLeft("35%");
+      setMapLeft("33%");
       setMiddleToWhere(0);
       currentMainPageRef.current = 2; // 값 변경
     } else if (currentMainPageRef.current === 0) {

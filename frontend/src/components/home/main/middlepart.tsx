@@ -7,6 +7,10 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
     <Box 
       className="middlepart" 
       style={{
+        backgroundImage: "url(/MainPage/mainBackground2.jpeg)",
+        backgroundSize: "auto 100%",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
         left: (() => {
           if (middlePosition === 0) {
             return "-110%";
@@ -19,7 +23,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
       }}>
       
       {/* 배경 엘리먼트 */}
-      <Box className="area">
+      {/* <Box className="area">
         <ul className="circles">
           <li/>
           <li/>
@@ -32,7 +36,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           <li/>
           <li/>
         </ul>
-      </Box>
+      </Box> */}
       
       <Typography 
         variant = "h1"

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import api from "@/lib/axios";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -91,7 +91,12 @@ export default function LessonResultPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen p-4 bg-gray-100">
+    <Box 
+      className="flex flex-col items-center justify-center p-4 bg-gray-100" 
+      sx={{
+        minHeight:"600px",
+        height:"90vh",
+      }}>
       {currentStep === 1 && lessonResult.length > 0 && lessonGroupResult && (
         <FirstResult
           lessonResult={lessonResult}
@@ -101,7 +106,7 @@ export default function LessonResultPage() {
       {currentStep === 2 && lessonGroupResult && userInfo && (
         <SecondResult lessonGroupResult={lessonGroupResult} userInfo={userInfo} />
       )}
-      <div className="flex gap-4">
+      <Box className="flex gap-4">
         {currentStep !== 1 && (
           <Button
             className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
@@ -118,7 +123,7 @@ export default function LessonResultPage() {
             다음
           </Button>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

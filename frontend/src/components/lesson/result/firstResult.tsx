@@ -45,15 +45,15 @@ export default function FirstResult({
   return (
     <Box
       className="flex flex-col bg-white rounded-lg shadow-lg w-full max-w-4xl"
-      style={{ height: '100vh', overflow: 'hidden' }} // Remove scroll and fit height
+      style={{ height: '75vh', overflow: 'hidden' }} // Remove scroll and fit height
     >
       {/* Labels for pronunciation and accent similarity */}
-      <Box className="flex justify-end items-center w-full pr-2" style={{ paddingBottom: '8px' }}>
+      <Box className="flex justify-end items-center w-full pr-2" sx={{ paddingBottom: '8px' }}>
         <Box className="w-1/5 flex justify-around">
-          <Typography variant="caption" className="text-center" style={{ fontSize: '1rem', whiteSpace: 'nowrap' }}>
+          <Typography variant="caption" className="text-center" sx={{ fontSize: '1rem', whiteSpace: 'nowrap' }}>
             발음
           </Typography>
-          <Typography variant="caption" className="text-center" style={{ fontSize: '1rem', whiteSpace: 'nowrap' }}>
+          <Typography variant="caption" className="text-center" sx={{ fontSize: '1rem', whiteSpace: 'nowrap' }}>
             억양
           </Typography>
         </Box>
@@ -62,8 +62,10 @@ export default function FirstResult({
         <Box
           key={index}
           className="flex flex-row items-center justify-between p-2"
-          style={{ height: '20vh' }} // Adjust height for each result
-        >
+          sx={{ 
+            height: '15vh', 
+            borderTop: "2px solid lightgray"
+          }}>
           {/* Chart Box */}
           <Box className="w-2/5" style={{ maxHeight: '100%', overflow: 'hidden' }}>
             <LessonChart userGraphY={lesson.userGraphY} sampleGraphY={lesson.sampleGraphY} lessonId={lesson.lessonId} />
@@ -92,7 +94,8 @@ export default function FirstResult({
                 {lesson.pronunciationAccuracy || 0}%
               </Typography>
             </Box>
-            <Box className="flex flex-col items-center">
+            <Box 
+              className="flex flex-col items-center">
               <CircularProgress
                 variant="determinate"
                 value={lesson.accentSimilarity || 0}
@@ -105,7 +108,7 @@ export default function FirstResult({
             </Box>
           </Box>
         </Box>
-      ))}
+      ))}      
     </Box>
   );
 }

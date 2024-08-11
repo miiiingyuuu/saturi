@@ -117,22 +117,22 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
               }}>
                 <Typography variant="h1" sx={{ fontSize: 39, fontWeight: "bold" }}>학습 페이지</Typography>
                 <br />
-                <Card sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, border: '1px solid black', borderRadius: 5 }}>
-                  <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginTop:"5px", marginLeft:"7px" }}>
-                    <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Card sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, border: '3px solid lightgray', borderRadius: 5, padding:"15px" }}>                  
+                  <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
+                    <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{width: '100%', height: '100%', objectFit: 'cover' }} />
                   </ButtonBase>
-                  <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ borderRadius:"5px", width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginTop:"5px", marginRight:"7px" }}>
-                    <Box component="img" src="/MainPage/learnButton2.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
+                    <Box component="img" src="/MainPage/learnButton2.png" alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </ButtonBase>
-                  <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginBottom:"5px", marginLeft:"7px" }}>
-                    <Box component="img" src="/MainPage/learnButton3.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
+                    <Box component="img" src="/MainPage/learnButton3.png" alt="" sx={{width: '100%', height: '100%', objectFit: 'cover' }} />
                   </ButtonBase>
-                  <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: 0, paddingBottom: '100%', position: 'relative', marginBottom:"5px", marginRight:"7px" }}>
+                  <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
                     <Box 
                       component="img"
                       src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}
                       alt=""
-                      sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                      sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   </ButtonBase>
                 </Card>

@@ -13,6 +13,7 @@ import {
   Grid,
   Box,
   Card,
+  Typography,
 } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import api from "@/lib/axios";
@@ -373,6 +374,7 @@ export default function LessonPage() {
         minHeight: "700px",
         height: "90vh",
         display:"flex",
+        alignItems:"center",
 
       }}>
       <Card 
@@ -381,6 +383,9 @@ export default function LessonPage() {
           alignItems:"center",
           minHeight: "560px",
           maxHeight: "700px",
+          border: "3px solid lightgray",
+          borderRadius: "15px",
+          padding: "15px",
       }}>
         <Grid 
           container 
@@ -397,7 +402,6 @@ export default function LessonPage() {
                     height={800}
                     className="object-contain max-w-full h-auto"
                   />
-
                   <Button
                     variant="contained"
                     color="success"
@@ -414,25 +418,34 @@ export default function LessonPage() {
 
           {/* 오른쪽 부분 */}
           <Grid item xs={12} md={6}>
-            <Box className="flex justify-center items-center w-full h-full bg-gray-200">
-            <Box className="rounded shadow flex flex-col items-center justify-center w-full max-w-3xl">
-              <h1 className="text-3xl font-bold text-black mb-2">
+            <Box 
+              className="flex justify-center items-center w-full h-full bg-gray-200"
+              sx={{
+                borderRadius: "15px"
+            }}>
+            <Box 
+              className="rounded flex flex-col items-center justify-center w-full max-w-3xl"
+              >
+              <Typography 
+                className="text-3xl font-bold text-black mb-2"
+              >
                 {currentIndex + 1}/5
-              </h1>
+              </Typography>
               {lessons.map((lesson, index) => (
-                <h1
+                <Typography
+                  variant="h1"
                   key={lesson.lessonId}
                   className="mb-2 text-4xl font-bold text-black"
-                  style={{
+                  sx={{
                     display: index === currentIndex ? "block" : "none",
                     cursor: "pointer",
                   }}
                   onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
                 >
                   {lesson.script}
-                </h1>
+                </Typography>
               ))}
-              <Box className="mt-4 flex space-x-2">
+              <Box className="mt-8 flex space-x-2">
                 <Button
                   className="text-nowrap"
                   variant="contained"
