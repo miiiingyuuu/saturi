@@ -440,22 +440,46 @@ public class UserService {
         List<UserStreakInfoDaysDTO> result = new ArrayList<>();
         if(lessonGroupResults == null) return null;
 
-        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
-        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        List<LessonResultEntity> lessonResults = new ArrayList<>(findLessonResult);
 
-        lessonResults.addAll(findLessonResult);
-
-        // 레슨 학습 일시를 최근 순으로 정렬, 올 해가 아니면 break
         Map<LocalDate, Integer> streakDays = new HashMap<>();
-        lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
 
         // 스트릭 만들기
-        for (LessonResultEntity lessonResult : lessonResults) {
-            int year = lessonResult.getLessonDt().getYear();
+           // lessonId별로 lessonResult 모으기
+        Map<Long, List<LessonResultEntity>> lessonResultMap = new HashMap<>();
+        for (LessonResultEntity lr : lessonResults) {
+            int year = lr.getLessonDt().getYear();
             if(LocalDate.now().getYear() != year) break; // 올 해가 아니면 break
-            LocalDate currentDate = lessonResult.getLessonDt().toLocalDate();
+            Long lessonId = lr.getLesson().getLessonId();
+            if(lessonResultMap.containsKey(lessonId)) {
+                lessonResultMap.get(lessonId).add(lr);
+            } else {
+                lessonResultMap.put(lessonId, new ArrayList<>());
+                lessonResultMap.get(lessonId).add(lr);
+            }
+        }
 
-            streakDays.put(currentDate, streakDays.getOrDefault(currentDate, 0) + 1);
+        // 복습 실패한 경우는 streak에 포함하지 않음
+        Map<Long, Long> lessonResultScoreMap = new HashMap<>(); // key : lessonId, value : lessonScore
+
+        for (Long lessonId : lessonResultMap.keySet()) {
+            List<LessonResultEntity> lessonResultListByLessonId = lessonResultMap.get(lessonId);
+            // 오래된 순으로 정렬
+            lessonResultListByLessonId.sort(Comparator.comparing(LessonResultEntity::getLessonDt));
+            for (LessonResultEntity lr : lessonResultListByLessonId) {
+                Long avgScore = (lr.getAccentSimilarity() + lr.getPronunciationAccuracy()) / 2L;
+                if(lessonResultScoreMap.containsKey(lessonId)) {
+                    Long prevScore = lessonResultScoreMap.get(lessonId);
+                    // 복습 실패 한 경우는 continue
+                    if(prevScore >= avgScore) continue;
+                    lessonResultScoreMap.replace(lessonId, avgScore);
+                } else { // 제일 오래된 레슨 결과
+                    lessonResultScoreMap.put(lessonId, avgScore);
+                }
+                // 날짜를 기준으로 맵에 추가
+                LocalDate currentDate = lr.getLessonDt().toLocalDate();
+                streakDays.put(currentDate, streakDays.getOrDefault(currentDate, 0) + 1);
+            }
         }
 
         // result 생성
