@@ -10,15 +10,16 @@ import {
   AccordionDetails,
   Typography,
   TableRow,
-  TableCell, Button,
+  TableCell, Button, Checkbox, checkboxClasses, List, ListSubheader, ListItemText, ListItem, Box,
 } from "@mui/material";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useTableSort from "@/hooks/useTableSort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SortableTableHead from "@/components/SortableTableHead";
-
+import { styled } from "@mui/material/styles"
+import Tooltip, { tooltipClasses, TooltipProps } from "@mui/material/Tooltip";
 interface QuizProps {
   quizId: number;
   locationId: number;
@@ -47,6 +48,24 @@ const headCells: HeadCell[] = [
   { id: "question", label: "문제" },
 ];
 
+const CustomCheckbox = styled(Checkbox)(({ theme }) => ({
+  [`&.${checkboxClasses.root}`]: {
+    color: theme.palette.primary.main, // 기본 색상
+    '&.Mui-checked': {
+      color: theme.palette.primary.dark, // 체크된 상태의 색상
+    },
+    '&.Mui-disabled': {
+      color: theme.palette.primary.light, // 비활성화된 상태의 색상
+    },
+  },
+  [`& .${checkboxClasses.disabled}`]: {
+    color: theme.palette.primary.light, // 비활성화된 체크박스의 색상
+  },
+}));
+
+
+
+
 export default function App() {
   const router = useRouter()
   const [ items, setItems] = useState<QuizProps[]>([]);
@@ -64,7 +83,7 @@ export default function App() {
   }
 
   function handleEdit(quizId: number) {
-    router.push(`/admin/game/quiz/edit/${quizId}`)
+    router.push(`/admin/quiz/edit/${quizId}`)
   }
 
   function handleDelete(quizId: number) {
@@ -105,26 +124,51 @@ export default function App() {
                     <Typography>{row.question}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Typography>선택지:</Typography>
+                    <List
+                      aria-labelledby="nested-list-subheader"
+                      subheader={
+                        <ListSubheader component="div" id="nested-list-subheader">
+                          선택지
+                        </ListSubheader>
+                      }
+                    >
                     {row.choiceList ? (
                       row.choiceList.map((choice) => (
-                        <Typography key={choice.choiceId}>
-                          {choice.content} {choice.isAnswer ? "(정답)" : ""}
-                        </Typography>
+                            <ListItem disablePadding key={choice.choiceId}>
+                              <CustomCheckbox
+                                disabled
+                                checked={choice.isAnswer}
+                              />
+                              <ListItemText primary={`${choice.choiceId}번 : ${choice.content}`} />
+                            </ListItem>
                       ))
                     ) : (
                       <Typography>로딩 중...</Typography>
                     )}
+
+                    </List>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap :1,
+                        mt :2,
+                      }}
+                    >
                     <Button
+                      variant="contained"
+                      color="success"
                       onClick={() => handleEdit(row.quizId)}
                     >
                       수정
                     </Button>
                     <Button
+                      variant="contained"
                       onClick={() => handleDelete(row.quizId)}
                     >
                       삭제
                     </Button>
+                    </Box>
                   </AccordionDetails>
                 </Accordion>
               </TableCell>
