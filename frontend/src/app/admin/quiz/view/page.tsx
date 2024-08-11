@@ -76,7 +76,8 @@ export default function App() {
   }
 
   useEffect(() => {
-    api.get("/admin/game/quiz/").then((response) => setItems(response.data));
+    api.get("/admin/game/quiz")
+      .then((response) => setItems(response.data));
   }, []);
 
   return (
