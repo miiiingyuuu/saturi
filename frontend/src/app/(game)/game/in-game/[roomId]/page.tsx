@@ -58,6 +58,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [highlightedNick, setHighlightedNick] = useState<string | null>(null);
   const [isClicked, setIsClicked] = useState<IsClickedState>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [ quizTimer, setQuizTimer] = useState(10);
+  const [ isCorrect, setIsCorrect] = useState(false);
 
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
@@ -108,7 +110,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   useEffect(() => {
     const client = clientRef.current;
-    if (participants?.length>1 && remainCount===1) {
+    if (participants?.length>1 && remainCount<1) {
       client?.publish({
         destination: "/pub/room",
         body: JSON.stringify({
@@ -202,9 +204,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             // 채팅 관련 정보를 초기화 하고
             setIsSubmitted(false)
             setMessage("")
-            // 정답자 축하 타임 ( 이때 꺼짐 )
+            // 정답자 축하 타임 (이때 꺼짐)
             setIsAnswerTime(true);
-
+            setIsCorrect(true)
             // 니가 정답자라면
             if (you === body.senderNickName) {
               setResult("정답입니다!");
@@ -216,6 +218,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               setIsAnswerTime(false);
               setResult("틀렸습니다!")
               setNow((prev) => prev + 1);
+              // 여기서 문제 타이머 설정하기
+              setQuizTimer(10)
+              setIsCorrect(false)
+              setMessage("");
             }, 5000);
           }
           // 시간
@@ -277,10 +283,37 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     }
   }, [time, isStart]);
 
+  // 문제 타이머
+  useEffect(() => {
+    // 게임 로딩 타이머가 다 됐고
+    // 퀴즈 타이머가 남아있고,
+    // 퀴즈가 현재 진행중이고 (isStart)
+    // 정답 타임이 아닌 경우
+    if (!time && quizTimer && isStart && !isAnswerTime) {
+      setTimeout(() => setQuizTimer(quizTimer - 1), 1000)
+    }
+    // 정답자가 아예 없는 경우
+    if (!isAnswerTime && quizTimer === 0) {
+      setResult("정답자가 없습니다.")
+      setIsAnswerTime(true)
+      setTimeout(() => {
+        if (!isCorrect) {
+        setNow((prev) => prev+1)
+        setIsSubmitted(false)
+        setIsAnswerTime(false)
+        setQuizTimer(10)
+        setMessage("")
+        setResult("틀렸습니다.")
+        }
+      },3000)
+    }
+  }, [time,quizTimer,isStart,isAnswerTime]);
+
   // 빡종 방지
   useConfirmLeave();
   return (
     <Box>
+      {quizTimer}
       <Container maxWidth="lg">
         {/* 게임 파트 */}
         <Box
