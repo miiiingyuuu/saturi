@@ -15,6 +15,8 @@ import RightPart from '../../../components/home/main/rightpart';
 import '../../../styles/home/main/mainPage.css';
 import KoreaMap from '../../../components/home/main/koreaMap';
 
+import Chatbot from "@/components/chatbot/chatbot";
+
 
 
 // /////////////////////////////////////////////////////////////
@@ -165,6 +167,9 @@ export default function App() {
           selectedRegion={selectedRegion}
           middleToWhere = {middleToWhere}
         />        
+      </Box>
+      <Box>
+        <Chatbot />
       </Box>
     </Box>
   );
