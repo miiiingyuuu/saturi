@@ -42,13 +42,20 @@ export function handleLogin({
     .then(response => {
       sessionStorage.setItem("accessToken", response.data.accessToken);
       sessionStorage.setItem("refreshToken", response.data.refreshToken);
+
+      console.log(response.data)
+      let destination = goTo
+      if (response.data.role === "ADMIN") {
+        destination = "/admin"
+      }
+      return destination;
     })
-    .then(() => {
+    .then((destination) => {
       api.get("user/auth/profile")
       .then(response => {
         insertCookie(response);
-        router.push(`${goTo}`);
-        window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}${goTo}`
+        router.push(`${destination}`);
+        // window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}${destination}`
       })
     })
     .catch(error => {
