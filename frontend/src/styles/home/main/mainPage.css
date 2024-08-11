@@ -14,6 +14,25 @@
     right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
 }
 
+.tmp {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition:
+  left 1s ease,
+  right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+}
+
+.tmp2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition:
+  left 1s ease,
+  right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+}
+
+
 .rightpart {
   position: absolute;
   /* background-color: whitesmoke; */

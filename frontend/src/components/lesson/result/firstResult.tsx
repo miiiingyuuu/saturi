@@ -2,6 +2,7 @@ import {
   CircularProgress,
   Box,
   Typography,
+  Button,
 } from '@mui/material';
 import LessonChart from './resultChart'; // Ensure correct import of the chart component
 import { WidthFull } from '@mui/icons-material';
@@ -37,18 +38,39 @@ interface LessonGroupResult {
 interface FirstResultProps {
   lessonResult: LessonResultProps[];
   lessonGroupResult: LessonGroupResult;
+  currentStep : number;
+  nextstep : any;
 }
 
 export default function FirstResult({
   lessonResult,
   lessonGroupResult,
+  currentStep,
+  nextstep,
 }: FirstResultProps) {
   return (
+    <Box className= "tmp"
+      style={{
+        display:"flex",
+        flexDirection:"column",
+        justifyContent:"center",
+        alignItems: "center",        
+        height: '90vh', 
+        width: "100%",
+        overflow: 'hidden',
+        left: (() => {
+          if (currentStep === 1) {
+            return "50%";
+          } if (currentStep === 2) {
+            return "-50%";
+          } return "0%";              
+      })()
+    }}>
     <Box
       className="flex flex-col bg-white rounded-lg shadow-lg w-full max-w-4xl"
-      style={{ height: '75vh', overflow: 'hidden' }} // Remove scroll and fit height
+
     >
-      {/* Labels for pronunciation and accent similarity */}
+      {/* 라벨 부분 */}
       <Box
         className="flex flex-row items-center justify-between p-2"
       >
@@ -84,21 +106,13 @@ export default function FirstResult({
         </Box>
       </Box>
 
-
-
-
-
-
-
-
-
-
+      {/* 5개 부분 */}
       {lessonResult.map((lesson, index) => (
         <Box
           key={index}
           className="flex flex-row items-center justify-between p-2"
           sx={{ 
-            height: '15vh', 
+            height: '14vh', 
             borderTop: "2px solid lightgray"
           }}>
           {/* Chart Box */}
@@ -148,7 +162,26 @@ export default function FirstResult({
             </Box>
           </Box>
         </Box>
-      ))}      
+      ))} 
+
+
+     
+    </Box>
+    <Box className="flex justify-center mx-24 py-1">
+      <Button
+        className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+        variant="contained"
+        sx={{
+          backgroundColor:"success.light",
+          '&:hover': { backgroundColor: 'green' },
+          '&:active': { backgroundColor: 'green' },
+          '&:focus': { backgroundColor: 'success' },
+        }}
+        onClick={nextstep}
+      >
+        다음
+      </Button>
+    </Box>
     </Box>
   );
 }

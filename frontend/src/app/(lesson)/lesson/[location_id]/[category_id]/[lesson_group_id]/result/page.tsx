@@ -91,52 +91,33 @@ export default function LessonResultPage() {
   };
 
   return (
+
+    
     <Box 
       className="flex flex-col items-center justify-center p-4 bg-gray-100" 
       sx={{
+        position:"relative",
+        overflow:"hidden",
         minHeight:"600px",
         height:"90vh",
       }}>
-      {currentStep === 1 && lessonResult.length > 0 && lessonGroupResult && (
+      {lessonResult.length > 0 && lessonGroupResult && (
         <FirstResult
-          lessonResult={lessonResult}
-          lessonGroupResult={lessonGroupResult}
+          lessonResult = {lessonResult}
+          lessonGroupResult = {lessonGroupResult}
+          currentStep = {currentStep}
+          nextstep = {nextstep}
         />
       )}
-      {currentStep === 2 && lessonGroupResult && userInfo && (
-        <SecondResult lessonGroupResult={lessonGroupResult} userInfo={userInfo} />
+      {lessonGroupResult && userInfo && (
+        <SecondResult 
+          lessonGroupResult = {lessonGroupResult} 
+          userInfo = {userInfo} 
+          currentStep = {currentStep}
+          beforestep = {beforestep}
+        />
       )}
-      <Box className="flex gap-4">
-        {currentStep !== 1 && (
-          <Button
-            className="mt-4 text-white px-8 py-4 rounded"
-            variant="contained"
-            sx={{
-              backgroundColor:"success.light",
-              '&:hover': { backgroundColor: 'green' },
-              '&:active': { backgroundColor: 'green' },
-              '&:focus': { backgroundColor: 'success' },
-            }}
-            onClick={beforestep}
-          >
-            이전
-          </Button>
-        )}
-        {currentStep !== 2 && (
-          <Button
-            className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
-            variant="contained"
-            sx={{
-              backgroundColor:"success.light",
-              '&:hover': { backgroundColor: 'green' },
-              '&:active': { backgroundColor: 'green' },
-              '&:focus': { backgroundColor: 'success' },
-            }}
-            onClick={nextstep}
-          >
-            다음
-          </Button>
-        )}
+      <Box className="flex gap-4">                
       </Box>
     </Box>
   );
