@@ -83,7 +83,19 @@ export default function RightPart({selectedRegion} : RightPartProps) {
                 </Box>
 
                 {/* 게임 시작 버튼 */}
-                <Button variant="contained" onClick={GameStartButton} sx={{ marginTop: "20px", width: "200px", height: "50px", fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }  }}>게임 시작</Button>
+                <Button 
+                  variant="contained"
+                  onClick={GameStartButton}
+                  sx={{
+                    backgroundColor:"success.light",
+                    '&:hover': { backgroundColor: 'green' },
+                    '&:active': { backgroundColor: 'green' },
+                    '&:focus': { backgroundColor: 'success' },
+                    marginTop: "20px", 
+                    width: "200px", 
+                    height: "50px", 
+                    fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
+                  }}> 게임 시작 </Button>
                 </Box>
               </Grid>
             </Grid>

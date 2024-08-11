@@ -4,6 +4,7 @@ import {
   Typography,
 } from '@mui/material';
 import LessonChart from './resultChart'; // Ensure correct import of the chart component
+import { WidthFull } from '@mui/icons-material';
 
 // Props interfaces
 interface LessonResultProps {
@@ -48,16 +49,50 @@ export default function FirstResult({
       style={{ height: '75vh', overflow: 'hidden' }} // Remove scroll and fit height
     >
       {/* Labels for pronunciation and accent similarity */}
-      <Box className="flex justify-end items-center w-full pr-2" sx={{ paddingBottom: '8px' }}>
-        <Box className="w-1/5 flex justify-around">
-          <Typography variant="caption" className="text-center" sx={{ fontSize: '1rem', whiteSpace: 'nowrap' }}>
-            발음
-          </Typography>
-          <Typography variant="caption" className="text-center" sx={{ fontSize: '1rem', whiteSpace: 'nowrap' }}>
-            억양
+      <Box
+        className="flex flex-row items-center justify-between p-2"
+      >
+        <Box className="flex w-2/5 ml-2 justify-center">
+          <Typography variant="caption" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
+            그래프
           </Typography>
         </Box>
+
+        {/* Script Box */}
+        <Box 
+          className="flex flex-col justify-center w-2/5 ml-2" 
+        >
+          <Typography variant="caption" className="text-center" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
+            대사
+          </Typography>         
+        </Box>
+
+        {/* Pronunciation and Accent Progress Circles */}
+        <Box className="w-1/5 flex justify-around pl-2">
+          <Box className="flex flex-col items-center">
+            <Typography variant="caption" className="text-center" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
+              발음
+            </Typography>
+          </Box>
+          <Box 
+            className="flex flex-col items-center"
+          >          
+            <Typography variant="caption" className="text-center" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
+              대사
+            </Typography>
+          </Box>
+        </Box>
       </Box>
+
+
+
+
+
+
+
+
+
+
       {lessonResult.map((lesson, index) => (
         <Box
           key={index}
@@ -72,7 +107,12 @@ export default function FirstResult({
           </Box>
 
           {/* Script Box */}
-          <Box className="flex flex-col justify-center w-2/5 ml-2">
+          <Box 
+            className="flex flex-col justify-center w-2/5 ml-2" 
+            sx={{
+              paddingLeft:"15px",
+              paddingRight:"15px",
+            }}>
             <Typography variant="body2" style={{ fontSize: '1rem' }}>
               {lesson.sampleScript || '정답 스크립트 정보가 없습니다.'}
             </Typography> 

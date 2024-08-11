@@ -109,7 +109,14 @@ export default function LessonResultPage() {
       <Box className="flex gap-4">
         {currentStep !== 1 && (
           <Button
-            className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+            className="mt-4 text-white px-8 py-4 rounded"
+            variant="contained"
+            sx={{
+              backgroundColor:"success.light",
+              '&:hover': { backgroundColor: 'green' },
+              '&:active': { backgroundColor: 'green' },
+              '&:focus': { backgroundColor: 'success' },
+            }}
             onClick={beforestep}
           >
             이전
@@ -118,6 +125,13 @@ export default function LessonResultPage() {
         {currentStep !== 2 && (
           <Button
             className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+            variant="contained"
+            sx={{
+              backgroundColor:"success.light",
+              '&:hover': { backgroundColor: 'green' },
+              '&:active': { backgroundColor: 'green' },
+              '&:focus': { backgroundColor: 'success' },
+            }}
             onClick={nextstep}
           >
             다음

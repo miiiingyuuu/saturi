@@ -424,8 +424,10 @@ export default function LessonPage() {
                 borderRadius: "15px"
             }}>
             <Box 
-              className="rounded flex flex-col items-center justify-center w-full max-w-3xl"
-              >
+              className="rounded flex flex-col items-center justify-center"
+              sx={{
+                width: "80%",
+              }}>
               <Typography 
                 className="text-3xl font-bold text-black mb-2"
               >
