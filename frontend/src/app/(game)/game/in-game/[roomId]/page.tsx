@@ -61,6 +61,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [ quizTimer, setQuizTimer] = useState(10);
   const [ isCorrect, setIsCorrect] = useState(false);
 
+
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
       prevParticipants.map((participant) =>

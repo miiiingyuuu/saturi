@@ -1,129 +1,129 @@
-"use client";
+"use client"
 
-import api from "@/lib/axios";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { QuizProps } from "@/utils/props";
 import {
-  Box,
   Table,
-  Button,
-  TableRow,
-  Accordion,
   TableBody,
-  TableCell,
-  TableHead,
-  Typography,
-  AccordionDetails,
+  TableContainer,
+  Paper,
+  Accordion,
   AccordionSummary,
+  AccordionDetails,
+  Typography,
+  TableRow,
+  TableCell, Button,
 } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import api from "@/lib/axios";
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import useTableSort from "@/hooks/useTableSort";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SortableTableHead from "@/components/SortableTableHead";
+
+interface QuizProps {
+  quizId: number;
+  locationId: number;
+  question: string;
+  isObjective: boolean;
+  creationDt: string;
+  choiceList?: Choice[];
+}
+
+interface Choice {
+  choiceId: number;
+  content: string;
+  isAnswer: boolean;
+}
+
+type HeadCell = {
+  id: keyof QuizProps;
+  label: string;
+};
+
+const headCells: HeadCell[] = [
+  { id: "quizId", label: "Id" },
+  { id: "locationId", label: "지역" },
+  { id: "creationDt", label: "생성일" },
+  { id: "isObjective", label: "문제 타입" },
+  { id: "question", label: "문제" },
+];
 
 export default function App() {
-  const [quizzes, setQuizzes] = useState<QuizProps[]>([]);
-  const [expanded, setExpanded] = useState<number | false>(false);
-  const [quizDetails, setQuizDetails] = useState<{ [key: number]: any }>({});
+  const router = useRouter()
+  const [items, setItems] = useState<QuizProps[]>([]);
+  const { rows, order, orderBy, onRequestSort } = useTableSort(items, "quizId");
 
-  // 아코디언이 켜지면 상세 조회 ㄱ
-  function handleAccordionChange(quizId: number) {
-    return async (event: SyntheticEvent, isExpanded: boolean) => {
-      if (!quizDetails[quizId]) {
-        const response = await api.get(`admin/game/quiz/${quizId}`);
-        setQuizDetails(prev => ({...prev, [quizId]: response.data}));
-      }
-      setExpanded(isExpanded ? quizId : false)
-    }
+  // 아코디언 클릭 시 추가 데이터를 가져오는 함수
+  function fetchDetail(quizId: number) {
+    api.get<QuizProps>(`/admin/game/quiz/${quizId}`)
+      .then(response => {
+        const updatedItems = items.map((item) =>
+        item.quizId === quizId ? {...item, choiceList: response.data.choiceList} : item
+        )
+        setItems(updatedItems);
+      })
   }
 
-  function deleteQuiz(quizId: number) {
+  function handleEdit(quizId: number) {
+    router.push(`/admin/game/quiz/edit/${quizId}`)
+  }
+
+  function handleDelete(quizId: number) {
     api.delete(`/admin/game/quiz/${quizId}`)
       .then(() => {
-          setQuizzes(quizzes.filter(quiz => quiz.quizId !== quizId));
-        }
-      )
+        alert("삭제되었습니다.")
+        setItems(items.filter(item => item.quizId !== quizId));
+      })
   }
 
   useEffect(() => {
-    api.get("/admin/game/quiz")
-      .then(response => setQuizzes(response.data));
+    api.get("/admin/game/quiz/").then((response) => setItems(response.data));
   }, []);
 
   return (
-    <Box>
-      <Typography component="h1" variant="h5">
-        퀴즈 조회
-      </Typography>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>지역</TableCell>
-            <TableCell>질문</TableCell>
-            <TableCell>등록일자</TableCell>
-            <TableCell>주관식/객관식</TableCell>
-            <TableCell>수정/삭제</TableCell>
-          </TableRow>
-        </TableHead>
-
+    <TableContainer component={Paper}>
+      <Table>
+        <SortableTableHead
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+          headCells={headCells}
+        />
         <TableBody>
-          {quizzes.map((quiz) => (
-            <TableRow key={quiz.quizId}>
-              <TableCell colSpan={6} style={{ padding: 0 }}>
-                <Accordion
-                  expanded={expanded === quiz.quizId}
-                  onChange={handleAccordionChange(quiz.quizId)}
-                >
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <TableCell>{quiz.quizId}</TableCell>
-                    <TableCell>{quiz.locationId}</TableCell>
-                    <TableCell>{quiz.question}</TableCell>
-                    <TableCell>{new Date(quiz.creationDt).toLocaleString()}</TableCell>
-                    <TableCell>{quiz.isObjective ? "객관식" : "주관식"}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{ mr: 1 }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={() => deleteQuiz(quiz.quizId)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+          {rows.map((row) => (
+            <TableRow key={row.quizId}>
+              <TableCell>{row.quizId}</TableCell>
+              <TableCell>{row.locationId}</TableCell>
+              <TableCell>{row.creationDt}</TableCell>
+              <TableCell>{row.isObjective ? "객관식" : "주관식"}</TableCell>
+              <TableCell>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    onClick={() => fetchDetail(row.quizId)}
+                  >
+                    <Typography>{row.question}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    {quizDetails[quiz.quizId] && (
-                      <>
-                        <Typography variant="h6">상세 정보</Typography>
-                        <Typography>질문: {quizDetails[quiz.quizId].question}</Typography>
-                        {quizDetails[quiz.quizId].choiceList && (
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell>선택지</TableCell>
-                                <TableCell>답변</TableCell>
-                                <TableCell>정답여부</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {quizDetails[quiz.quizId].choiceList.map((choice: any) => (
-                                <TableRow key={choice.choiceId}>
-                                  <TableCell>{choice.choiceId}</TableCell>
-                                  <TableCell>{choice.content}</TableCell>
-                                  <TableCell>{choice.isAnswer ? "Yes" : "No"}</TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        )}
-                      </>
+                    <Typography>선택지:</Typography>
+                    {row.choiceList ? (
+                      row.choiceList.map((choice) => (
+                        <Typography key={choice.choiceId}>
+                          {choice.content} {choice.isAnswer ? "(정답)" : ""}
+                        </Typography>
+                      ))
+                    ) : (
+                      <Typography>로딩 중...</Typography>
                     )}
+                    <Button
+                      onClick={() => handleEdit(row.quizId)}
+                    >
+                      수정
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(row.quizId)}
+                    >
+                      삭제
+                    </Button>
                   </AccordionDetails>
                 </Accordion>
               </TableCell>
@@ -131,6 +131,6 @@ export default function App() {
           ))}
         </TableBody>
       </Table>
-    </Box>
+    </TableContainer>
   );
 }
