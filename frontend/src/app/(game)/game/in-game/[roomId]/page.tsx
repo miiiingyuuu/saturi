@@ -19,6 +19,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Container,
+  Popover,
 } from "@mui/material";
 import { getCookie } from "cookies-next";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
@@ -311,9 +312,24 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   // 빡종 방지
   useConfirmLeave();
+
+
+  // 채팅 창 팝오버 부분
+  const [opacity, setOpacity] = useState(0); // 초기 투명도 0으로 설정
+  const handleClick = () => {
+    // 클릭 시 opacity를 0에서 0.7로, 0.7에서 0으로 토글
+    setOpacity(prevOpacity => (prevOpacity === 0 ? 0.85 : 0));
+  };
+
+
+
+
+
+
+
+
   return (
-    <Box>
-      {quizTimer}
+    <Box>      
       <Container maxWidth="lg">
         {/* 게임 파트 */}
         <Box
@@ -327,6 +343,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           borderRadius: "15px",
           border:"3px groove black",
         }}>
+          {quizTimer}
           <Box sx={{
             minHeight: "390px",
             height:"70%",
@@ -568,20 +585,70 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
         {/* 채팅 파트 */}
         <Box sx={{
-          height:"20vh",
-          backgroundColor:"blue",
+          position:"fixed",
+          bottom: "0%",
+          width:"100%",
+          maxWidth: "1155px",
+          height:"35vh",
+          // backgroundColor:"blue",
         }}>
+          {/* 채팅이 보이는 부분 */}
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              height: "20vh",
-              p: 2,
-              backgroundColor: "#f5f5f5",
+              height: "25vh",
+              px: 2,
+              pt: 2,
+              backgroundColor: "#f5f5f5",              
+              opacity: opacity,            
           }}>
+            <Paper
+              sx={{                
+                flex: 1,
+                p: 2,
+                overflowY: "auto",
+                mb: 2,    
+              }}
+            >
+              {/* <Typography variant="h6" gutterBottom>
+                Chat
+              </Typography> */}
+              <List>
+                {messages.map((msg) => (
+                  <ListItem key={msg.chatLogId}>
+                    <Box className="w-1/5">
+                      <ListItemText primary={msg.timestamp} />
+                    </Box>
+                    <Box className="w-1/5">
+                      <ListItemText primary={msg.nickname} />
+                    </Box>
+                    <Box className="w-2/5">
+                      <ListItemText primary={msg.message} />
+                    </Box>
+                    {!(msg.nickname===getCookie("nickname"))&&!isClicked[msg.chatLogId] && (
+                    <AnnouncementIcon 
+                      className="w-1/5"
+                      onClick={() => reportChat(msg.chatLogId)}
+                    />
+                        )}
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          </Box>
 
-
-            {/* 채팅을 입력하는 부분 */}
+          {/* 채팅을 입력하는 부분 */}
+          
+          <Box
+            sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "9vh",
+            px: 1,
+            pt: 1,
+            backgroundColor: "#f5f5f5",              
+          }}>
             <Box sx={{ display: "flex"}}>
               <TextField
                 variant="outlined"
@@ -595,40 +662,21 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               <Button
                 variant="contained"
                 color="primary"
+                onClick={handleClick}
+                sx={{ ml: 1 }}
+              >
+                <SendIcon />
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={() => sendMessage(` ${message}`)}
                 sx={{ ml: 1 }}
               >
                 <SendIcon />
               </Button>
             </Box>
-
-            {/* 채팅이 보이는 부분 */}
-            <Paper
-              sx={{
-                flex: 1,
-                p: 2,
-                overflowY: "auto",
-                mb: 2,
-              }}
-            >
-              {/* <Typography variant="h6" gutterBottom>
-                Chat
-              </Typography> */}
-              <List>
-                {messages.map((msg) => (
-                  <ListItem key={msg.chatLogId}>
-                    <ListItemText primary={msg.timestamp} />
-                    <ListItemText primary={msg.nickname} />
-                    <ListItemText primary={msg.message} />
-                    {!(msg.nickname===getCookie("nickname"))&&!isClicked[msg.chatLogId] && (
-                    <AnnouncementIcon
-                      onClick={() => reportChat(msg.chatLogId)}
-                    />
-                        )}
-                  </ListItem>
-                ))}
-              </List>
-            </Paper>
+            
           </Box>
         </Box>
 

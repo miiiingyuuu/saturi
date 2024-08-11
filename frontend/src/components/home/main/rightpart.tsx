@@ -44,12 +44,27 @@ export default function RightPart({selectedRegion} : RightPartProps) {
     })
   }
 
+
+  // 무작위 배경
+  const backgrounds = [
+    "#eae3ce",
+    "#575b75",
+    "#907f77",
+    "#b4845c",
+    "#5c7098",
+    "#6a8884",
+    "#cadddc",
+    "#e6bec8",
+    "#636c5e",
+  ];
+  const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+
   return (
     <Box 
       className="rightpart" 
       sx={{ 
         position: "absolute",
-        background: "-webkit-linear-gradient(to left, #8f94fb, #4e54c8)",
+        backgroundColor: randomBackground,
         width: "100%",
         minHeight: "700px",
         height: "90vh",
@@ -61,7 +76,7 @@ export default function RightPart({selectedRegion} : RightPartProps) {
             sx={{
               width: "100%",
               height: "560px",
-              // border: '2px groove black', 
+              border: '3px solid lightgray', 
               borderRadius: 5,
               display: "flex",
               justifyContent:"flex-end",

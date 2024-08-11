@@ -66,7 +66,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
 
   return (    
     <Box
-      className="leftpart"
+      className="leftpart bg-gray-100"
       style={{
         zIndex: (() => {
           if (middlePosition === 0) {
@@ -81,7 +81,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
           return 0;
         })(),
         position: "absolute",
-        background: "-webkit-linear-gradient(to left, #8f94fb, #4e54c8)",
+        // background: "-webkit-linear-gradient(to left, #8f94fb, #4e54c8)",        
         width: "100%",
         minHeight: "700px",
         height: "90vh",
@@ -93,7 +93,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
           sx={{
             width: "100%",
             height: "560px",
-            // border: '2px groove', 
+            border: '3px solid lightgray', 
             borderRadius: 5,
             display: "flex",
             alignItems:"center",
