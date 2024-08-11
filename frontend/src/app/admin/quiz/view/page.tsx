@@ -49,8 +49,8 @@ const headCells: HeadCell[] = [
 
 export default function App() {
   const router = useRouter()
-  const [items, setItems] = useState<QuizProps[]>([]);
-  const { rows, order, orderBy, onRequestSort } = useTableSort(items, "quizId");
+  const [ items, setItems] = useState<QuizProps[]>([]);
+  const { rows, order, orderBy, onRequestSort } = useTableSort<QuizProps>(items, "quizId");
 
   // 아코디언 클릭 시 추가 데이터를 가져오는 함수
   function fetchDetail(quizId: number) {
@@ -76,7 +76,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    api.get("/admin/game/quiz")
+    api.get("/admin/game/quiz/")
       .then((response) => setItems(response.data));
   }, []);
 
