@@ -143,7 +143,7 @@ public class UserService {
 //        validateDeletedUser(findUser); // 탈퇴회원 검증
         validateBannedUser(findUser); // 정지회원 검증
 
-        return tokenService.saveRefreshToken(findUser.getUserId());
+        return tokenService.saveRefreshToken(findUser.getUserId(), findUser.getRole());
     }
 
     private static void validatePasswordIsNullOrEmpty(UserLoginRequestDTO request) {

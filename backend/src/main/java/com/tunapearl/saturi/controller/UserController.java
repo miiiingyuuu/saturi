@@ -70,7 +70,7 @@ public class UserController {
     }
 
     /**
-     * 일반회원 로그인
+     * 회원 로그인
      */
     @PostMapping("/auth/login")
     public ResponseEntity<UserLoginResponseDTO> userLogin(@RequestBody @Valid UserLoginRequestDTO request) {
@@ -272,7 +272,7 @@ public class UserController {
         // 소셜로그인회원 인지
         UserEntity findUserByEmail = userRepository.findByEmail(request.getEmail()).orElse(null).get(0);
         if(findUserByEmail.getPassword() == null) {
-            throw new IllegalStateException("소셜 로그인 회원은 비밀번호를 찾을 수 없습니다");
+            throw new IllegalStateException("소셜 로그인 회원은 비밀번호 찾기 기능을 사용할 수 없습니다");
         }
 
         return ResponseEntity.ok().body(userService.setEmailSend(request.getEmail()));
