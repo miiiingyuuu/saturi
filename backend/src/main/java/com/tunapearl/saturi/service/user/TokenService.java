@@ -2,6 +2,7 @@ package com.tunapearl.saturi.service.user;
 
 import com.tunapearl.saturi.domain.user.RedisEmail;
 import com.tunapearl.saturi.domain.user.RedisToken;
+import com.tunapearl.saturi.domain.user.Role;
 import com.tunapearl.saturi.dto.user.UserLoginResponseDTO;
 import com.tunapearl.saturi.repository.redis.EmailRepository;
 import com.tunapearl.saturi.repository.redis.TokenRepository;
@@ -19,7 +20,6 @@ public class TokenService {
 
     private final TokenRepository tokenRepository;
     private final JWTUtil jwtUtil;
-    private final EmailRepository emailRepository;
 
     public UserLoginResponseDTO saveRefreshToken(Long userId){
 
@@ -27,7 +27,16 @@ public class TokenService {
         String refreshToken = jwtUtil.createRefreshToken(userId);
 
         tokenRepository.save(new RedisToken(userId,refreshToken));
-        return new UserLoginResponseDTO(accessToken, refreshToken);
+        return new UserLoginResponseDTO(accessToken, refreshToken, Role.BASIC);
+    }
+
+    public UserLoginResponseDTO saveRefreshToken(Long userId, Role role){
+
+        String accessToken = jwtUtil.createAccessToken(userId);
+        String refreshToken = jwtUtil.createRefreshToken(userId);
+
+        tokenRepository.save(new RedisToken(userId,refreshToken));
+        return new UserLoginResponseDTO(accessToken, refreshToken, role);
     }
 
     public String getRefreshToken(Long id){
