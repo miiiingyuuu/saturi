@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Box, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import api from '@/lib/axios';
+import SortableTableHead from "@/components/SortableTableHead";
+import useTableSort from "@/hooks/useTableSort";
+
 
 interface LessonClaim {
   lessonClaimId: number;
@@ -11,6 +14,19 @@ interface LessonClaim {
   content: string;
   claimDt: string;
 }
+
+type HeadCell = {
+  id: keyof LessonClaim;
+  label: string;
+};
+
+const headCells: HeadCell[] = [
+  { id: "lessonClaimId", label: "신고 Id" },
+  { id: "lessonId", label: "레슨 Id" },
+  { id: "userId", label: "유저 Id" },
+  { id: "content", label: "신고 내용" },
+  { id: "claimDt", label: "신고 일자" },
+];
 
 const useLessonClaims = () => {
   const [claims, setClaims] = useState<LessonClaim[]>([]);
@@ -36,20 +52,28 @@ const useLessonClaims = () => {
 };
 
 const LessonClaimsTable: React.FC<{ claims: LessonClaim[] }> = ({ claims }) => {
+  const { rows, order, orderBy, onRequestSort } = useTableSort<LessonClaim>(claims, "lessonClaimId");
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="lesson claims table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Claim ID</TableCell>
-            <TableCell>Lesson ID</TableCell>
-            <TableCell>User ID</TableCell>
-            <TableCell>Content</TableCell>
-            <TableCell>Claim Date</TableCell>
-          </TableRow>
-        </TableHead>
+        <SortableTableHead
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+          headCells={headCells}
+        />
+        {/* <TableHead> */}
+        {/*   <TableRow> */}
+        {/*     <TableCell>Claim ID</TableCell> */}
+        {/*     <TableCell>Lesson ID</TableCell> */}
+        {/*     <TableCell>User ID</TableCell> */}
+        {/*     <TableCell>Content</TableCell> */}
+        {/*     <TableCell>Claim Date</TableCell> */}
+        {/*   </TableRow> */}
+        {/* </TableHead> */}
         <TableBody>
-          {claims.map((claim) => (
+          {rows.map((claim) => (
             <TableRow
               key={claim.lessonClaimId}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
