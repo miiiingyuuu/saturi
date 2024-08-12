@@ -28,6 +28,32 @@ export default function SecondResult({
   const router = useRouter();
   const { rank, birdId, nickName, ansCount, earnedExp, exp, user } = myRank
 
+
+
+  // 티어 이미지 파트
+  const tierImages = {
+    stone: "/tier/stone1.gif",
+    bronze: "/tier/bronze1.gif",
+    silver: "/tier/silver1.gif",
+    gold: "/tier/gold1.gif",
+    sapphire: "/tier/sapphire1.gif",
+    platinum: "/tier/platinum1.gif",
+    diamond: "/tier/diamond1.gif",
+  };
+  type TierKey = keyof typeof tierImages;
+  const getTierFromExp = (exp: number): TierKey => {
+    if (exp === 0) return "stone";
+    if (exp < 100) return "bronze";
+    if (exp < 500) return "silver";
+    if (exp < 1500) return "gold";
+    if (exp < 3000) return "platinum";
+    if (exp < 5000) return "sapphire";
+    return "diamond";
+  };
+  const tierKey = getTierFromExp( exp+earnedExp );
+  const imageSrc = tierImages[tierKey];
+
+
   const handleAgain = () => {
     //지역값을 받아와서 router.push를 해야 할 것 같은데 
   }
@@ -78,7 +104,7 @@ export default function SecondResult({
                 }}>
                 <Box
                     component="img"
-                    src = {myRank? `/mini_profile/${myRank.birdId}.png` : undefined }
+                    src = {myRank? imageSrc : undefined }
                     alt = "profile"
                     sx={{
                         width:"100px"
