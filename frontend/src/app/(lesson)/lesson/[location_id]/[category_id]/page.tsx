@@ -7,6 +7,7 @@ import api from "@/lib/axios";
 import SideNavbar from "../../../../../components/lesson/sidebar";
 import Puzzle from "../../../../../components/lesson/puzzle";
 import PuzzleInfo from "../../../../../components/lesson/puzzleInfo";
+import Chatbot from "@/components/chatbot/chatbot";
 
 export default function CategorySelectPage() {
   interface Lesson {
@@ -212,6 +213,9 @@ export default function CategorySelectPage() {
           </Card>
         </Box>
       </Container>
+      <Box>
+        <Chatbot />
+      </Box>
     </Box>
   );
 }

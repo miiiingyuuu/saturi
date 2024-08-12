@@ -19,6 +19,7 @@ import { useRouter, usePathname } from "next/navigation";
 import api from "@/lib/axios";
 import apiAi from "@/lib/axiosAI";
 import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 라이브러리 import
+import Chatbot from "@/components/chatbot/chatbot";
 
 // 컴포넌트: LessonPage
 export default function LessonPage() {
@@ -508,7 +509,9 @@ export default function LessonPage() {
           </DialogActions>
         </Dialog>
       </Card>
-      
+      <Box>
+        <Chatbot />
+      </Box>
     </Container>
   );
 }
