@@ -14,6 +14,7 @@ interface UserReport {
   userId: number;
   roomId: number;
   quizId: number;
+  actions: string
 }
 
 const UserReportManagementPage: React.FC = () => {
