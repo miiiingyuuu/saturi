@@ -82,12 +82,6 @@ const UserSimilarityChart: React.FC = () => {
         text: '지역별 평균 유사도 및 정확도',
       },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 100,
-      },
-    },
   };
 
   return (

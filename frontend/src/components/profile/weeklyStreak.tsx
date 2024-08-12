@@ -40,7 +40,7 @@ const WeeklyStreak: React.FC<WeeklyStreakProps> = ({ data, isLoading }) => {
   const daysOfTheWeek = data?.daysOfTheWeek ?? [];
 
   return (
-    <Box>
+    <Box sx={{ borderRadius: '16px' }}>
       <Typography variant="h6" gutterBottom>주간 스트릭</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12}>
