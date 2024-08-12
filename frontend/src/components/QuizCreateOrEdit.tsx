@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import { ILocationProps } from "@/utils/props";
 import { getLocation } from "@/utils/adminutils";
+import { useRouter } from "next/router"
 
 interface QuizProps {
   quizId?: number; // 수정의 경우 quizId가 필요
@@ -29,6 +30,7 @@ interface QuizProps {
 // quizId 가 있으며 수정, 없으면 생성
 // eslint-disable-next-line react/require-default-props
 export default function QuizForm({quizId} : {quizId? : number}) {
+  const router = useRouter()
   const [question, setQuestion] = useState("");
   const [isObjective, setIsObjective] = useState(true);
   const [locationId, setLocationId] = useState<ILocationProps | null>(null);
@@ -76,12 +78,18 @@ export default function QuizForm({quizId} : {quizId? : number}) {
     if (quizId) {
       // 수정 모드
       api.put(`/admin/game/quiz/${quizId}`, quizData)
-        .then(() => alert("수정되었습니다."))
+        .then(() => {
+          alert("수정되었습니다.");
+          router.push("/admin/quiz")
+        })
         .catch((err) => console.log(err));
     } else {
       // 생성 모드
       api.post("/admin/game/quiz", quizData)
-        .then(() => alert("등록되었습니다."))
+        .then(() => {
+          alert("등록되었습니다.");
+          router.push("/admin/quiz")
+        })
         .catch((err) => console.log(err));
     }
   };

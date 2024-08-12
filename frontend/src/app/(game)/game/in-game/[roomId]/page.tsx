@@ -4,7 +4,7 @@ import { IMessage } from "@stomp/stompjs";
 import useConnect from "@/hooks/useConnect";
 import SendIcon from "@mui/icons-material/Send";
 import { handleValueChange } from "@/utils/utils";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { GameQuizChoiceProps, GameQuizProps, MessagesProps, RoomIdProps, ParticipantsProps } from "@/utils/props";
 import {
   Box,
@@ -19,7 +19,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Container,
-  Popover,
 } from "@mui/material";
 import { getCookie } from "cookies-next";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
@@ -41,6 +40,11 @@ const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 });
 
+interface TipsProps {
+ tipId: number
+ content: string
+}
+
 export default function App({ params: { roomId } }: RoomIdProps) {
   const you = getCookie("nickname");
   const router = useRouter()
@@ -61,7 +65,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ quizTimer, setQuizTimer] = useState(10);
   const [ isCorrect, setIsCorrect] = useState(false);
-
+  const [ tips, setTips ] = useState<TipsProps[]>([])
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
@@ -149,11 +154,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       setIsAnswerTime(true);
       setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
       setTimeout(() => {
-        router.push(`/game/in-game/${roomId}/result`)
+        router.replace(`/game/in-game/${roomId}/result`)
       },3000)
     }
   }, [quizzes, now]);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
     const client = clientRef.current;
     if (client) {
@@ -168,6 +174,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           } else {
             if (!isStart && body.chatType === "START") {
               setIsStart(true)
+            }
+
+            const p = body.participants.find(p => p.nickName === getCookie("nickname"))
+            if (p.isExited) {
+              alert("이미 나가셨는데요")
+              router.replace("/")
             }
             setParticipants(body.participants);
           }});
@@ -252,7 +264,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
       // 게임 종료 시
       const onDisconnect = () => {
-        client.publish({
+        client?.publish({
           destination: "/pub/room",
           body: JSON.stringify({
             roomId,
@@ -322,12 +334,16 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     setOpacity(prevOpacity => (prevOpacity === 0 ? 0.85 : 0));
   };
 
+  useEffect(() => {
+    api.get("/game/tip")
+      .then(response => {
+        setTips(response.data);
+      })
+  }, []);
 
-
-
-
-
-
+  useEffect(() => {
+    setTimeout(() => setCurrentTipIndex(prev => (prev+1)%tips?.length||1), 5000)
+  }, [currentTipIndex]);
 
   return (
     <Box>      
@@ -345,7 +361,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           border:"3px groove black",
         }}>
           {quizTimer}
-          <Box sx={{
+          <Box
+            sx={{
             minHeight: "390px",
             height:"70%",
 
@@ -362,7 +379,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   height:"100%",
                 }}
               >
-                머기중입니다.
+                {tips[currentTipIndex]?.content}
               </Typography>
             ) : (
               <>
@@ -563,7 +580,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                         style={{ width: "100%", height: "auto" }}
                       />
                       <hr />
-                      <Box sx={{
+                      <Box
+                        sx={{
                         display: "center",
                         justifyContent: "center",
                         height: "100%",
@@ -585,7 +603,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
 
         {/* 채팅 파트 */}
-        <Box sx={{
+        <Box
+          sx={{
           position:"fixed",
           bottom: "0%",
           width:"100%",
@@ -602,7 +621,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               px: 2,
               pt: 2,
               backgroundColor: "#f5f5f5",              
-              opacity: opacity,            
+              opacity
           }}>
             <Paper
               sx={{                
