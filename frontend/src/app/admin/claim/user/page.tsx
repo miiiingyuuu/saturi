@@ -67,7 +67,7 @@ const UserReportManagementPage: React.FC = () => {
     try {
       await api.delete(`/admin/claim/user/${chatClaimId}`);
       setSnackbar({ open: true, message: '신고가 삭제되었습니다.', severity: 'success' });
-      fetchReports();
+      setReports(prevReports => prevReports.filter(report => report.chatClaimId !== chatClaimId));
     } catch (err) {
       setSnackbar({ open: true, message: '신고 삭제에 실패했습니다.', severity: 'error' });
     }
@@ -90,7 +90,15 @@ const UserReportManagementPage: React.FC = () => {
           chatClaimId: selectedChatClaimId
         });
         setSnackbar({ open: true, message: '사용자가 정지되었습니다.', severity: 'success' });
-        fetchReports();
+        
+        // 상태 업데이트
+        setReports(prevReports => 
+          prevReports.map(report => 
+            report.userId === selectedUserId
+              ? { ...report, isBanned: true }
+              : report
+          )
+        );
       } catch (err) {
         setSnackbar({ open: true, message: '사용자 정지에 실패했습니다.', severity: 'error' });
       }
