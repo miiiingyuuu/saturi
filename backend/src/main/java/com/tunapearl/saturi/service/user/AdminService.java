@@ -44,7 +44,7 @@ public class AdminService {
         findUser.setRole(Role.BANNED);
         LocalDateTime returnDt = LocalDateTime.now().plusDays(request.getBanDate());
         findUser.setReturnDt(returnDt);
-        chatClaimService.updateClaim(new ClaimDeleteRequestDto(request.getChatClaimId()));
+        chatClaimService.updateClaim(request.getChatClaimId());
         return new UserMsgResponseDTO("ok");
     }
 

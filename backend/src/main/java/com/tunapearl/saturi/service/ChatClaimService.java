@@ -56,9 +56,9 @@ public class ChatClaimService {
     /*
     * 유저 채팅 신고 처리
     */
-    public void updateClaim(ClaimDeleteRequestDto request) {
-        ChatClaimEntity entity = chatClaimRepository.findById(request)
-                .orElseThrow(() -> new RuntimeException("Invalid chat claim id: " + request.getChatClaimId()));
+    public void updateClaim(Long chatClaimId) {
+        ChatClaimEntity entity = chatClaimRepository.findById(chatClaimId)
+                .orElseThrow(() -> new RuntimeException("Invalid chat claim id: " + chatClaimId));
         entity.check();
     }
 
