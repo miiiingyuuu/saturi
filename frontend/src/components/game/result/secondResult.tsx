@@ -28,31 +28,37 @@ export default function SecondResult({
 
   return(
     <Container
-        className="tmp2"
-        maxWidth="lg"
-        style={{
-            height: "90vh",
-            minHeight: "700px",
-            display:"flex",
-            justifyContent:"center",
-            flexDirection:"column",
-            left: (() => {
-              if (currentStep === 1) {
-                return "150%";
-              } if (currentStep === 2) {
-                return "50%";
-              } return "0%";              
-            })()
-        }}>
+      className="tmp2"
+      maxWidth="lg"
+      style={{
+          height: "90vh",
+          minHeight: "700px",
+          display:"flex",
+          justifyContent:"center",
+          alignItems:"center",
+          flexDirection:"column",
+          left: (() => {
+            if (currentStep === 1) {
+              return "150%";
+            } if (currentStep === 2) {
+              return "50%";
+            } return "0%";              
+          })()
+      }}>
 
         {/* 첫 번째 라인 */}
-        <Box
+        <Card
             sx= {{
-                display:"flex",
-                justifyContent:"center",
+              display:"flex",
+              justifyContent:"center",
+              alignItems:"center",
+              padding:"15px",
+              paddingX:"20px",
+              margin:"5px",
+              borderRadius:"15px",
             }}>
             {/* 1의 1 */}
-            <Card
+            <Box
                 sx={{
                     width:"100px",
                     height:"100px",
@@ -64,7 +70,7 @@ export default function SecondResult({
                     sx={{
                         width:"100px"
                     }}/>
-            </Card>
+            </Box>
             {/* 1의 2 */}
             <Box>
                 <LinearProgress
@@ -83,11 +89,14 @@ export default function SecondResult({
                 />
             </Box>
             {/* 1의 3 */}
-            <Typography>
+            <Typography
+              sx={{
+              textAlign:"center",
+            }}>
               +20
             </Typography>
 
-        </Box>
+        </Card>
 
         {/* 두 번째 라인 */}
         <Box
