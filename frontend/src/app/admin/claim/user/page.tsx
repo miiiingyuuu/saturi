@@ -11,11 +11,10 @@ import BanDialog from '@/components/admin/chat-claim/Ban';
 interface UserReport {
   chatClaimId: number;
   gameLogId: number;
-  userId: number;
+  email: string;
   roomId: number;
   quizId: number;
   chatting: string;
-  isBanned: boolean;
 }
 
 const UserReportManagementPage: React.FC = () => {
@@ -24,12 +23,12 @@ const UserReportManagementPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     gameLogId: '',
-    userId: '',
+    email: '',
     roomId: '',
     quizId: ''
   });
   const [openBanDialog, setOpenBanDialog] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
   const [selectedChatClaimId, setSelectedChatClaimId] = useState<number | null>(null);
   const [banDuration, setBanDuration] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
@@ -74,31 +73,25 @@ const UserReportManagementPage: React.FC = () => {
   };
 
   // 유저 정지
-  const handleBanClick = (userId: number, chatClaimId: number) => {
-    setSelectedUserId(userId);
+  const handleBanClick = (email: string, chatClaimId: number) => {
+    setSelectedEmail(email);
     setSelectedChatClaimId(chatClaimId);
     setOpenBanDialog(true);
   };
 
   // 유저 정지
   const handleBanConfirm = async () => {
-    if (selectedUserId && selectedChatClaimId) {
+    if (selectedEmail && selectedChatClaimId) {
       try {
         await api.post('/admin/claim/user', {
-          userId: selectedUserId,
+          email: selectedEmail,
           banDate: parseInt(banDuration),
           chatClaimId: selectedChatClaimId
         });
         setSnackbar({ open: true, message: '사용자가 정지되었습니다.', severity: 'success' });
         
-        // 상태 업데이트
-        setReports(prevReports => 
-          prevReports.map(report => 
-            report.userId === selectedUserId
-              ? { ...report, isBanned: true }
-              : report
-          )
-        );
+        // 정지 후 보고서 목록을 새로 가져옵니다.
+        fetchReports();
       } catch (err) {
         setSnackbar({ open: true, message: '사용자 정지에 실패했습니다.', severity: 'error' });
       }
