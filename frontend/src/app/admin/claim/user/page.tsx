@@ -63,7 +63,7 @@ const UserReportManagementPage: React.FC = () => {
   // 채팅 신고 삭제
   const handleDelete = async (chatClaimId: number) => {
     try {
-      await api.delete(`/admin/claim/user`, { data: { chatClaimId } });
+      await api.delete(`/admin/claim/user/${chatClaimId}`);
       setSnackbar({ open: true, message: '신고가 삭제되었습니다.', severity: 'success' });
       fetchReports();
     } catch (err) {

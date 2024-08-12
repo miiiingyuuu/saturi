@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
+import "../../../styles/home/main/mainPage.css";
 
 interface LessonGroupResultProps {
   lessonGroupId: number;
@@ -14,6 +15,10 @@ interface LessonGroupResultProps {
   startDt: string;
   endDt: string | null;
   isCompleted: boolean;
+  lessons?: { // Assuming this is the shape of lessons
+    lessonId: number;
+    lessonName: string;
+  }[];
 }
 
 interface UserInfo {
@@ -25,11 +30,15 @@ interface UserInfo {
 interface SecondResultProps {
   lessonGroupResult: LessonGroupResultProps;
   userInfo: UserInfo;
+  currentStep: number;
+  beforestep: any;
 }
 
 export default function SecondResult({
   lessonGroupResult,
   userInfo,
+  currentStep,
+  beforestep,
 }: SecondResultProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -118,12 +127,19 @@ export default function SecondResult({
 
   useEffect(() => {
     if (currentLessonGroupId !== null) {
+      // Check if there is a previous lesson group
       const hasPrev = currentCategory.some(
         (group) => group.lessonGroupId === currentLessonGroupId - 1
       );
-      const hasNext = currentCategory.some(
-        (group) => group.lessonGroupId === currentLessonGroupId + 1
-      );
+
+      // Check if there is a next lesson group with lessons
+      const hasNext = currentCategory.some((group) => {
+        return (
+          group.lessonGroupId === currentLessonGroupId + 1 &&
+          group.lessons &&
+          group.lessons.length > 0
+        );
+      });
 
       setIsPrevDisabled(!hasPrev);
       setIsNextDisabled(!hasNext);
@@ -177,65 +193,97 @@ export default function SecondResult({
   };
 
   return (
-    <Box className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-6">
-      <Box className="flex items-center m-5">
-        <Image
-          src={imageSrc}
-          alt="티어 이미지"
-          width={80}
-          height={80}
-          className="object-contain rounded-full"
-        />
-        <Box className="px-4 flex-grow">
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            color="primary"
-            className="w-full"
+    <Box
+      className="tmp2"
+      style={{
+        width: "100%",
+        left: (() => {
+          if (currentStep === 1) {
+            return "150%";
+          }
+          if (currentStep === 2) {
+            return "50%";
+          }
+          return "0%";
+        })(),
+      }}
+    >
+      <Box className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-6">
+        <Box className="flex items-center m-5">
+          <Image
+            src={imageSrc}
+            alt="티어 이미지"
+            width={80}
+            height={80}
+            className="object-contain rounded-full"
           />
+          <Box className="px-4 flex-grow">
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              color="primary"
+              className="w-full"
+            />
+          </Box>
+          <Typography variant="h6" className="ml-4">
+            {`+${userInfo.earnExp} XP`}
+          </Typography>
         </Box>
-        <Typography variant="h6" className="ml-4">
-          {`+${userInfo.earnExp} XP`}
-        </Typography>
+        <Box className="flex justify-center mx-24 py-4">
+          <Button
+            variant="contained"
+            color="success"
+            className="mx-2"
+            onClick={handlePrevClick}
+            disabled={isPrevDisabled}
+          >
+            이전 조각
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            className="mx-2"
+            onClick={handleAgain}
+          >
+            다시하기
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            className="mx-2"
+            onClick={handleNextClick}
+            disabled={isNextDisabled}
+          >
+            다음 조각
+          </Button>
+        </Box>
+        <Box className="flex justify-center mx-24 py-4">
+          <Button
+            variant="contained"
+            color="success"
+            className="w-full"
+            onClick={handleHome}
+          >
+            Home
+          </Button>
+        </Box>
       </Box>
-      <Box className="flex justify-center mx-24 py-4">
+      <Box className="flex justify-center mx-24 py-2">
         <Button
+          className="mt-4 text-white px-8 py-4 rounded"
           variant="contained"
-          color="success"
-          className="mx-2"
-          onClick={handlePrevClick}
-          disabled={isPrevDisabled}
+          sx={{
+            backgroundColor: "success.light",
+            "&:hover": { backgroundColor: "green" },
+            "&:active": { backgroundColor: "green" },
+            "&:focus": { backgroundColor: "success" },
+          }}
+          onClick={beforestep}
         >
-          이전 조각
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          className="mx-2"
-          onClick={handleAgain}
-        >
-          다시하기
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          className="mx-2"
-          onClick={handleNextClick}
-          disabled={isNextDisabled}
-        >
-          다음 조각
-        </Button>
-      </Box>
-      <Box className="flex justify-center mx-24 py-4">
-        <Button
-          variant="contained"
-          color="success"
-          className="w-full"
-          onClick={handleHome}
-        >
-          Home
+          이전
         </Button>
       </Box>
     </Box>
   );
 }
+

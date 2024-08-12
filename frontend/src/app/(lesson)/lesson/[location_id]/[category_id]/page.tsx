@@ -7,6 +7,7 @@ import api from "@/lib/axios";
 import SideNavbar from "../../../../../components/lesson/sidebar";
 import Puzzle from "../../../../../components/lesson/puzzle";
 import PuzzleInfo from "../../../../../components/lesson/puzzleInfo";
+import Chatbot from "@/components/chatbot/chatbot";
 
 export default function CategorySelectPage() {
   interface Lesson {
@@ -126,88 +127,95 @@ export default function CategorySelectPage() {
   };
 
   return (
-    <Container 
-      maxWidth="lg" 
-      sx={{
-        height: "90vh",    
-        minHeight: "700px",
-        display:"flex",
-        alignItems:"center",        
-    }}>
-      <Box
+    <Box 
+      className="bg-gray-100"
+    >
+      <Container       
+        maxWidth="lg" 
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-          height: "560px",
-        }}
-      >
-        {/* 맨 왼쪽 */}
-        <Card
+          height: "90vh",    
+          minHeight: "700px",
+          display:"flex",
+          alignItems:"center",        
+      }}>
+        <Box
           sx={{
-            width: "25%",
-            height: "100%",
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            border: "1px groove",
-            borderRadius: "8px",
+            justifyContent: "space-between",
+            width: "100%",
+            height: "560px",
           }}
         >
-          <SideNavbar location={locationId} categoryId={categoryId} />
-        </Card>
+          {/* 맨 왼쪽 */}
+          <Card
+            sx={{
+              width: "25%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              border: "3px solid lightgray",
+              borderRadius: "8px",
+            }}
+          >
+            <SideNavbar location={locationId} categoryId={categoryId} />
+          </Card>
 
-        {/* 중간 */}
-        <Card
-          sx={{
-            width: "45%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            border: "1px groove",
-            borderRadius: "8px",
-          }}
-        >
-          {locationId && (
-            <Puzzle
-              id={locationId}
-              totalProgress={categoryProgress}
-              onSelect={handlePuzzleSelect}
-              lessonGroup={lessonGroup}
-              progressData={progressData}
-            />
-          )}
-        </Card>
+          {/* 중간 */}
+          <Card
+            sx={{
+              width: "45%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              border: "3px solid lightgray",
+              borderRadius: "8px",
+            }}
+          >
+            {locationId && (
+              <Puzzle
+                id={locationId}
+                totalProgress={categoryProgress}
+                onSelect={handlePuzzleSelect}
+                lessonGroup={lessonGroup}
+                progressData={progressData}
+              />
+            )}
+          </Card>
 
-        {/* 맨 오른쪽 */}
-        <Card
-          sx={{
-            width: "25%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center", // Center content vertically
-            alignItems: "center", // Center content horizontally
-            overflowY: "auto", // Allow scrolling if content overflows
-            border: "1px groove",
-            borderRadius: "8px",
-            padding: "10px", // Ensure there is padding inside the card
-          }}
-        >
-          {selectedPuzzleId == null && (
-            <Typography> 퍼즐을 선택하세요. </Typography>
-          )}
+          {/* 맨 오른쪽 */}
+          <Card
+            sx={{
+              width: "25%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center", // Center content vertically
+              alignItems: "center", // Center content horizontally
+              overflowY: "auto", // Allow scrolling if content overflows
+              border: "3px solid lightgray",
+              borderRadius: "8px",
+              padding: "10px", // Ensure there is padding inside the card
+            }}
+          >
+            {selectedPuzzleId == null && (
+              <Typography> 퍼즐을 선택하세요. </Typography>
+            )}
 
-          {selectedLessonGroup && (
-            <PuzzleInfo
-              locationId={locationId}
-              lessonGroup={selectedLessonGroup}
-              avgAccuracy={selectedPuzzleAccuracy ?? 0} // Ensure avgAccuracy is a number
-            />
-          )}
-        </Card>
+            {selectedLessonGroup && (
+              <PuzzleInfo
+                locationId={locationId}
+                lessonGroup={selectedLessonGroup}
+                avgAccuracy={selectedPuzzleAccuracy ?? 0} // Ensure avgAccuracy is a number
+              />
+            )}
+          </Card>
+        </Box>
+      </Container>
+      <Box>
+        <Chatbot />
       </Box>
-    </Container>
+    </Box>
   );
 }

@@ -44,12 +44,27 @@ export default function RightPart({selectedRegion} : RightPartProps) {
     })
   }
 
+
+  // 무작위 배경
+  const backgrounds = [
+    "#eae3ce",
+    "#575b75",
+    "#907f77",
+    "#b4845c",
+    "#5c7098",
+    "#6a8884",
+    "#cadddc",
+    "#e6bec8",
+    "#636c5e",
+  ];
+  const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+
   return (
     <Box 
       className="rightpart" 
       sx={{ 
         position: "absolute",
-        background: "-webkit-linear-gradient(to left, #8f94fb, #4e54c8)",
+        backgroundColor: randomBackground,
         width: "100%",
         minHeight: "700px",
         height: "90vh",
@@ -61,7 +76,7 @@ export default function RightPart({selectedRegion} : RightPartProps) {
             sx={{
               width: "100%",
               height: "560px",
-              // border: '2px groove black', 
+              border: '3px solid lightgray', 
               borderRadius: 5,
               display: "flex",
               justifyContent:"flex-end",
@@ -78,18 +93,24 @@ export default function RightPart({selectedRegion} : RightPartProps) {
                 <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold", marginBottom:"10px" }}>게임 페이지</Typography>
 
                 {/* 게임 프로필 */}
-                <Box sx={{  }}>
-                  <Card sx={{ width:"250px", height: "350px", display: 'grid', placeItems: 'center' }}>
-                    <UserTierRank layout='horizontal'/>
-                    <Avatar
-                      sizes="large"                       
-                      src={`${profileImage}`} 
-                    />
-                  </Card>                  
+                <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
+                  <UserTierRank/>                    
                 </Box>
 
                 {/* 게임 시작 버튼 */}
-                <Button variant="contained" onClick={GameStartButton} sx={{ marginTop: "20px", width: "200px", height: "50px", fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }  }}>게임 시작</Button>
+                <Button 
+                  variant="contained"
+                  onClick={GameStartButton}
+                  sx={{
+                    backgroundColor:"success.light",
+                    '&:hover': { backgroundColor: 'green' },
+                    '&:active': { backgroundColor: 'green' },
+                    '&:focus': { backgroundColor: 'success' },
+                    marginTop: "20px", 
+                    width: "200px", 
+                    height: "50px", 
+                    fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
+                  }}> 게임 시작 </Button>
                 </Box>
               </Grid>
             </Grid>

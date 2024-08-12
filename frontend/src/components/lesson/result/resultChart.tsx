@@ -85,7 +85,7 @@ const LessonChart: React.FC<LessonChartProps> = ({
       legend: {
         display: true, // 범례를 표시합니다.
         position: 'left' as const, // 올바른 값으로 설정
-        align: 'start' as const, // 범례를 시작 위치(좌측 상단)에 정렬합니다.
+        align: 'center' as const, // 범례를 시작 위치(좌측 상단)에 정렬합니다.
         labels: {
           boxWidth: 20, // 색상 박스의 너비
           font: {

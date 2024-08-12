@@ -14,24 +14,38 @@
     right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
 }
 
+.tmp {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition:
+  left 1s ease,
+  right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+}
+
+.tmp2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition:
+  left 1s ease,
+  right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+}
+
+
 .rightpart {
   position: absolute;
   /* background-color: whitesmoke; */
-  background: #4e54c8;  
-  background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  
+  /* background: #4e54c8;   */
+  /* background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);   */
   z-index: 1;
 }
 
 .buttonLeft {
   /* background: url('/MainPage/buttonLeft.png') no-repeat center center;
   background-size: contain; */  
-  background: none;
-  border: none;
   padding: 0;
   cursor: pointer;
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
   z-index: 15;
   left: 10px;
 }
@@ -39,13 +53,8 @@
 .buttonRight {
   /* background: url('/MainPage/buttonRight.png') no-repeat center center;
   background-size: contain; */  
-  background: none;
-  border: none;
   padding: 0;
   cursor: pointer;
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
   z-index: 15;
   right: 10px;
 }

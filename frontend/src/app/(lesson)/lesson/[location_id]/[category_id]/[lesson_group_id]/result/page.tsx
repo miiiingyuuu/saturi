@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import api from "@/lib/axios";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -91,34 +91,34 @@ export default function LessonResultPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen p-4 bg-gray-100">
-      {currentStep === 1 && lessonResult.length > 0 && lessonGroupResult && (
+
+    
+    <Box 
+      className="flex flex-col items-center justify-center p-4 bg-gray-100" 
+      sx={{
+        position:"relative",
+        overflow:"hidden",
+        minHeight:"600px",
+        height:"90vh",
+      }}>
+      {lessonResult.length > 0 && lessonGroupResult && (
         <FirstResult
-          lessonResult={lessonResult}
-          lessonGroupResult={lessonGroupResult}
+          lessonResult = {lessonResult}
+          lessonGroupResult = {lessonGroupResult}
+          currentStep = {currentStep}
+          nextstep = {nextstep}
         />
       )}
-      {currentStep === 2 && lessonGroupResult && userInfo && (
-        <SecondResult lessonGroupResult={lessonGroupResult} userInfo={userInfo} />
+      {lessonGroupResult && userInfo && (
+        <SecondResult 
+          lessonGroupResult = {lessonGroupResult} 
+          userInfo = {userInfo} 
+          currentStep = {currentStep}
+          beforestep = {beforestep}
+        />
       )}
-      <div className="flex gap-4">
-        {currentStep !== 1 && (
-          <Button
-            className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
-            onClick={beforestep}
-          >
-            이전
-          </Button>
-        )}
-        {currentStep !== 2 && (
-          <Button
-            className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
-            onClick={nextstep}
-          >
-            다음
-          </Button>
-        )}
-      </div>
-    </div>
+      <Box className="flex gap-4">                
+      </Box>
+    </Box>
   );
 }

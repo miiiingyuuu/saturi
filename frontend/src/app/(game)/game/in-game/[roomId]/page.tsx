@@ -4,7 +4,7 @@ import { IMessage } from "@stomp/stompjs";
 import useConnect from "@/hooks/useConnect";
 import SendIcon from "@mui/icons-material/Send";
 import { handleValueChange } from "@/utils/utils";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { GameQuizChoiceProps, GameQuizProps, MessagesProps, RoomIdProps, ParticipantsProps } from "@/utils/props";
 import {
   Box,
@@ -40,6 +40,11 @@ const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 });
 
+interface TipsProps {
+ tipId: number
+ content: string
+}
+
 export default function App({ params: { roomId } }: RoomIdProps) {
   const you = getCookie("nickname");
   const router = useRouter()
@@ -60,6 +65,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ quizTimer, setQuizTimer] = useState(10);
   const [ isCorrect, setIsCorrect] = useState(false);
+  const [ tips, setTips ] = useState<TipsProps[]>([])
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
@@ -110,8 +117,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   useEffect(() => {
     const client = clientRef.current;
-    if (participants?.length>1 && remainCount<1) {
-      client?.publish({
+    if (client && participants?.length>1 && remainCount<=1) {
+      client.publish({
         destination: "/pub/room",
         body: JSON.stringify({
           chatType: "TERMINATED",
@@ -122,9 +129,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         }
       })
       alert("인원이 부족해 게임이 종료되었습니다. \n 메인 화면으로 되돌아갑니다.")
-      router.replace("/")
+      router.push("/")
     }
-  }, [remainCount]);
+  }, [remainCount,participants]);
 
   // now(현재 문제 번호)가 바뀔때마다 quizzes 배열에서 문제를 갱신하고,
   // 문제 번호가 10인 경우(마지막 문제까지 다 푼 경우) 게임을 종료시킨다.
@@ -147,11 +154,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       setIsAnswerTime(true);
       setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
       setTimeout(() => {
-        router.push(`/game/in-game/${roomId}/result`)
+        router.replace(`/game/in-game/${roomId}/result`)
       },3000)
     }
   }, [quizzes, now]);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
     const client = clientRef.current;
     if (client) {
@@ -164,10 +172,17 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           if (Array.isArray(body)) {
             setQuizzes(body);
           } else {
-            if (!isStart && body.chatType === "START") {
-              setIsStart(true)
-            }
             setParticipants(body.participants);
+            if (!isStart && body.chatType === "START") {
+               setIsStart(true)
+            }
+
+            const yourStatus = body.participants.find((p: any) => p.nickName === getCookie("nickname"))
+            if (yourStatus.isExited) {
+              alert("이미 나가셨는데요")
+              router.replace("/")
+            }
+
           }});
 
         // 입장
@@ -250,7 +265,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
       // 게임 종료 시
       const onDisconnect = () => {
-        client.publish({
+        clientRef.current?.publish({
           destination: "/pub/room",
           body: JSON.stringify({
             roomId,
@@ -311,9 +326,30 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   // 빡종 방지
   useConfirmLeave();
+
+
+  // 채팅 창 팝오버 부분
+  const [opacity, setOpacity] = useState(0); // 초기 투명도 0으로 설정
+  const handleClick = () => {
+    // 클릭 시 opacity를 0에서 0.7로, 0.7에서 0으로 토글
+    setOpacity(prevOpacity => (prevOpacity === 0 ? 0.85 : 0));
+  };
+
+  useEffect(() => {
+    api.get("/game/tip")
+      .then(response => {
+        setTips(response.data);
+      })
+  }, []);
+
+  useEffect(() => {
+    if (!isStart) {
+    setTimeout(() => setCurrentTipIndex(prev => (prev+1)%tips?.length||1), 5000)
+    }
+  }, [isStart,currentTipIndex]);
+
   return (
-    <Box>
-      {quizTimer}
+    <Box>      
       <Container maxWidth="lg">
         {/* 게임 파트 */}
         <Box
@@ -327,7 +363,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           borderRadius: "15px",
           border:"3px groove black",
         }}>
-          <Box sx={{
+          {quizTimer}
+          <Box
+            sx={{
             minHeight: "390px",
             height:"70%",
 
@@ -344,7 +382,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   height:"100%",
                 }}
               >
-                머기중입니다.
+                {tips[currentTipIndex]?.content}
               </Typography>
             ) : (
               <>
@@ -545,7 +583,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                         style={{ width: "100%", height: "auto" }}
                       />
                       <hr />
-                      <Box sx={{
+                      <Box
+                        sx={{
                         display: "center",
                         justifyContent: "center",
                         height: "100%",
@@ -567,21 +606,72 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
 
         {/* 채팅 파트 */}
-        <Box sx={{
-          height:"20vh",
-          backgroundColor:"blue",
+        <Box
+          sx={{
+          position:"fixed",
+          bottom: "0%",
+          width:"100%",
+          maxWidth: "1155px",
+          height:"35vh",
+          // backgroundColor:"blue",
         }}>
+          {/* 채팅이 보이는 부분 */}
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              height: "20vh",
-              p: 2,
-              backgroundColor: "#f5f5f5",
+              height: "25vh",
+              px: 2,
+              pt: 2,
+              backgroundColor: "#f5f5f5",              
+              opacity
           }}>
+            <Paper
+              sx={{                
+                flex: 1,
+                p: 2,
+                overflowY: "auto",
+                mb: 2,    
+              }}
+            >
+              {/* <Typography variant="h6" gutterBottom>
+                Chat
+              </Typography> */}
+              <List>
+                {messages.map((msg) => (
+                  <ListItem key={msg.chatLogId}>
+                    <Box className="w-1/5">
+                      <ListItemText primary={msg.timestamp} />
+                    </Box>
+                    <Box className="w-1/5">
+                      <ListItemText primary={msg.nickname} />
+                    </Box>
+                    <Box className="w-2/5">
+                      <ListItemText primary={msg.message} />
+                    </Box>
+                    {!(msg.nickname===getCookie("nickname"))&&!isClicked[msg.chatLogId] && (
+                    <AnnouncementIcon 
+                      className="w-1/5"
+                      onClick={() => reportChat(msg.chatLogId)}
+                    />
+                        )}
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          </Box>
 
-
-            {/* 채팅을 입력하는 부분 */}
+          {/* 채팅을 입력하는 부분 */}
+          
+          <Box
+            sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "9vh",
+            px: 1,
+            pt: 1,
+            backgroundColor: "#f5f5f5",              
+          }}>
             <Box sx={{ display: "flex"}}>
               <TextField
                 variant="outlined"
@@ -595,40 +685,21 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               <Button
                 variant="contained"
                 color="primary"
+                onClick={handleClick}
+                sx={{ ml: 1 }}
+              >
+                <SendIcon />
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={() => sendMessage(` ${message}`)}
                 sx={{ ml: 1 }}
               >
                 <SendIcon />
               </Button>
             </Box>
-
-            {/* 채팅이 보이는 부분 */}
-            <Paper
-              sx={{
-                flex: 1,
-                p: 2,
-                overflowY: "auto",
-                mb: 2,
-              }}
-            >
-              {/* <Typography variant="h6" gutterBottom>
-                Chat
-              </Typography> */}
-              <List>
-                {messages.map((msg) => (
-                  <ListItem key={msg.chatLogId}>
-                    <ListItemText primary={msg.timestamp} />
-                    <ListItemText primary={msg.nickname} />
-                    <ListItemText primary={msg.message} />
-                    {!(msg.nickname===getCookie("nickname"))&&!isClicked[msg.chatLogId] && (
-                    <AnnouncementIcon
-                      onClick={() => reportChat(msg.chatLogId)}
-                    />
-                        )}
-                  </ListItem>
-                ))}
-              </List>
-            </Paper>
+            
           </Box>
         </Box>
 

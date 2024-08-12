@@ -59,7 +59,7 @@ const Chatbot: React.FC = () => {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "ft:gpt-4o-mini-2024-07-18:personal:saturi2:9uCN3x11",
+        model: "ft:gpt-4o-mini-2024-07-18:personal::9vENm4j6",
         messages: [
           {
             role: "system",
