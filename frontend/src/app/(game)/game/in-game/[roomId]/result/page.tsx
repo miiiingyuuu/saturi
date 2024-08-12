@@ -24,82 +24,83 @@ export default function Result({ params: { roomId } }: RoomIdProps) {
 
 
 
-        <Container
-            maxWidth="lg"
-            sx={{
-                height: "700px",
-                display:"flex",
-                justifyContent:"center",
-                flexDirection:"column",
-            }}>
+        // <Container
+        //     maxWidth="lg"
+        //     sx={{
+        //         height: "90vh",
+        //         minHeight: "700px",
+        //         display:"flex",
+        //         justifyContent:"center",
+        //         flexDirection:"column",
+        //     }}>
 
-            {/* 첫 번째 라인 */}
-            <Box
-                sx= {{
-                    display:"flex",
-                    justifyContent:"center",
-                }}>
-                {/* 1의 1 */}
-                <Card
-                    sx={{
-                        width:"100px",
-                        height:"100px",
-                    }}>
-                    <Box
-                        component="img"
-                        src = "/btnG_아이콘원형.png"
-                        alt = "profile"
-                        sx={{
-                            width:"100px"
-                        }}/>
-                </Card>
-                {/* 1의 2 */}
-                <Box>
-                    <LinearProgress
-                        variant="determinate"
-                        value={progress}
-                        className="pb-4 m-10"
-                        aria-label="progress bar"
-                        sx={{
-                            width: "550px",
-                            height: 8, // 원하는 높이로 설정
-                            borderRadius: 5, // 테두리를 둥글게 설정
-                            "& .MuiLinearProgress-bar": {
-                                borderRadius: 5, // 진행 바 자체도 둥글게 설정
-                            },
-                        }}
-                    />
-                </Box>
-                {/* 1의 3 */}
-                {/* <Typography
-          sx={{
-            position: "absolute",
-            right:"5px"
-        }}>
-          50+
-        </Typography> */}
-            </Box>
+        //     {/* 첫 번째 라인 */}
+        //     <Box
+        //         sx= {{
+        //             display:"flex",
+        //             justifyContent:"center",
+        //         }}>
+        //         {/* 1의 1 */}
+        //         <Card
+        //             sx={{
+        //                 width:"100px",
+        //                 height:"100px",
+        //             }}>
+        //             <Box
+        //                 component="img"
+        //                 src = "/btnG_아이콘원형.png"
+        //                 alt = "profile"
+        //                 sx={{
+        //                     width:"100px"
+        //                 }}/>
+        //         </Card>
+        //         {/* 1의 2 */}
+        //         <Box>
+        //             <LinearProgress
+        //                 variant="determinate"
+        //                 value={progress}
+        //                 className="pb-4 m-10"
+        //                 aria-label="progress bar"
+        //                 sx={{
+        //                     width: "550px",
+        //                     height: 8, // 원하는 높이로 설정
+        //                     borderRadius: 5, // 테두리를 둥글게 설정
+        //                     "& .MuiLinearProgress-bar": {
+        //                         borderRadius: 5, // 진행 바 자체도 둥글게 설정
+        //                     },
+        //                 }}
+        //             />
+        //         </Box>
+        //         {/* 1의 3 */}
+        //         {/* <Typography
+        //   sx={{
+        //     position: "absolute",
+        //     right:"5px"
+        // }}>
+        //   50+
+        // </Typography> */}
+        //     </Box>
 
-            {/* 두 번째 라인 */}
-            <Box
-                sx= {{
-                    display:"flex",
-                    justifyContent:"center",
-                }}>
-                <Box
-                    sx={{
-                        width: "350px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginTop: "20px",
-                    }}>
-                    <Button variant="contained"> 다시하기 </Button>
-                    <Button variant="contained"> 처음으로 </Button>
-                </Box>
+        //     {/* 두 번째 라인 */}
+        //     <Box
+        //         sx= {{
+        //             display:"flex",
+        //             justifyContent:"center",
+        //         }}>
+        //         <Box
+        //             sx={{
+        //                 width: "350px",
+        //                 display: "flex",
+        //                 justifyContent: "space-between",
+        //                 marginTop: "20px",
+        //             }}>
+        //             <Button variant="contained"> 다시하기 </Button>
+        //             <Button variant="contained"> 처음으로 </Button>
+        //         </Box>
 
 
-            </Box>
-        </Container>
+        //     </Box>
+        // </Container>
 
 
         // <Container

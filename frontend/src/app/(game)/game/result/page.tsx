@@ -87,7 +87,7 @@ export default function Result({params: {roomId}}: RoomIdProps){
             justifyContent: "space-between",
             marginTop: "20px",
         }}>
-          <Button variant="contained"> 다시하기 </Button>
+          <Button variant="contained"> asfsafasf </Button>
           <Button variant="contained"> 처음으로 </Button>
         </Box>
 
