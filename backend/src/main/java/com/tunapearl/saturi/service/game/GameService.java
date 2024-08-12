@@ -176,6 +176,7 @@ public class GameService {
                 resultDTO.setRank(participant.getMatchRank());
                 UserEntity user = participant.getUser();
                 resultDTO.setNickName(user.getNickname());
+                resultDTO.setBirdId(user.getBird().getId());
 
                 if (user.getUserId() == requestDto.getUserId()) {//본인임
                     resultDTO.setUser(true);

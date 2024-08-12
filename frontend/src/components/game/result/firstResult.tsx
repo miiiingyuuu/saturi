@@ -1,17 +1,30 @@
-import { Box, Container, Card, Typography, LinearProgress, Button } from "@mui/material";
+import { Box, Container, Card, Typography, LinearProgress, Button, Avatar } from "@mui/material";
 import "@/styles/home/main/mainPage.css";
 
 
-interface FirstResultProps {
+interface FirstResultProps<T> {
   currentStep : number;
   nextstep : any;
+  ranks : T[]
+}
+
+interface RankProps {
+  rank : number
+  birdId: number
+  nickName: string
+  ansCount: number
+  earnedExp: number
+  exp: number
+  user: boolean
 }
 
 
 export default function firstResult({
   currentStep,
   nextstep,
-} : FirstResultProps){
+  ranks
+} : FirstResultProps<RankProps>){
+
   return(
     <Container
       className="tmp"
@@ -57,107 +70,36 @@ export default function firstResult({
               flexDirection:"column",
               justifyContent:"space-around",
           }}>
-            {/* 1번째 */}
-            <Box 
-              className="px-3 py-2"
-              sx={{
-                minHeight:"104px",
-                display:"flex",
-                justifyContent:"space-around",
-                alignItems:"center",
-            }}>
-              <Box sx={{border:"1px solid black"}}> profile </Box>
-              <Box 
+            { ranks.map((rank: RankProps) => (
+              <Box
+                className="px-3 py-2"
                 sx={{
-                  width:"85%",
-                  height:"100%",
-              }}>
-                <LinearProgress variant="determinate" value={20} />
+                  minHeight:"104px",
+                  display:"flex",
+                  justifyContent:"space-around",
+                  alignItems:"center",
+                }}>
+                <Avatar
+                  sizes="large"
+                  src={rank.birdId ? `/mini_profile/${rank.birdId}.png` : "이미지가 없습니다."}
+                />
+                <Box sx={{border:"1px solid black"}}> {rank.nickName} </Box>
+                <Box
+                  sx={{
+                    width:"85%",
+                    height:"100%",
+                  }}>
+                  <LinearProgress variant="determinate" value={rank.ansCount} />
+                </Box>
               </Box>
-            </Box>
-
-            {/* 2번째 */}
-            <Box 
-              className="px-3 py-2"
-              sx={{
-                minHeight:"104px",
-                display:"flex",
-                justifyContent:"space-around",
-                alignItems:"center",
-            }}>
-              <Box sx={{border:"1px solid black"}}> profile </Box>
-              <Box 
-                sx={{
-                  width:"85%",
-                  height:"100%",
-              }}>
-                <LinearProgress variant="determinate" value={20} />
-              </Box>
-            </Box>
-
-            {/* 3번째 */}
-            <Box 
-              className="px-3 py-2"
-              sx={{
-                minHeight:"104px",
-                display:"flex",
-                justifyContent:"space-around",
-                alignItems:"center",
-            }}>
-              <Box sx={{border:"1px solid black"}}> profile </Box>
-              <Box 
-                sx={{
-                  width:"85%",
-                  height:"100%",
-              }}>
-                <LinearProgress variant="determinate" value={20} />
-              </Box>
-            </Box>
-
-            {/* 4번째 */}
-            <Box 
-              className="px-3 py-2"
-              sx={{
-                minHeight:"104px",
-                display:"flex",
-                justifyContent:"space-around",
-                alignItems:"center",
-            }}>
-              <Box sx={{border:"1px solid black"}}> profile </Box>
-              <Box 
-                sx={{
-                  width:"85%",
-                  height:"100%",
-              }}>
-                <LinearProgress variant="determinate" value={20} />
-              </Box>
-            </Box>
-
-            {/* 5번째 */}
-            <Box 
-              className="px-3 py-2"
-              sx={{
-                minHeight:"104px",
-                display:"flex",
-                justifyContent:"space-around",
-                alignItems:"center",
-            }}>
-              <Box sx={{border:"1px solid black"}}> profile </Box>
-              <Box 
-                sx={{
-                  width:"85%",
-                  height:"100%",
-              }}>
-                <LinearProgress variant="determinate" value={20} />
-              </Box>
-            </Box>
+            ))}
           </Box>
-
-
         </Card>
+
         <Button variant="contained" onClick={nextstep} sx={{ marginTop: "10px" }}>
           다음
         </Button>
+
       </Box>
 
 
