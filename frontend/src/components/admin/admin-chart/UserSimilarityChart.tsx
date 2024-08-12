@@ -85,9 +85,7 @@ const UserSimilarityChart: React.FC = () => {
   };
 
   return (
-    <Box>
-      {chartData.labels.length > 0 && <Bar options={options} data={chartData} />}
-    </Box>
+   <Bar options={options} data={chartData} />
   );
 };
 
