@@ -11,24 +11,30 @@ import BanDialog from '@/components/admin/chat-claim/Ban';
 interface UserReport {
   chatClaimId: number;
   gameLogId: number;
-  email: string;
+  userId: number;
   roomId: number;
   quizId: number;
   chatting: string;
 }
 
+interface UserRole {
+  userId: number;
+  role: string;
+}
+
 const UserReportManagementPage: React.FC = () => {
   const [reports, setReports] = useState<UserReport[]>([]);
+  const [userRoles, setUserRoles] = useState<{ [key: number]: string }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     gameLogId: '',
-    email: '',
+    userId: '',
     roomId: '',
     quizId: ''
   });
   const [openBanDialog, setOpenBanDialog] = useState(false);
-  const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedChatClaimId, setSelectedChatClaimId] = useState<number | null>(null);
   const [banDuration, setBanDuration] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
@@ -42,6 +48,23 @@ const UserReportManagementPage: React.FC = () => {
       ).toString();
       const response = await api.get<UserReport[]>(`/admin/claim/user?${queryParams}`);
       setReports(response.data);
+      
+      // 사용자 역할 정보 가져오기
+      // ES5 호환 방식으로 코드 짜기
+      const userIds = response.data.reduce<number[]>((acc, report) => {
+        if (acc.indexOf(report.userId) === -1) {
+          acc.push(report.userId);
+        }
+        return acc;
+      }, []);
+      const roleResponses = await Promise.all(
+        userIds.map(userId => api.get<UserRole>(`/admin/user/${userId}`))
+      );
+      const newUserRoles = roleResponses.reduce((acc, response) => {
+        acc[response.data.userId] = response.data.role;
+        return acc;
+      }, {} as { [key: number]: string });
+      setUserRoles(newUserRoles);
     } catch (err) {
       setError('Failed to fetch user reports');
     } finally {
@@ -73,24 +96,24 @@ const UserReportManagementPage: React.FC = () => {
   };
 
   // 유저 정지
-  const handleBanClick = (email: string, chatClaimId: number) => {
-    setSelectedEmail(email);
+  const handleBanClick = (userId: number, chatClaimId: number) => {
+    setSelectedUserId(userId);
     setSelectedChatClaimId(chatClaimId);
     setOpenBanDialog(true);
   };
 
   // 유저 정지
   const handleBanConfirm = async () => {
-    if (selectedEmail && selectedChatClaimId) {
+    if (selectedUserId && selectedChatClaimId) {
       try {
         await api.post('/admin/claim/user', {
-          email: selectedEmail,
+          userId: selectedUserId,
           banDate: parseInt(banDuration),
           chatClaimId: selectedChatClaimId
         });
         setSnackbar({ open: true, message: '사용자가 정지되었습니다.', severity: 'success' });
         
-        // 정지 후 보고서 목록을 새로 가져옵니다.
+        // 정지 후 보고서 및 사용자 역할 정보를 새로 가져옵니다.
         fetchReports();
       } catch (err) {
         setSnackbar({ open: true, message: '사용자 정지에 실패했습니다.', severity: 'error' });
@@ -117,6 +140,7 @@ const UserReportManagementPage: React.FC = () => {
       />
       <ReportTable 
         reports={reports}
+        userRoles={userRoles}
         onDelete={handleDelete}
         onBan={handleBanClick}
       />

@@ -4,7 +4,7 @@ import { Box, TextField, Button } from '@mui/material';
 interface SearchFiltersProps {
   filters: {
     gameLogId: string;
-    email: string;
+    userId: string;
     roomId: string;
     quizId: string;
   };
@@ -24,7 +24,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, onFilterChange, 
       <TextField
         name="userId"
         label="User ID"
-        value={filters.email}
+        value={filters.userId}
         onChange={onFilterChange}
       />
       <TextField
