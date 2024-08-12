@@ -5,7 +5,6 @@ import {
   Button,
 } from '@mui/material';
 import LessonChart from './resultChart'; // Ensure correct import of the chart component
-import { WidthFull } from '@mui/icons-material';
 
 // Props interfaces
 interface LessonResultProps {
@@ -49,12 +48,12 @@ export default function FirstResult({
   nextstep,
 }: FirstResultProps) {
   return (
-    <Box className= "tmp"
+    <Box className="tmp"
       style={{
-        display:"flex",
-        flexDirection:"column",
-        justifyContent:"center",
-        alignItems: "center",        
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
         height: '90vh', 
         minHeight: "600px",
         width: "100%",
@@ -88,7 +87,7 @@ export default function FirstResult({
             className="flex flex-col justify-center w-2/5 ml-2" 
           >
             <Typography variant="caption" className="text-center" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
-              대사
+              대사    
             </Typography>         
           </Box>
 
@@ -103,7 +102,7 @@ export default function FirstResult({
               className="flex flex-col items-center"
             >          
               <Typography variant="caption" className="text-center" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
-                대사
+                억양
               </Typography>
             </Box>
           </Box>
@@ -139,53 +138,68 @@ export default function FirstResult({
               </Typography>
             </Box>
 
-            {/* Pronunciation and Accent Progress Circles */}
-            <Box className="w-1/5 flex justify-around pl-2">
-              <Box className="flex flex-col items-center">
-                <CircularProgress
-                  variant="determinate"
-                  value={lesson.pronunciationAccuracy || 0}
-                  size={60} // Set the size of the circular progress
-                  thickness={4} // Set the thickness of the circular progress
-                />
-                <Typography className="text-xs font-bold text-orange-500 mt-1">
-                  {lesson.pronunciationAccuracy || 0}%
-                </Typography>
-              </Box>
-              <Box 
-                className="flex flex-col items-center">
-                <CircularProgress
-                  variant="determinate"
-                  value={lesson.accentSimilarity || 0}
-                  size={60} // Set the size of the circular progress
-                  thickness={4} // Set the thickness of the circular progress
-                />
-                <Typography className="text-xs font-bold text-orange-500 mt-1">
-                  {lesson.accentSimilarity || 0}%
-                </Typography>
-              </Box>
+          {/* Pronunciation and Accent Progress Circles */}
+          <Box className="w-1/5 flex justify-around pl-2">
+            <Box className="flex flex-col items-center" position="relative" display="inline-flex">
+              {/* Background track */}
+              <CircularProgress
+                variant="determinate"
+                value={100} // Full circle for the background
+                size={60} // Set the size of the circular progress
+                thickness={4} // Set the thickness of the circular progress
+                sx={{ color: '#e0e0e0', position: 'absolute' }} // Gray background
+              />
+              {/* Actual progress */}
+              <CircularProgress
+                variant="determinate"
+                value={lesson.pronunciationAccuracy || 0}
+                size={60} // Set the size of the circular progress
+                thickness={4} // Set the thickness of the circular progress
+              />
+              <Typography className="text-xs font-bold text-orange-500 mt-1">
+                {lesson.pronunciationAccuracy || 0}%
+              </Typography>
+            </Box>
+            <Box className="flex flex-col items-center" position="relative" display="inline-flex">
+              {/* Background track */}
+              <CircularProgress
+                variant="determinate"
+                value={100} // Full circle for the background
+                size={60} // Set the size of the circular progress
+                thickness={4} // Set the thickness of the circular progress
+                sx={{ color: '#e0e0e0', position: 'absolute' }} // Gray background
+              />
+              {/* Actual progress */}
+              <CircularProgress
+                variant="determinate"
+                value={lesson.accentSimilarity || 0}
+                size={60} // Set the size of the circular progress
+                thickness={4} // Set the thickness of the circular progress
+              />
+              <Typography className="text-xs font-bold text-orange-500 mt-1">
+                {lesson.accentSimilarity || 0}%
+              </Typography>
             </Box>
           </Box>
-        ))} 
+        </Box>
+      ))}
 
-
-      
-      </Box>
-      <Box className="flex justify-center mx-24 py-1">
-        <Button
-          className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
-          variant="contained"
-          sx={{
-            backgroundColor:"success.light",
-            '&:hover': { backgroundColor: 'green' },
-            '&:active': { backgroundColor: 'green' },
-            '&:focus': { backgroundColor: 'success' },
-          }}
-          onClick={nextstep}
-        >
-          다음
-        </Button>
-      </Box>
+    </Box>
+    <Box className="flex justify-center mx-24 py-1">
+      <Button
+        className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+        variant="contained"
+        sx={{
+          backgroundColor:"success.light",
+          '&:hover': { backgroundColor: 'green' },
+          '&:active': { backgroundColor: 'green' },
+          '&:focus': { backgroundColor: 'success' },
+        }}
+        onClick={nextstep}
+      >
+        다음
+      </Button>
+    </Box>
     </Box>
   );
 }

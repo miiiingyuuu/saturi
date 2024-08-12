@@ -14,6 +14,7 @@ import {
   Box,
   Card,
   Typography,
+  LinearProgress,
 } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import api from "@/lib/axios";
@@ -368,6 +369,7 @@ export default function LessonPage() {
     setReportContent(""); // 입력 필드 초기화
   };
 
+  
   return (
     <Container 
       maxWidth="lg" 
@@ -376,8 +378,8 @@ export default function LessonPage() {
         height: "90vh",
         display:"flex",
         alignItems:"center",
-
-      }}>
+      }}
+    >
       <Card 
         sx={{
           display:"flex",
@@ -387,35 +389,31 @@ export default function LessonPage() {
           border: "3px solid lightgray",
           borderRadius: "15px",
           padding: "15px",
-      }}>
-        <Grid 
-          container 
-          spacing={3}
-          >
-              {/* 왼쪽 부분 */}
-              <Grid item xs={12} md={6}>
-                <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
-                <Box className="items-center flex flex-col">
-                  <Image
-                    src="/images/quokka.jpg"
-                    alt="귀여운 쿼카"
-                    width={800}
-                    height={800}
-                    className="object-contain max-w-full h-auto"
-                  />
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className="mt-4 text-nowrap"
-                    onClick={handleOpenModal}
-                  >
-                    문제 신고
-                  </Button>
-                </Box>
-                </Box>
-              </Grid>
-
-
+        }}
+      >
+        <Grid container spacing={3}>
+          {/* 왼쪽 부분 */}
+          <Grid item xs={12} md={6}>
+            <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
+              <Box className="items-center flex flex-col">
+                <Image
+                  src="/images/quokka.jpg"
+                  alt="귀여운 쿼카"
+                  width={800}
+                  height={800}
+                  className="object-contain max-w-full h-auto"
+                />
+                <Button
+                  variant="contained"
+                  color="success"
+                  className="mt-4 text-nowrap"
+                  onClick={handleOpenModal}
+                >
+                  문제 신고
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
 
           {/* 오른쪽 부분 */}
           <Grid item xs={12} md={6}>
@@ -423,64 +421,90 @@ export default function LessonPage() {
               className="flex justify-center items-center w-full h-full bg-gray-200"
               sx={{
                 borderRadius: "15px"
-            }}>
-            <Box 
-              className="rounded flex flex-col items-center justify-center"
-              sx={{
-                width: "80%",
-              }}>
-              <Typography 
-                className="text-3xl font-bold text-black mb-2"
+              }}
+            >
+              <Box 
+                className="rounded flex flex-col items-center justify-center"
+                sx={{
+                  width: "80%",
+                }}
               >
-                {currentIndex + 1}/5
-              </Typography>
-              {lessons.map((lesson, index) => (
-                <Typography
-                  variant="h1"
-                  key={lesson.lessonId}
-                  className="mb-2 text-4xl font-bold text-black"
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(currentIndex + 1) / lessons.length * 100} 
+                  className="w-4/5 mb-10 h-4 rounded-xl"
                   sx={{
-                    display: index === currentIndex ? "block" : "none",
-                    cursor: "pointer",
+                    border: "5px solid litegray",
+                    borderRadius: 5, // 테두리를 둥글게 설정
+                    "& .MuiLinearProgress-bar": {
+                      borderRadius: 5, // 진행 바 자체도 둥글게 설정
+                    },
                   }}
-                  onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
-                >
-                  {lesson.script}
-                </Typography>
-              ))}
-              <Box className="mt-8 flex space-x-2">
-                <Button
-                  className="text-nowrap"
-                  variant="contained"
-                  color={isRecording ? "error" : "success"}
-                  onClick={handleRecording}
-                >
-                  {isRecording ? "녹음 중지" : "녹음 시작"}
-                </Button>
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="text-nowrap"
-                  onClick={handleSkip}
-                >
-                  건너뛰기
-                </Button>
-                {currentIndex < lessons.length - 1 ? (
+                />
+
+                {lessons.map((lesson, index) => (
+                  <Box
+                    key={lesson.lessonId}
+                    sx={{
+                      display: index === currentIndex ? "flex" : "none",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleDownloadAndPlayAudio(lesson)} // Click handler to play audio
+                  >
+                    <Typography
+                      variant="h1"
+                      className="mb-2 text-4xl font-bold text-black text-nowrap"
+                    >
+                      {lesson.script}
+                    </Typography>
+                    <Image
+                      src="/images/speaker.png" // Path to your speaker icon
+                      alt="Speaker Icon"
+                      width={50} // Set appropriate width
+                      height={50} // Set appropriate height
+                      className="ml-2 mb-2"
+                    />
+                  </Box>
+                ))}
+                <Box className="mt-8 flex space-x-2">
+                  <Button
+                    className="text-nowrap rounded-full"
+                    variant="contained"
+                    color={isRecording ? "error" : "primary"}
+                    onClick={handleRecording}
+                  >
+                    <Image
+                      src="/images/mike.png"
+                      alt="마이크 아이콘"
+                      width={30}
+                      height={30}
+                    />
+                  </Button>
                   <Button
                     variant="contained"
                     color="success"
                     className="text-nowrap"
-                    onClick={handleNext}
+                    onClick={handleSkip}
                   >
-                    다음 문장
+                    건너뛰기
                   </Button>
-                ) : (
-                  <Button variant="contained" color="primary" onClick={handleNext}>
-                    결과 보기
-                  </Button>
-                )}
+                  {currentIndex < lessons.length - 1 ? (
+                    <Button
+                      variant="contained"
+                      color="success"
+                      className="text-nowrap"
+                      onClick={handleNext}
+                    >
+                      다음 문장
+                    </Button>
+                  ) : (
+                    <Button variant="contained" color="primary" onClick={handleNext}>
+                      결과 보기
+                    </Button>
+                  )}
+                </Box>
               </Box>
-            </Box>
             </Box>
           </Grid>
         </Grid>
@@ -514,17 +538,4 @@ export default function LessonPage() {
       </Box>
     </Container>
   );
-}
-
-// WebM Blob을 WAV로 변환하는 헬퍼 함수
-async function convertToWav(webmBlob: Blob) {
-  const arrayBuffer = await webmBlob.arrayBuffer();
-  const audioContext = new window.AudioContext();
-  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-  // audiobuffer-to-wav 라이브러리를 사용하여 AudioBuffer를 WAV로 변환
-  const wavArrayBuffer = toWav(audioBuffer);
-
-  // WAV ArrayBuffer를 Blob으로 변환
-  return new Blob([wavArrayBuffer], { type: "audio/wav" });
 }
