@@ -14,6 +14,8 @@ import {
   Box,
   Card,
   Typography,
+  LinearProgress,
+  IconButton,
 } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import api from "@/lib/axios";
@@ -38,7 +40,7 @@ export default function LessonPage() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [lessonGroupId, setLessonGroupId] = useState<number | null>(null);
   const [lessonGroupResultId, setLessonGroupResultId] = useState<number | null>(
-    null,
+    null
   );
   const [lessons, setLessons] = useState<Lesson[]>([]); // lessons의 타입을 객체 배열로 명시
   const [modalOpen, setModalOpen] = useState(false); // Modal state
@@ -59,15 +61,15 @@ export default function LessonPage() {
       const pathSegments = pathname.split("/");
       const selectedLocation = parseInt(
         pathSegments[pathSegments.length - 3],
-        10,
+        10
       );
       const selectedCategory = parseInt(
         pathSegments[pathSegments.length - 2],
-        10,
+        10
       );
       const selectedLessonGroupId = parseInt(
         pathSegments[pathSegments.length - 1],
-        10,
+        10
       );
       if (
         ![1, 2, 3].includes(selectedLocation) ||
@@ -87,14 +89,14 @@ export default function LessonPage() {
     if (lessonGroupId !== null) {
       api
         .post(`learn/lesson-group-result/${lessonGroupId}`)
-        .then(response => {
+        .then((response) => {
           if (response.status === 201) {
             // 레슨 그룹 아이디 설정
             setLessonGroupResultId(response.data.lessonGroupResultId);
             console.log(response.data.lessonGroupResultId);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("레슨 그룹 결과 테이블 생성 실패오류 :", error);
         });
     }
@@ -143,15 +145,16 @@ export default function LessonPage() {
     if (locationId !== null && categoryId !== null && lessonGroupId !== null) {
       api
         .get(
-          `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`,
+          `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`
         )
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             console.log("category의 lessonGroups: ", response);
 
             // Find the lesson group that matches the lessonGroupId
             const matchedGroup = response.data.find(
-              ( group: { lessonGroupId: number; }) => group.lessonGroupId === lessonGroupId,
+              (group: { lessonGroupId: number }) =>
+                group.lessonGroupId === lessonGroupId
             );
 
             if (matchedGroup) {
@@ -165,7 +168,7 @@ export default function LessonPage() {
             }
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("API 요청 중 오류 발생:", error);
         });
     }
@@ -187,7 +190,7 @@ export default function LessonPage() {
             ""
           )
         );
-  
+
         // google-storage 에 저장
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
@@ -196,35 +199,35 @@ export default function LessonPage() {
           },
           body: JSON.stringify({ audioData: base64AudioData }),
         });
-  
+
         if (!uploadResponse.ok) {
           throw new Error("Failed to upload file");
         }
-  
+
         const result = await uploadResponse.json();
         console.log("File uploaded with name:", result.filename);
-  
+
         // 현재 레슨 정보 가져오기
         const currentLesson = lessons[currentIndex];
         if (!currentLesson) {
           console.error("Current lesson not found.");
           return;
         }
-  
+
         // 정답파일명, 음성파일명을 django 로 보내서 분석결과 수집
         const analysisResponse = await apiAi.post("/audio/analyze/", {
           answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
           userVoiceFileName: `${result.filename}`,
-          answerScript: `${currentLesson.script}`
+          answerScript: `${currentLesson.script}`,
         });
         console.log(analysisResponse);
         if (analysisResponse.status !== 200) {
           throw new Error("Failed to analyze audio");
         }
-  
+
         // 분석 결과
         console.log(analysisResponse.data);
-  
+
         // 개별 레슨 결과 전송
         const requestBody = {
           lessonId: currentLessonId,
@@ -240,15 +243,15 @@ export default function LessonPage() {
           // graphInfoY: "vocie_info_Y",
           script: analysisResponse.data.userScript,
         };
-  
+
         const lessonResponse = await api.post("/learn/lesson", requestBody);
-  
+
         if (lessonResponse.status !== 201) {
           throw new Error("Failed to save lesson result");
         }
-  
+
         console.log("Lesson result saved:", lessonResponse.data);
-  
+
         // 모든 레슨을 완료한 경우, 결과 보기로 이동
         if (currentIndex >= lessons.length - 1) {
           // 이 부분을 수정
@@ -257,7 +260,7 @@ export default function LessonPage() {
           const newIndex = currentIndex + 1;
           setCurrentIndex(newIndex);
           setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
-          audioBlobRef.current = null; // Move to next lesson only if audio is uploaded successfully
+          audioBlobRef.current = null; // Move to next lesson only if audio is uploaded primaryfully
         }
       } catch (error) {
         const err = error as any; // error를 any 타입으로 캐스팅
@@ -268,7 +271,6 @@ export default function LessonPage() {
       alert("녹음이 되지 않았어요"); // 녹음이 없을 때 경고창 표시
     }
   };
-  
 
   // 녹음 후 구글 스토리지로 저장
   const handleRecording = async () => {
@@ -285,7 +287,7 @@ export default function LessonPage() {
         const mediaRecorder = new MediaRecorder(stream);
         mediaRecorderRef.current = mediaRecorder;
 
-        mediaRecorder.ondataavailable = event => {
+        mediaRecorder.ondataavailable = (event) => {
           audioChunksRef.current.push(event.data);
         };
 
@@ -307,7 +309,7 @@ export default function LessonPage() {
   const handleResult = async () => {
     if (lessonGroupResultId !== null) {
       router.push(
-        `${pathname}/result?lessonGroupResultId=${lessonGroupResultId}`,
+        `${pathname}/result?lessonGroupResultId=${lessonGroupResultId}`
       );
     } else {
       console.error("lessonGroupResultId가 설정되지 않았습니다.");
@@ -322,10 +324,10 @@ export default function LessonPage() {
     // 건너뛰기
     api
       .put(`learn/lesson/${currentLessonId}`)
-      .then(response => {
+      .then((response) => {
         console.log(response);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         console.log(currentLessonId);
       });
@@ -336,7 +338,7 @@ export default function LessonPage() {
       setCurrentIndex(newIndex);
       setCurrentLessonId(lessons[newIndex].lessonId); // currentLessonId 업데이트
     } else {
-      handleResult(); 
+      handleResult();
     }
   };
 
@@ -349,12 +351,12 @@ export default function LessonPage() {
     console.log(requestBody);
     api
       .post(`learn/lesson/claim`, requestBody)
-      .then(response => {
+      .then((response) => {
         console.log(response);
         setModalOpen(false); // 모달 닫기
         setReportContent(""); // 입력 필드 초기화
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -369,97 +371,137 @@ export default function LessonPage() {
   };
 
   return (
-    <Container 
-      maxWidth="lg" 
+    <Container
+      maxWidth="lg"
       sx={{
         minHeight: "700px",
         height: "90vh",
-        display:"flex",
-        alignItems:"center",
-
-      }}>
-      <Card 
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <Card
         sx={{
-          display:"flex",
-          alignItems:"center",
+          display: "flex",
+          alignItems: "center",
           minHeight: "560px",
           maxHeight: "700px",
           border: "3px solid lightgray",
           borderRadius: "15px",
           padding: "15px",
-      }}>
-        <Grid 
-          container 
-          spacing={3}
-          >
-              {/* 왼쪽 부분 */}
-              <Grid item xs={12} md={6}>
-                <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
-                <Box className="items-center flex flex-col">
-                  <Image
-                    src="/images/quokka.jpg"
-                    alt="귀여운 쿼카"
-                    width={800}
-                    height={800}
-                    className="object-contain max-w-full h-auto"
-                  />
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className="mt-4 text-nowrap"
-                    onClick={handleOpenModal}
-                  >
-                    문제 신고
-                  </Button>
-                </Box>
-                </Box>
-              </Grid>
-
-
-
+          position: "relative", // Allow absolute positioning inside the card
+        }}
+      >
+        <Grid container spacing={3}>
+          {/* 왼쪽 부분 */}
+          <Grid item xs={12} md={6}>
+            <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
+              <Box className="items-center flex flex-col">
+                <Image
+                  src="/images/quokka.jpg"
+                  alt="귀여운 쿼카"
+                  width={800}
+                  height={800}
+                  className="object-contain max-w-full h-auto"
+                />
+              </Box>
+            </Box>
+          </Grid>
+  
           {/* 오른쪽 부분 */}
           <Grid item xs={12} md={6}>
-            <Box 
+            <Box
               className="flex justify-center items-center w-full h-full bg-gray-200"
               sx={{
-                borderRadius: "15px"
-            }}>
-            <Box 
-              className="rounded flex flex-col items-center justify-center"
-              sx={{
-                width: "80%",
-              }}>
-              <Typography 
-                className="text-3xl font-bold text-black mb-2"
+                borderRadius: "15px",
+                position: "relative", // For absolute positioning of the buttons
+              }}
+            >
+              <Box
+                className="rounded flex flex-col items-center justify-center"
+                sx={{
+                  width: "80%",
+                }}
               >
-                {currentIndex + 1}/5
-              </Typography>
-              {lessons.map((lesson, index) => (
-                <Typography
-                  variant="h1"
-                  key={lesson.lessonId}
-                  className="mb-2 text-4xl font-bold text-black"
-                  sx={{
-                    display: index === currentIndex ? "block" : "none",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
-                >
-                  {lesson.script}
+                <Typography className="text-3xl font-bold text-black mb-2">
+                  {`Lesson ${currentIndex + 1} of ${lessons.length}`}
                 </Typography>
-              ))}
-              <Box className="mt-8 flex space-x-2">
-                <Button
-                  className="text-nowrap"
-                  variant="contained"
-                  color={isRecording ? "error" : "success"}
+                <LinearProgress
+                  variant="determinate"
+                  value={((currentIndex + 1) / lessons.length) * 100}
+                  className="w-4/5 mb-10 h-4 rounded-xl"
+                  sx={{
+                    border: "5px solid litegray",
+                    borderRadius: 5, // 테두리를 둥글게 설정
+                    "& .MuiLinearProgress-bar": {
+                      borderRadius: 5, // 진행 바 자체도 둥글게 설정
+                    },
+                  }}
+                />
+  
+                {lessons.map((lesson, index) => (
+                  <Box
+                    key={lesson.lessonId}
+                    sx={{
+                      display: index === currentIndex ? "flex" : "none",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleDownloadAndPlayAudio(lesson)} // Click handler to play audio
+                  >
+                    <Typography
+                      variant="h1"
+                      className="mb-2 text-4xl font-bold text-black text-nowrap"
+                    >
+                      {lesson.script}
+                    </Typography>
+                    <Image
+                      src="/images/speaker.png" // Path to your speaker icon
+                      alt="Speaker Icon"
+                      width={50} // Set appropriate width
+                      height={50} // Set appropriate height
+                      className="ml-2 mb-2"
+                    />
+                  </Box>
+                ))}
+  
+                {/* 마이크 버튼을 크게 중앙에 배치 */}
+                <IconButton
+                  className={`text-nowrap rounded-full mt-8 ${isRecording ? "glowing-border" : ""}`}
                   onClick={handleRecording}
+                  sx={{
+                    width: "80px",
+                    height: "80px",
+                    minWidth: "80px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {isRecording ? "녹음 중지" : "녹음 시작"}
-                </Button>
+                  <Image
+                    src="/images/mike.png"
+                    alt="마이크 아이콘"
+                    width={50}
+                    height={50}
+                  />
+                </IconButton>
+              </Box>
+  
+              {/* 건너뛰기와 다음 문장 버튼을 오른쪽 아래에 배치 */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: "10px",
+                  right: "10px",
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "10px",
+                }}
+              >
                 <Button
                   variant="contained"
-                  color="success"
+                  color="primary"
                   className="text-nowrap"
                   onClick={handleSkip}
                 >
@@ -468,23 +510,46 @@ export default function LessonPage() {
                 {currentIndex < lessons.length - 1 ? (
                   <Button
                     variant="contained"
-                    color="success"
+                    color="primary"
                     className="text-nowrap"
                     onClick={handleNext}
                   >
                     다음 문장
                   </Button>
                 ) : (
-                  <Button variant="contained" color="primary" onClick={handleNext}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleNext}
+                  >
                     결과 보기
                   </Button>
                 )}
               </Box>
             </Box>
-            </Box>
           </Grid>
         </Grid>
-
+  
+        {/* 문제 신고 버튼 - Positioning at the bottom right of the card */}
+        <Button
+          variant="contained"
+          color="error"
+          sx={{
+            position: "absolute",
+            bottom: "10px",
+            right: "10px",
+            width: "40px",
+            height: "40px",
+            minWidth: "40px",
+            borderRadius: "50%",
+            padding: 0,
+            margin: 0,
+          }}
+          onClick={handleOpenModal}
+        >
+          !
+        </Button>
+  
         {/* 문제 신고 모달 */}
         <Dialog open={modalOpen} onClose={handleCloseModal}>
           <DialogTitle>문제 신고</DialogTitle>
@@ -496,7 +561,7 @@ export default function LessonPage() {
               type="text"
               fullWidth
               value={reportContent}
-              onChange={e => setReportContent(e.target.value)}
+              onChange={(e) => setReportContent(e.target.value)}
             />
           </DialogContent>
           <DialogActions>
@@ -514,6 +579,7 @@ export default function LessonPage() {
       </Box>
     </Container>
   );
+  
 }
 
 // WebM Blob을 WAV로 변환하는 헬퍼 함수
@@ -528,3 +594,4 @@ async function convertToWav(webmBlob: Blob) {
   // WAV ArrayBuffer를 Blob으로 변환
   return new Blob([wavArrayBuffer], { type: "audio/wav" });
 }
+

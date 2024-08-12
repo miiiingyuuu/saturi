@@ -117,8 +117,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   useEffect(() => {
     const client = clientRef.current;
-    if (participants?.length>1 && remainCount<1) {
-      client?.publish({
+    if (client && participants?.length>1 && remainCount<=1) {
+      client.publish({
         destination: "/pub/room",
         body: JSON.stringify({
           chatType: "TERMINATED",
@@ -129,9 +129,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         }
       })
       alert("인원이 부족해 게임이 종료되었습니다. \n 메인 화면으로 되돌아갑니다.")
-      router.replace("/")
+      router.push("/")
     }
-  }, [remainCount]);
+  }, [remainCount,participants]);
 
   // now(현재 문제 번호)가 바뀔때마다 quizzes 배열에서 문제를 갱신하고,
   // 문제 번호가 10인 경우(마지막 문제까지 다 푼 경우) 게임을 종료시킨다.
@@ -172,8 +172,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           if (Array.isArray(body)) {
             setQuizzes(body);
           } else {
+            setParticipants(body.participants);
             if (!isStart && body.chatType === "START") {
-              setIsStart(true)
+               setIsStart(true)
             }
 
             const yourStatus = body.participants.find((p: any) => p.nickName === getCookie("nickname"))
@@ -181,7 +182,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               alert("이미 나가셨는데요")
               router.replace("/")
             }
-            setParticipants(body.participants);
+
           }});
 
         // 입장
@@ -264,7 +265,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
       // 게임 종료 시
       const onDisconnect = () => {
-        client?.publish({
+        clientRef.current?.publish({
           destination: "/pub/room",
           body: JSON.stringify({
             roomId,
@@ -342,8 +343,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   }, []);
 
   useEffect(() => {
+    if (!isStart) {
     setTimeout(() => setCurrentTipIndex(prev => (prev+1)%tips?.length||1), 5000)
-  }, [currentTipIndex]);
+    }
+  }, [isStart,currentTipIndex]);
 
   return (
     <Box>      

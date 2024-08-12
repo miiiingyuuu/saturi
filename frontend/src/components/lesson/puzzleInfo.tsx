@@ -54,16 +54,30 @@ export default function PuzzleInfo({
           marginBottom: 2
         }}
       >
-        <Typography variant="h6">평균 정확도</Typography>
+        <Typography variant="h6">{avgAccuracy ? "평균 정확도" : "지금 학습해보세요!"}</Typography>
         <br />
-        <CircularProgress                    
-          variant="determinate"
-          value={avgAccuracy}
-          size={100} // 크기 조절
-          thickness={40} // 두께 조절
-          color="success" // 색상 설정
-        />
-        <Typography variant="body1">{avgAccuracy}%</Typography> {/* 정확도 표시 */}
+        <Box position="relative" display="inline-flex">
+  <CircularProgress
+    variant="determinate"
+    value={100} // 배경용: 항상 전체 표시
+    size={100}
+    thickness={22}
+    sx={{
+      color: "#e0e0e0", // 배경 색상 설정
+      position: "absolute",
+      left: 0,
+    }}
+  />
+  <CircularProgress
+    variant="determinate"
+    value={avgAccuracy}
+    size={100}
+    thickness={22}
+    color="primary"
+  />
+</Box>
+
+        <Typography variant="body1">{avgAccuracy ? `${avgAccuracy}%`  : ""}</Typography> {/* 정확도 표시 */}
       </Box>
       <Box
         sx={{
