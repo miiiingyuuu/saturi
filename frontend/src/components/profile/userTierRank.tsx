@@ -99,7 +99,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
         <Box sx={{ top: 16, left: 16, display: 'flex', alignItems: 'center', marginTop: 2 }}>
           <FaCrown style={{ color: 'gold', marginRight: 8, fontWeight: 'bold' }} />
           <Typography variant="h6" fontWeight="bold" >
-            {userExpInfo?.userRank ? `전체 ${userExpInfo.userRank}위` : 'Out of Rank'}
+            {userExpInfo?.userRank ? `전체 ${userExpInfo.userRank}위` : 'UnRanked'}
           </Typography>
         </Box>
       )}

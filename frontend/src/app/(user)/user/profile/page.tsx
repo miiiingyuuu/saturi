@@ -15,6 +15,7 @@ import UserTierRank from "@/components/profile/userTierRank";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import api from "@/lib/axios";
+import Chatbot from "@/components/chatbot/chatbot";
 
 
 // Dashboard type 선언
@@ -135,6 +136,9 @@ export default function ProfilePage() {
           </Grid>
         </Grid>
       </Grid>
+      <Box>
+        <Chatbot />
+      </Box>
     </Box>
   );
 }

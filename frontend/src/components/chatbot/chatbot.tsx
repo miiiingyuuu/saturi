@@ -12,15 +12,16 @@ import {
   ListItemText,
   Fab,
   Grow,
-  useTheme
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown from 'react-markdown';
 
 const INITIAL_MESSAGE = {
-    sender: '챗봇',
-    content: '사투리를 입력하시면 표준어를 알려드립니다.'
+    sender: '사투리무새',
+    content: '사투리를 단어로 입력하시면 표준어를 알려드립니다.'
   };
 
 const Chatbot: React.FC = () => {
@@ -30,6 +31,7 @@ const Chatbot: React.FC = () => {
   const chatMessagesRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const toggleChatbot = () => {
     setChatbotVisible(!chatbotVisible);
@@ -135,10 +137,17 @@ const Chatbot: React.FC = () => {
         onClick={toggleChatbot} 
         aria-label="chat"
         sx={{ 
+          mb: 2,
+          mr: 2,
           position: 'absolute', 
           bottom: 0, 
           right: 0,
-          display: chatbotVisible ? 'none' : 'flex' 
+          display: chatbotVisible ? 'none' : 'flex',
+          width: 80,  // 버튼 크기 증가
+          height: 80, // 버튼 크기 증가
+          '& .MuiSvgIcon-root': {
+            fontSize: 40  // 아이콘 크기 증가
+          }
         }}
       >
         <FlutterDashIcon />
@@ -154,8 +163,10 @@ const Chatbot: React.FC = () => {
             position: 'absolute',
             bottom: 0,
             right: 0,
-            width: 300,
-            height: 400,
+            width: isMobile ? '100vw' : 400,
+            height: isMobile ? '100vh' : 600,
+            maxWidth: '100vw',
+            maxHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
