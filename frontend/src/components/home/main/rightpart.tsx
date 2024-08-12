@@ -5,10 +5,10 @@ import Image from "next/image"
 import api from '@/lib/axios';
 import UserTierRank from '@/components/profile/userTierRank';
 import { getCookie } from 'cookies-next';
+import useConnect from "@/hooks/useConnect";
 
 export default function RightPart({selectedRegion} : RightPartProps) {
   const router = useRouter();
-
   const profileImage = `/main_profile/${getCookie("birdId")}.png`
 
   function GameStartButton() {
@@ -40,9 +40,8 @@ export default function RightPart({selectedRegion} : RightPartProps) {
       locationId: region
     })
     .then(response => {
-      router.push(`game/in-queue/${response.data.roomId}`)
+      router.replace(`game/in-queue/${response.data.roomId}`)
     })
-    .catch(err => console.log(err))
   }
 
   return (

@@ -37,9 +37,7 @@ export default function Header() {
   function handleLogoClick() {
     const accessToken = sessionStorage.getItem("accessToken");
     const targetPath = accessToken ? '/main' : '/start';
-    if (pathname !== targetPath) {
-      router.push(targetPath);
-    }
+    window.location.href = targetPath; // 또 오류 나면... 어쩔 수 없이 쳐내야지 다른 방법 찾기
   }
 
   const updateUserInfo = async () => {
@@ -57,7 +55,7 @@ export default function Header() {
       setNickName(userData.nickname);
     } catch (error) {
       console.error("Failed to fetch user info:", error);
-      setProfileImage("/default-profile.png");
+      // setProfileImage("/default-profile.png");
     } finally {
       setProfileLoading(false);
     }
@@ -127,7 +125,7 @@ export default function Header() {
                   ) : (
                     <Avatar
                       sizes="large" 
-                      src={profileImage ? `/mini_profile/${profileImage}.png` : "/default-profile.png"} 
+                      src={profileImage ? `/mini_profile/${profileImage}.png` : "이미지가 없습니다."} 
                     />
                   )}
                 </IconButton>

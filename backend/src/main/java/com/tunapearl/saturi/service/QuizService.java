@@ -11,6 +11,7 @@ import com.tunapearl.saturi.dto.quiz.QuizReadResponseDTO;
 import com.tunapearl.saturi.repository.LocationRepository;
 import com.tunapearl.saturi.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -46,6 +48,7 @@ public class QuizService {
         if(idList.size() < 10) throw new RuntimeException(String.format("Find Ten Quiz Randomly: 문제가 부족합니다: %d", locationId));
 
         Collections.shuffle(idList);
+        log.info("random id list: {}", idList.subList(0, 10));
         return idList.subList(0, 10);
     }
 

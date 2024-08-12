@@ -298,7 +298,9 @@ public class UserService {
     public UserInfoResponseDTO getUserProfile(Long userId) {
         UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
         log.info("find User Profile {}", findUser);
-        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getLocationId(), findUser.getBird().getId());
+        Boolean isSocial = false;
+        if(findUser.getPassword() == null) isSocial = true;
+        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getLocationId(), findUser.getBird().getId(), isSocial);
     }
 
     /**
@@ -387,8 +389,7 @@ public class UserService {
             mostRecentLessonResult.getLessonDt().toLocalDate().equals(LocalDate.now().minusDays(1))) { // 혹은 어제 학습했는지
             learnDays++;
             LocalDate currentDate = mostRecentLessonResult.getLessonDt().toLocalDate();
-            for (int i = 0; i < lessonResults.size(); i++) {
-                if(i == 0) continue;
+            for (int i = 1; i < lessonResults.size(); i++) {
                 if(lessonResults.get(i).getLessonDt().toLocalDate().equals(currentDate.minusDays(1))) {
                     learnDays++;
                     currentDate = lessonResults.get(i).getLessonDt().toLocalDate();
@@ -507,6 +508,14 @@ public class UserService {
     @Transactional
     public void changePasswordByTmpPassword(UserEntity user, String tmpPassword) {
         user.setPassword(PasswordEncoder.encrypt(user.getEmail(), tmpPassword));
+    }
+
+    public boolean checkIsExistUserEmail(String email) {
+        Optional<List<UserEntity>> findUserByEmail = userRepository.findByEmail(email);
+        if(findUserByEmail.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }
 

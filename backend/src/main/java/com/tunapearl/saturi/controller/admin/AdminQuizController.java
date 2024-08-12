@@ -47,7 +47,7 @@ public class AdminQuizController {
     public ResponseEntity<?> getRandomQuiz(@ModelAttribute QuizRandomReadRequestDto randomRequestDto){
         log.info("GET, get random quiz: {}", randomRequestDto);
         List<Long> quizIdList = quizService.findRandomIdByLocation(randomRequestDto.getLocationId());
-        grQuizService.poseTenQuiz(randomRequestDto.getRoomId(), quizIdList);
+        grQuizService.saveTenRandomQuiz(randomRequestDto.getRoomId(), quizIdList);
         return ResponseEntity.ok(String.format("랜덤 퀴즈 10개 저장 완료: %d", randomRequestDto.getRoomId()));
     }
 

@@ -15,6 +15,7 @@ import UserTierRank from "@/components/profile/userTierRank";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import api from "@/lib/axios";
+import Chatbot from "@/components/chatbot/chatbot";
 
 
 // Dashboard type 선언
@@ -66,14 +67,11 @@ export default function ProfilePage() {
           throw new Error('Access token not found');
         }
 
-        // 실제 API 호출
         const response = await api.get('/user/auth/dashboard', {
           headers: { Authorization: `Bearer ${accessToken}` }
         });
         setDashboardData(response.data);
-        console.log('data', response)
-        // 샘플 데이터 사용
-        // setDashboardData(sampleData as DashboardData);
+
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       } finally {
@@ -138,6 +136,9 @@ export default function ProfilePage() {
           </Grid>
         </Grid>
       </Grid>
+      <Box>
+        <Chatbot />
+      </Box>
     </Box>
   );
 }

@@ -23,4 +23,5 @@ public class UserInfoResponseDTO {
     private AgeRange ageRange;
     private Long locationId;
     private Long birdId;
+    private Boolean isSocial;
 }

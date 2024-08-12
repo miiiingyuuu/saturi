@@ -37,7 +37,9 @@ public class RedisPublisher {
 
         if(responseDTO.getChatType()== MessageType.ENTER)
             message.put("subType", "ENTER");
-        else message.put("subType", "START");
+        else if(responseDTO.getChatType()== MessageType.START)
+            message.put("subType", "START");
+        else message.put("subType", "EXIT");
 
         message.put("roomId",roomId);
         message.put("data", responseDTO);

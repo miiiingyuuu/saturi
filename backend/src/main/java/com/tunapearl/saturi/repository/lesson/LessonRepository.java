@@ -2,18 +2,13 @@ package com.tunapearl.saturi.repository.lesson;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.*;
-import com.tunapearl.saturi.dto.lesson.LessonSaveRequestDTO;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
-import java.util.OptionalDouble;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,8 +18,12 @@ public class LessonRepository {
     private final JPAQueryFactory queryFactory;
 
     public Optional<LessonEntity> findById(Long lessonId) {
-        LessonEntity lessonEntity = em.find(LessonEntity.class, lessonId);
-        return lessonEntity == null ? Optional.empty() : Optional.of(lessonEntity);
+        QLessonEntity ql = new QLessonEntity("l");
+        LessonEntity result = queryFactory.selectFrom(ql)
+                .join(ql.lessonGroup).fetchJoin()
+                .where(ql.lessonId.eq(lessonId))
+                .fetchOne();
+        return result == null ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<LessonCategoryEntity> findByIdLessonCategory(Long lessonCategoryId) {
@@ -73,24 +72,45 @@ public class LessonRepository {
         return lessonGroup.lessonCategory.lessonCategoryId.eq(lessonCategoryId);
     }
 
-    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserId(Long userId) {
-        List<LessonGroupResultEntity> lessonGroupResult = em.createQuery("select gr from LessonGroupResultEntity gr" +
-                        " join fetch gr.lessonGroup lg" +
-                        " where gr.user.userId = :userId and gr.isCompleted = true", LessonGroupResultEntity.class)
-                .setParameter("userId", userId)
-                .getResultList();
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdWhereLocationAndCategory(Long userId, Long locationId, Long lessonCategoryId) {
+        QLessonGroupResultEntity qLessonGroupResult = new QLessonGroupResultEntity("lgr");
+        List<LessonGroupResultEntity> result = queryFactory.selectFrom(qLessonGroupResult)
+                .join(qLessonGroupResult.lessonGroup).fetchJoin()
+                .join(qLessonGroupResult.user).fetchJoin()
+                .where(
+                        qLessonGroupResult.lessonGroup.location.locationId.eq(locationId),
+                        qLessonGroupResult.lessonGroup.lessonCategory.lessonCategoryId.eq(lessonCategoryId),
+                        qLessonGroupResult.user.userId.eq(userId),
+                        qLessonGroupResult.isCompleted.eq(true)
+                ).fetch();
 
-        return lessonGroupResult.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResult);
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+
 
     }
 
+    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdWithoutIsCompleted(Long userId, Long locationId, Long lessonCategoryId) {
+        QLessonGroupResultEntity qlgr = new QLessonGroupResultEntity("lgr");
+        List<LessonGroupResultEntity> result = queryFactory.selectFrom(qlgr)
+                .join(qlgr.lessonGroup).fetchJoin()
+                .join(qlgr.user).fetchJoin()
+                .where(
+                        qlgr.user.userId.eq(userId),
+                        qlgr.lessonGroup.location.locationId.eq(locationId),
+                        qlgr.lessonGroup.lessonCategory.lessonCategoryId.eq(lessonCategoryId))
+                .fetch();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+
     public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdWithoutIsCompleted(Long userId) {
-        List<LessonGroupResultEntity> lessonGroupResult = em.createQuery("select gr from LessonGroupResultEntity gr" +
-                        " join fetch gr.lessonGroup lg" +
-                        " where gr.user.userId = :userId", LessonGroupResultEntity.class)
-                .setParameter("userId", userId)
-                .getResultList();
-        return lessonGroupResult.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResult);
+        QLessonGroupResultEntity qlgr = new QLessonGroupResultEntity("lgr");
+        List<LessonGroupResultEntity> result = queryFactory.selectFrom(qlgr)
+                .join(qlgr.lessonGroup).fetchJoin()
+                .join(qlgr.user).fetchJoin()
+                .where(
+                        qlgr.user.userId.eq(userId))
+                .fetch();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdList(List<Long> lessonGroupResultIds) {
@@ -112,7 +132,14 @@ public class LessonRepository {
     }
 
     public Optional<LessonGroupResultEntity> findLessonGroupResultById(Long lessonGroupResultId) {
-        return Optional.ofNullable(em.find(LessonGroupResultEntity.class, lessonGroupResultId));
+        QLessonGroupResultEntity qlgr = new QLessonGroupResultEntity("lgr");
+        LessonGroupResultEntity result = queryFactory.selectFrom(qlgr)
+                .join(qlgr.lessonGroup).fetchJoin()
+                .join(qlgr.user).fetchJoin()
+                .where(qlgr.lessonGroupResultId.eq(lessonGroupResultId))
+                .fetchOne();
+
+        return result == null ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<Long> saveLessonForSkipped(LessonResultEntity lessonResultSkipped) {
@@ -121,31 +148,61 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonResultEntity>> findLessonResultByLessonIdAndLessonGroupResultId(Long lessonId, Long lessonGroupResultId) {
-        List<LessonResultEntity> resultList = em.createQuery("select lr from LessonResultEntity lr " +
-                        " join fetch lr.lesson" +
-                        " join fetch lr.lessonGroupResult " +
-                        " left join fetch lr.lessonRecordFile" +
-                        " left join fetch lr.lessonRecordGraph" +
-                        " where lr.lesson.lessonId = :lessonId and" +
-                        " lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
-                .setParameter("lessonId", lessonId)
-                .setParameter("lessonGroupResultId", lessonGroupResultId)
-                .getResultList();
+        QLessonResultEntity qlr = new QLessonResultEntity("lr");
 
-        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList);
+        List<LessonResultEntity> result = queryFactory.selectFrom(qlr)
+                .join(qlr.lesson).fetchJoin()
+                .join(qlr.lessonGroupResult).fetchJoin()
+                .leftJoin(qlr.lessonRecordFile).fetchJoin()
+                .leftJoin(qlr.lessonRecordGraph).fetchJoin()
+                .where(
+                        qlr.lesson.lessonId.eq(lessonId),
+                        qlr.lessonGroupResult.lessonGroupResultId.eq(lessonGroupResultId))
+                .fetch();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+
+//        List<LessonResultEntity> resultList = em.createQuery("select lr from LessonResultEntity lr " +
+//                        " join fetch lr.lesson" +
+//                        " join fetch lr.lessonGroupResult " +
+//                        " left join fetch lr.lessonRecordFile" +
+//                        " left join fetch lr.lessonRecordGraph" +
+//                        " where lr.lesson.lessonId = :lessonId" +
+//                        " and lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
+//                .setParameter("lessonId", lessonId)
+//                .setParameter("lessonGroupResultId", lessonGroupResultId)
+//                .getResultList();
+//
+//        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList);
     }
 
-    public Optional<List<LessonGroupResultEntity>> findLessonGroupResultByUserIdAndLessonGroupId(Long userId, Long lessonGroupId) {
-        List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr" +
-                        " join fetch lgr.user" +
-                        " join fetch lgr.lessonGroup " +
-                        " where lgr.user.userId = :userId" +
-                        " and lgr.lessonGroup.lessonGroupId = :lessonGroupId", LessonGroupResultEntity.class)
-                .setParameter("userId", userId)
-                .setParameter("lessonGroupId", lessonGroupId)
-                .getResultList();
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonIdAndLessonGroupResultId(Long lessonId, Long lessonGroupResultId, Boolean isSkipped) {
+        QLessonResultEntity qlr = new QLessonResultEntity("lr");
 
+        List<LessonResultEntity> result = queryFactory.selectFrom(qlr)
+                .join(qlr.lesson).fetchJoin()
+                .join(qlr.lessonGroupResult).fetchJoin()
+                .leftJoin(qlr.lessonRecordFile).fetchJoin()
+                .leftJoin(qlr.lessonRecordGraph).fetchJoin()
+                .where(
+                        qlr.lesson.lessonId.eq(lessonId),
+                        qlr.lessonGroupResult.lessonGroupResultId.eq(lessonGroupResultId),
+                        qlr.isSkipped.eq(isSkipped))
+                .fetch();
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    }
+
+    public Optional<LessonGroupResultEntity> findLessonGroupResultByUserIdAndLessonGroupId(Long userId, Long lessonGroupId) {
+        QLessonGroupResultEntity qlgr = new QLessonGroupResultEntity("lgr");
+
+        LessonGroupResultEntity result = queryFactory.selectFrom(qlgr)
+                .join(qlgr.user).fetchJoin()
+                .join(qlgr.lessonGroup).fetchJoin()
+                .where(
+                        qlgr.user.userId.eq(userId),
+                        qlgr.lessonGroup.lessonGroupId.eq(lessonGroupId))
+                .fetchOne();
+
+        return result == null ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<Long> saveLessonResult(LessonResultEntity lessonResult) {
@@ -202,12 +259,16 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonResultEntity>> findAllLessonResult() {
-        List<LessonResultEntity> lessonResults = em.createQuery("select lr from LessonResultEntity lr" +
-                        " join fetch lr.lessonRecordFile" +
-                        " join fetch lr.lessonRecordGraph ", LessonResultEntity.class)
-                .getResultList();
+        QLessonResultEntity qlr = new QLessonResultEntity("lr");
 
-        return lessonResults.isEmpty() ? Optional.empty() : Optional.of(lessonResults);
+        List<LessonResultEntity> result = queryFactory.selectFrom(qlr)
+                .join(qlr.lesson).fetchJoin()
+                .join(qlr.lessonGroupResult).fetchJoin()
+                .join(qlr.lessonRecordFile).fetchJoin()
+                .join(qlr.lessonRecordGraph).fetchJoin()
+                .fetch();
+
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdNotSkippedSortedByRecentDt(Long lessonGroupResultId) {
@@ -222,37 +283,55 @@ public class LessonRepository {
     }
 
     public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultIdSortedByRecentDt(Long lessonGroupResultId) {
-        List<LessonResultEntity> result = em.createQuery("select lr from LessonResultEntity lr " +
-                        " left join fetch lr.lessonRecordFile " +
-                        " left join fetch lr.lessonRecordGraph " +
-                        " where lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId" +
-                        " order by lr.lessonDt desc", LessonResultEntity.class)
-                .setParameter("lessonGroupResultId", lessonGroupResultId)
-                .getResultList();
+        QLessonResultEntity qlr = new QLessonResultEntity("lr");
+
+        List<LessonResultEntity> result = queryFactory.selectFrom(qlr)
+                .join(qlr.lesson).fetchJoin()
+                .join(qlr.lessonGroupResult).fetchJoin()
+                .leftJoin(qlr.lessonRecordFile).fetchJoin()
+                .leftJoin(qlr.lessonRecordGraph).fetchJoin()
+                .where(qlr.lessonGroupResult.lessonGroupResultId.eq(lessonGroupResultId))
+                .orderBy(qlr.lessonDt.desc())
+                .fetch();
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     public Optional<List<LessonGroupResultEntity>> findAllLessonGroupResult() {
-        List<LessonGroupResultEntity> result = em.createQuery("select lgr from LessonGroupResultEntity lgr", LessonGroupResultEntity.class)
-                .getResultList();
+        QLessonGroupResultEntity qlgr = new QLessonGroupResultEntity("lgr");
+
+        List<LessonGroupResultEntity> result = queryFactory.selectFrom(qlgr)
+                .join(qlgr.lessonGroup).fetchJoin()
+                .join(qlgr.lessonGroup.location).fetchJoin()
+                .fetch();
+
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
-    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(Long lessonGroupResultId) {
-        List<LessonResultEntity> lessonGroupResult = em.createQuery("select lr from LessonResultEntity lr" +
-                        " join fetch lr.lessonGroupResult" +
-                        " join fetch lr.lessonRecordFile " +
-                        " join fetch lr.lessonRecordGraph " +
-                        " where lr.isSkipped = false and lr.lessonGroupResult.lessonGroupResultId = :lessonGroupResultId", LessonResultEntity.class)
-                .setParameter("lessonGroupResultId", lessonGroupResultId)
-                .getResultList();
+    public Optional<List<LessonResultEntity>> findLessonResultByLessonGroupResultId(List<Long> lessonGroupResultIdList) {
+        QLessonResultEntity qlr = new QLessonResultEntity("lr");
+        List<LessonResultEntity> result = queryFactory.selectFrom(qlr)
+                .join(qlr.lesson).fetchJoin()
+                .join(qlr.lessonGroupResult).fetchJoin()
+                .leftJoin(qlr.lessonRecordFile).fetchJoin()
+                .leftJoin(qlr.lessonRecordGraph).fetchJoin()
+                .where(
+                        qlr.lessonGroupResult.lessonGroupResultId.in(lessonGroupResultIdList),
+                        qlr.isSkipped.eq(false)
+                )
+                .fetch();
 
-        return lessonGroupResult.isEmpty() ? Optional.empty() : Optional.of(lessonGroupResult);
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
-    public Optional<List<LessonEntity>> findAllByLessonGroupResultId() {
-        List<LessonEntity> result = em.createQuery("select l from LessonEntity l join fetch l.lessonGroup", LessonEntity.class).getResultList();
+    public Optional<List<LessonEntity>> findAllByLessonGroupResultId(Long LessonGroupId) {
+        QLessonEntity ql = new QLessonEntity("l");
+
+        List<LessonEntity> result = queryFactory.selectFrom(ql)
+                .join(ql.lessonGroup).fetchJoin()
+                .where(ql.lessonGroup.lessonGroupId.eq(LessonGroupId))
+                .fetch();
+
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 }

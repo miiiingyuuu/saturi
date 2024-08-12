@@ -10,13 +10,13 @@ import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.service.lesson.LessonService;
 import com.tunapearl.saturi.service.user.UserService;
 import com.tunapearl.saturi.utils.JWTUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -45,8 +45,11 @@ public class LessonController {
      */
     @GetMapping("/lesson-group")
     public ResponseEntity<List<LessonGroupResponseDTO>> getLessonGroupIdByLocationAndCategory(@ModelAttribute LocationIdAndCategoryIdDTO request) {
-        log.info("received request to get lesson group id by location and category {}, {}", request.getLocationId(), request.getCategoryId());
-        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(request.getLocationId(), request.getCategoryId());
+        Long locationId = request.getLocationId();
+        Long lessonCategoryId = request.getCategoryId();
+        if(locationId == null || lessonCategoryId == null) throw new IllegalArgumentException("지역 혹은 유형이 올바르지 않습니다.");
+        log.info("received request to get lesson group id by location and category {}, {}", locationId, lessonCategoryId);
+        List<LessonGroupEntity> lessonGroupByLocationAndCategory = lessonService.findLessonGroupByLocationAndCategory(locationId, lessonCategoryId);
         List<LessonGroupResponseDTO> result = lessonGroupByLocationAndCategory.stream()
                 .map(g -> new LessonGroupResponseDTO(g)).toList();
         return ResponseEntity.ok(result);
@@ -59,9 +62,8 @@ public class LessonController {
     public ResponseEntity<LessonResponseDTO> getLesson(@PathVariable Long lessonId) {
         log.info("received request to find Lesson {}", lessonId);
         LessonEntity findLesson = lessonService.findById(lessonId);
-        return ResponseEntity.ok(new LessonResponseDTO(findLesson.getLessonId(),
-                findLesson.getLessonGroup().getLessonGroupId(), findLesson.getLessonGroup().getName(),
-                findLesson.getSampleVoicePath(), findLesson.getSampleVoiceName(), findLesson.getScript(), findLesson.getLastUpdateDt()));
+        LessonResponseDTO lessonDTO = lessonService.createLessonDTO(findLesson);
+        return ResponseEntity.ok(lessonDTO);
     }
 
     /**
@@ -70,8 +72,10 @@ public class LessonController {
      */
     @GetMapping("/lesson-group/progress")
     public ResponseEntity<LessonGroupProgressResponseDTO> getLessonGroupProgressByUser(@RequestHeader("Authorization") String authorization,
-                                                                                       @RequestParam("locationId") Long locationId,
-                                                                                       @RequestParam("categoryId") Long lessonCategoryId) throws UnAuthorizedException {
+                                                                                       @ModelAttribute @Valid LocationIdAndCategoryIdDTO request) throws UnAuthorizedException {
+        Long locationId = request.getLocationId();
+        Long lessonCategoryId = request.getCategoryId();
+        if(locationId == null || lessonCategoryId == null) throw new IllegalArgumentException("지역 혹은 유형이 올바르지 않습니다.");
         log.info("received request to get lessonGroup progress by user {}, {}", locationId, lessonCategoryId);
         Long userId = jwtUtil.getUserId(authorization);
 
@@ -134,10 +138,9 @@ public class LessonController {
     @PostMapping("lesson")
     public ResponseEntity<LessonMsgResponseDTO> saveLessonResult(@RequestHeader("Authorization") String accessToken,
                                                                  @RequestBody LessonSaveRequestDTO request) throws UnAuthorizedException {
-
         log.info("received request to save lesson result {}", request.getLessonId());
         Long userId = jwtUtil.getUserId(accessToken);
-        Long savelessonId = lessonService.saveLesson(request);
+        Long saveLessonId = lessonService.saveLesson(request);
         return ResponseEntity.created(URI.create("/learn/lesson")).body(new LessonMsgResponseDTO("ok"));
     }
 
