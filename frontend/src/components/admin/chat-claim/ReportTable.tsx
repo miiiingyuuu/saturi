@@ -29,7 +29,7 @@ const headCells: HeadCell[] = [
   { id: "userId", label: "유저 Id" },
   { id: "roomId", label: "채팅방 Id" },
   { id: "quizId", label: "문제 Id" },
-  { id: "chatting", label: "채팅 내용" },
+  { id: "chatting", label: "신고 내용" },
   { id: "isBanned", label: "정지 상태" },
   { id: "actions", label: "작업" }
 ];
