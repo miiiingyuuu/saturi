@@ -369,150 +369,154 @@ export default function LessonPage() {
   };
 
   return (
-    <Container 
-      maxWidth="lg" 
-      sx={{
-        minHeight: "700px",
-        height: "90vh",
-        display:"flex",
-        alignItems:"center",
-
-      }}>
-      <Card 
+    <Box 
+      className="bg-gray-100"
+    >
+      <Container 
+        maxWidth="lg" 
         sx={{
+          minHeight: "700px",
+          height: "90vh",
           display:"flex",
           alignItems:"center",
-          minHeight: "560px",
-          maxHeight: "700px",
-          border: "3px solid lightgray",
-          borderRadius: "15px",
-          padding: "15px",
-      }}>
-        <Grid 
-          container 
-          spacing={3}
-          >
-              {/* 왼쪽 부분 */}
-              <Grid item xs={12} md={6}>
-                <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
-                <Box className="items-center flex flex-col">
-                  <Image
-                    src="/images/quokka.jpg"
-                    alt="귀여운 쿼카"
-                    width={800}
-                    height={800}
-                    className="object-contain max-w-full h-auto"
-                  />
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className="mt-4 text-nowrap"
-                    onClick={handleOpenModal}
-                  >
-                    문제 신고
-                  </Button>
-                </Box>
-                </Box>
-              </Grid>
+
+        }}>
+        <Card 
+          sx={{
+            display:"flex",
+            alignItems:"center",
+            minHeight: "560px",
+            maxHeight: "700px",
+            border: "3px solid lightgray",
+            borderRadius: "15px",
+            padding: "15px",
+        }}>
+          <Grid 
+            container 
+            spacing={3}
+            >
+                {/* 왼쪽 부분 */}
+                <Grid item xs={12} md={6}>
+                  <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
+                  <Box className="items-center flex flex-col">
+                    <Image
+                      src="/images/quokka.jpg"
+                      alt="귀여운 쿼카"
+                      width={800}
+                      height={800}
+                      className="object-contain max-w-full h-auto"
+                    />
+                    <Button
+                      variant="contained"
+                      color="success"
+                      className="mt-4 text-nowrap"
+                      onClick={handleOpenModal}
+                    >
+                      문제 신고
+                    </Button>
+                  </Box>
+                  </Box>
+                </Grid>
 
 
 
-          {/* 오른쪽 부분 */}
-          <Grid item xs={12} md={6}>
-            <Box 
-              className="flex justify-center items-center w-full h-full bg-gray-200"
-              sx={{
-                borderRadius: "15px"
-            }}>
-            <Box 
-              className="rounded flex flex-col items-center justify-center"
-              sx={{
-                width: "80%",
+            {/* 오른쪽 부분 */}
+            <Grid item xs={12} md={6}>
+              <Box 
+                className="flex justify-center items-center w-full h-full bg-gray-200"
+                sx={{
+                  borderRadius: "15px"
               }}>
-              <Typography 
-                className="text-3xl font-bold text-black mb-2"
-              >
-                {currentIndex + 1}/5
-              </Typography>
-              {lessons.map((lesson, index) => (
-                <Typography
-                  variant="h1"
-                  key={lesson.lessonId}
-                  className="mb-2 text-4xl font-bold text-black"
-                  sx={{
-                    display: index === currentIndex ? "block" : "none",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
+              <Box 
+                className="rounded flex flex-col items-center justify-center"
+                sx={{
+                  width: "80%",
+                }}>
+                <Typography 
+                  className="text-3xl font-bold text-black mb-2"
                 >
-                  {lesson.script}
+                  {currentIndex + 1}/5
                 </Typography>
-              ))}
-              <Box className="mt-8 flex space-x-2">
-                <Button
-                  className="text-nowrap"
-                  variant="contained"
-                  color={isRecording ? "error" : "success"}
-                  onClick={handleRecording}
-                >
-                  {isRecording ? "녹음 중지" : "녹음 시작"}
-                </Button>
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="text-nowrap"
-                  onClick={handleSkip}
-                >
-                  건너뛰기
-                </Button>
-                {currentIndex < lessons.length - 1 ? (
+                {lessons.map((lesson, index) => (
+                  <Typography
+                    variant="h1"
+                    key={lesson.lessonId}
+                    className="mb-2 text-4xl font-bold text-black"
+                    sx={{
+                      display: index === currentIndex ? "block" : "none",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleDownloadAndPlayAudio(lesson)} // lesson.script 클릭 시 오디오 다운로드 및 재생
+                  >
+                    {lesson.script}
+                  </Typography>
+                ))}
+                <Box className="mt-8 flex space-x-2">
+                  <Button
+                    className="text-nowrap"
+                    variant="contained"
+                    color={isRecording ? "error" : "success"}
+                    onClick={handleRecording}
+                  >
+                    {isRecording ? "녹음 중지" : "녹음 시작"}
+                  </Button>
                   <Button
                     variant="contained"
                     color="success"
                     className="text-nowrap"
-                    onClick={handleNext}
+                    onClick={handleSkip}
                   >
-                    다음 문장
+                    건너뛰기
                   </Button>
-                ) : (
-                  <Button variant="contained" color="primary" onClick={handleNext}>
-                    결과 보기
-                  </Button>
-                )}
+                  {currentIndex < lessons.length - 1 ? (
+                    <Button
+                      variant="contained"
+                      color="success"
+                      className="text-nowrap"
+                      onClick={handleNext}
+                    >
+                      다음 문장
+                    </Button>
+                  ) : (
+                    <Button variant="contained" color="primary" onClick={handleNext}>
+                      결과 보기
+                    </Button>
+                  )}
+                </Box>
               </Box>
-            </Box>
-            </Box>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
 
-        {/* 문제 신고 모달 */}
-        <Dialog open={modalOpen} onClose={handleCloseModal}>
-          <DialogTitle>문제 신고</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="신고 내용"
-              type="text"
-              fullWidth
-              value={reportContent}
-              onChange={e => setReportContent(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseModal} color="primary">
-              취소
-            </Button>
-            <Button onClick={handleClaim} color="primary">
-              제출
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Card>
-      <Box>
-        <Chatbot />
-      </Box>
-    </Container>
+          {/* 문제 신고 모달 */}
+          <Dialog open={modalOpen} onClose={handleCloseModal}>
+            <DialogTitle>문제 신고</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="신고 내용"
+                type="text"
+                fullWidth
+                value={reportContent}
+                onChange={e => setReportContent(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseModal} color="primary">
+                취소
+              </Button>
+              <Button onClick={handleClaim} color="primary">
+                제출
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Card>
+        <Box>
+          <Chatbot />
+        </Box>
+      </Container>
+    </Box>
   );
 }
 

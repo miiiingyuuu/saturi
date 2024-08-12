@@ -5,9 +5,7 @@ export default function Footer() {
   return (
     <footer 
       className="text-gray-400 text-center py-5"
-      style={{
-        borderTop:"1px solid black",
-      }}>
+    >
       <Box className="flex flex-col items-center">
         <Image 
           src="/SSLogo.png" 
