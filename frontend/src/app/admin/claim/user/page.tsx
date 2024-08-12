@@ -15,16 +15,14 @@ interface UserReport {
   roomId: number;
   quizId: number;
   chatting: string;
-}
-
-interface UserRole {
-  userId: number;
-  role: string;
+  chattingDt: string;
+  claimedDt: string;
+  isChecked: boolean;
+  checkedDt: string | null;
 }
 
 const UserReportManagementPage: React.FC = () => {
   const [reports, setReports] = useState<UserReport[]>([]);
-  const [userRoles, setUserRoles] = useState<{ [key: number]: string }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
@@ -48,23 +46,6 @@ const UserReportManagementPage: React.FC = () => {
       ).toString();
       const response = await api.get<UserReport[]>(`/admin/claim/user?${queryParams}`);
       setReports(response.data);
-      
-      // 사용자 역할 정보 가져오기
-      // ES5 호환 방식으로 코드 짜기
-      const userIds = response.data.reduce<number[]>((acc, report) => {
-        if (acc.indexOf(report.userId) === -1) {
-          acc.push(report.userId);
-        }
-        return acc;
-      }, []);
-      const roleResponses = await Promise.all(
-        userIds.map(userId => api.get<UserRole>(`/admin/user/${userId}`))
-      );
-      const newUserRoles = roleResponses.reduce((acc, response) => {
-        acc[response.data.userId] = response.data.role;
-        return acc;
-      }, {} as { [key: number]: string });
-      setUserRoles(newUserRoles);
     } catch (err) {
       setError('Failed to fetch user reports');
     } finally {
@@ -113,8 +94,14 @@ const UserReportManagementPage: React.FC = () => {
         });
         setSnackbar({ open: true, message: '사용자가 정지되었습니다.', severity: 'success' });
         
-        // 정지 후 보고서 및 사용자 역할 정보를 새로 가져옵니다.
-        fetchReports();
+        // 밴 처리 후 보고서 상태 업데이트
+        setReports(prevReports => 
+          prevReports.map(report => 
+            report.chatClaimId === selectedChatClaimId
+              ? { ...report, isChecked: true, checkedDt: new Date().toISOString() }
+              : report
+          )
+        );
       } catch (err) {
         setSnackbar({ open: true, message: '사용자 정지에 실패했습니다.', severity: 'error' });
       }
@@ -140,7 +127,6 @@ const UserReportManagementPage: React.FC = () => {
       />
       <ReportTable 
         reports={reports}
-        userRoles={userRoles}
         onDelete={handleDelete}
         onBan={handleBanClick}
       />
