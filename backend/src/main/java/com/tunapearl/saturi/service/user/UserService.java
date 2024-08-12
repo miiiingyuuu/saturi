@@ -158,7 +158,7 @@ public class UserService {
         }
     }
 
-    private static void validateBannedUser(UserEntity findUser) {
+    public static void validateBannedUser(UserEntity findUser) {
         if (findUser.getRole() == Role.BANNED) {
             if (LocalDateTime.now().isBefore(findUser.getReturnDt())) {
                 throw new IllegalStateException("계정이 정지되었습니다. [계정 복귀 일시 : " + findUser.getReturnDt() + " ]");

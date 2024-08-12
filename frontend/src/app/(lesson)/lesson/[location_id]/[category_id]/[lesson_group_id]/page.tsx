@@ -512,9 +512,9 @@ export default function LessonPage() {
                     variant="contained"
                     color="primary"
                     className="text-nowrap"
-                    onClick={handleNext}
+                    onClick={handleSkip}
                   >
-                    다음 문장
+                    건너뛰기
                   </Button>
                 ) : (
                   <Button

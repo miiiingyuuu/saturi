@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import { ILocationProps } from "@/utils/props";
 import { getLocation } from "@/utils/adminutils";
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 interface QuizProps {
   quizId?: number; // 수정의 경우 quizId가 필요
@@ -80,7 +80,7 @@ export default function QuizForm({quizId} : {quizId? : number}) {
       api.put(`/admin/game/quiz/${quizId}`, quizData)
         .then(() => {
           alert("수정되었습니다.");
-          router.push("/admin/quiz")
+          router.push("/admin/quiz/view")
         })
         .catch((err) => console.log(err));
     } else {
@@ -88,7 +88,7 @@ export default function QuizForm({quizId} : {quizId? : number}) {
       api.post("/admin/game/quiz", quizData)
         .then(() => {
           alert("등록되었습니다.");
-          router.push("/admin/quiz")
+          router.push("/admin/quiz/view")
         })
         .catch((err) => console.log(err));
     }

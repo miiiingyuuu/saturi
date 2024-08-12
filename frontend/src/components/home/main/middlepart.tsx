@@ -6,8 +6,9 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
   return (
     <Box 
       className="middlepart" 
-      style={{
-        backgroundImage: "url(/MainPage/mainBackground2.jpeg)",
+      style={{        
+        backgroundColor:"#f3f4f6",
+        backgroundImage: "url(/MainPage/mainBackground.png)",
         backgroundSize: "auto 100%",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",
@@ -37,19 +38,22 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           <li/>
         </ul>
       </Box> */}
-      
-      <Typography 
-        variant = "h1"
-        className="blink" 
-        style={{
-          position: 'absolute',
-          top: '10%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          textShadow: "1px 1px 0px whitesmoke",
-          fontSize: 25,
-          fontWeight: "bold",
-        }}> {mainPageIndicator} </Typography>
+      <Box>
+        <Typography 
+          variant = "h1"
+          className="blink" 
+          style={{
+            backgroundColor:"blue",
+            position: 'absolute',
+            top: '10%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            textShadow: "2px 2px 0px black",
+            fontSize: 25,
+            fontWeight: "bold",
+            color:"white",
+          }}> {mainPageIndicator} </Typography>
+      </Box>
     </Box>
   );
 }

@@ -17,7 +17,23 @@ interface ReportTableProps {
   onBan: (userId: number, chatClaimId: number) => void;
 }
 
+type HeadCell = {
+  id: keyof UserReport;
+  label: string;
+};
+
+const headCells: HeadCell[] = [
+  { id: "chatClaimId", label: "Id" },
+  { id: "gameLogId", label: "게임 로그 Id" },
+  { id: "userId", label: "유저 Id" },
+  { id: "roomId", label: "채팅방 Id" },
+  { id: "quizId", label: "문제 Id" },
+  { id: "actions", label: "" }
+];
+
 const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) => {
+  const { rows, order, orderBy, onRequestSort } = useTableSort<UserReport>(reports, "chatClaimId");
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -34,7 +50,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
           </TableRow>
         </TableHead>
         <TableBody>
-          {reports.map((report) => (
+          {rows.map((report) => (
             <TableRow key={report.chatClaimId}>
               <TableCell>{report.chatClaimId}</TableCell>
               <TableCell>{report.gameLogId}</TableCell>
