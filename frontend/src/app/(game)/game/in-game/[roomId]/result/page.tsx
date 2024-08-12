@@ -9,7 +9,6 @@ import SecondResult from "@/components/game/result/secondResult";
 
 
 export default function Result({ params: { roomId } }: RoomIdProps) {
-    const [userInfo, setUserInfo] = useState<UserInfo | null>(null); // Initialize as null
     const [currentStep, setCurrentStep] = useState(1);
 
 
