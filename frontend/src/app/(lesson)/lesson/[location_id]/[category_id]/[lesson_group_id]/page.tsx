@@ -51,6 +51,7 @@ export default function LessonPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const audioBlobRef = useRef<Blob | null>(null); // Store the final audio blob
   const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
+  const [isFinalLesson,setIsFinalLesson]=useState<boolean>(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -214,6 +215,9 @@ export default function LessonPage() {
           return;
         }
 
+        if (currentIndex >= lessons.length - 1) {
+          setIsFinalLesson(true); // 컴포넌트를 변경
+        }
         // 정답파일명, 음성파일명을 django 로 보내서 분석결과 수집
         const analysisResponse = await apiAi.post("/audio/analyze/", {
           answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
@@ -238,11 +242,9 @@ export default function LessonPage() {
           fileName: result.filename, // (추가) 유저 음성 파일 이름
           graphInfoX: analysisResponse.data.userVoiceTime,
           graphInfoY: analysisResponse.data.userVoicePitch,
-          // 이거 데이터가 안들어가요 :(
-          // graphInfoX: "voice_info_X",
-          // graphInfoY: "vocie_info_Y",
           script: analysisResponse.data.userScript,
         };
+
 
         const lessonResponse = await api.post("/learn/lesson", requestBody);
 
@@ -264,8 +266,10 @@ export default function LessonPage() {
         }
       } catch (error) {
         const err = error as any; // error를 any 타입으로 캐스팅
+        setIsFinalLesson(false);
         alert("재녹음이 필요해요"); // 녹음 업로드 실패 시 경고창 표시
         console.error("Error in handleNext:", err);
+
       }
     } else {
       alert("녹음이 되지 않았어요"); // 녹음이 없을 때 경고창 표시
@@ -392,6 +396,20 @@ export default function LessonPage() {
           position: "relative", // Allow absolute positioning inside the card
         }}
       >
+        {isFinalLesson ? (
+        <Box className="grid w-full h-full justify-center items-center min-w-full">
+          <Typography>
+            새가 날아가는 gif 넣을 곳
+          </Typography>
+          <Image
+                  src="/images/quokka.jpg"
+                  alt="귀여운 쿼카"
+                  width={700}
+                  height={700}
+                  className="object-contain max-w-full h-auto"
+                />
+        </Box>
+      ):
         <Grid container spacing={3}>
           {/* 왼쪽 부분 */}
           <Grid item xs={12} md={6}>
@@ -512,9 +530,9 @@ export default function LessonPage() {
                     variant="contained"
                     color="primary"
                     className="text-nowrap"
-                    onClick={handleSkip}
+                    onClick={handleNext}
                   >
-                    건너뛰기
+                    다음 문장
                   </Button>
                 ) : (
                   <Button
@@ -529,6 +547,7 @@ export default function LessonPage() {
             </Box>
           </Grid>
         </Grid>
+        }
   
         {/* 문제 신고 버튼 - Positioning at the bottom right of the card */}
         <Button
