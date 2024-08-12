@@ -43,11 +43,11 @@ export default function App() {
   const { rows, order, orderBy, onRequestSort } = useTableSort<LessonProps>(items, "lessonId");
 
   function handleEdit(lessonId: number) {
-    router.push(`/admin/quiz/edit/${lessonId}`)
+    router.push(`/admin/lesson/edit/${lessonId}`)
   }
 
   function handleDelete(lessonId: number) {
-    api.delete(`/admin/game/quiz/${lessonId}`)
+    api.delete(`/admin/lesson/${lessonId}`)
       .then(() => {
         alert("삭제되었습니다.")
         setItems(items.filter(item => item.lessonId !== lessonId));
@@ -73,6 +73,7 @@ export default function App() {
             <TableRow key={row.lessonId}>
               <TableCell>{row.lessonId}</TableCell>
               <TableCell>{row.lessonGroupId}</TableCell>
+              <TableCell>{row.lessonGroupName}</TableCell>
               <TableCell>{row.sampleVoicePath}</TableCell>
               <TableCell>{row.sampleVoiceName}</TableCell>
               <TableCell>{row.lastUpdateDt}</TableCell>

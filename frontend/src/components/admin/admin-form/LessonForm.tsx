@@ -11,8 +11,10 @@ import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import { getLessonGroup } from "@/utils/adminutils";
 import { LessonGroup, LessonProps } from "@/utils/props";
+import { useRouter } from "next/navigation";
 
 export default function LessonForm({ lessonId }: { lessonId?: number }) {
+  const router = useRouter()
   const [lessonGroup, setLessonGroup] = useState<LessonGroup | null>(null);
   const [script, setScript] = useState<string>("");
   const [sampleVoice, setSampleVoice] = useState<File | null>(null);
@@ -61,10 +63,7 @@ export default function LessonForm({ lessonId }: { lessonId?: number }) {
     apiCall
       .then(response => {
         alert(lessonId ? "수정되었습니다." : "등록되었습니다.");
-        setSampleVoice(null);
-        setScript("");
-        setLessonGroup(null);
-        setSampleVoiceName("");
+        router.push("/admin/lesson/view")
       })
       .catch(error => console.error('Error:', error));
   }
