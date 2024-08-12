@@ -23,7 +23,7 @@ export default function App({params:{roomId}}: RoomIdProps) {
             // 구독 해제
             subscription.unsubscribe();
             // 페이지 이동
-            router.push(`/game/in-game/${body.matchedroomId}`)
+            router.replace(`/game/in-game/${body.matchedroomId}`)
           }
         });
 

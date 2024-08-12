@@ -24,12 +24,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
-      authToken(router)
+      authToken()
     }
   },[router])
 
   
-  if (pathname&&(pathname.startsWith("/admin")||pathname.startsWith("/game"))) {
+  if (pathname && ( pathname.startsWith("/admin") || (pathname.startsWith("/game") && !(pathname.includes("/in-game/") && pathname.endsWith("/result"))))) {
     return (
       <html lang="ko" className={inter.className}>
         <body>

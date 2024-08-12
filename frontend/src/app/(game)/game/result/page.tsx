@@ -1,13 +1,17 @@
 "use client";
 
+import api from "@/lib/axios";
+import { RoomIdProps } from "@/utils/props";
 import { Box, Container, Typography, Card, LinearProgress, Button } from "@mui/material";
 import { useState } from "react";
 
 
-export default function Result(){
+export default function Result({params: {roomId}}: RoomIdProps){
   // 마음대로 변경 가능 
   const progress = 50
 
+  api.post(`/game/result/${roomId}`)
+  .then(response => console.log(response))
 
   return(    
 
@@ -16,7 +20,8 @@ export default function Result(){
     <Container 
       maxWidth="lg" 
       sx={{
-        height: "700px",
+        height: "90vh",
+        minHeight: "700px",
         display:"flex",
         justifyContent:"center",
         flexDirection:"column",
@@ -82,7 +87,7 @@ export default function Result(){
             justifyContent: "space-between",
             marginTop: "20px",
         }}>
-          <Button variant="contained"> 다시하기 </Button>
+          <Button variant="contained"> asfsafasf </Button>
           <Button variant="contained"> 처음으로 </Button>
         </Box>
 

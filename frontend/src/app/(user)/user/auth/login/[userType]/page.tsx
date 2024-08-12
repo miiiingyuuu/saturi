@@ -2,10 +2,9 @@
 
 import api from "@/lib/axios";
 import { useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { authToken } from "@/utils/authutils";
 import { Backdrop, CircularProgress } from "@mui/material";
-import { authToken, insertCookie } from "@/utils/authutils";
-import { getCookie } from "cookies-next";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function App() {
   const router = useRouter();
@@ -28,11 +27,10 @@ export default function App() {
       .then(response => {
         sessionStorage.setItem("accessToken", response.data.accessToken);
         sessionStorage.setItem("refreshToken", response.data.refreshToken);
-        authToken(router)
+        authToken()
 
         api.get("user/auth/profile")
           .then(response => {
-            console.log(response.data.nickname)
             if (response.data.nickname === null) {
               alert("닉네임을 설정해주세요.")
               router.push("/user/profile/update")

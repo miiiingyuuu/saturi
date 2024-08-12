@@ -1,5 +1,3 @@
-// components/profile/UserTierRank.tsx
-
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Paper, Box, Typography, CircularProgress } from "@mui/material";
@@ -11,12 +9,22 @@ const tierImages = {
   bronze: '/tier/bronze1.gif',
   silver: '/tier/silver1.gif',
   gold: '/tier/gold1.gif',
-  sapphire: '/tier/sappire1.gif',
+  sapphire: '/tier/sapphire1.gif',
   platinum: '/tier/platinum1.gif',
   diamond: '/tier/diamond1.gif'
 };
 
 type TierKey = keyof typeof tierImages;
+
+const tierThresholds = {
+  stone: 0,
+  bronze: 1,
+  silver: 100,
+  gold: 500,
+  platinum: 1500,
+  sapphire: 3000,
+  diamond: 5000
+};
 
 const getTierFromExp = (exp: number): TierKey => {
   if (exp === 0) return 'stone';
@@ -28,21 +36,35 @@ const getTierFromExp = (exp: number): TierKey => {
   return 'diamond';
 };
 
+const getNextTier = (currentTier: TierKey): TierKey | null => {
+  const tiers = Object.keys(tierThresholds) as TierKey[];
+  const currentIndex = tiers.indexOf(currentTier);
+  return currentIndex < tiers.length - 1 ? tiers[currentIndex + 1] : null;
+};
+
+const getExpToNextTier = (currentExp: number): number | null => {
+  const currentTier = getTierFromExp(currentExp);
+  const nextTier = getNextTier(currentTier);
+  if (nextTier) {
+    return tierThresholds[nextTier] - currentExp;
+  }
+  return null;
+};
+
 const formatTierName = (tier: TierKey): string => {
   return tier.charAt(0).toUpperCase() + tier.slice(1) + ' Tier';
 };
 
 interface UserExpInfo {
   currentExp: number;
-  userRank: number;
+  userRank: number | null;
 }
 
-// Header용 미니프로필 클릭 시 나오는 티어 정보
 interface UserTierRankProps {
   layout?: 'vertical' | 'horizontal';
 }
 
-const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vercial' }) => {
+const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
   const [userExpInfo, setUserExpInfo] = useState<UserExpInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -61,6 +83,8 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vercial' }) => {
 
       } catch (error) {
         console.error('Failed to fetch user exp info:', error);
+        // Set default values when data fetch fails
+        setUserExpInfo({ currentExp: 0, userRank: null });
       } finally {
         setIsLoading(false);
       }
@@ -77,13 +101,10 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vercial' }) => {
     return <CircularProgress />;
   }
 
-  if (!userExpInfo) {
-    return <Typography>Failed to load user information.</Typography>;
-  }
-
-  const tierKey = getTierFromExp(userExpInfo.currentExp);
+  const tierKey = getTierFromExp(userExpInfo?.currentExp || 0);
   const imageSrc = tierImages[tierKey];
   const tierName = formatTierName(tierKey);
+  const expToNextTier = getExpToNextTier(userExpInfo?.currentExp || 0);
 
   const isHorizontal = layout === 'horizontal';
 
@@ -91,7 +112,6 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vercial' }) => {
     <Paper elevation={3}
     sx={{ 
       p: 2.5, 
-      // bgcolor: '#f0f0f0', 
       borderRadius: '16px',
       position: 'relative',
       height: isHorizontal ? 'auto' : '90%',
@@ -102,9 +122,11 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vercial' }) => {
       width: isHorizontal ? '100%' : 'auto', 
     }}>
       {!isHorizontal && (
-        <Box sx={{ top: 16, left: 16, display: 'flex', alignItems: 'center', marginTop: 2}}>
+        <Box sx={{ top: 16, left: 16, display: 'flex', alignItems: 'center', marginTop: 2 }}>
           <FaCrown style={{ color: 'gold', marginRight: 8, fontWeight: 'bold' }} />
-          <Typography variant="h6" fontWeight="bold" >전체 {userExpInfo.userRank}위</Typography>
+          <Typography variant="h6" fontWeight="bold" >
+            {userExpInfo?.userRank ? `전체 ${userExpInfo.userRank}위` : 'UnRanked'}
+          </Typography>
         </Box>
       )}
       <Box sx={{ 
@@ -138,15 +160,26 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vercial' }) => {
         {isHorizontal && (
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <FaCrown style={{ color: 'gold', marginRight: 8, fontWeight: 'bold' }} />
-            <Typography variant="body2" fontWeight="bold" >전체 {userExpInfo.userRank}위</Typography>
+            <Typography variant="body2" fontWeight="bold" >
+              {userExpInfo?.userRank ? `전체 ${userExpInfo.userRank}위` : 'Out of Rank'}
+            </Typography>
           </Box>
         )}
         <Typography variant={isHorizontal ? "body1" : "h5"} color="text.primary" sx={{ mt: isHorizontal ? 0 : 1 }}>
           {tierName}
         </Typography>
-        <Typography variant={isHorizontal ? "body2" : "h6"} color="text.secondary" sx={{ mb: isHorizontal ? 0 : 1 }}>
-          {`${userExpInfo.currentExp} EXP`}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+          <Typography variant={isHorizontal ? "body2" : "h6"} color="text.secondary" sx={{ mb: isHorizontal ? 0 : 1 }}>
+            {`${userExpInfo?.currentExp || 0} EXP`}
+          </Typography>
+        </Box>
+        <Box>
+          {!isHorizontal && expToNextTier !== null && (
+              <Typography variant="body2" color="text.secondary">
+                {`다음 티어까지: ${expToNextTier} EXP`}
+              </Typography>
+            )}
+        </Box>
       </Box>
     </Paper>
   );

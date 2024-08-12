@@ -2,6 +2,7 @@ package com.tunapearl.saturi.domain.game;
 
 import com.tunapearl.saturi.domain.user.UserEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -32,7 +33,7 @@ public class GameRoomParticipantEntity {
     @ColumnDefault("0")
     private int correctCount;
 
-    @Column(name="isExited")
+    @Column(name="is_exited")
     @ColumnDefault("false")
     private boolean isExited;
 

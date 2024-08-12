@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Container, Box, Typography, Button } from "@mui/material";
-import LessonForm from "@/components/admin/LessonForm";
-import LessonGroupForm from "@/components/admin/LessonGroupForm";
+import LessonForm from "@/components/admin/admin-form/LessonForm";
+import LessonGroupForm from "@/components/admin/admin-form/LessonGroupForm";
 
 export default function App() {
   const [isLessonForm, setIsLessonForm] = useState(true);

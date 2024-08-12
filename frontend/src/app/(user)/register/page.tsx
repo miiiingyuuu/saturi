@@ -4,25 +4,26 @@ import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/utils/authutils";
 import { useMemo, useState, useEffect } from "react";
+import PasswordValidation from "@/components/PasswordValidation";
 import {
   validateEmail,
   passwordConfirm,
   validatePassword,
   validateNickname,
   handleValueChange,
+  formatTime,
 } from "@/utils/utils";
 import {
   Box,
   Grid,
   Button,
+  Backdrop,
   Container,
   TextField,
   Typography,
-  Backdrop,
-  CircularProgress,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
-import PasswordValidation from "@/components/PasswordValidation";
 
 export default function App() {
   const router = useRouter();
@@ -39,11 +40,11 @@ export default function App() {
 
   const isEmailValid = useMemo(() => validateEmail(email), [email]);
   const isPasswordValid = useMemo(() => validatePassword(password), [password]);
+  const isNicknameValid = useMemo(() => validateNickname(nickname), [nickname]);
   const isPasswordConfirmed = useMemo(
     () => passwordConfirm({ password, passwordConf }),
     [password, passwordConf]
   );
-  const isNicknameValid = useMemo(() => validateNickname(nickname), [nickname]);
 
   useEffect(() => {
     // @ts-expect-error : 타이머가 종류가 많아.. 엄청 많아
@@ -64,12 +65,6 @@ export default function App() {
       router.push("/");
     }
   }, [router]);
-
-  function formatTime(seconds: number) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  }
 
   function handleRegister() {
     let error = "";
@@ -107,7 +102,6 @@ export default function App() {
         alert("회원가입이 완료되었습니다.");
         handleLogin({ email, password, router, goTo: "/register/step" });
       })
-      .catch((error) => console.log(error));
   }
 
   function handleAuthEmail() {
@@ -154,8 +148,7 @@ export default function App() {
           alert("인증되었습니다.");
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         alert("인증번호가 틀립니다.");
       });
   }
@@ -173,7 +166,6 @@ export default function App() {
             }
           }
         })
-        .catch((error) => console.log(error));
     } else {
       alert("유효하지 않은 닉네임 입니다.");
     }
@@ -258,7 +250,7 @@ export default function App() {
                     height: "56px",
                   }}
                 >
-                  인증번호 받기
+                  {validationTime === 0 ? "재전송" : "인증번호 받기"}
                 </Button>
               ) : (
                 <Button
@@ -273,7 +265,7 @@ export default function App() {
                     height: "56px",
                   }}
                 >
-                  {validationTime > 0 ? "인증번호 확인" : "재전송"}
+                  인증번호 확인
                 </Button>
               )}
             </Grid>
@@ -289,13 +281,6 @@ export default function App() {
                 value={password}
                 onChange={(event) => {
                   handleValueChange(event, setPassword);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <PasswordValidation password={password} />
-                    </InputAdornment>
-                  ),
                 }}
                 error={!isPasswordValid}
               />
@@ -314,6 +299,9 @@ export default function App() {
                 }}
                 error={!isPasswordConfirmed}
               />
+            </Grid>
+            <Grid item xs={12}>
+              <PasswordValidation password={password} />
             </Grid>
             <Grid item xs={8}>
               <TextField

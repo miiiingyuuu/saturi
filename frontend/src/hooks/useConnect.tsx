@@ -1,10 +1,9 @@
-import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
+import { useEffect, useRef } from "react";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
 
 export default function useConnect() {
   const clientRef = useRef<Client | null>(null);
-
   useConfirmLeave(); // 페이지 이탈 확인 훅 호출
 
   useEffect(() => {
@@ -35,6 +34,7 @@ export default function useConnect() {
 
     // 클린업 함수에서 이벤트 핸들러 제거
     return () => {
+      console.log("여기는 훅")
       window.removeEventListener("beforeunload", handleBeforeUnload);
       if (clientRef.current) {
         clientRef.current.deactivate();

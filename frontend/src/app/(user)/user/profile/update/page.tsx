@@ -2,20 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  Card, CardHeader, CardActions, 
-  Divider, 
-  Avatar, 
-  Button, 
-  List, ListItem, ListItemText, 
-  Link, 
-  TextField, 
-  Dialog, DialogTitle, DialogContent, 
-  Grid, 
-  CircularProgress, 
-  Typography} from "@mui/material";
+import {
+  Card, CardHeader, CardActions,
+  Divider,
+  Avatar,
+  Button,
+  List, ListItem, ListItemText,
+  Link,
+  TextField,
+  Dialog, DialogTitle, DialogContent,
+  Grid,
+  CircularProgress,
+  Typography
+} from "@mui/material";
 import { validateNickname } from "@/utils/utils";
 import api from "@/lib/axios";
+import { getCookie } from "cookies-next";
+import { useTheme } from "@mui/material/styles"
 
 // type 선언
 type Gender = 'DEFAULT' | 'MALE' | 'FEMALE';
@@ -69,7 +72,7 @@ const getFormattedGender = (gender: string): string => {
     case 'DEFAULT': return '정보 입력 안함';
     case 'FEMALE': return '여자';
     case 'MALE': return '남자';
-    default: return '정보 입력 안함';    
+    default: return '정보 입력 안함';
   }
 };
 
@@ -105,6 +108,8 @@ const getFormattedLocationId = (locationId: number): string => {
 
 // 프로필 수정 로직
 export default function EditProfilePage() {
+  const theme = useTheme()
+  const isSocial = getCookie("isSocial")
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [originalNickname, setOriginalNickname] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -127,11 +132,7 @@ export default function EditProfilePage() {
           throw new Error('Access token not found');
         }
 
-        const response = await api.get<UserProfile>('/user/auth/profile', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        });
+        const response = await api.get('/user/auth/profile');
 
         setUserProfile(response.data);
         setOriginalNickname(response.data.nickname);
@@ -205,7 +206,7 @@ export default function EditProfilePage() {
       }
 
       const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
-      
+
       const updateData: ProfileUpdateData = {
         nickname: userProfile.nickname,
         locationId: userProfile.locationId,
@@ -231,7 +232,7 @@ export default function EditProfilePage() {
       // eslint-disable-next-line no-alert
       alert('이미 존재하는 닉네임입니다.');
     }
-  };  
+  };
 
   if (isLoading) {
     return <CircularProgress />;
@@ -255,15 +256,31 @@ export default function EditProfilePage() {
           }
           title={
             <div className="flex flex-col">
-              <TextField
-                label="닉네임"
-                name="nickname"
-                value={userProfile.nickname}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-                margin="normal"
-              />
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs>
+                  <TextField
+                    label="닉네임"
+                    name="nickname"
+                    value={userProfile.nickname}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                  />
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSave}
+                    sx={{
+                      height: "56px"
+                    }}
+                  >
+                    제출
+                  </Button>
+                </Grid>
+              </Grid>
               <Typography sx= {{ fontSize: '11px', color: 'red', ml: 1 }}>닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
@@ -288,14 +305,16 @@ export default function EditProfilePage() {
             <Button variant="contained">뒤로가기</Button>
           </Link>
           <div className="flex space-x-4">
-            <Button variant="contained" color="primary" onClick={handleSave}>
-              수정 완료
-            </Button>
-            <Link href="/user/auth/changepassword" underline="none">
-              <Button variant="contained" color="secondary">
+            {(isSocial==="false") && (
+              <Link href="/user/auth/changepassword" underline="none">
+              <Button variant="contained" sx={{ backgroundColor: theme.palette.primary.light }}>
                 비밀번호 변경
               </Button>
             </Link>
+            )}
+            <Button variant="contained" color="primary" onClick={handleSave}>
+              수정 완료
+            </Button>
           </div>
         </CardActions>
       </Card>
@@ -327,7 +346,7 @@ export default function EditProfilePage() {
           <List>
             {[1, 2, 3, 4, 5, 6, 7].map((id) => (
               <ListItem button key={id} onClick={() => handleSelect('dialect', id as LocationId)}>
-                
+
                 <ListItemText primary={getFormattedLocationId(id)} />
               </ListItem>
             ))}

@@ -42,10 +42,9 @@ export default function Map({ onRegionClick }: MapProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="973"      
+      width="673"      
       style={{
-        minHeight : "350px",
-        height: "50vh"
+        height : "420px",
       }}
       // width="200%"
       // height="200%"

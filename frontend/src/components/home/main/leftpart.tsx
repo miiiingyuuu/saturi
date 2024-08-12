@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Card, ButtonBase, Typography, Container } from '@mui/material';
+import { Box, Card, ButtonBase, Typography, useMediaQuery, Container, Grid } from '@mui/material';
 import { LeftPartProps } from "@/utils/props";
 
 
@@ -62,10 +62,11 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
     router.push(`/lesson/${region}/${num}`);
   }
 
-  return (
-    
+
+
+  return (    
     <Box
-      className="leftpart"
+      className="leftpart bg-gray-100"
       style={{
         zIndex: (() => {
           if (middlePosition === 0) {
@@ -80,7 +81,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
           return 0;
         })(),
         position: "absolute",
-        background: "-webkit-linear-gradient(to left, #8f94fb, #4e54c8)",
+        // background: "-webkit-linear-gradient(to left, #8f94fb, #4e54c8)",        
         width: "100%",
         minHeight: "700px",
         height: "90vh",
@@ -92,42 +93,64 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
           sx={{
             width: "100%",
             height: "560px",
-            // border: '2px groove', 
+            border: '3px solid lightgray', 
             borderRadius: 5,
             display: "flex",
             alignItems:"center",
           }}>
-          <Box>
-            <Typography variant="h1" sx={{ fontSize: 39, fontWeight: "bold" }}>학습 페이지</Typography>
-            <br />
-            <Card sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, border: '1px solid black', borderRadius: 5 }}>
-              <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '11vw', height: 0, paddingBottom: '100%', position: 'relative', marginTop:"5px", marginLeft:"7px" }}>
-                <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              </ButtonBase>
-              <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '11vw', height: 0, paddingBottom: '100%', position: 'relative', marginTop:"5px", marginRight:"7px" }}>
-                <Box component="img" src="/MainPage/learnButton2.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              </ButtonBase>
-              <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '11vw', height: 0, paddingBottom: '100%', position: 'relative', marginBottom:"5px", marginLeft:"7px" }}>
-                <Box component="img" src="/MainPage/learnButton3.png" alt="" sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              </ButtonBase>
-              <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '11vw', height: 0, paddingBottom: '100%', position: 'relative', marginBottom:"5px", marginRight:"7px" }}>
-                <Box 
-                  component="img"
-                  src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}
-                  alt=""
-                  sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </ButtonBase>
-            </Card>
-          </Box>
-
+          <Grid container spacing={0}>
+            <Grid 
+              item 
+              xs={12} 
+              md={6} 
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}>
+              <Box 
+                sx={{
+                  width: "370px",
+                  minHeight: "500px",
+                  display:"flex",
+                  flexDirection:"column",
+                  justifyContent:"center",
+              }}>
+                <Typography variant="h1" sx={{ fontSize: 39, fontWeight: "bold" }}>학습 페이지</Typography>
+                <br />
+                <Card sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, border: '3px solid lightgray', borderRadius: 5, padding:"15px" }}>                  
+                  <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
+                    <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </ButtonBase>
+                  <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
+                    <Box component="img" src="/MainPage/learnButton2.png" alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </ButtonBase>
+                  <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
+                    <Box component="img" src="/MainPage/learnButton3.png" alt="" sx={{width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </ButtonBase>
+                  <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: "100%", borderRadius: "15px"}}>
+                    <Box 
+                      component="img"
+                      src={selectedRegion !== "경기도" ? "/MainPage/learnButton4.png" : "/MainPage/learnButton5.png"}
+                      alt=""
+                      sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </ButtonBase>
+                </Card>
+              </Box>  
+            </Grid>
+            <Grid item xs={12} md={6}/>
+          </Grid>
           
-
         </Card>   
-      </Container>
-       
+      </Container>       
     </Box>
-    
+
+
+
+
+
+
+
     
 
 

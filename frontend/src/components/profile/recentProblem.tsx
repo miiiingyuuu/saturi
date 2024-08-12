@@ -45,9 +45,9 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
     if (isLoading) return <Typography>Loading...</Typography>;
 
     return (
-      <Box>
+      <Box sx={{ borderRadius: '16px' }}>
         <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
-        {/* 데이터가 없을 시... */}
+        {/* 데이터가 있을 시... */}
         {data ? (
           <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
             <Avatar sx={{ bgcolor: 'green', mr: 2 }}>GO</Avatar>
@@ -60,7 +60,7 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
             </Box>
           </Box>
         ) : (
-          // 데이터가 있을시...
+          // 데이터가 없을 시...
           <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
             {/* TODO : 해당 문제로 가는 router 필요한데, 이거 구현되나? */}
             <Avatar sx={{ bgcolor: 'grey', mr: 2 }}>-</Avatar>

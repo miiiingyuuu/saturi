@@ -143,7 +143,7 @@ public class UserService {
 //        validateDeletedUser(findUser); // 탈퇴회원 검증
         validateBannedUser(findUser); // 정지회원 검증
 
-        return tokenService.saveRefreshToken(findUser.getUserId());
+        return tokenService.saveRefreshToken(findUser.getUserId(), findUser.getRole());
     }
 
     private static void validatePasswordIsNullOrEmpty(UserLoginRequestDTO request) {
@@ -158,7 +158,7 @@ public class UserService {
         }
     }
 
-    private static void validateBannedUser(UserEntity findUser) {
+    public static void validateBannedUser(UserEntity findUser) {
         if (findUser.getRole() == Role.BANNED) {
             if (LocalDateTime.now().isBefore(findUser.getReturnDt())) {
                 throw new IllegalStateException("계정이 정지되었습니다. [계정 복귀 일시 : " + findUser.getReturnDt() + " ]");
@@ -298,7 +298,9 @@ public class UserService {
     public UserInfoResponseDTO getUserProfile(Long userId) {
         UserEntity findUser = userRepository.findByUserId(userId).orElse(null);
         log.info("find User Profile {}", findUser);
-        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getLocationId(), findUser.getBird().getId());
+        Boolean isSocial = false;
+        if(findUser.getPassword() == null) isSocial = true;
+        return new UserInfoResponseDTO(findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(), findUser.getGender(), findUser.getRole(), findUser.getAgeRange(), findUser.getLocation().getLocationId(), findUser.getBird().getId(), isSocial);
     }
 
     /**
@@ -387,8 +389,7 @@ public class UserService {
             mostRecentLessonResult.getLessonDt().toLocalDate().equals(LocalDate.now().minusDays(1))) { // 혹은 어제 학습했는지
             learnDays++;
             LocalDate currentDate = mostRecentLessonResult.getLessonDt().toLocalDate();
-            for (int i = 0; i < lessonResults.size(); i++) {
-                if(i == 0) continue;
+            for (int i = 1; i < lessonResults.size(); i++) {
                 if(lessonResults.get(i).getLessonDt().toLocalDate().equals(currentDate.minusDays(1))) {
                     learnDays++;
                     currentDate = lessonResults.get(i).getLessonDt().toLocalDate();
@@ -439,20 +440,49 @@ public class UserService {
         List<UserStreakInfoDaysDTO> result = new ArrayList<>();
         if(lessonGroupResults == null) return null;
 
-        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
-        List<LessonResultEntity> lessonResults = new ArrayList<>();
+        List<LessonResultEntity> lessonResults = new ArrayList<>(findLessonResult);
 
-        lessonResults.addAll(findLessonResult);
-
-        // 레슨 학습 일시를 최근 순으로 정렬, 올 해가 아니면 break
         Map<LocalDate, Integer> streakDays = new HashMap<>();
-        lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
-        for (LessonResultEntity lessonResult : lessonResults) {
-            int year = lessonResult.getLessonDt().getYear();
-            if(LocalDate.now().getYear() != year) break;
-            LocalDate currentDate = lessonResult.getLessonDt().toLocalDate();
-            streakDays.put(currentDate, streakDays.getOrDefault(currentDate, 0) + 1);
+
+        // 스트릭 만들기
+           // lessonId별로 lessonResult 모으기
+        Map<Long, List<LessonResultEntity>> lessonResultMap = new HashMap<>();
+        for (LessonResultEntity lr : lessonResults) {
+            int year = lr.getLessonDt().getYear();
+            if(LocalDate.now().getYear() != year) break; // 올 해가 아니면 break
+            Long lessonId = lr.getLesson().getLessonId();
+            if(lessonResultMap.containsKey(lessonId)) {
+                lessonResultMap.get(lessonId).add(lr);
+            } else {
+                lessonResultMap.put(lessonId, new ArrayList<>());
+                lessonResultMap.get(lessonId).add(lr);
+            }
         }
+
+        // 복습 실패한 경우는 streak에 포함하지 않음
+        Map<Long, Long> lessonResultScoreMap = new HashMap<>(); // key : lessonId, value : lessonScore
+
+        for (Long lessonId : lessonResultMap.keySet()) {
+            List<LessonResultEntity> lessonResultListByLessonId = lessonResultMap.get(lessonId);
+            // 오래된 순으로 정렬
+            lessonResultListByLessonId.sort(Comparator.comparing(LessonResultEntity::getLessonDt));
+            for (LessonResultEntity lr : lessonResultListByLessonId) {
+                Long avgScore = (lr.getAccentSimilarity() + lr.getPronunciationAccuracy()) / 2L;
+                if(lessonResultScoreMap.containsKey(lessonId)) {
+                    Long prevScore = lessonResultScoreMap.get(lessonId);
+                    // 복습 실패 한 경우는 continue
+                    if(prevScore >= avgScore) continue;
+                    lessonResultScoreMap.replace(lessonId, avgScore);
+                } else { // 제일 오래된 레슨 결과
+                    lessonResultScoreMap.put(lessonId, avgScore);
+                }
+                // 날짜를 기준으로 맵에 추가
+                LocalDate currentDate = lr.getLessonDt().toLocalDate();
+                streakDays.put(currentDate, streakDays.getOrDefault(currentDate, 0) + 1);
+            }
+        }
+
+        // result 생성
         for (LocalDate d : streakDays.keySet()) {
             UserStreakDateDTO userStreakDate = new UserStreakDateDTO(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
             Integer solvedNum = streakDays.get(d);
@@ -502,6 +532,14 @@ public class UserService {
     @Transactional
     public void changePasswordByTmpPassword(UserEntity user, String tmpPassword) {
         user.setPassword(PasswordEncoder.encrypt(user.getEmail(), tmpPassword));
+    }
+
+    public boolean checkIsExistUserEmail(String email) {
+        Optional<List<UserEntity>> findUserByEmail = userRepository.findByEmail(email);
+        if(findUserByEmail.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }
 

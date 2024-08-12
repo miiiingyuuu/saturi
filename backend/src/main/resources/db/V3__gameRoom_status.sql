@@ -1,0 +1,1 @@
+alter table game_room modify column status enum ('COMPLETED','IN_PROGRESS','TERMINATED','MATCHING');

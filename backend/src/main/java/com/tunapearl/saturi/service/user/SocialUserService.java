@@ -62,7 +62,10 @@ public class SocialUserService {
             userId = userRepository.saveUser(createNewUser(userResponse));
         }
         else{
-            userId = user.get().get(0).getUserId();
+            // 이미 있었다면 정지 유무도 판별해야한다.
+            UserEntity userEntity = user.get().get(0);
+            UserService.validateBannedUser(userEntity);
+            userId = userEntity.getUserId();
         }
 
         //회원 엔티티로 JWT 생성, 반환
