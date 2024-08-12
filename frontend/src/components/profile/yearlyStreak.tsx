@@ -42,7 +42,7 @@ const YearlyStreak: React.FC<YearlyStreakProps> = ({ data, totalLessonInfo, isLo
   })) : [], [data]);
 
   return (
-    <Box>
+    <Box sx={{ borderRadius: '16px' }}>
       <Typography variant="h6" gutterBottom>연간 스트릭</Typography>
       <CalendarHeatmap
         startDate={startDate}

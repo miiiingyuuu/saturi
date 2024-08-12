@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, ReactNode } from 'react';
 import { 
   Box, 
   Button, 
@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import SendIcon from '@mui/icons-material/Send';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components } from 'react-markdown';
 
 const INITIAL_MESSAGE = {
     sender: '사투리무새',
@@ -130,6 +130,14 @@ const Chatbot: React.FC = () => {
     };
   }, [chatbotVisible]);
 
+  const customRenderers: Components = {
+    p: ({ children, ...props }) => (
+      <span className="markdown-paragraph" {...props}>
+      {children}
+      </span>
+    ),
+  };
+
   return (
     <Box sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1000 }} ref={chatbotRef}>
       <Fab 
@@ -143,10 +151,10 @@ const Chatbot: React.FC = () => {
           bottom: 0, 
           right: 0,
           display: chatbotVisible ? 'none' : 'flex',
-          width: 80,  // 버튼 크기 증가
-          height: 80, // 버튼 크기 증가
+          width: 80,  
+          height: 80, 
           '& .MuiSvgIcon-root': {
-            fontSize: 40  // 아이콘 크기 증가
+            fontSize: 40  
           }
         }}
       >
@@ -181,7 +189,7 @@ const Chatbot: React.FC = () => {
               flex: 1,
               overflowY: 'auto',
               display: 'flex',
-              flexDirection: 'column-reverse',
+              flexDirection: 'column',
               p: 2,
             }}
           >
@@ -191,9 +199,9 @@ const Chatbot: React.FC = () => {
                     <ListItemText
                     primary={msg.sender}
                     secondary={
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      <ReactMarkdown components={customRenderers}>{msg.content}</ReactMarkdown>
                     }
-                    />
+                  />
                 </ListItem>
                 ))}
             </List>

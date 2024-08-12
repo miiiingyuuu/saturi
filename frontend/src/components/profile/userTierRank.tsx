@@ -9,12 +9,22 @@ const tierImages = {
   bronze: '/tier/bronze1.gif',
   silver: '/tier/silver1.gif',
   gold: '/tier/gold1.gif',
-  sapphire: '/tier/sappire1.gif',
+  sapphire: '/tier/sapphire1.gif',
   platinum: '/tier/platinum1.gif',
   diamond: '/tier/diamond1.gif'
 };
 
 type TierKey = keyof typeof tierImages;
+
+const tierThresholds = {
+  stone: 0,
+  bronze: 1,
+  silver: 100,
+  gold: 500,
+  platinum: 1500,
+  sapphire: 3000,
+  diamond: 5000
+};
 
 const getTierFromExp = (exp: number): TierKey => {
   if (exp === 0) return 'stone';
@@ -24,6 +34,21 @@ const getTierFromExp = (exp: number): TierKey => {
   if (exp < 3000) return 'platinum';
   if (exp < 5000) return 'sapphire';
   return 'diamond';
+};
+
+const getNextTier = (currentTier: TierKey): TierKey | null => {
+  const tiers = Object.keys(tierThresholds) as TierKey[];
+  const currentIndex = tiers.indexOf(currentTier);
+  return currentIndex < tiers.length - 1 ? tiers[currentIndex + 1] : null;
+};
+
+const getExpToNextTier = (currentExp: number): number | null => {
+  const currentTier = getTierFromExp(currentExp);
+  const nextTier = getNextTier(currentTier);
+  if (nextTier) {
+    return tierThresholds[nextTier] - currentExp;
+  }
+  return null;
 };
 
 const formatTierName = (tier: TierKey): string => {
@@ -79,6 +104,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
   const tierKey = getTierFromExp(userExpInfo?.currentExp || 0);
   const imageSrc = tierImages[tierKey];
   const tierName = formatTierName(tierKey);
+  const expToNextTier = getExpToNextTier(userExpInfo?.currentExp || 0);
 
   const isHorizontal = layout === 'horizontal';
 
@@ -142,9 +168,18 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
         <Typography variant={isHorizontal ? "body1" : "h5"} color="text.primary" sx={{ mt: isHorizontal ? 0 : 1 }}>
           {tierName}
         </Typography>
-        <Typography variant={isHorizontal ? "body2" : "h6"} color="text.secondary" sx={{ mb: isHorizontal ? 0 : 1 }}>
-          {`${userExpInfo?.currentExp || 0} EXP`}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+          <Typography variant={isHorizontal ? "body2" : "h6"} color="text.secondary" sx={{ mb: isHorizontal ? 0 : 1 }}>
+            {`${userExpInfo?.currentExp || 0} EXP`}
+          </Typography>
+        </Box>
+        <Box>
+          {!isHorizontal && expToNextTier !== null && (
+              <Typography variant="body2" color="text.secondary">
+                {`다음 티어까지: ${expToNextTier} EXP`}
+              </Typography>
+            )}
+        </Box>
       </Box>
     </Paper>
   );
