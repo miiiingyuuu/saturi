@@ -47,21 +47,23 @@ export default function Result({ params: { roomId } }: RoomIdProps) {
     }, []);
 
     return(
-        <Container
-            maxWidth="lg" 
-            sx={{                
-                height:"90vh",
-                minHeight:"700px",
+        <Box
+        sx={{        
+            backgroundColor: "#f3f4f6",        
+            height:"90vh",
+            minHeight:"700px",
         }}>
-            <FirstResult
-                currentStep = {currentStep}
-                nextstep = {nextstep}
-                ranks = {ranks}
-            />
-            <SecondResult
-                currentStep = {currentStep}
-                myRank = {myRank}
-            />
-        </Container>
+            <Container maxWidth="lg" >
+                <FirstResult
+                    currentStep = {currentStep}
+                    nextstep = {nextstep}
+                    ranks = {ranks}
+                />
+                <SecondResult
+                    currentStep = {currentStep}
+                    myRank = {myRank}
+                />
+            </Container>
+        </Box>
     )
 }

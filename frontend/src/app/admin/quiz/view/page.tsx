@@ -1,3 +1,4 @@
+
 "use client"
 
 import {
@@ -19,7 +20,6 @@ import useTableSort from "@/hooks/useTableSort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SortableTableHead from "@/components/SortableTableHead";
 import { styled } from "@mui/material/styles"
-import Tooltip, { tooltipClasses, TooltipProps } from "@mui/material/Tooltip";
 interface QuizProps {
   quizId: number;
   locationId: number;

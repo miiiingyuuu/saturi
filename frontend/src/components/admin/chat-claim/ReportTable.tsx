@@ -1,3 +1,4 @@
+import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip } from '@mui/material';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
@@ -9,7 +10,10 @@ interface UserReport {
   roomId: number;
   quizId: number;
   chatting: string;
-  isBanned: boolean;
+  chattingDt: string;
+  claimedDt: string;
+  isChecked: boolean;
+  checkedDt: string | null;
 }
 
 interface ReportTableProps {
@@ -29,8 +33,11 @@ const headCells: HeadCell[] = [
   { id: "userId", label: "유저 Id" },
   { id: "roomId", label: "채팅방 Id" },
   { id: "quizId", label: "문제 Id" },
-  { id: "chatting", label: "채팅 내용" },
-  { id: "isBanned", label: "정지 상태" },
+  { id: "chatting", label: "신고 내용" },
+  { id: "chattingDt", label: "채팅 일시" },
+  { id: "claimedDt", label: "신고 일시" },
+  { id: "isChecked", label: "확인 상태" },
+  { id: "checkedDt", label: "확인 일시" },
   { id: "actions", label: "작업" }
 ];
 
@@ -59,14 +66,17 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
                   <span>{report.chatting.length > 20 ? `${report.chatting.substring(0, 20)}...` : report.chatting}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell>{report.isBanned ? "정지됨" : "활성"}</TableCell>
+              <TableCell>{new Date(report.chattingDt).toLocaleString()}</TableCell>
+              <TableCell>{new Date(report.claimedDt).toLocaleString()}</TableCell>
+              <TableCell>{report.isChecked ? "확인됨" : "미확인"}</TableCell>
+              <TableCell>{report.checkedDt ? new Date(report.checkedDt).toLocaleString() : "-"}</TableCell>
               <TableCell>
-                <Button onClick={() => onDelete(report.chatClaimId)} disabled={report.isBanned}>Delete</Button>
+                <Button onClick={() => onDelete(report.chatClaimId)} disabled={report.isChecked}>Delete</Button>
                 <Button 
                   onClick={() => onBan(report.userId, report.chatClaimId)} 
-                  disabled={report.isBanned}
+                  disabled={report.isChecked}
                 >
-                  {report.isBanned ? "정지됨" : "정지"}
+                  {report.isChecked ? "정지됨" : "정지"}
                 </Button>
               </TableCell>
             </TableRow>

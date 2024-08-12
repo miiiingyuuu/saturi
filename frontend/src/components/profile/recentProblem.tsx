@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link ,Box, Typography, Avatar, LinearProgress } from "@mui/material";
+import { useRouter } from 'next/navigation';
+import { Box, Typography, Avatar, LinearProgress } from "@mui/material";
 
 // 지역 코드 한글로 반환
 const getDisplayName = (lessonGroupName: string): string => {
@@ -23,7 +24,6 @@ const getDisplayName = (lessonGroupName: string): string => {
   return displayName;
 };
 
-
 interface RecentLessonGroup {
   lessonGroupId: number;
   lessonGroupName: string;
@@ -42,38 +42,55 @@ interface RecentProblemProps {
 }
 
 const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
-    if (isLoading) return <Typography>Loading...</Typography>;
+  const router = useRouter();
 
-    return (
-      <Box sx={{ borderRadius: '16px' }}>
-        <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
-        {/* 데이터가 있을 시... */}
-        {data ? (
-          <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
-            <Avatar sx={{ bgcolor: 'green', mr: 2 }}>GO</Avatar>
-            <Box flexGrow={1}>
-              <Typography variant="body1">{getDisplayName(data.lessonGroupName)}</Typography>
-              <LinearProgress variant="determinate" value={data.avgAccuracy || 0} />
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : '데이터가 아직 없어요...'}
-              </Typography>
-            </Box>
+  if (isLoading) return <Typography>Loading...</Typography>;
+
+  const handleClick = () => {
+    if (data) {
+      router.push(`/lesson/${data.locationId}/${data.categoryId}/${data.lessonGroupId}`);
+    }
+  };
+
+  return (
+    <Box sx={{ borderRadius: '16px' }}>
+      <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
+      {data ? (
+        <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
+          <Avatar 
+            sx={{ 
+              bgcolor: 'green', 
+              mr: 2, 
+              cursor: 'pointer',
+              '&:hover': {
+                opacity: 0.8,
+              }
+            }}
+            onClick={handleClick}
+          >
+            GO
+          </Avatar>
+          <Box flexGrow={1}>
+            <Typography variant="body1">{getDisplayName(data.lessonGroupName)}</Typography>
+            <LinearProgress variant="determinate" value={data.avgAccuracy || 0} />
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : '데이터가 아직 없어요...'}
+            </Typography>
           </Box>
-        ) : (
-          // 데이터가 없을 시...
-          <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
-            {/* TODO : 해당 문제로 가는 router 필요한데, 이거 구현되나? */}
-            <Avatar sx={{ bgcolor: 'grey', mr: 2 }}>-</Avatar>
-            <Box flexGrow={1}>
-              <Typography variant="body1">최근에 학습한 문제가 없어요...</Typography>
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                새로운 문제를 풀어보세요!
-              </Typography>
-            </Box>
+        </Box>
+      ) : (
+        <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
+          <Avatar sx={{ bgcolor: 'grey', mr: 2 }}>-</Avatar>
+          <Box flexGrow={1}>
+            <Typography variant="body1">최근에 학습한 문제가 없어요...</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              새로운 문제를 풀어보세요!
+            </Typography>
           </Box>
-        )}
-      </Box>
-    );
-    };
-  
-  export default RecentProblem;
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+export default RecentProblem;

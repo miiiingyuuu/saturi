@@ -204,7 +204,7 @@ export default function QuizForm({quizId} : {quizId? : number}) {
                   required
                   fullWidth
                   id="answer"
-                  value={choices[0].content}
+                  value={choices[0]?.content}
                   onChange={(event) =>
                     handleChoiceChange(0, event.target.value)
                   }

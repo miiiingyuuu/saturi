@@ -362,7 +362,7 @@ public class UserService {
          * 연속 학습 일 수 구하기
          */
         Long learnDays = 0L;
-        if(lessonGroupResults == null) {
+        if(lessonGroupResults == null || findLessonResult == null) {
             LocalDate today = LocalDate.now();
 
             // 이번 주 첫째날 구하기
@@ -377,7 +377,6 @@ public class UserService {
             return new UserContinuousLearnDayDTO(0L, new ArrayList<Integer>(), weekAndMonth);
         }
 
-        // 레슨 그룹 결과 아이디로 모든 레슨 결과 조회
         List<LessonResultEntity> lessonResults = new ArrayList<>();
 
         lessonResults.addAll(findLessonResult);
