@@ -1,5 +1,6 @@
-import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip } from '@mui/material';
+import SortableTableHead from "@/components/SortableTableHead";
+import useTableSort from "@/hooks/useTableSort";
 
 interface UserReport {
   chatClaimId: number;
@@ -8,7 +9,7 @@ interface UserReport {
   roomId: number;
   quizId: number;
   chatting: string;
-  isBanned: boolean;  // 새로 추가된 필드
+  isBanned: boolean;
 }
 
 interface ReportTableProps {
@@ -18,7 +19,7 @@ interface ReportTableProps {
 }
 
 type HeadCell = {
-  id: keyof UserReport;
+  id: keyof UserReport | 'actions';
   label: string;
 };
 
@@ -28,7 +29,9 @@ const headCells: HeadCell[] = [
   { id: "userId", label: "유저 Id" },
   { id: "roomId", label: "채팅방 Id" },
   { id: "quizId", label: "문제 Id" },
-  { id: "actions", label: "" }
+  { id: "chatting", label: "신고 내용" },
+  { id: "isBanned", label: "정지 상태" },
+  { id: "actions", label: "작업" }
 ];
 
 const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) => {
@@ -37,18 +40,12 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
   return (
     <TableContainer component={Paper}>
       <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Chat Claim ID</TableCell>
-            <TableCell>Game Log ID</TableCell>
-            <TableCell>User ID</TableCell>
-            <TableCell>Room ID</TableCell>
-            <TableCell>Quiz ID</TableCell>
-            <TableCell>Chatting</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
+        <SortableTableHead
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+          headCells={headCells}
+        />
         <TableBody>
           {rows.map((report) => (
             <TableRow key={report.chatClaimId}>
@@ -62,20 +59,11 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
                   <span>{report.chatting.length > 20 ? `${report.chatting.substring(0, 20)}...` : report.chatting}</span>
                 </Tooltip>
               </TableCell>
+              <TableCell>{report.isBanned ? "정지됨" : "활성"}</TableCell>
               <TableCell>
-                {report.isBanned ? "정지됨" : "활성"}
-              </TableCell>
-              <TableCell>
+                <Button onClick={() => onDelete(report.chatClaimId)} disabled={report.isBanned}>Delete</Button>
                 <Button 
-                  onClick={() => onDelete(report.chatClaimId)}
-                  disabled={report.isBanned}
-                >
-                  Delete
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => onBan(report.userId, report.chatClaimId)}
+                  onClick={() => onBan(report.userId, report.chatClaimId)} 
                   disabled={report.isBanned}
                 >
                   {report.isBanned ? "정지됨" : "정지"}
