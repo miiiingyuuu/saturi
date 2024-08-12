@@ -101,9 +101,6 @@ public class AdminLessonService {
 
     public void updateLesson(Long lessonId, Long lessonGroupId, String script, String storeFileName) {
         List<LessonEntity> allByLessonGroupId = lessonService.findAllByLessonGroupId(lessonGroupId);
-        if(allByLessonGroupId.size() >= 5) {
-            throw new AlreadyMaxSizeException();
-        }
         LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
         LessonGroupEntity findLessonGroup = lessonRepository.findByIdLessonGroup(lessonGroupId).orElse(null);
         lesson.setLessonGroup(findLessonGroup);
