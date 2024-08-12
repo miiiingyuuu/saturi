@@ -1,27 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip, CircularProgress } from '@mui/material';
+import React from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip } from '@mui/material';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
-import api from '@/lib/axios';
 
 interface UserReport {
   chatClaimId: number;
   gameLogId: number;
-  email: string;
+  userId: number;
   roomId: number;
   quizId: number;
   chatting: string;
 }
 
-interface UserProfile {
-  email: string;
-  role: 'BANNED' | 'BASIC' | string;
-}
-
 interface ReportTableProps {
   reports: UserReport[];
+  userRoles: { [key: number]: string };
   onDelete: (chatClaimId: number) => void;
-  onBan: (email: string, chatClaimId: number) => void;
+  onBan: (userId: number, chatClaimId: number) => void;
 }
 
 type HeadCell = {
@@ -32,7 +27,7 @@ type HeadCell = {
 const headCells: HeadCell[] = [
   { id: "chatClaimId", label: "Id" },
   { id: "gameLogId", label: "게임 로그 Id" },
-  { id: "email", label: "사용자 이메일" },
+  { id: "userId", label: "유저 Id" },
   { id: "roomId", label: "채팅방 Id" },
   { id: "quizId", label: "문제 Id" },
   { id: "chatting", label: "신고 내용" },
@@ -40,45 +35,8 @@ const headCells: HeadCell[] = [
   { id: "actions", label: "작업" }
 ];
 
-const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) => {
-  const [userRoles, setUserRoles] = useState<{ [key: string]: string }>({});
-  const [loading, setLoading] = useState(true);
+const ReportTable: React.FC<ReportTableProps> = ({ reports, userRoles, onDelete, onBan }) => {
   const { rows, order, orderBy, onRequestSort } = useTableSort<UserReport>(reports, "chatClaimId");
-
-  useEffect(() => {
-    const fetchUserRoles = async () => {
-      setLoading(true);
-      try {
-        // ES5 호환 방식으로 중복 이메일 제거
-        const emails = reports.reduce<string[]>((acc, report) => {
-          if (!acc.includes(report.email)) {
-            acc.push(report.email);
-          }
-          return acc;
-        }, []);
-
-        const rolePromises = emails.map(email =>
-          api.get<UserProfile>(`/user/auth/profile`, { params: { email } })
-        );
-        const roleResponses = await Promise.all(rolePromises);
-        const newUserRoles = roleResponses.reduce((acc, response) => {
-          acc[response.data.email] = response.data.role;
-          return acc;
-        }, {} as { [key: string]: string });
-        setUserRoles(newUserRoles);
-      } catch (error) {
-        console.error('Failed to fetch user roles:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserRoles();
-  }, [reports]);
-
-  if (loading) {
-    return <CircularProgress />;
-  }
 
   return (
     <TableContainer component={Paper}>
@@ -91,13 +49,13 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
         />
         <TableBody>
           {rows.map((report) => {
-            const userRole = userRoles[report.email] || 'UNKNOWN';
+            const userRole = userRoles[report.userId] || 'UNKNOWN';
             const isBanned = userRole === 'BANNED';
             return (
               <TableRow key={report.chatClaimId}>
                 <TableCell>{report.chatClaimId}</TableCell>
                 <TableCell>{report.gameLogId}</TableCell>
-                <TableCell>{report.email}</TableCell>
+                <TableCell>{report.userId}</TableCell>
                 <TableCell>{report.roomId}</TableCell>
                 <TableCell>{report.quizId}</TableCell>
                 <TableCell>
@@ -109,7 +67,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
                 <TableCell>
                   <Button onClick={() => onDelete(report.chatClaimId)} disabled={isBanned}>Delete</Button>
                   <Button 
-                    onClick={() => onBan(report.email, report.chatClaimId)} 
+                    onClick={() => onBan(report.userId, report.chatClaimId)} 
                     disabled={isBanned}
                   >
                     {isBanned ? "정지됨" : "정지"}
