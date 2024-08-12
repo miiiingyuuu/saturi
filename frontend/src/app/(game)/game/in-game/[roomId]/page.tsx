@@ -45,6 +45,13 @@ interface TipsProps {
  content: string
 }
 
+interface UserProps {
+  nickName: string
+  birdId: number
+  isExited: boolean
+}
+
+
 export default function App({ params: { roomId } }: RoomIdProps) {
   const you = getCookie("nickname");
   const router = useRouter()
@@ -111,14 +118,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   // 잔여 인원 수
   const remainCount = useMemo(() =>
-    participants?.filter(participant => !participant.isExited).length
+    participants?.filter(participant => !participant?.isExited).length
   , [participants])
   // 잔여 인원 수를 세어 방에 2명 이상이 있었다가, 1명만 남은 경우 방을 폭파시킨다.
 
   useEffect(() => {
     const client = clientRef.current;
     if (client && participants?.length>1 && remainCount<=1) {
-      client.publish({
+      client?.publish({
         destination: "/pub/room",
         body: JSON.stringify({
           chatType: "TERMINATED",
@@ -176,11 +183,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             if (!isStart && body.chatType === "START") {
                setIsStart(true)
             }
-
-            const yourStatus = body.participants.find((p: any) => p.nickName === getCookie("nickname"))
-            if (yourStatus.isExited) {
+            if (body.chatType === "ENTER" || body.chatType === "EXIT" || body.chatType === "START") {
+            const yourStatus = body.participants?.find((p: UserProps) => p.nickName === getCookie("nickname"))
+            if (yourStatus !== undefined && yourStatus.isExited) {
               alert("이미 나가셨는데요")
               router.replace("/")
+            }
             }
 
           }});
@@ -279,14 +287,18 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
       window.addEventListener("unload", onDisconnect);
 
-      client.onDisconnect = onDisconnect;
+      // client.onDisconnect = onDisconnect;
       client.onConnect = onConnect;
 
       if (client.connected) {
         onConnect();
+        window.removeEventListener("unload", onDisconnect);
       }
       return () => {
+        console.log("여기는 클린업 페이지")
+        if (client) {
         onDisconnect()
+        }
       }
     }
   }, [roomId, clientRef]);
@@ -554,7 +566,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               }}
             >
               {participants?.map((participant) =>
-                !participant.isExited && (
+                !(participant?.isExited) && (
                 <CustomTooltip
                   key={participant.nickName}
                   title={participant.latestMessage || ""}

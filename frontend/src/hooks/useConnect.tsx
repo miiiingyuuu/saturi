@@ -34,6 +34,7 @@ export default function useConnect() {
 
     // 클린업 함수에서 이벤트 핸들러 제거
     return () => {
+      console.log("여기는 훅")
       window.removeEventListener("beforeunload", handleBeforeUnload);
       if (clientRef.current) {
         clientRef.current.deactivate();
