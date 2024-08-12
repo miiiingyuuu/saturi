@@ -176,8 +176,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               setIsStart(true)
             }
 
-            const p = body.participants.find(p => p.nickName === getCookie("nickname"))
-            if (p.isExited) {
+            const yourStatus = body.participants.find((p: any) => p.nickName === getCookie("nickname"))
+            if (yourStatus.isExited) {
               alert("이미 나가셨는데요")
               router.replace("/")
             }

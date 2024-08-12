@@ -67,7 +67,7 @@ const YearlyStreak: React.FC<YearlyStreakProps> = ({ data, totalLessonInfo, isLo
       <ReactTooltip />
       {!data || data.length === 0 && (
         <Typography variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
-          아직 스트릭 데이터가 없습니다. 학습을 시작해보세요!
+          아직 스트릭 데이터가 없습니다.
         </Typography>
       )}
       <Grid container spacing={2} sx={{ mt: 2, textAlign: 'center' }}>
