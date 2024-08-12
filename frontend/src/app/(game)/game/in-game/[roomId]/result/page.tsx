@@ -7,10 +7,28 @@ import {RoomIdProps} from "@/utils/props";
 import FirstResult from "@/components/game/result/firstResult";
 import SecondResult from "@/components/game/result/secondResult";
 
+interface RankProps {
+  rank : number
+  birdId: number
+  nickName: string
+  ansCount: number
+  earnedExp: number
+  exp: number
+  user: boolean
+}
 
 export default function Result({ params: { roomId } }: RoomIdProps) {
     const [currentStep, setCurrentStep] = useState(1);
-
+    const [ ranks, setRanks ] = useState<RankProps[]>([])
+    const [ myRank, setMyRank ] = useState<RankProps>({
+      rank: 0,
+      birdId: 0,
+      nickName: '',
+      ansCount: 0,
+      earnedExp: 0,
+      exp: 0,
+      user: false
+    })
 
     const nextstep = () => {
         if (currentStep === 1){
@@ -18,38 +36,18 @@ export default function Result({ params: { roomId } }: RoomIdProps) {
         }        
       };
 
-
     useEffect(() => {
         api.post("/game/result", {
             roomId
         })
-            .then(response => {
-                // 여기에 결과 정보 담아서 옴
-                console.log(response)
+          .then(response => {
+              setRanks(response.data)
+              setMyRank(response.data.filter((rank: RankProps) => rank.user)[0])
             })
     }, []);
 
-    // 프로필 받아오기 
-    // useEffect(() => {
-    //     api
-    //         .put(`learn/lesson-group-result/${lessonGroupResultId}`)
-    //         .then((res) => {
-    //         if (res.status === 200) {
-    //             console.log("lessonGroupResult", res.data);
-    //             setUserInfo(res.data.userInfo);
-    //         }
-    //         })
-    //         .catch((err) => {
-    //         console.log(err);
-    //         });
-    // }, []); // lessonGroupResultId가 변경될 때마다 실행
-
-
-
-
     return(
-
-        <Container 
+        <Container
             maxWidth="lg" 
             sx={{                
                 height:"90vh",
@@ -58,21 +56,12 @@ export default function Result({ params: { roomId } }: RoomIdProps) {
             <FirstResult
                 currentStep = {currentStep}
                 nextstep = {nextstep}
+                ranks = {ranks}
             />
             <SecondResult
                 currentStep = {currentStep}
+                myRank = {myRank}
             />
         </Container>
-
-
-
-
-
-        
-
-
-
-
     )
-
 }

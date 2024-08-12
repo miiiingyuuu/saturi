@@ -2,19 +2,29 @@ import { Box, Container, Card, LinearProgress, Button, Typography } from "@mui/m
 import "@/styles/home/main/mainPage.css";
 
 
-interface SecondResultProps {
+interface SecondResultProps<T> {
   currentStep : number;
+  myRank: T
 }
 
-
+interface RankProps {
+  rank : number
+  birdId: number
+  nickName: string
+  ansCount: number
+  earnedExp: number
+  exp: number
+  user: boolean
+}
 
 export default function SecondResult({
   currentStep,
-}: SecondResultProps) {
+  myRank
+}: SecondResultProps<RankProps>) {
 
   // 마음대로 변경 가능
   const progress = 50
-
+  const { rank, birdId, nickName, ansCount, earnedExp, exp, user } = myRank
 
   return(
     <Container
@@ -49,7 +59,7 @@ export default function SecondResult({
                 }}>
                 <Box
                     component="img"
-                    src = "/btnG_아이콘원형.png"
+                    src = {myRank? `/mini_profile/${myRank.birdId}.png` : undefined }
                     alt = "profile"
                     sx={{
                         width:"100px"
