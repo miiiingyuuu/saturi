@@ -14,6 +14,8 @@ public class GameResultResponseDTO {
     int rank;
     String nickName;
     //본인인가
+    Long birdId;
+
     boolean isUser = false;
     //몇개 맞췄냐
     int ansCount;
