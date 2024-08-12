@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.glowing-border {
+    animation: subtle-glow 1.5s infinite alternate;
+  }
+  
+  @keyframes subtle-glow {
+    from {
+      box-shadow: 0 0 5px #ff6666, 0 0 10px #ff6666, 0 0 15px #ff6666;
+    }
+    to {
+      box-shadow: 0 0 10px #ff9999, 0 0 20px #ff9999, 0 0 30px #ff9999;
+    }
+  }
+  
