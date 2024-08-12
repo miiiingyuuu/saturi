@@ -36,7 +36,7 @@ export interface ILessonCategoryProps {
 }
 
 export interface LessonGroup {
-  lessonGroupId: string;
+  lessonGroupId: number;
   locationName: string;
   lessonCategoryName: string;
   name: string;
@@ -44,12 +44,15 @@ export interface LessonGroup {
 }
 
 export interface LessonProps {
-  lessonId: number;
+  lessonId?: number;
   lessonGroupId: number;
   lessonGroupName: string;
   sampleVoicePath: string;
+  sampleVoiceName: string;
+  sampleVoicePitchX: string | null;
+  sampleVoicePitchY: string;
   script: string;
-  lastUpdateDt: string;
+  lastUpdateDt: string
 }
 
 // game

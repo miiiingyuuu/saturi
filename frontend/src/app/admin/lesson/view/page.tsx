@@ -1,128 +1,112 @@
-"use client";
+"use client"
 
-import api from "@/lib/axios";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { LessonProps } from "@/utils/props";
 import {
-  Box,
-  Button,
   Table,
-  TableRow,
-  Accordion,
   TableBody,
-  TableCell,
-  TableHead,
-  Typography,
-  AccordionDetails,
+  TableContainer,
+  Paper,
+  Accordion,
   AccordionSummary,
+  AccordionDetails,
+  Typography,
+  TableRow,
+  TableCell,
+  Button,
 } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import api from "@/lib/axios";
+import { useRouter } from "next/navigation"
+import React, { useEffect, useState } from "react";
+import useTableSort from "@/hooks/useTableSort";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SortableTableHead from "@/components/SortableTableHead";
+import AdminSampleGraph from "@/components/admin/AdminSampleGraph"
+import {LessonProps} from "@/utils/props"
+
+type HeadCell = {
+  id: keyof LessonProps | "actions";
+  label: string;
+};
+
+const headCells: HeadCell[] = [
+  { id: "lessonId", label: "레슨 Id" },
+  { id: "lessonGroupId", label: "레슨 그룹 Id" },
+  { id: "lessonGroupName", label: "레슨 그룹" },
+  { id: "sampleVoicePath", label: "파일 경로" },
+  { id: "sampleVoiceName", label: "예시 음성" },
+  { id: "lastUpdateDt", label: "최종 수정일" },
+  { id: "script", label: "스크립트" },
+];
 
 export default function App() {
-  const [lessons, setLessons] = useState<LessonProps[]>([]);
-  const [expanded, setExpanded] = useState<number | false>(false);
-  const [lessonDetails, setLessonDetails] = useState<{ [key: number]: any }>({});
+  const router = useRouter()
+  const [ items, setItems] = useState<LessonProps[]>([]);
+  const { rows, order, orderBy, onRequestSort } = useTableSort<LessonProps>(items, "lessonId");
 
-  // 아코디언이 켜지면 상세 조회
-  function handleAccordionChange(lessonId: number) {
-    return async (event: SyntheticEvent, isExpanded: boolean) => {
-      if (!lessonDetails[lessonId]) {
-        const response = await api.get(`admin/lesson/${lessonId}`);
-        setLessonDetails(prev => ({...prev, [lessonId]: response.data}));
-      }
-      setExpanded(isExpanded ? lessonId : false);
-    };
+  function handleEdit(lessonId: number) {
+    router.push(`/admin/quiz/edit/${lessonId}`)
+  }
+
+  function handleDelete(lessonId: number) {
+    api.delete(`/admin/game/quiz/${lessonId}`)
+      .then(() => {
+        alert("삭제되었습니다.")
+        setItems(items.filter(item => item.lessonId !== lessonId));
+      })
   }
 
   useEffect(() => {
     api.get("/admin/lesson")
-      .then(response => setLessons(response.data))
+      .then((response) => setItems(response.data));
   }, []);
 
-  const handleEdit = (lessonId: number) => {
-    // Edit functionality here
-    console.log("Edit:", lessonId);
-  };
-
-  function handleDelete(lessonId: number) {
-    // Delete functionality here
-    api.delete(`/admin/lesson/${lessonId}`)
-      .then(() => {
-        setLessons(lessons.filter(lesson => lesson.lessonId !== lessonId));
-      })
-      .catch(err => console.log(err));
-  };
-
   return (
-    <Box>
-      <Typography component="h1" variant="h5">
-        레슨 조회
-      </Typography>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>레슨 ID</TableCell>
-            <TableCell>레슨 그룹</TableCell>
-            <TableCell>Sample Voice Path</TableCell>
-            <TableCell>스크립트</TableCell>
-            <TableCell>등록일자</TableCell>
-            <TableCell>수정/삭제</TableCell>
-          </TableRow>
-        </TableHead>
+    <TableContainer component={Paper}>
+      <Table>
+        <SortableTableHead
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+          headCells={headCells}
+        />
         <TableBody>
-          {lessons.map((lesson) => (
-            <TableRow key={lesson.lessonId}>
-              <TableCell colSpan={6} style={{ padding: 0 }}>
-                <Accordion
-                  expanded={expanded === lesson.lessonId}
-                  onChange={handleAccordionChange(lesson.lessonId)}
-                >
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <TableRow>
-                      <TableCell>{lesson.lessonId}</TableCell>
-                      <TableCell>{lesson.lessonGroupName}</TableCell>
-                      <TableCell>{lesson.sampleVoicePath}</TableCell>
-                      <TableCell>{lesson.script}</TableCell>
-                      <TableCell>{new Date(lesson.lastUpdateDt).toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          onClick={() => handleEdit(lesson.lessonId)}
-                          sx={{ mr: 1 }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          size="small"
-                          onClick={() => handleDelete(lesson.lessonId)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+          {rows.map((row) => (
+            <TableRow key={row.lessonId}>
+              <TableCell>{row.lessonId}</TableCell>
+              <TableCell>{row.lessonGroupId}</TableCell>
+              <TableCell>{row.sampleVoicePath}</TableCell>
+              <TableCell>{row.sampleVoiceName}</TableCell>
+              <TableCell>{row.lastUpdateDt}</TableCell>
+              <TableCell>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography>{row.script}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    {lessonDetails[lesson.lessonId] && (
-                      <Box>
-                        <Typography variant="h6">상세 정보</Typography>
-                        <Typography>레슨 그룹: {lessonDetails[lesson.lessonId].lessonGroupName}</Typography>
-                        <Typography>원본 음성 파일 경로: {lessonDetails[lesson.lessonId].sampleVoicePath}</Typography>
-                        <Typography>원본 음성 파일 이름: {lessonDetails[lesson.lessonId].sampleVoiceName}</Typography>
-                        <Typography>스크립트: {lessonDetails[lesson.lessonId].script}</Typography>
-                        <Typography>최근 수정된 내역: {new Date(lessonDetails[lesson.lessonId].lastUpdateDt).toLocaleString()}</Typography>
-                      </Box>
-                    )}
+                    <AdminSampleGraph sampleVoicePitchY={row.sampleVoicePitchY}/>
                   </AccordionDetails>
                 </Accordion>
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => handleEdit(row.lessonId||0)}
+                >
+                  수정
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => handleDelete(row.lessonId||0)}
+                >
+                  삭제
+                </Button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </Box>
+    </TableContainer>
   );
 }

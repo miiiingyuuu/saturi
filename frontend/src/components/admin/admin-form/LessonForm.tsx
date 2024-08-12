@@ -10,16 +10,40 @@ import api from "@/lib/axios";
 import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import { getLessonGroup } from "@/utils/adminutils";
-import { LessonGroup } from "@/utils/props"
+import { LessonGroup, LessonProps } from "@/utils/props";
 
-
-export default function LessonForm() {
+export default function LessonForm({ lessonId }: { lessonId?: number }) {
   const [lessonGroup, setLessonGroup] = useState<LessonGroup | null>(null);
   const [script, setScript] = useState<string>("");
   const [sampleVoice, setSampleVoice] = useState<File | null>(null);
   const [lessonGroupOptions, setLessonGroupOptions] = useState<LessonGroup[] | null>(null);
+  const [sampleVoiceName, setSampleVoiceName] = useState<string>("");
 
-  function createLesson() {
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getLessonGroup();
+      setLessonGroupOptions(data);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (lessonId && lessonGroupOptions) {
+      api.get<LessonProps>(`/admin/lesson/${lessonId}`)
+        .then(response => {
+          const { lessonGroupId, script, sampleVoiceName } = response.data;
+
+          // 불러온 데이터로 폼을 세팅
+          const group = lessonGroupOptions.find(option => option.lessonGroupId === lessonGroupId);
+          setLessonGroup(group || null);
+          setScript(script);
+          setSampleVoiceName(sampleVoiceName);
+        })
+        .catch(error => console.error('Error fetching lesson data:', error));
+    }
+  }, [lessonId, lessonGroupOptions]);
+
+  function createOrUpdateLesson() {
     const formData = new FormData();
 
     if (sampleVoice) {
@@ -27,15 +51,20 @@ export default function LessonForm() {
     }
     formData.append("script", script);
     if (lessonGroup) {
-      formData.append("lessonGroupId", lessonGroup.lessonGroupId);
+      formData.append("lessonGroupId", lessonGroup.lessonGroupId.toString());
     }
 
-    api.post("/admin/lesson", formData, { headers: { "Content-Type": "multipart/form-data" } })
+    const apiCall = lessonId
+      ? api.put(`/admin/lesson/${lessonId}`, formData, { headers: { "Content-Type": "multipart/form-data" } })
+      : api.post("/admin/lesson", formData, { headers: { "Content-Type": "multipart/form-data" } });
+
+    apiCall
       .then(response => {
-        alert("등록되었습니다.")
-        setSampleVoice(null)
-        setScript("")
-        setLessonGroupOptions(null)
+        alert(lessonId ? "수정되었습니다." : "등록되었습니다.");
+        setSampleVoice(null);
+        setScript("");
+        setLessonGroup(null);
+        setSampleVoiceName("");
       })
       .catch(error => console.error('Error:', error));
   }
@@ -43,16 +72,8 @@ export default function LessonForm() {
   function handleVoiceFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files ? event.target.files[0] : null;
     setSampleVoice(file);
+    setSampleVoiceName(""); // 새 파일이 선택되면 기존 파일 이름 리셋
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      const data = await getLessonGroup();
-      setLessonGroupOptions(data);
-    }
-
-    fetchData();
-  }, []);
 
   return (
     <Box
@@ -60,7 +81,7 @@ export default function LessonForm() {
       noValidate
       onSubmit={event => {
         event.preventDefault();
-        createLesson();
+        createOrUpdateLesson();
       }}
       sx={{ mt: 3 }}
     >
@@ -118,7 +139,7 @@ export default function LessonForm() {
             }}
           >
             <Typography variant="body1" sx={{ mr: 2 }}>
-              {sampleVoice ? `선택한 파일: ${sampleVoice.name}` : "파일을 선택하세요"}
+              {sampleVoiceName ? `${sampleVoiceName}` : sampleVoice ? `선택한 파일: ${sampleVoice.name}` : "파일을 선택하세요"}
             </Typography>
             <div>
               <label htmlFor="file-upload">
@@ -148,7 +169,7 @@ export default function LessonForm() {
               height: "56px",
             }}
           >
-            등록
+            {lessonId ? "수정" : "등록"}
           </Button>
         </Grid>
       </Grid>
