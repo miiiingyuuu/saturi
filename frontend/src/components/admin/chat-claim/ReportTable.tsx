@@ -24,10 +24,10 @@ type HeadCell = {
 
 const headCells: HeadCell[] = [
   { id: "chatClaimId", label: "Id" },
-  { id: "gameLogId", label: "지역" },
-  { id: "userId", label: "생성일" },
-  { id: "roomId", label: "문제 타입" },
-  { id: "quizId", label: "문제" },
+  { id: "gameLogId", label: "게임 로그 Id" },
+  { id: "userId", label: "유저 Id" },
+  { id: "roomId", label: "채팅방 Id" },
+  { id: "quizId", label: "문제 Id" },
   { id: "actions", label: "" }
 ];
 
