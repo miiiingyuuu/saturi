@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip } from '@mui/material';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
 
@@ -8,7 +8,8 @@ interface UserReport {
   userId: number;
   roomId: number;
   quizId: number;
-  actions: string
+  chatting: string;
+  isBanned: boolean;
 }
 
 interface ReportTableProps {
@@ -18,7 +19,7 @@ interface ReportTableProps {
 }
 
 type HeadCell = {
-  id: keyof UserReport;
+  id: keyof UserReport | 'actions';
   label: string;
 };
 
@@ -28,7 +29,9 @@ const headCells: HeadCell[] = [
   { id: "userId", label: "유저 Id" },
   { id: "roomId", label: "채팅방 Id" },
   { id: "quizId", label: "문제 Id" },
-  { id: "actions", label: "" }
+  { id: "chatting", label: "채팅 내용" },
+  { id: "isBanned", label: "정지 상태" },
+  { id: "actions", label: "작업" }
 ];
 
 const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) => {
@@ -52,8 +55,19 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
               <TableCell>{report.roomId}</TableCell>
               <TableCell>{report.quizId}</TableCell>
               <TableCell>
-                <Button onClick={() => onDelete(report.chatClaimId)}>Delete</Button>
-                <Button onClick={() => onBan(report.userId, report.chatClaimId)}>Ban</Button>
+                <Tooltip title={report.chatting} arrow>
+                  <span>{report.chatting.length > 20 ? `${report.chatting.substring(0, 20)}...` : report.chatting}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell>{report.isBanned ? "정지됨" : "활성"}</TableCell>
+              <TableCell>
+                <Button onClick={() => onDelete(report.chatClaimId)} disabled={report.isBanned}>Delete</Button>
+                <Button 
+                  onClick={() => onBan(report.userId, report.chatClaimId)} 
+                  disabled={report.isBanned}
+                >
+                  {report.isBanned ? "정지됨" : "정지"}
+                </Button>
               </TableCell>
             </TableRow>
           ))}
