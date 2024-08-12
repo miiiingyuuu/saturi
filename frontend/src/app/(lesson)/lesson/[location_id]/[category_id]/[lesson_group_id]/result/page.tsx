@@ -117,8 +117,6 @@ export default function LessonResultPage() {
           beforestep = {beforestep}
         />
       )}
-      <Box className="flex gap-4">                
-      </Box>
     </Box>
   );
 }
