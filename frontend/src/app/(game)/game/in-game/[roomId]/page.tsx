@@ -265,7 +265,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
       // 게임 종료 시
       const onDisconnect = () => {
-        clientRef.current.publish({
+        clientRef.current?.publish({
           destination: "/pub/room",
           body: JSON.stringify({
             roomId,
