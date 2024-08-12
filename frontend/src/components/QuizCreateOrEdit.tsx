@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { handleValueChange } from "@/utils/utils";
 import { ILocationProps } from "@/utils/props";
 import { getLocation } from "@/utils/adminutils";
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 interface QuizProps {
   quizId?: number; // 수정의 경우 quizId가 필요
