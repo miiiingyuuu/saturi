@@ -20,7 +20,8 @@ export default function Result({params: {roomId}}: RoomIdProps){
     <Container 
       maxWidth="lg" 
       sx={{
-        height: "700px",
+        height: "90vh",
+        minHeight: "700px",
         display:"flex",
         justifyContent:"center",
         flexDirection:"column",
