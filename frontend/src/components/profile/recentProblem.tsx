@@ -45,7 +45,7 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
     if (isLoading) return <Typography>Loading...</Typography>;
 
     return (
-      <Box>
+      <Box sx={{ borderRadius: '16px' }}>
         <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
         {/* 데이터가 있을 시... */}
         {data ? (

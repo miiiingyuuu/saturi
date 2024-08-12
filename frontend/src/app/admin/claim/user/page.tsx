@@ -14,7 +14,8 @@ interface UserReport {
   userId: number;
   roomId: number;
   quizId: number;
-  actions: string
+  chatting: string;
+  isBanned: boolean;
 }
 
 const UserReportManagementPage: React.FC = () => {
