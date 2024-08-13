@@ -77,6 +77,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [currentTipIndex, setCurrentTipIndex] = useState(0)
   const [ isEnd, setIsEnd ] = useState(false)
   const [ chat, setChat ] = useState("")
+  const [highlightedWinner, setHighlightedWinner] = useState<string | null>(null);
   const textFieldRef = useRef<HTMLInputElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
@@ -228,6 +229,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           const body = JSON.parse(message.body);
           // 방에서 정답이 나오면
           if (body.correct) {
+            // 정답자 하이라이팅
+             setHighlightedWinner(body.senderNickName)
             // 채팅 관련 정보를 초기화 하고
             setIsSubmitted(false)
             setMessage("")
@@ -242,6 +245,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             }
             // 5초 후, 다음 문제로 넘어가기
             setTimeout(() => {
+              setHighlightedWinner(null);
               setIsAnswerTime(false);
               setResult("틀렸습니다!")
               setNow((prev) => prev + 1);
@@ -436,7 +440,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             }}
           >
             {/* 중요파트 */}
-            {!isAnswerTime && isStart  && !timer && `남은 시간: ${quizTimer}`}
+            {!isAnswerTime && isStart  && !time && `남은 시간: ${quizTimer}`}
             {!isStart ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                 <Typography
@@ -575,7 +579,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               alignItems: 'center',
               flexWrap: 'wrap',
               overflow: 'auto',
-              backgroundColor: 'rgba(255, 255, 255, 0.8)', // 배경에 약간의 투명도 추가
+              backgroundColor: 'rgba(255, 255, 255, 0.4)', // 배경에 약간의 투명도 추가
             }}
           >
             {participants?.map((participant) =>
@@ -597,8 +601,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                         position: "relative",
                         border: "3px groove #BDDD",
                         borderRadius: "15px",
-                        backgroundColor: "#ecf0f3",
+                        backgroundColor: highlightedWinner === participant.nickName ? "#d1ffd6" : "#ecf0f3", // 하이라이팅 색상
                         m: 3, // 카드 간의 마진
+                        transition: "background-color 0.3s ease", // 부드러운 색상 전환
+
                       }}
                     >
                       <Box>
@@ -635,7 +641,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             flex: 1,
             px: 2,
             pt: 2,
-            backgroundColor: '#f5f5f5',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -684,7 +689,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             // height: '9vh',
             px: 1,
             pt: 1,
-            backgroundColor: '#f5f5f5',
           }}
         >
           <TextField
