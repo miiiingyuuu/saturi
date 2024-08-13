@@ -86,6 +86,7 @@ export default function firstResult({
               <Card
                 className="px-3 py-2 mx-3"
                 sx={{
+                  height:"16%",
                   minHeight:"80px",
                   display:"flex",
                   justifyContent:"space-around",
@@ -101,6 +102,7 @@ export default function firstResult({
                     height:"100%",
                     display:"flex",
                     flexDirection:"column",
+                    justifyContent:"space-around",
                     alignItems:"center",
                   }}
                 >
@@ -115,7 +117,8 @@ export default function firstResult({
                   <Box 
                     sx={{
                       paddingTop:"1px",
-                      height:"20%"
+                      height:"20%",
+
                       // border:"1px solid black"
                     }}> {rank.nickName} 
                   </Box>
@@ -137,6 +140,12 @@ export default function firstResult({
                         },
                   }}/>
                 </Box>
+                <Typography 
+                  sx={{
+                    paddingX:"5px",
+                }}>
+                  {rank.ansCount} / 10
+                </Typography>
               </Card>
             ))}
           </Box>

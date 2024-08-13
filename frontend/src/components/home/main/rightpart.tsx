@@ -49,7 +49,6 @@ export default function RightPart({selectedRegion} : RightPartProps) {
       className="rightpart" 
       sx={{ 
         position: "absolute",
-        backgroundColor: "#f3f4f6",
         width: "100%",
         minHeight: "700px",
         height: "90vh",
@@ -91,7 +90,7 @@ export default function RightPart({selectedRegion} : RightPartProps) {
                     '&:hover': { backgroundColor: 'green' },
                     '&:active': { backgroundColor: 'green' },
                     '&:focus': { backgroundColor: 'success' },
-                    marginTop: "20px", 
+                    marginTop: "25px", 
                     width: "200px", 
                     height: "50px", 
                     fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }

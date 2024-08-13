@@ -115,7 +115,7 @@ export default function SecondResult({
                 <LinearProgress
                     variant="determinate"
                     value={progress}
-                    className="pb-4 m-10"
+                    className="pb-4 m-3"
                     aria-label="progress bar"
                     sx={{
                         width: "550px",
@@ -129,8 +129,10 @@ export default function SecondResult({
             </Box>
             {/* 1의 3 */}
             <Typography
+              variant="h5"
               sx={{
-              textAlign:"center",
+              marginX:"12px",
+              textAlign:"center",              
             }}>
               +{earnedExp} Exp
             </Typography>
@@ -147,10 +149,10 @@ export default function SecondResult({
               sx={{
                 width: "350px",
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 marginTop: "20px",
               }}>
-                <Button
+                {/* <Button
                   className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
                   variant="contained"
                   onClick={handleAgain}
@@ -161,7 +163,7 @@ export default function SecondResult({
                     '&:focus': { backgroundColor: 'success' },
                 }}>
                   다시하기
-                </Button>
+                </Button> */}
                 <Button
                   className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
                   variant="contained"

@@ -83,7 +83,7 @@ export default function ProfilePage() {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}>
+    <Box sx={{ flexGrow: 1, p: 3 }}>
       <Grid container spacing={3} sx={{ maxWidth: '75%', mx: 'auto' }}>
         {/* My Profile 섹션 */}
         <Grid item xs={12}>

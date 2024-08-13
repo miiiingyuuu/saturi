@@ -196,7 +196,7 @@ export default function EditProfilePage() {
             }
           }
         })
-        .catch(err=>console.log(err))
+        .catch(()=> alert("이미 존재하는 닉네임 입니다."))
     } else {
       alert("유효하지 않은 닉네임 입니다.");
     }

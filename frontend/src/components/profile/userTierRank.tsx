@@ -174,7 +174,10 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
             {`${userExpInfo?.currentExp || 0} EXP`}
           </Typography>
         </Box>
-        <Box>
+        <Box 
+          sx={{
+            marginBottom:"15px",
+          }}>
           {!isHorizontal && (
               <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
                 {isMaxTier 

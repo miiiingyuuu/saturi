@@ -7,17 +7,16 @@ import {
   TextField, 
   Typography, 
   Paper, 
-  List, 
-  ListItem, 
-  ListItemText,
   Fab,
   Grow,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
 import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown, { Components } from 'react-markdown';
+import Image from 'next/image';
+import chatbotImage from '/public/chatbot.png'; // 이미지 경로를 적절히 수정해주세요
 
 const INITIAL_MESSAGE = {
     sender: '사투리무새',
@@ -27,7 +26,7 @@ const INITIAL_MESSAGE = {
 const Chatbot: React.FC = () => {
   const [chatbotVisible, setChatbotVisible] = useState(false);
   const [userMessage, setUserMessage] = useState('');
-  const [messages, setMessages] = useState<{sender: string, content: string}[]>([]);
+  const [messages, setMessages] = useState<{sender: string, content: string}[]>([INITIAL_MESSAGE]);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
   const chatbotRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
@@ -36,10 +35,9 @@ const Chatbot: React.FC = () => {
   const toggleChatbot = () => {
     setChatbotVisible(!chatbotVisible);
     if (!chatbotVisible) {
-        // 챗봇이 열릴 때 초기 메시지를 다시 표시
-        setMessages([INITIAL_MESSAGE]);
-      }
-    };
+      setMessages([INITIAL_MESSAGE]);
+    }
+  };
 
   const addMessage = (sender: string, message: string) => {
     const newMessage = {
@@ -115,18 +113,17 @@ const Chatbot: React.FC = () => {
     };
 
     const handleEscKey = (event: KeyboardEvent) => {
-        if (event.key === 'Escape' && chatbotVisible) {
-          setChatbotVisible(false);
-        }
-      };
-
+      if (event.key === 'Escape' && chatbotVisible) {
+        setChatbotVisible(false);
+      }
+    };
 
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscKey);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscKey);
+      document.removeEventListener('keydown', handleEscKey);
     };
   }, [chatbotVisible]);
 
@@ -141,7 +138,7 @@ const Chatbot: React.FC = () => {
   return (
     <Box sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: 1000 }} ref={chatbotRef}>
       <Fab 
-        color="primary" 
+        // color="primary" 
         onClick={toggleChatbot} 
         aria-label="chat"
         sx={{ 
@@ -151,14 +148,20 @@ const Chatbot: React.FC = () => {
           bottom: 0, 
           right: 0,
           display: chatbotVisible ? 'none' : 'flex',
-          width: 80,  
-          height: 80, 
+          width: 70,  
+          height: 70, 
           '& .MuiSvgIcon-root': {
             fontSize: 40  
-          }
+          },
+          backgroundColor: '#d2e1ff'
         }}
       >
-        <FlutterDashIcon />
+          <Image
+            src={chatbotImage}
+            alt="Chatbot"
+            width={40}
+            height={40}
+          />
       </Fab>
       <Grow 
         in={chatbotVisible} 
@@ -171,16 +174,21 @@ const Chatbot: React.FC = () => {
             position: 'absolute',
             bottom: 0,
             right: 0,
-            width: isMobile ? '100vw' : 400,
-            height: isMobile ? '100vh' : 600,
+            width: isMobile ? '100vw' : 350,
+            height: isMobile ? '100vh' : 500,
             maxWidth: '100vw',
             maxHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
+            borderRadius: '10px'
           }}
         >
-          <Box sx={{ p: 2, backgroundColor: theme.palette.primary.main, color: 'white' }}>
+          <Box sx={{ 
+            p: 2, 
+            backgroundColor: '#d2e1ff',
+            color: 'black',
+          }}>
             <Typography variant="h6">사투리무새</Typography>
           </Box>
           <Box
@@ -193,18 +201,43 @@ const Chatbot: React.FC = () => {
               p: 2,
             }}
           >
-            <List>
-                {messages.map((msg, index) => (
-                <ListItem key={index} alignItems="flex-start">
-                    <ListItemText
-                    primary={msg.sender}
-                    secondary={
-                      <ReactMarkdown components={customRenderers}>{msg.content}</ReactMarkdown>
-                    }
-                  />
-                </ListItem>
-                ))}
-            </List>
+            {messages.map((msg, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  justifyContent: msg.sender === '나' ? 'flex-end' : 'flex-start',
+                  mb: 2,
+                  alignItems: 'flex-start', // 이미지와 텍스트를 위쪽으로 정렬
+                }}
+              >
+                {msg.sender !== '나' && (
+                  <Box sx={{ mr: 1, mt: 0.5 }}>
+                    <Image
+                      src={chatbotImage}
+                      alt="Chatbot"
+                      width={40}
+                      height={40}
+                      style={{ borderRadius: '50%' }}
+                    />
+                  </Box>
+                )}
+                <Box
+                  sx={{
+                    maxWidth: '70%',
+                    p: 1,
+                    borderRadius: 2,
+                    backgroundColor: msg.sender === '나' ? '#F0F5FF' : '#fff',
+                    boxShadow: 1,
+                  }}
+                >
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
+                    {msg.sender}
+                  </Typography>
+                  <ReactMarkdown components={customRenderers}>{msg.content}</ReactMarkdown>
+                </Box>
+              </Box>
+            ))}
           </Box>
           <Box sx={{ p: 2, backgroundColor: theme.palette.grey[100] }}>
             <TextField
@@ -218,7 +251,7 @@ const Chatbot: React.FC = () => {
                 endAdornment: (
                   <Button
                     onClick={sendMessage}
-                    endIcon={<SendIcon />}
+                    endIcon={<SendIcon sx={{ color: '#A0AFFF' }} />}
                   >
                   </Button>
                 ),
