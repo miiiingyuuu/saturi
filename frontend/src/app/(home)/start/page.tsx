@@ -10,26 +10,6 @@ import { useEffect, useState } from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { styled } from '@mui/system'
 
-// const BackgroundContainer = styled(Box)({
-//   position: 'relative',
-//   width: '100%',
-//   minHeight: '100vh',
-//   backgroundImage: 'url("/path/to/your/background-image.jpg")', // 배경 이미지 경로를 지정하세요
-//   backgroundSize: 'cover',
-//   backgroundPosition: 'center top',
-//   backgroundRepeat: 'no-repeat',
-//   '&::before': {
-//     content: '""',
-//     position: 'absolute',
-//     top: 0,
-//     left: 0,
-//     right: 0,
-//     bottom: 0,
-//     background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%)',
-//     pointerEvents: 'none',
-//   },
-// });
-
 const ContentContainer = styled(Box)({
   position: 'relative',
   zIndex: 1,
