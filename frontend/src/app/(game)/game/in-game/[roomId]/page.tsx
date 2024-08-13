@@ -73,7 +73,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [ quizTimer, setQuizTimer] = useState(10);
   const [ isCorrect, setIsCorrect] = useState(false);
   const [ tips, setTips ] = useState<TipsProps[]>([])
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0)
+  const [ isEnd, setIsEnd ] = useState(false)
 
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
@@ -124,7 +125,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   useEffect(() => {
     const client = clientRef.current;
-    if (client && participants?.length>1 && remainCount<=1) {
+    if (!isEnd && client && participants?.length>1 && remainCount<=1) {
       client?.publish({
         destination: "/pub/room",
         body: JSON.stringify({
@@ -159,6 +160,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         }
       })
       setIsAnswerTime(true);
+      setIsEnd(true)
       setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
       setTimeout(() => {
         router.replace(`/game/in-game/${roomId}/result`)
