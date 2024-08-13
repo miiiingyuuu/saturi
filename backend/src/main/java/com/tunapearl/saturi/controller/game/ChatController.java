@@ -4,12 +4,10 @@ import com.tunapearl.saturi.domain.game.*;
 import com.tunapearl.saturi.domain.game.person.PersonChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatMessage;
 import com.tunapearl.saturi.domain.game.room.ChatRoom;
-import com.tunapearl.saturi.domain.quiz.QuizEntity;
 import com.tunapearl.saturi.dto.game.*;
 import com.tunapearl.saturi.dto.user.UserInfoResponseDTO;
 import com.tunapearl.saturi.exception.UnAuthorizedException;
 import com.tunapearl.saturi.repository.game.GameRoomParticipantRepository;
-import com.tunapearl.saturi.repository.game.GameRoomQuizRepository;
 import com.tunapearl.saturi.repository.game.GameRoomRepository;
 import com.tunapearl.saturi.repository.redis.ChatRoomRepository;
 import com.tunapearl.saturi.service.GameRoomParticipantService;
@@ -26,11 +24,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -48,6 +42,7 @@ public class ChatController {
 
     private final ChatRoomRepository chatRoomRepository;
     private final GameRoomParticipantRepository gameRoomParticipantRepository;
+    private final GameRoomRepository gameRoomRepository;
 
 
     /**
@@ -126,16 +121,6 @@ public class ChatController {
             //상태 변경
             gameService.changeParticipantStatus(grpid);
 
-//            //누가나갔는지, 현재 몇명인지,
-//            ExitMessage exitMessage = new ExitMessage();
-//            exitMessage.setRoomId(message.getRoomId());
-//            exitMessage.setMessage(message.getSenderNickName() + "님이 퇴장하셨습니다.");
-//            exitMessage.setExitNickName(message.getSenderNickName());
-//
-//
-//            long remained = gameRoomParticipantRepository.countActiveParticipantsByRoomId(roomId);
-//            exitMessage.setRemainCount(remained);//몇명남았냐
-
             GameParticipantResponseDTO dto = new GameParticipantResponseDTO();
 
             dto.setChatType(MessageType.EXIT);
@@ -146,19 +131,25 @@ public class ChatController {
             //참여자정보 가져와
             List<GameRoomParticipantEntity> participantEntityList = gameRoomParticipantService.findByRoomId(message.getRoomId());
             List<GameParticipantDTO> participantDTOList = new ArrayList<>();
+            int remain_cnt = 0;//남은 인원
             for (GameRoomParticipantEntity participant : participantEntityList) {
                 GameParticipantDTO participantDTO = new GameParticipantDTO();
 
                 participantDTO.setNickName(participant.getUser().getNickname());
                 participantDTO.setBirdId(participant.getUser().getBird().getId());
                 participantDTO.setExited(participant.isExited());
+                if (!participant.isExited())
+                    remain_cnt++;
                 participantDTOList.add(participantDTO);
             }
             dto.setParticipants(participantDTOList);
 
-            redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());
+            if (remain_cnt == 0) {
+                GameRoomEntity gr = gameRoomRepository.findById(roomId).orElseThrow(NoSuchElementException::new);
+                gr.setStatus(Status.TERMINATED);
+            }
 
-//            redisPublisher.gameExitPublish(chatService.getRoomTopic(message.getRoomId()), exitMessage);
+            redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());
 
         } else if (MessageType.TERMINATED.equals(message.getChatType())) {
 
