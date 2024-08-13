@@ -90,15 +90,19 @@ export default function ProfilePage() {
           <Typography variant="h4" sx={{ mb: 2 }}>
             <AccountBoxIcon fontSize="medium" /> My Profile
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{ height: '100%' }}>
             {/* 프로필 정보 */}
-            <Grid item xs={12} md={6}>
-              <ProfileInfo />
+            <Grid item xs={12} md={6} sx={{ display: 'flex' }}>
+              <Box sx={{ width: '100%', height: '100%' }}>
+                <ProfileInfo />
+              </Box>
             </Grid>
             
             {/* 티어, 경험치, 순위 */}
-            <Grid item xs={12} md={6}>
-              <UserTierRank/>
+            <Grid item xs={12} md={6} sx={{ display: 'flex' }}>
+              <Box sx={{ width: '100%', height: '100%' }}>
+                <UserTierRank />
+              </Box>
             </Grid>
           </Grid>
         </Grid>
