@@ -7,9 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontfamily: {
-        sans: ['Pretendard', 'sans-serif'], // Pretendard를 기본 sans-serif 폰트로 설정
-      }
+      // fontfamily: {
+      //   sans: ['Pretendard', 'sans-serif'], // Pretendard를 기본 sans-serif 폰트로 설정
+      // }
     },
   },
   corePlugins: {
