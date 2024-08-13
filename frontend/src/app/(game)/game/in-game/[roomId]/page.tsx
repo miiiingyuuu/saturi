@@ -1,5 +1,6 @@
 "use client"
 
+import { pink } from '@mui/material/colors';
 import { IMessage } from "@stomp/stompjs";
 import useConnect from "@/hooks/useConnect";
 import SendIcon from "@mui/icons-material/Send";
@@ -77,6 +78,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [ isEnd, setIsEnd ] = useState(false)
   const [ chat, setChat ] = useState("")
   const textFieldRef = useRef<HTMLInputElement>(null)
+  const chatEndRef = useRef<HTMLDivElement>(null)
 
 
   function updateParticipantMessage(nickName: string, message: string) {
@@ -251,7 +253,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           }
           // 시간
           const timestamp = new Date().toLocaleTimeString("ko-KR", {
-            hour12: true,
+            hour12: false,
             hour: "2-digit",
             minute: "2-digit",
           });
@@ -263,7 +265,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             chatLogId: body.chatLogId
           };
           // 메시지 로그에 뒤에서부터 채워넣고
-          setMessages((prevMsg) => [...prevMsg, newMsg]);
+          setMessages((prevMsg) => [ ...prevMsg, newMsg,]);
 
           // 말풍선 관련 호출 함수
           setHighlightedNick(body.senderNickName);
@@ -367,141 +369,136 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     }
   }, [nowQuiz]);
 
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({behavior: "smooth"})
+    }
+  }, [messages]);
+
   return (
-    <Box>
-      <Container maxWidth="lg">
-        {/* 게임 파트 */}
-        <Box
-          sx={{
-          height: "90vh",
-          minHeight: "600px",
+    <Box sx={{ display: 'flex', height: '90vh', flexDirection: 'row', m: 3}}>
+      {/* 게임 파트 */}
+      <Box
+        sx={{
+          flex: 2, // 게임 파트가 화면의 약 2/3을 차지합니다.
+          height: '100%',
           backgroundImage: "url(/MainPage/background.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           borderRadius: "15px",
-          border:"3px groove black",
-        }}>
+          border: "3px groove black",
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative', // 프로필 파트를 절대 위치로 배치하기 위한 설정
+        }}
+      >
+        <Container maxWidth="lg" sx={{ height: '100%' }}>
+          {/* 게임 타이머 */}
+          {/* <Box */}
+          {/*   sx={{ */}
+          {/*     position: 'absolute', */}
+          {/*     top: 0, */}
+          {/*     left: 0, */}
+          {/*     right: 0, */}
+          {/*     height: '8vh', */}
+          {/*     display: 'flex', */}
+          {/*     justifyContent: 'center', */}
+          {/*     alignItems: 'center', */}
+          {/*     backgroundColor: 'rgba(255, 255, 255, 0.8)', */}
+          {/*     borderBottom: '1px solid #ddd', */}
+          {/*   }} */}
+          {/* > */}
+          {/*   {quizTimer} */}
+          {/* </Box> */}
+          <Button
+            sx={{
+              color: pink[500],
+            }}
+            onClick={() => {
+              if(confirm("반복적인 중도 퇴장 시 제재를 받으실 수 있습니다. \n나가시겠습니까?")) {
+                router.replace("/")
+              }
+            }}
+          >
+            나가기
+          </Button>
+          {/* 문제와 관련된 부분 */}
           <Box
             sx={{
-            minHeight: "390px",
-            height:"63vh",
-
-          }}>
+              height: 'calc(100% - 8vh - 27vh)', // quizTimer와 프로필 파트를 제외한 나머지 공간
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position: 'relative',
+              fontSize: '18px'
+            }}
+          >
             {/* 중요파트 */}
-            {quizTimer}
+            {!isAnswerTime && isStart  && !timer && `남은 시간: ${quizTimer}`}
             {!isStart ? (
-                <Box 
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <Typography
+                  component="h1"
+                  variant="h5"
                   sx={{
-                    display:"flex",
-                    justifyContent:"center",
-                    alignItems:"center", 
-                    height:"100%",
-                }}>                  
-                  <Typography
-                    component="h1"
-                    variant="h5"
-                    sx={{
-                      fontWeight:"bold",
-                      backgroundColor:"whitesmoke",                   
-                      padding:"30px",
-                      borderRadius:"15px",
-                      opacity:"0.7",
-                  }}>
-                    팁: {tips[currentTipIndex]?.content}
-                  </Typography>
-                </Box>
+                    fontWeight: "bold",
+                    backgroundColor: "whitesmoke",
+                    padding: "30px",
+                    borderRadius: "15px",
+                    opacity: "0.7",
+                  }}
+                >
+                  팁: {tips[currentTipIndex]?.content}
+                </Typography>
+              </Box>
             ) : (
               <>
                 {(isSubmitted || isAnswerTime) && (
-                  <Box 
-                    sx={{
-                    display:"flex",
-                    justifyContent:"center",
-                    alignItems:"center", 
-                    height:"100%",
-                  }}>    
-                    <Typography
-                      component="h1"
-                      variant="h5"
-                      sx={{
-                        fontWeight:"bold",
-                    }}>{result}</Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <Typography component="h1" variant="h5" sx={{ fontWeight: "bold" }}>
+                      {result}
+                    </Typography>
                   </Box>
                 )}
                 {time ? (
-                <Box 
-                  sx={{
-                  display:"flex",
-                  justifyContent:"center",
-                  alignItems:"center", 
-                  height:"100%",
-                }}>  
-                  <Typography
-                    component="h1"
-                    variant="h5"
-                    sx={{
-                      fontWeight:"bold",
-                  }}>
-                    {time}초 뒤 게임이 시작됩니다
-                  </Typography>
-                </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <Typography component="h1" variant="h5" sx={{ fontWeight: "bold" }}>
+                      {time}초 뒤 게임이 시작됩니다
+                    </Typography>
+                  </Box>
                 ) : (
-                  <Box
-                    sx={{
-                      display: "grid",
-                      placeItems: "center",
-                    }}
-                  >
+                  <Box sx={{ display: "grid", placeItems: "center", flex: 1 }}>
                     {!isSubmitted && !isAnswerTime && nowQuiz && (
                       <>
+                        <Typography sx={{ pt: "20px", fontSize: "39px", fontWeight: "bold", pb: "30px" }}>
+                          {now + 1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
+                        </Typography>
                         <Typography
                           sx={{
-                            pt:"20px",
-                            fontSize: "39px",
+                            fontSize: "25px",
+                            textShadow: `
+                              1px 1px 0 #F08080,   /* 오른쪽 아래 */
+                              -1px 1px 0 #F08080,  /* 왼쪽 아래 */
+                              1px -1px 0 #F08080,  /* 오른쪽 위 */
+                              -1px -1px 0 #F08080  /* 왼쪽 위 */
+                            `,
                             fontWeight: "bold",
-                            pb:"30px",
                           }}
                         >
-                          {now+1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
-                        </Typography>
-                        {/* Q 파트 */}
-                        <Typography
-                        sx={{
-                          fontSize: "25px",
-                          textShadow: `
-                            1px 1px 0 #F08080,   /* 오른쪽 아래 */
-                            -1px 1px 0 #F08080,  /* 왼쪽 아래 */
-                            1px -1px 0 #F08080,  /* 오른쪽 위 */
-                            -1px -1px 0 #F08080  /* 왼쪽 위 */
-                          `,
-                          fontWeight: "bold",
-                        }}>
                           {nowQuiz.question}
                         </Typography>
                         {nowQuiz.isObjective ? (
-
                           // 객관식 파트
-                          <Box
-                            sx={{
-                              marginTop: "25px",
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: "100%",
-                                maxWidth: "600px",
-                                mx: "auto",
-                              }}
-                            >
+                          <Box sx={{ marginTop: "25px", display: "flex", justifyContent: "space-between" }}>
+                            <Box sx={{ width: "100%", maxWidth: "600px", mx: "auto" }}>
                               <ToggleButtonGroup
                                 exclusive
                                 value={message}
                                 onChange={(_, value) => {
                                   setIsSubmitted(true);
-                                  sendMessage(value, setMessage)
+                                  sendMessage(value, setMessage);
                                 }}
                                 sx={{
                                   display: "flex",
@@ -514,23 +511,22 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                                 {nowQuiz.quizChoiceList.map((choiceList, index) => (
                                   <ToggleButton
                                     key={choiceList.choiceId}
-                                    value={(index+1).toString()}
+                                    value={(index + 1).toString()}
                                     sx={{
                                       minWidth: 300,
                                       maxWidth: "100%",
                                       backgroundColor: "whitesmoke",
                                     }}
                                   >
-                                    {index+1}번. {choiceList.choiceText}
+                                    {index + 1}번. {choiceList.choiceText}
                                   </ToggleButton>
                                 ))}
                               </ToggleButtonGroup>
                             </Box>
                           </Box>
                         ) : (
-
                           // 주관식 파트
-                          <Box sx={{ display: "flex", pt:"20px" }}>
+                          <Box sx={{ display: "flex", pt: "20px" }}>
                             <TextField
                               inputRef={textFieldRef}
                               variant="outlined"
@@ -541,19 +537,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                                 if (e.key === "Enter") {
                                   setIsSubmitted(true);
                                   sendMessage(message, setMessage);
-                                };
+                                }
                               }}
-                              sx={{
-                                backgroundColor: "whitesmoke",
-                                borderRadius: "5px",
-                              }}
+                              sx={{ backgroundColor: "whitesmoke", borderRadius: "5px" }}
                             />
                             <Button
                               variant="contained"
                               color="primary"
-                              sx={{
-                                ml: 1,
-                              }}
+                              sx={{ ml: 1 }}
                               onClick={() => {
                                 setIsSubmitted(true);
                                 sendMessage(message, setMessage);
@@ -569,179 +560,152 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                 )}
               </>
             )}
-
           </Box>
-
-
 
           {/* 프로필 파트 */}
           <Box
             sx={{
-              display: "grid",
-              placeItems: "center",
-              minHeight: "150px",
-              height: "27vh",
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '27vh', // 프로필 파트가 게임 파트 하단에서 27vh를 차지합니다.
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              overflow: 'auto',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)', // 배경에 약간의 투명도 추가
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-evenly",
-                alignItems:"center",
-                width: "100%",
-              }}
-            >
-              {participants?.map((participant) =>
+            {participants?.map((participant) =>
                 !(participant?.isExited) && (
-                <CustomTooltip
-                  key={participant.nickName}
-                  title={participant.latestMessage || ""}
-                  open={tooltipOpen && highlightedNick === participant.nickName}
-                  arrow
-                  placement="top"
-                >
-                  <Card
-                    sx={{
-                      // width: "170px",
-                      // height: "220px",
-                      width: "15%",
-                      aspectRatio: "1 / 1.4",
-                      // height: "23vh",
-                      minWidth: "10%",
-                      maxWidth: "120px",
-                      minHeight: "160px",
-                      
-                      position: "relative",
-                      border: "3px groove #BDDD",
-                      borderRadius: "15px",
-                      backgroundColor: "#ecf0f3",
-                    }}>
-                    <Box>
-                      <img
-                        src={`/main_profile/${participant.birdId}.png`}
-                        alt={`${participant.nickName}'s bird`}
-                        style={{ width: "100%", height: "auto" }}
-                      />
-                      <hr />
-                      <Box
-                        sx={{
-                        display: "center",
-                        justifyContent: "center",
-                        height: "100%",
-                        alignItems: "center",
-                      }}>{participant.nickName}</Box>
-
-                    </Box>
-                  </Card>
-                </CustomTooltip>
-              ))}
-            </Box>
+                  <CustomTooltip
+                    key={participant.nickName}
+                    title={participant.latestMessage || ""}
+                    open={tooltipOpen && highlightedNick === participant.nickName}
+                    arrow
+                    placement="top"
+                  >
+                    <Card
+                      sx={{
+                        width: "15%",
+                        aspectRatio: "1 / 1.4",
+                        minWidth: "10%",
+                        maxWidth: "120px",
+                        minHeight: "160px",
+                        position: "relative",
+                        border: "3px groove #BDDD",
+                        borderRadius: "15px",
+                        backgroundColor: "#ecf0f3",
+                        m: 3, // 카드 간의 마진
+                      }}
+                    >
+                      <Box>
+                        <img
+                          src={`/main_profile/${participant.birdId}.png`}
+                          alt={`${participant.nickName}'s bird`}
+                          style={{ width: "100%", height: "auto" }}
+                        />
+                        <hr />
+                        <Box sx={{ textAlign: "center", p: 1 }}>
+                          {participant.nickName}
+                        </Box>
+                      </Box>
+                    </Card>
+                  </CustomTooltip>
+                )
+            )}
           </Box>
+        </Container>
+      </Box>
 
-
-
-        </Box>
-
-
-
-
-        {/* 채팅 파트 */}
+      {/* 채팅 파트 */}
+      <Box
+        sx={{
+          flex: 1, // 채팅 파트가 화면의 약 1/3을 차지합니다.
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* 채팅이 보이는 부분 */}
         <Box
           sx={{
-          position:"fixed",
-          bottom: "0%",
-          width:"100%",
-          maxWidth: "1155px",
-          height:"35vh",
-          // backgroundColor:"blue",
-        }}>
-          {/* 채팅이 보이는 부분 */}
-          <Box
+            flex: 1,
+            px: 2,
+            pt: 2,
+            backgroundColor: '#f5f5f5',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          <Paper
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "25vh",
-              px: 2,
-              pt: 2,
-              backgroundColor: "#f5f5f5",              
-              opacity
-          }}>
-            <Paper
-              sx={{                
-                flex: 1,
-                p: 2,
-                overflowY: "auto",
-                mb: 2,    
-              }}
-            >
-              {/* <Typography variant="h6" gutterBottom>
-                Chat
-              </Typography> */}
-              <List>
-                {messages.map((msg) => (
-                  <ListItem key={msg.chatLogId}>
-                    <Box className="w-1/5">
-                      <ListItemText primary={msg.timestamp} />
-                    </Box>
-                    <Box className="w-1/5">
-                      <ListItemText primary={msg.nickname} />
-                    </Box>
-                    <Box className="w-2/5">
-                      <ListItemText primary={msg.message} />
-                    </Box>
-                    {!(msg.nickname===getCookie("nickname"))&&!isClicked[msg.chatLogId] && (
-                    <AnnouncementIcon 
-                      className="w-1/5"
+              flex: 1,
+              p: 2,
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <List>
+              {messages.map((msg) => (
+                <ListItem key={msg.chatLogId}>
+                  <Box className="w-2/12">
+                    <ListItemText primary={msg.timestamp} />
+                  </Box>
+                  <Box className="w-3/12">
+                    <ListItemText primary={msg.nickname} />
+                  </Box>
+                  <Box className="w-5/12">
+                    <ListItemText primary={msg.message} />
+                  </Box>
+                  {!(msg.nickname === getCookie("nickname")) && !isClicked[msg.chatLogId] && (
+                    <AnnouncementIcon
+                      className="w-2/12"
                       onClick={() => reportChat(msg.chatLogId)}
                     />
-                        )}
-                  </ListItem>
-                ))}
-              </List>
-            </Paper>
-          </Box>
+                  )}
+                </ListItem>
+              ))}
+              {/* 스크롤을 맨 아래로 이동시키는 div */}
+              <div ref={chatEndRef} />
+            </List>
+          </Paper>
+        </Box>
 
-          {/* 채팅을 입력하는 부분 */}
-          
-          <Box
-            sx={{
-            display: "flex",
-            flexDirection: "column",
-            height: "9vh",
+        {/* 채팅을 입력하는 부분 */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            // height: '9vh',
             px: 1,
             pt: 1,
-            backgroundColor: "#f5f5f5",              
-          }}>
-            <Box sx={{ display: "flex"}}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                value={chat}
-                onChange={(event) => handleValueChange(event, setChat)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") sendMessage(` ${chat}`, setChat);
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleClick}
-                sx={{ ml: 1 }}
-              >
-                <SendIcon />
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => sendMessage(` ${chat}`, setChat)}
-                sx={{ ml: 1 }}
-              >
-                <SendIcon />
-              </Button>
-            </Box>
-          </Box>
+            backgroundColor: '#f5f5f5',
+          }}
+        >
+          <TextField
+            variant="outlined"
+            fullWidth
+            value={chat}
+            onChange={(event) => handleValueChange(event, setChat)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage(` ${chat}`, setChat);
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => sendMessage(` ${chat}`, setChat)}
+            sx={{ ml: 1 }}
+          >
+            <SendIcon />
+          </Button>
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 }
