@@ -92,9 +92,10 @@ public class AdminLessonService {
 
         // 응답 처리
         if(response.getStatusCode().is2xxSuccessful()) {
-            List<Double> voicePitch = response.getBody().getAnswerVoicePitch();
+            String voicePitch = response.getBody().getAnswerVoicePitch();
+
             if(voicePitch == null) throw new RuntimeException("파형 정보를 불러올 수 없습니다");
-            return voicePitch.toString();
+            return voicePitch;
         } else {
             throw new IllegalArgumentException("파일 저장에 문제가 발생하였습니다");
         }
