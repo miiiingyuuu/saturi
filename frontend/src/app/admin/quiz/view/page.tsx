@@ -83,12 +83,12 @@ export default function App() {
     question: "",
     isObjective: "",
   });
-  function handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setFilters({ ...filters, [event.target.name]: event.target.value });
-  };
   // Pagination 관련 상태
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // 현재 페이지에 표시할 행 계산
+  const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   // 페이지 변경 핸들러
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -100,6 +100,7 @@ export default function App() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
 
   function fetchDetail(quizId: number) {
     api.get<QuizProps>(`/admin/game/quiz/${quizId}`).then((response) => {
@@ -121,27 +122,24 @@ export default function App() {
     });
   }
 
-  useEffect(() => {
-    api.get("/admin/game/quiz").then((response) => setItems(response.data));
-  }, []);
-
-  // 현재 페이지에 표시할 행 계산
-  const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   function fetchReports() {
-      const queryParams = new URLSearchParams(
-        Object.entries(filters).filter(([_, value]) => value !== '')
-      ).toString();
-
-      api.get(`/admin/claim/user?${queryParams}`)
-        .then((response) => {
-          setItems(response.data)
-        })
+    const queryParams = new URLSearchParams(
+      Object.entries(filters).filter(([_, value]) => value !== '')
+    ).toString();
+    api.get(`/admin/game/quiz?${queryParams}`)
+      .then((response) => {
+        setItems(response.data)
+      })
   };
 
   useEffect(() => {
     fetchReports();
   }, []);
+
+  function handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setFilters({ ...filters, [event.target.name]: event.target.value });
+  };
 
   return (
     <Container>
@@ -226,7 +224,7 @@ export default function App() {
                   </AccordionDetails>
                 </Accordion>
               </TableCell>
-              <TableCell className="w-2/12">{row.creationDt}.slice(0,10)</TableCell>
+              <TableCell className="w-2/12">{row.creationDt.slice(0,10)}</TableCell>
               <TableCell className="w-2/12">
                 <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
                   수정
