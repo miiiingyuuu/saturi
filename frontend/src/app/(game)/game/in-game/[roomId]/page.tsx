@@ -387,9 +387,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                     display:"flex",
                     justifyContent:"center",
                     alignItems:"center", 
-                    opacity:"0.5",
                     height:"100%",
                 }}>
+                  
                   <Typography
                     component="h1"
                     variant="h5"
@@ -397,9 +397,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       backgroundColor:"whitesmoke",                   
                       padding:"30px",
                       borderRadius:"15px",
-                      
-                    }}
-                  >
+                      opacity:"0.7",
+                  }}>
                     팁: {tips[currentTipIndex]?.content}
                   </Typography>
                 </Box>
