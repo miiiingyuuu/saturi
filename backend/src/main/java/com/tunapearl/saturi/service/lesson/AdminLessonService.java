@@ -77,6 +77,7 @@ public class AdminLessonService {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("answerVoiceFileName", fileName);
         requestBody.put("UserVoiceFileName", fileName); // 장고의 api가 이렇게 두개의 파일이름을 보내는 것 뿐이라 똑같은 파일이름을 보냄
+        log.info("update lesson -> getFileGraph http request body info {}", requestBody.toString());
 
         // 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
