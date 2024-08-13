@@ -15,7 +15,7 @@ export default function App({params: {lessonId}}: {params: {lessonId: number}}) 
         }}
       >
         <Typography component="h1" variant="h5">
-          퀴즈 수정
+          레슨 수정
         </Typography>
         <LessonForm lessonId={lessonId}/>
       </Box>
