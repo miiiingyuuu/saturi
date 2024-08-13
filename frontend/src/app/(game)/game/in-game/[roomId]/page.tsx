@@ -75,6 +75,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [ tips, setTips ] = useState<TipsProps[]>([])
   const [currentTipIndex, setCurrentTipIndex] = useState(0)
   const [ isEnd, setIsEnd ] = useState(false)
+  const [ chat, setChat ] = useState("")
 
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
@@ -99,7 +100,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     setTimeout(() => setTooltipOpen(false), 3000); // 3초 후 Tooltip 닫기
   }
 
-  function sendMessage(message: string) {
+  function sendMessage(message: string, setFunction: (value: string) => void) {
     if (message.trim() && clientRef.current) {
       clientRef.current.publish({
         destination: "/pub/chat",
@@ -114,7 +115,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         },
       });
     }
-    setMessage("");
+    setFunction("")
   }
 
   // 잔여 인원 수
@@ -482,7 +483,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                                 value={message}
                                 onChange={(_, value) => {
                                   setIsSubmitted(true);
-                                  sendMessage(value)
+                                  sendMessage(value, setMessage)
                                 }}
                                 sx={{
                                   display: "flex",
@@ -520,7 +521,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                               onKeyDown={(e) => {
                                 if (e.key === "Enter") {
                                   setIsSubmitted(true);
-                                  sendMessage(message);
+                                  sendMessage(message, setMessage);
                                 };
                               }}
                               sx={{
@@ -536,7 +537,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                               }}
                               onClick={() => {
                                 setIsSubmitted(true);
-                                sendMessage(message);
+                                sendMessage(message, setMessage);
                               }}
                             >
                               <SendIcon />
@@ -696,10 +697,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               <TextField
                 variant="outlined"
                 fullWidth
-                value={message}
-                onChange={(event) => handleValueChange(event, setMessage)}
+                value={chat}
+                onChange={(event) => handleValueChange(event, setChat)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") sendMessage(` ${message}`);
+                  if (e.key === "Enter") sendMessage(` ${chat}`, setChat);
                 }}
               />
               <Button
@@ -713,16 +714,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => sendMessage(` ${message}`)}
+                onClick={() => sendMessage(` ${chat}`, setChat)}
                 sx={{ ml: 1 }}
               >
                 <SendIcon />
               </Button>
             </Box>
-            
           </Box>
         </Box>
-
       </Container>
     </Box>
   );

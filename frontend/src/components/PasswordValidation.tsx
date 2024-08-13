@@ -25,7 +25,7 @@ export default function PasswordValidation({ password }: { password: string }) {
       { id: "a", text: "최소 8자 이상이어야 합니다.", valid: a },
       { id: "b", text: "최소 1개의 숫자를 포함해야 합니다.", valid: b },
       { id: "c", text: "최소 1개의 소문자를 포함해야 합니다.", valid: c },
-      { id: "d", text: "특수 문자를 포함해야 합니다.", valid: d },
+      { id: "d", text: "!,@,#,$,%,^,&,+,=중 1개 이상을 포함해야 합니다.", valid: d },
       { id: "e", text: "공백은 허용되지 않습니다.", valid: e }
     ];
 
@@ -63,7 +63,15 @@ export default function PasswordValidation({ password }: { password: string }) {
       >
         {validationMessages.map((message) =>
           !message.valid ? (
-            <Typography key={message.id}>{message.text}</Typography>
+            <Typography
+              key={message.id}
+              sx={{
+                fontSize: "14px",
+                mb : 0.5
+              }}
+            >
+              {message.text}
+            </Typography>
           ) : null
         )}
         {passedChecks === 5 && (
