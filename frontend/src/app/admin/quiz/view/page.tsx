@@ -19,7 +19,14 @@ import {
   ListItemText,
   ListItem,
   Box,
-  TablePagination, TextField, Container,
+  TablePagination,
+  TextField,
+  Container,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel
 } from "@mui/material";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
@@ -52,25 +59,25 @@ type HeadCell = {
 const headCells: HeadCell[] = [
   { id: "quizId", label: "Id" },
   { id: "locationId", label: "지역" },
-  { id: "isObjective", label: "문제 타입" },
+  { id: "isObjective", label: "타입" },
   { id: "question", label: "문제" },
   { id: "creationDt", label: "생성일" },
-  { id: "actions", label: ""}
+  { id: "actions", label: "" }
 ];
 
 const CustomCheckbox = styled(Checkbox)(({ theme }) => ({
   [`&.${checkboxClasses.root}`]: {
     color: theme.palette.primary.main,
     "&.Mui-checked": {
-      color: theme.palette.primary.dark,
+      color: theme.palette.primary.dark
     },
     "&.Mui-disabled": {
-      color: theme.palette.primary.light,
-    },
+      color: theme.palette.primary.light
+    }
   },
   [`& .${checkboxClasses.disabled}`]: {
-    color: theme.palette.primary.light,
-  },
+    color: theme.palette.primary.light
+  }
 }));
 
 export default function App() {
@@ -81,8 +88,9 @@ export default function App() {
     quizId: "",
     locationId: "",
     question: "",
-    isObjective: "",
+    isObjective: ""
   });
+
   // Pagination 관련 상태
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -99,8 +107,7 @@ export default function App() {
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement>) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
+  }
 
   function fetchDetail(quizId: number) {
     api.get<QuizProps>(`/admin/game/quiz/${quizId}`).then((response) => {
@@ -122,16 +129,15 @@ export default function App() {
     });
   }
 
-
   function fetchReports() {
     const queryParams = new URLSearchParams(
       Object.entries(filters).filter(([_, value]) => value !== '')
     ).toString();
     api.get(`/admin/game/quiz?${queryParams}`)
       .then((response) => {
-        setItems(response.data)
-      })
-  };
+        setItems(response.data);
+      });
+  }
 
   useEffect(() => {
     fetchReports();
@@ -139,116 +145,125 @@ export default function App() {
 
   function handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
     setFilters({ ...filters, [event.target.name]: event.target.value });
-  };
+  }
+
+  function handleRadioChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setFilters({ ...filters, isObjective: event.target.value });
+  }
 
   return (
     <Container>
-    <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-      <TextField
-        name="quizId"
-        label="퀴즈 Id"
-        value={filters.quizId}
-        onChange={handleFilterChange}
-      />
-      <TextField
-        name="locationId"
-        label="지역 Id"
-        value={filters.locationId}
-        onChange={handleFilterChange}
-      />
-      <TextField
-        name="question"
-        label="문제"
-        value={filters.question}
-        onChange={handleFilterChange}
-      />
-      <TextField
-        name="isObjective"
-        label="객관식"
-        value={filters.isObjective}
-        onChange={handleFilterChange}
-      />
-      <Button variant="contained" onClick={fetchReports}>검색</Button>
-    </Box>
-    <TableContainer component={Paper}>
-      <Table>
-        <SortableTableHead
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={onRequestSort}
-          headCells={headCells}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <TextField
+          name="quizId"
+          label="퀴즈 Id"
+          value={filters.quizId}
+          onChange={handleFilterChange}
         />
-        <TableBody>
-          {displayedRows.map((row) => (
-            <TableRow key={row.quizId}>
-              <TableCell className="w-1/12">{row.quizId}</TableCell>
-              <TableCell className="w-1/12">{row.locationId}</TableCell>
-              <TableCell className="w-1/12">{row.isObjective ? "객관식" : "주관식"}</TableCell>
-              <TableCell className="w-5/12">
-                <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    onClick={() => fetchDetail(row.quizId)}
-                  >
-                    <Typography>{row.question}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <List
-                      aria-labelledby="nested-list-subheader"
-                      subheader={
-                        <ListSubheader component="div" id="nested-list-subheader">
-                          선택지
-                        </ListSubheader>
-                      }
+        <TextField
+          name="locationId"
+          label="지역 Id"
+          value={filters.locationId}
+          onChange={handleFilterChange}
+        />
+        <TextField
+          name="question"
+          label="문제"
+          value={filters.question}
+          onChange={handleFilterChange}
+        />
+        <FormControl>
+          <FormLabel>타입</FormLabel>
+          <RadioGroup
+            name="isObjective"
+            value={filters.isObjective}
+            onChange={handleRadioChange}
+          >
+            <FormControlLabel value="" control={<Radio />} label="모두" />
+            <FormControlLabel value="true" control={<Radio />} label="객관식" />
+            <FormControlLabel value="false" control={<Radio />} label="주관식" />
+          </RadioGroup>
+        </FormControl>
+        <Button variant="contained" onClick={fetchReports}>검색</Button>
+      </Box>
+      <TableContainer component={Paper}>
+        <Table>
+          <SortableTableHead
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={onRequestSort}
+            headCells={headCells}
+          />
+          <TableBody>
+            {displayedRows.map((row) => (
+              <TableRow key={row.quizId}>
+                <TableCell className="w-1/12">{row.quizId}</TableCell>
+                <TableCell className="w-1/12">{row.locationId}</TableCell>
+                <TableCell className="w-1/12">{row.isObjective ? "객관식" : "주관식"}</TableCell>
+                <TableCell className="w-5/12">
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      onClick={() => fetchDetail(row.quizId)}
                     >
-                      {row.choiceList ? (
-                        row.choiceList.map((choice) => (
-                          <ListItem disablePadding key={choice.choiceId}>
-                            <CustomCheckbox disabled checked={choice.isAnswer} />
-                            <ListItemText primary={`${choice.choiceId}번 : ${choice.content}`} />
-                          </ListItem>
-                        ))
-                      ) : (
-                        <Typography>로딩 중...</Typography>
-                      )}
-                    </List>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: 1,
-                        mt: 2,
-                      }}
-                    >
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
-              </TableCell>
-              <TableCell className="w-2/12">{row.creationDt.slice(0,10)}</TableCell>
-              <TableCell className="w-2/12">
-                <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
-                  수정
-                </Button>
-                <Button variant="contained" onClick={() => handleDelete(row.quizId)}>
-                  삭제
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="페이지 당 항목 수: "
-      />
-    </TableContainer>
+                      <Typography>{row.question}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List
+                        aria-labelledby="nested-list-subheader"
+                        subheader={
+                          <ListSubheader component="div" id="nested-list-subheader">
+                            선택지
+                          </ListSubheader>
+                        }
+                      >
+                        {row.choiceList ? (
+                          row.choiceList.map((choice) => (
+                            <ListItem disablePadding key={choice.choiceId}>
+                              <CustomCheckbox disabled checked={choice.isAnswer} />
+                              <ListItemText primary={`${choice.choiceId}번 : ${choice.content}`} />
+                            </ListItem>
+                          ))
+                        ) : (
+                          <Typography>로딩 중...</Typography>
+                        )}
+                      </List>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: 1,
+                          mt: 2
+                        }}
+                      >
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
+                </TableCell>
+                <TableCell className="w-2/12">{row.creationDt.slice(0, 10)}</TableCell>
+                <TableCell className="w-2/12">
+                  <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
+                    수정
+                  </Button>
+                  <Button variant="contained" onClick={() => handleDelete(row.quizId)}>
+                    삭제
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="페이지 당 항목 수: "
+        />
+      </TableContainer>
     </Container>
   );
 }
