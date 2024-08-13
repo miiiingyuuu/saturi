@@ -51,6 +51,7 @@ export default function LessonPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const audioBlobRef = useRef<Blob | null>(null); // Store the final audio blob
   const [audioData, setAudioData] = useState<ArrayBuffer | null>(null);
+  const [isFinalLesson,setIsFinalLesson]=useState<boolean>(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -214,6 +215,9 @@ export default function LessonPage() {
           return;
         }
 
+        if (currentIndex >= lessons.length - 1) {
+          setIsFinalLesson(true); // 컴포넌트를 변경
+        }
         // 정답파일명, 음성파일명을 django 로 보내서 분석결과 수집
         const analysisResponse = await apiAi.post("/audio/analyze/", {
           answerVoiceFileName: `${currentLesson.sampleVoiceName}.wav`, // 현재 레슨의 샘플 파일 이름 사용
@@ -238,11 +242,9 @@ export default function LessonPage() {
           fileName: result.filename, // (추가) 유저 음성 파일 이름
           graphInfoX: analysisResponse.data.userVoiceTime,
           graphInfoY: analysisResponse.data.userVoicePitch,
-          // 이거 데이터가 안들어가요 :(
-          // graphInfoX: "voice_info_X",
-          // graphInfoY: "vocie_info_Y",
           script: analysisResponse.data.userScript,
         };
+
 
         const lessonResponse = await api.post("/learn/lesson", requestBody);
 
@@ -264,8 +266,10 @@ export default function LessonPage() {
         }
       } catch (error) {
         const err = error as any; // error를 any 타입으로 캐스팅
+        setIsFinalLesson(false);
         alert("재녹음이 필요해요"); // 녹음 업로드 실패 시 경고창 표시
         console.error("Error in handleNext:", err);
+
       }
     } else {
       alert("녹음이 되지 않았어요"); // 녹음이 없을 때 경고창 표시
@@ -378,6 +382,7 @@ export default function LessonPage() {
         height: "90vh",
         display: "flex",
         alignItems: "center",
+        // minWidth: "1100px"
       }}
     >
       <Card
@@ -386,22 +391,57 @@ export default function LessonPage() {
           alignItems: "center",
           minHeight: "560px",
           maxHeight: "700px",
+          minWidth:"1100px",
           border: "3px solid lightgray",
           borderRadius: "15px",
           padding: "15px",
           position: "relative", // Allow absolute positioning inside the card
         }}
       >
-        <Grid container spacing={3}>
+        {false ? (
+        <Box
+        className="w-full h-full"
+        sx={{
+          display: "flex",         // Use Flexbox for centering
+          flexDirection: "column", // Stack children vertically
+          justifyContent: "center",// Center content vertically
+          alignItems: "center",    // Center content horizontally
+          minWidth: "560px",
+        }}
+      >
+        <Image
+          src="/images/loadingBird.gif"
+          alt="귀여운 쿼카"
+          width={320}
+          height={338}
+          style={{
+            objectFit: "contain", // Ensure the image maintains its aspect ratio
+            maxWidth: "100%",     // Allow image to resize responsively
+            height: "auto",       // Maintain aspect ratio
+          }}
+          className="max-w-full h-auto ml-4"
+        />
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: "center", // Ensure text is centered
+            mt: 2,               // Add some margin to separate from image
+          }}
+        >
+          레슨 결과를 전송 중이에요
+        </Typography>
+      </Box>
+      ):
+        <Grid container spacing={3} className="row">
           {/* 왼쪽 부분 */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Box className="grid grid-cols-1 justify-center items-center w-full h-full">
               <Box className="items-center flex flex-col">
                 <Image
-                  src="/images/quokka.jpg"
+                  src="/images/singingBird.gif"
                   alt="귀여운 쿼카"
-                  width={800}
-                  height={800}
+                  width={150}
+                  height={150}
                   className="object-contain max-w-full h-auto"
                 />
               </Box>
@@ -409,12 +449,13 @@ export default function LessonPage() {
           </Grid>
   
           {/* 오른쪽 부분 */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12} >
             <Box
               className="flex justify-center items-center w-full h-full bg-gray-200"
               sx={{
                 borderRadius: "15px",
                 position: "relative", // For absolute positioning of the buttons
+                // minWidth: "1100px"
               }}
             >
               <Box
@@ -423,13 +464,13 @@ export default function LessonPage() {
                   width: "80%",
                 }}
               >
-                <Typography className="text-3xl font-bold text-black mb-2">
+                <Typography className="text-3xl font-bold text-black m-2">
                   {`Lesson ${currentIndex + 1} of ${lessons.length}`}
                 </Typography>
                 <LinearProgress
                   variant="determinate"
                   value={((currentIndex + 1) / lessons.length) * 100}
-                  className="w-4/5 mb-10 h-4 rounded-xl"
+                  className="w-4/5 m-5   h-4 rounded-xl justify-center"
                   sx={{
                     border: "5px solid litegray",
                     borderRadius: 5, // 테두리를 둥글게 설정
@@ -467,7 +508,7 @@ export default function LessonPage() {
   
                 {/* 마이크 버튼을 크게 중앙에 배치 */}
                 <IconButton
-                  className={`text-nowrap rounded-full mt-8 ${isRecording ? "glowing-border" : ""}`}
+                  className={`text-nowrap rounded-full m-2 ${isRecording ? "glowing-border" : ""}`}
                   onClick={handleRecording}
                   sx={{
                     width: "80px",
@@ -512,9 +553,9 @@ export default function LessonPage() {
                     variant="contained"
                     color="primary"
                     className="text-nowrap"
-                    onClick={handleSkip}
+                    onClick={handleNext}
                   >
-                    건너뛰기
+                    다음 문장
                   </Button>
                 ) : (
                   <Button
@@ -529,26 +570,29 @@ export default function LessonPage() {
             </Box>
           </Grid>
         </Grid>
+        }
   
         {/* 문제 신고 버튼 - Positioning at the bottom right of the card */}
+        {!isFinalLesson?(        
         <Button
-          variant="contained"
-          color="error"
-          sx={{
-            position: "absolute",
-            bottom: "10px",
-            right: "10px",
-            width: "40px",
-            height: "40px",
-            minWidth: "40px",
-            borderRadius: "50%",
-            padding: 0,
-            margin: 0,
-          }}
-          onClick={handleOpenModal}
+        variant="contained"
+        color="error"
+        sx={{
+          position: "absolute",
+          bottom: "10px",
+          right: "10px",
+          width: "40px",
+          height: "40px",
+          minWidth: "40px",
+          borderRadius: "50%",
+          padding: 0,
+          margin: 0,
+        }}
+        onClick={handleOpenModal}
         >
           !
-        </Button>
+        </Button>)
+        :"" }
   
         {/* 문제 신고 모달 */}
         <Dialog open={modalOpen} onClose={handleCloseModal}>
@@ -573,6 +617,7 @@ export default function LessonPage() {
             </Button>
           </DialogActions>
         </Dialog>
+
       </Card>
       <Box>
         <Chatbot />
