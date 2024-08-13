@@ -50,12 +50,16 @@ export default function Result({ params: { roomId } }: RoomIdProps) {
 
     return(
         <Box
-        sx={{        
+        style={{
+            position:"relative",
+            overflow:"hidden",
             backgroundColor: "#f3f4f6",        
             height:"90vh",
+            width:"100%",
             minHeight:"700px",
         }}>
-            <Container maxWidth="lg" >
+            <Container 
+                maxWidth="lg">
                 <FirstResult
                     currentStep = {currentStep}
                     nextstep = {nextstep}

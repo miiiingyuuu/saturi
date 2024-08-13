@@ -132,7 +132,7 @@ export default function SecondResult({
               sx={{
               textAlign:"center",
             }}>
-              +{earnedExp}
+              +{earnedExp} Exp
             </Typography>
 
         </Card>

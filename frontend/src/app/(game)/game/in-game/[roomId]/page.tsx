@@ -370,15 +370,15 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           backgroundRepeat: "no-repeat",
           borderRadius: "15px",
           border:"3px groove black",
-        }}>
-          {quizTimer}
+        }}>          
           <Box
             sx={{
             minHeight: "390px",
-            height:"70%",
+            height:"63vh",
 
           }}>
             {/* 중요파트 */}
+            {quizTimer}
             {!isStart ? (
               <Typography
                 component="h1"
@@ -390,7 +390,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   height:"100%",
                 }}
               >
-                {tips[currentTipIndex]?.content}
+                팁: {tips[currentTipIndex]?.content}
               </Typography>
             ) : (
               <>
@@ -550,14 +550,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               display: "grid",
               placeItems: "center",
               minHeight: "150px",
-              height: "30%",
+              height: "27vh",
             }}
           >
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-evenly",
-                alignItems:"flex-end",
+                alignItems:"center",
                 width: "100%",
               }}
             >
@@ -575,10 +575,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       // width: "170px",
                       // height: "220px",
                       width: "15%",
+                      aspectRatio: "1 / 1.4",
+                      // height: "23vh",
                       minWidth: "10%",
                       maxWidth: "120px",
                       minHeight: "160px",
-                      height: "23vh",
+                      
                       position: "relative",
                       border: "3px groove #BDDD",
                       borderRadius: "15px",

@@ -57,7 +57,6 @@ export default function FirstResult({
         alignItems: "center",        
         height: '90vh', 
         width: "100%",
-        overflow: 'hidden',
         left: (() => {
           if (currentStep === 1) {
             return "50%";

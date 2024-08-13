@@ -26,7 +26,7 @@ export default function firstResult({
   ranks,
   me
 } : FirstResultProps<RankProps>){
-
+  
   return(
     <Container
       className="tmp"
@@ -36,7 +36,6 @@ export default function firstResult({
         display:"flex",
         justifyContent:"center",
         flexDirection:"column",
-        overflow: 'hidden',
         left: (() => {
           if (currentStep === 1) {
             return "50%";
@@ -49,17 +48,22 @@ export default function firstResult({
         sx={{
           display: "grid",
           placeItems: "center",
-          margin: "10px",
         }}>
         <Card
           sx = {{
-            width: "700px",
+            aspectRatio: "1.1 / 1",
+            height: "75vh",
             minHeight: "560px",
+            borderRadius: "15px",
           }}>
+          {/* 등수 표시 */}
           <Box sx={{
-            
-            padding:"3px",      
-            borderBottom:"3px solid lightgray",
+            height:"10%",
+            display:"flex",
+            justifyContent:"center",
+            alignItems:"center",
+            borderBottom:"3px solid lightgray",      
+            padding:"3px",
           }}>
             <Typography 
               variant="h4"
@@ -72,7 +76,8 @@ export default function firstResult({
           {/* 결과 파트 */}
           <Box 
             sx={{
-              height:"520px",
+              overflow:"hidden",
+              height:"90%",
               display:"flex",
               flexDirection:"column",
               justifyContent:"space-around",
@@ -81,19 +86,19 @@ export default function firstResult({
               <Card
                 className="px-3 py-2 mx-3"
                 sx={{
-                  minHeight:"104px",
+                  minHeight:"80px",
                   display:"flex",
                   justifyContent:"space-around",
                   alignItems:"center",
                   border: "2px solid lightgray",
                   borderRadius:"15px",
+                  marginY:"5px",
                 }}>
                 {/* 프로필 */}
                 <Box
                   sx={{
                     width:"100px",
                     height:"100%",
-                    border:"1px",
                     display:"flex",
                     flexDirection:"column",
                     alignItems:"center",
@@ -102,16 +107,15 @@ export default function firstResult({
                   <Avatar
                     sizes="large"
                     src={rank.birdId ? `/mini_profile/${rank.birdId}.png` : "이미지가 없습니다."}
-                    sx={{
-                      width:"85px",
-                      height:"85px",
+                    sx={{                      
                       border:"2px solid lightgray",
                     }}
                   />
                   {/* 닉네임 */}
                   <Box 
                     sx={{
-                      marginTop:"1px",
+                      paddingTop:"1px",
+                      height:"20%"
                       // border:"1px solid black"
                     }}> {rank.nickName} 
                   </Box>
@@ -123,10 +127,10 @@ export default function firstResult({
                 >
                   <LinearProgress 
                     variant="determinate" 
-                    value={rank.ansCount} 
+                    value={rank.ansCount * 10 }
                     color="primary"
                     sx={{
-                      height: 8,
+                      height: 12,
                       borderRadius: 5,
                       "& .MuiLinearProgress-bar": {
                             borderRadius: 5, // 진행 바 자체도 둥글게 설정
@@ -138,7 +142,17 @@ export default function firstResult({
           </Box>
         </Card>
 
-        <Button variant="contained" onClick={nextstep} sx={{ marginTop: "10px" }}>
+        <Button
+          className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+          variant="contained"
+          onClick={nextstep}
+          sx={{
+            marginTop: "10px",
+            backgroundColor:"success.light",
+            '&:hover': { backgroundColor: 'green' },
+            '&:active': { backgroundColor: 'green' },
+            '&:focus': { backgroundColor: 'success' },
+          }}>
           다음
         </Button>
 

@@ -52,7 +52,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
             fontSize: 25,
             fontWeight: "bold",
             color:"white",
-          }}> {mainPageIndicator} </Typography>
+        }}> {mainPageIndicator} </Typography>
       </Box>
     </Box>
   );
