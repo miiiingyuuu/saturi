@@ -115,7 +115,7 @@ export default function SecondResult({
                 <LinearProgress
                     variant="determinate"
                     value={progress}
-                    className="pb-4 m-10"
+                    className="pb-4 m-3"
                     aria-label="progress bar"
                     sx={{
                         width: "550px",
@@ -129,8 +129,10 @@ export default function SecondResult({
             </Box>
             {/* 1의 3 */}
             <Typography
+              variant="h5"
               sx={{
-              textAlign:"center",
+              marginX:"12px",
+              textAlign:"center",              
             }}>
               +{earnedExp} Exp
             </Typography>

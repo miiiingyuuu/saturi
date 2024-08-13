@@ -61,7 +61,7 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
       )}
 
       {selectedRegion !== "_" && selectedRegion !== "준비중입니다" && (
-        <Box className='buttonRight'>
+        <Box className={`buttonRight ${middleToWhere == 0 ? 'invisible pointer-events-none' : ''}`}>
           <Button type="button" onClick={onRightClick}>
             <Image src="/MainPage/buttonRight.png" alt="button" width={60} height={60} />
           </Button>
