@@ -1,6 +1,6 @@
 import "../../../styles/home/main/background.css";
 import { MiddlePartProps } from "@/utils/props";
-import { Box, Typography } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 
 export default function MiddlePart({ middlePosition, mainPageIndicator }: MiddlePartProps) {
   return (
@@ -38,22 +38,27 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           <li/>
         </ul>
       </Box> */}
-      <Box>
+      <Card 
+        className="blink" 
+        style={{
+          position: 'absolute',          
+          transform: 'translate(-50%, -50%)',
+          top: '10%',
+          left: '50%',
+          padding:"10px",
+          border:"3px solid lightgray",
+          borderRadius:"15px",
+        }}
+      >
         <Typography 
-          variant = "h1"
-          className="blink" 
+          variant = "h1"          
           style={{
-            backgroundColor:"blue",
-            position: 'absolute',
-            top: '10%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textShadow: "2px 2px 0px black",
+            // backgroundColor:"blue",            
+            textShadow: "2px 2px 0px white",
             fontSize: 25,
             fontWeight: "bold",
-            color:"white",
         }}> {mainPageIndicator} </Typography>
-      </Box>
+      </Card>
     </Box>
   );
 }

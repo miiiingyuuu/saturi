@@ -147,10 +147,10 @@ export default function SecondResult({
               sx={{
                 width: "350px",
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 marginTop: "20px",
               }}>
-                <Button
+                {/* <Button
                   className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
                   variant="contained"
                   onClick={handleAgain}
@@ -161,7 +161,7 @@ export default function SecondResult({
                     '&:focus': { backgroundColor: 'success' },
                 }}>
                   다시하기
-                </Button>
+                </Button> */}
                 <Button
                   className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
                   variant="contained"

@@ -4,15 +4,15 @@ import {Box} from "@mui/material";
 export default function Footer() {
   return (
     <footer 
-      className="text-gray-400 text-center py-5"
+      className="text-gray-400 text-center"
     >
-      <Box className="flex flex-col items-center">
-        <Image 
+      <Box className="flex flex-col items-center bg-gray-100">
+        <Image
           src="/SSLogo.png" 
           width={100} 
           height={66.67} 
           alt="SSLogo" 
-          className="mb-2.5"
+          className="mb-2.5 mt-10"
         />
         <Box className="flex gap-5 mt-2.5">
           <a href="/" className="text-gray-400 hover:underline">Home</a>

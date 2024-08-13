@@ -115,7 +115,7 @@ export default function firstResult({
                   <Box 
                     sx={{
                       paddingTop:"1px",
-                      height:"20%"
+                      height:"20%",                      
                       // border:"1px solid black"
                     }}> {rank.nickName} 
                   </Box>
@@ -137,6 +137,12 @@ export default function firstResult({
                         },
                   }}/>
                 </Box>
+                <Typography 
+                  sx={{
+                    paddingX:"5px",
+                }}>
+                  {rank.ansCount} / 10
+                </Typography>
               </Card>
             ))}
           </Box>
