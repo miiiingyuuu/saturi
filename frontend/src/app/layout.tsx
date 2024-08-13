@@ -43,7 +43,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="ko" className={inter.className}>
-      <body>
+      <body
+        className="bg-gray-100"
+      >
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Header />

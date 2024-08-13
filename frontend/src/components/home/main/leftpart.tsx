@@ -66,7 +66,6 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
 
   return (    
     <Box
-      className="leftpart bg-gray-100"
       style={{
         zIndex: (() => {
           if (middlePosition === 0) {
