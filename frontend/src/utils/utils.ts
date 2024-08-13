@@ -6,7 +6,7 @@ export function validateEmail(value: string): boolean {
   return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
 }
 
-export function validateNickname(value: string): boolean {
+export function validateNickname(value: string | null): boolean {
   if (!value) return true;
   return /^(?!.*[ㄱ-ㅎㅏ-ㅣ])[A-Za-z0-9가-힣]{1,10}$/.test(value);
 }
@@ -25,4 +25,10 @@ export function handleValueChange(
   setFunction: (value: string) => void,
 ) {
   setFunction(event.target.value);
+}
+
+export function formatTime(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
 }

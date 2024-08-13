@@ -17,7 +17,9 @@ public class LessonRecordGraphEntity {
     @JoinColumn(name = "lesson_result_id")
     private LessonResultEntity lessonResult;
 
+    @Column(name = "graph_x")
     private String graphX;
 
+    @Column(name = "graph_y")
     private String graphY;
 }

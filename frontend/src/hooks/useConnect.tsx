@@ -1,10 +1,9 @@
-import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
+import { useEffect, useRef } from "react";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
 
 export default function useConnect() {
   const clientRef = useRef<Client | null>(null);
-
   useConfirmLeave(); // 페이지 이탈 확인 훅 호출
 
   useEffect(() => {
@@ -16,8 +15,6 @@ export default function useConnect() {
       reconnectDelay: 5000,
       heartbeatIncoming: 1000,
       heartbeatOutgoing: 1000,
-
-      debug: msg => console.log(msg)
     });
 
     clientRef.current.activate();

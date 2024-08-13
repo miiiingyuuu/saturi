@@ -1,129 +1,174 @@
-"use client";
 
-import api from "@/lib/axios";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { QuizProps } from "@/utils/props";
+"use client"
+
 import {
-  Box,
   Table,
-  Button,
-  TableRow,
-  Accordion,
   TableBody,
-  TableCell,
-  TableHead,
-  Typography,
-  AccordionDetails,
+  TableContainer,
+  Paper,
+  Accordion,
   AccordionSummary,
+  AccordionDetails,
+  Typography,
+  TableRow,
+  TableCell, Button, Checkbox, checkboxClasses, List, ListSubheader, ListItemText, ListItem, Box,
 } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import api from "@/lib/axios";
+import { useRouter } from "next/navigation"
+import React, { useEffect, useState } from "react";
+import useTableSort from "@/hooks/useTableSort";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SortableTableHead from "@/components/SortableTableHead";
+import { styled } from "@mui/material/styles"
+interface QuizProps {
+  quizId: number;
+  locationId: number;
+  question: string;
+  isObjective: boolean;
+  creationDt: string;
+  choiceList?: Choice[];
+}
+
+interface Choice {
+  choiceId: number;
+  content: string;
+  isAnswer: boolean;
+}
+
+type HeadCell = {
+  id: keyof QuizProps;
+  label: string;
+};
+
+const headCells: HeadCell[] = [
+  { id: "quizId", label: "Id" },
+  { id: "locationId", label: "지역" },
+  { id: "creationDt", label: "생성일" },
+  { id: "isObjective", label: "문제 타입" },
+  { id: "question", label: "문제" },
+];
+
+const CustomCheckbox = styled(Checkbox)(({ theme }) => ({
+  [`&.${checkboxClasses.root}`]: {
+    color: theme.palette.primary.main, // 기본 색상
+    '&.Mui-checked': {
+      color: theme.palette.primary.dark, // 체크된 상태의 색상
+    },
+    '&.Mui-disabled': {
+      color: theme.palette.primary.light, // 비활성화된 상태의 색상
+    },
+  },
+  [`& .${checkboxClasses.disabled}`]: {
+    color: theme.palette.primary.light, // 비활성화된 체크박스의 색상
+  },
+}));
+
+
+
 
 export default function App() {
-  const [quizzes, setQuizzes] = useState<QuizProps[]>([]);
-  const [expanded, setExpanded] = useState<number | false>(false);
-  const [quizDetails, setQuizDetails] = useState<{ [key: number]: any }>({});
+  const router = useRouter()
+  const [ items, setItems] = useState<QuizProps[]>([]);
+  const { rows, order, orderBy, onRequestSort } = useTableSort<QuizProps>(items, "quizId");
 
-  // 아코디언이 켜지면 상세 조회 ㄱ
-  function handleAccordionChange(quizId: number) {
-    return async (event: SyntheticEvent, isExpanded: boolean) => {
-      if (!quizDetails[quizId]) {
-        const response = await api.get(`admin/game/quiz/${quizId}`);
-        setQuizDetails(prev => ({...prev, [quizId]: response.data}));
-      }
-      setExpanded(isExpanded ? quizId : false)
-    }
+  // 아코디언 클릭 시 추가 데이터를 가져오는 함수
+  function fetchDetail(quizId: number) {
+    api.get<QuizProps>(`/admin/game/quiz/${quizId}`)
+      .then(response => {
+        const updatedItems = items.map((item) =>
+        item.quizId === quizId ? {...item, choiceList: response.data.choiceList} : item
+        )
+        setItems(updatedItems);
+      })
   }
 
-  function deleteQuiz(quizId: number) {
+  function handleEdit(quizId: number) {
+    router.push(`/admin/quiz/edit/${quizId}`)
+  }
+
+  function handleDelete(quizId: number) {
     api.delete(`/admin/game/quiz/${quizId}`)
       .then(() => {
-          setQuizzes(quizzes.filter(quiz => quiz.quizId !== quizId));
-        }
-      )
+        alert("삭제되었습니다.")
+        setItems(items.filter(item => item.quizId !== quizId));
+      })
   }
 
   useEffect(() => {
     api.get("/admin/game/quiz")
-      .then(response => setQuizzes(response.data));
+      .then((response) => setItems(response.data));
   }, []);
 
   return (
-    <Box>
-      <Typography component="h1" variant="h5">
-        퀴즈 조회
-      </Typography>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>지역</TableCell>
-            <TableCell>질문</TableCell>
-            <TableCell>등록일자</TableCell>
-            <TableCell>주관식/객관식</TableCell>
-            <TableCell>수정/삭제</TableCell>
-          </TableRow>
-        </TableHead>
-
+    <TableContainer component={Paper}>
+      <Table>
+        <SortableTableHead
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+          headCells={headCells}
+        />
         <TableBody>
-          {quizzes.map((quiz) => (
-            <TableRow key={quiz.quizId}>
-              <TableCell colSpan={6} style={{ padding: 0 }}>
-                <Accordion
-                  expanded={expanded === quiz.quizId}
-                  onChange={handleAccordionChange(quiz.quizId)}
-                >
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <TableCell>{quiz.quizId}</TableCell>
-                    <TableCell>{quiz.locationId}</TableCell>
-                    <TableCell>{quiz.question}</TableCell>
-                    <TableCell>{new Date(quiz.creationDt).toLocaleString()}</TableCell>
-                    <TableCell>{quiz.isObjective ? "객관식" : "주관식"}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{ mr: 1 }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={() => deleteQuiz(quiz.quizId)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+          {rows.map((row) => (
+            <TableRow key={row.quizId}>
+              <TableCell>{row.quizId}</TableCell>
+              <TableCell>{row.locationId}</TableCell>
+              <TableCell>{row.creationDt}</TableCell>
+              <TableCell>{row.isObjective ? "객관식" : "주관식"}</TableCell>
+              <TableCell>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    onClick={() => fetchDetail(row.quizId)}
+                  >
+                    <Typography>{row.question}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    {quizDetails[quiz.quizId] && (
-                      <>
-                        <Typography variant="h6">상세 정보</Typography>
-                        <Typography>질문: {quizDetails[quiz.quizId].question}</Typography>
-                        {quizDetails[quiz.quizId].choiceList && (
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell>선택지</TableCell>
-                                <TableCell>답변</TableCell>
-                                <TableCell>정답여부</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {quizDetails[quiz.quizId].choiceList.map((choice: any) => (
-                                <TableRow key={choice.choiceId}>
-                                  <TableCell>{choice.choiceId}</TableCell>
-                                  <TableCell>{choice.content}</TableCell>
-                                  <TableCell>{choice.isAnswer ? "Yes" : "No"}</TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        )}
-                      </>
+                    <List
+                      aria-labelledby="nested-list-subheader"
+                      subheader={
+                        <ListSubheader component="div" id="nested-list-subheader">
+                          선택지
+                        </ListSubheader>
+                      }
+                    >
+                    {row.choiceList ? (
+                      row.choiceList.map((choice) => (
+                            <ListItem disablePadding key={choice.choiceId}>
+                              <CustomCheckbox
+                                disabled
+                                checked={choice.isAnswer}
+                              />
+                              <ListItemText primary={`${choice.choiceId}번 : ${choice.content}`} />
+                            </ListItem>
+                      ))
+                    ) : (
+                      <Typography>로딩 중...</Typography>
                     )}
+
+                    </List>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap :1,
+                        mt :2,
+                      }}
+                    >
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => handleEdit(row.quizId)}
+                    >
+                      수정
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleDelete(row.quizId)}
+                    >
+                      삭제
+                    </Button>
+                    </Box>
                   </AccordionDetails>
                 </Accordion>
               </TableCell>
@@ -131,6 +176,6 @@ export default function App() {
           ))}
         </TableBody>
       </Table>
-    </Box>
+    </TableContainer>
   );
 }

@@ -1,55 +1,53 @@
 "use client"
 
-import React, { useState } from 'react';
+import api from "@/lib/axios";
+import { useState, useMemo } from "react";
 import { useRouter } from 'next/navigation';
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Container, 
-  Paper, 
-  Alert,
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PasswordValidation from "@/components/PasswordValidation";
+import { handleValueChange, validatePassword } from "@/utils/utils";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Paper,
   Grid
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { changePassword } from './confirmation';
-import { validatePassword } from '@/utils/utils';
 
-const PasswordChangeForm: React.FC = () => {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [isError, setIsError] = useState(false);
+export default function App() {
   const router = useRouter();
+  const [newPassword, setNewPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const isNewPasswordValid = useMemo(() => validatePassword(newPassword), [newPassword]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsError(false);
-
-    const result = await changePassword({ currentPassword, newPassword });
-    setMessage(result.message);
-    setIsError(!result.success);
-    if (result.success) {
-      setCurrentPassword('');
-      setNewPassword('');
-      setTimeout(() => {
-        router.push('/user/profile');
-      }, 300);
+  function changePassword() {
+    api.put("user/auth/password-update", {
+      currentPassword,
+      newPassword
+    })
+      .then(() => {
+        alert("비밀번호가 변경되었습니다.")
+        router.push("/user/profile")
+      })
     }
-  };
-
-  const handleGoBack = () => {
-    router.push('/user/profile/update');
-  };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           비밀번호 변경
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box
+          component="form"
+          onSubmit={(event) => {
+            event.preventDefault()
+            changePassword()
+          }}
+          noValidate
+          sx={{ mt: 1 }}
+        >
           <TextField
             margin="normal"
             required
@@ -60,7 +58,7 @@ const PasswordChangeForm: React.FC = () => {
             id="currentPassword"
             autoComplete="current-password"
             value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
+            onChange={(event) => handleValueChange(event, setCurrentPassword)}
           />
           <TextField
             margin="normal"
@@ -72,14 +70,17 @@ const PasswordChangeForm: React.FC = () => {
             id="newPassword"
             autoComplete="new-password"
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={(event) => handleValueChange(event, setNewPassword)}
+            error={!isNewPasswordValid}
           />
-          <Typography sx={{ fontSize: '12px', ml: 1, color: 'red' }}>새 비밀번호는 숫자, 소문자, 특수문자를 포함한 8자 이상</Typography>
+          <PasswordValidation password={newPassword} />
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
               <Button
                 startIcon={<ArrowBackIcon />}
-                onClick={handleGoBack}
+                onClick={() => {
+                  router.push('/user/profile/update');
+                }}
                 variant="outlined"
                 fullWidth
               >
@@ -91,20 +92,14 @@ const PasswordChangeForm: React.FC = () => {
                 type="submit"
                 variant="contained"
                 fullWidth
+                disabled={!isNewPasswordValid || newPassword === ''}
               >
                 비밀번호 변경
               </Button>
             </Grid>
           </Grid>
         </Box>
-        {message && (
-          <Alert severity={isError ? "error" : "success"} sx={{ mt: 2 }}>
-            {message}
-          </Alert>
-        )}
       </Paper>
     </Container>
   );
 };
-
-export default PasswordChangeForm;

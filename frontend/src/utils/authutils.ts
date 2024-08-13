@@ -1,7 +1,7 @@
 import api from "@/lib/axios";
-import { HandleLoginProps } from "@/utils/props";
-import { deleteCookie, getCookie, getCookies, setCookie } from "cookies-next";
 import { AxiosResponse } from "axios";
+import { deleteCookie, getCookies, setCookie } from "cookies-next";
+import { HandleLoginProps } from "@/utils/props";
 
 // 쿠키 삽입
 export function insertCookie(response: AxiosResponse) {
@@ -42,19 +42,25 @@ export function handleLogin({
     .then(response => {
       sessionStorage.setItem("accessToken", response.data.accessToken);
       sessionStorage.setItem("refreshToken", response.data.refreshToken);
+
+      console.log(response.data)
+      let destination = goTo
+      if (response.data.role === "ADMIN") {
+        destination = "/admin"
+      }
+      return destination;
     })
-    .then(() => {
+    .then((destination) => {
       api.get("user/auth/profile")
       .then(response => {
-        // 여기서 보내고 닉네임 설정 전까지 밖으로 안 내보내기
         insertCookie(response);
-        router.push(`${goTo}`);
-        window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}${goTo}`
+        router.push(`${destination}`);
+        // window.location.href =`${process.env.NEXT_PUBLIC_FRONTURL}${destination}`
       })
     })
     .catch(error => {
       if (error.response.status === 400) {
-        alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+        alert(error.response.data.msg);
       }
     });
 }
@@ -94,7 +100,7 @@ export async function frontLogOut() {
 
 // 토큰 유효성 확인
 // 페이지 옮길때마다 실행 (메인의 authutils에 달려있음)
-export function authToken(router: any) {
+export function authToken() {
   api.get("/user/auth/token-check")
     .then(response => {
       if (response.status === 200) getUserInfo()

@@ -46,7 +46,7 @@ public class ChatClaimRepository {
                 .fetch();
     }
 
-    public Optional<ChatClaimEntity> findById(ClaimDeleteRequestDto chatClaimId) {
+    public Optional<ChatClaimEntity> findById(Long chatClaimId) {
         return Optional.ofNullable(em.find(ChatClaimEntity.class, chatClaimId));
     }
 

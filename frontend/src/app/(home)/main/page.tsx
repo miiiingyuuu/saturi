@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image"
-import { Box, Button, Typography, useMediaQuery  } from "@mui/material"
+import { Box, Button, Card, Typography, useMediaQuery  } from "@mui/material"
 
 // Props
 import { ButtonPartProps, MiddleMapProps } from '@/utils/props';
@@ -14,6 +14,8 @@ import RightPart from '../../../components/home/main/rightpart';
 
 import '../../../styles/home/main/mainPage.css';
 import KoreaMap from '../../../components/home/main/koreaMap';
+
+import Chatbot from "@/components/chatbot/chatbot";
 
 
 
@@ -33,17 +35,44 @@ import KoreaMap from '../../../components/home/main/koreaMap';
 // 버튼 부분과 맵 파트
 function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }: ButtonPartProps) {
   return (
-    <Box>
-      {selectedRegion !== "_" && middleToWhere !== 2 && (
-        <Button type="button" className='buttonLeft' onClick={onLeftClick}>
-          <Image src="/MainPage/buttonLeft.png" alt="button" width={60} height={60} />
-        </Button>
+    <Box 
+      sx={{
+        display:"flex",
+        alignItems:"center",  
+        justifyContent:"space-between",
+        width: "100%",
+        height: "100%",
+    }}>
+      {/* 왼쪽 버튼은 공간은 차지하게 함 (클릭이나 보이지는 않게만) */}
+      {selectedRegion !== "_" && selectedRegion !== "준비중입니다" && (        
+        <Box className={`buttonLeft ${middleToWhere == 2 ? 'invisible pointer-events-none' : ''}`}>
+          <Button type="button"  onClick={onLeftClick}>
+            <Image src="/MainPage/buttonLeft.png" alt="button" width={60} height={60} />
+          </Button>
+          <Typography 
+            variant="h5"
+            sx={{
+              textAlign:"center",
+          }}>
+            학습
+          </Typography>
+        </Box>
+        
       )}
 
-      {selectedRegion !== "_" && middleToWhere !== 0 && (
-        <Button type="button" className='buttonRight' onClick={onRightClick}>
-          <Image src="/MainPage/buttonRight.png" alt="button" width={60} height={60} />
-        </Button>
+      {selectedRegion !== "_" && selectedRegion !== "준비중입니다" && (
+        <Box className='buttonRight'>
+          <Button type="button" onClick={onRightClick}>
+            <Image src="/MainPage/buttonRight.png" alt="button" width={60} height={60} />
+          </Button>
+          <Typography 
+            variant="h5"
+            sx={{
+              textAlign:"center",
+          }}>
+            게임
+          </Typography>
+        </Box>
       )}
     </Box>
   );
@@ -51,8 +80,8 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
 
 function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: MiddleMapProps) {
   // 반응형 부분 
-  const isDesktop = useMediaQuery('(min-width:768px)');
-  if (!isDesktop && middleToWhere !== 1) {
+  const isMd = useMediaQuery('(min-width:960px)');
+  if (!isMd && middleToWhere !== 1) {
     return null;    
   }
   
@@ -60,7 +89,10 @@ function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: Middl
     <Box 
       className="middleMap"
       style={{ 
-        left: left === "null" ? undefined : left
+        left: left === "null" ? undefined : left,
+        display:"flex",
+        flexDirection:"column",
+        alignItems:"center",
       }}>
       
       {/* 두 번쨰: 맵 */}
@@ -70,13 +102,24 @@ function MiddleMap({ left, onRegionClick, selectedRegion, middleToWhere }: Middl
 
 
       {/* 첫 번째: 지도 이름 */}
-      <Typography 
-        variant="h4" 
-        sx={{ 
-          textAlign: "center", 
-          fontWeight: "bold", 
+      <Card 
+        sx={{
+          width:"50%",
+          maxWidth:"100%",
+          padding:"5px",
+          borderRadius:"15px",
+          border:"3px solid lightgray",
           visibility: selectedRegion === "_" ? "hidden" : "visible" 
-        }}> {selectedRegion} </Typography>
+      }}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            textAlign: "center", 
+            fontWeight: "bold", 
+            visibility: selectedRegion === "_" ? "hidden" : "visible" 
+          }}> {selectedRegion} 
+        </Typography>
+      </Card>
       
       
 
@@ -127,7 +170,7 @@ export default function App() {
     e.preventDefault();
     moveDirection.current = "right";
     if (currentMainPageRef.current === 1) {
-      setMapLeft("35%");
+      setMapLeft("33%");
       setMiddleToWhere(0);
       currentMainPageRef.current = 2; // 값 변경
     } else if (currentMainPageRef.current === 0) {
@@ -139,7 +182,7 @@ export default function App() {
 
   return (
     <Box style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
-      <Box style={{ position: 'relative', width: '100%', height: '90vh' }}>
+      <Box sx={{ position: 'relative', width: '100%', height: '90vh', minHeight: "700px" }}>
         <LeftPart
           middlePosition={middleToWhere}
           moveDirection={moveDirection.current}
@@ -150,7 +193,9 @@ export default function App() {
           mainPageIndicator={mainPageIndicator}
           selectedRegion={selectedRegion}
         />
-        <RightPart />
+        <RightPart 
+          selectedRegion={selectedRegion}
+        />
         <ButtonPart
           onLeftClick={handleLeftClick}
           onRightClick={handleRightClick}
@@ -163,6 +208,9 @@ export default function App() {
           selectedRegion={selectedRegion}
           middleToWhere = {middleToWhere}
         />        
+      </Box>
+      <Box>
+        <Chatbot />
       </Box>
     </Box>
   );

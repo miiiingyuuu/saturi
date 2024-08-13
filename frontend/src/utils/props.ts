@@ -1,16 +1,16 @@
 // auth-util
 import * as React from "react";
 
+export interface PasswordChangeProps {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface HandleLoginProps {
   email: string;
   password: string;
   router: any;
   goTo: string;
-}
-
-export interface PasswordConfirmProps {
-  email: string;
-  password: string;
 }
 
 // util
@@ -19,16 +19,12 @@ export interface PasswordProps {
   passwordConf: string;
 }
 
-// component
-export interface CustomAccordionItemProps {
-  primaryText: string;
-  items: string[];
-  icon: React.ReactElement;
-  paths: string[];
-  basePath: string;
+// admin-utils
+
+export interface QuizIdProps {
+  params: {quizId: number}
 }
 
-//admin-utils
 export interface ILocationProps {
   locationId: number
   name: string
@@ -39,9 +35,8 @@ export interface ILessonCategoryProps {
   name: string
 }
 
-
 export interface LessonGroup {
-  lessonGroupId: string;
+  lessonGroupId: number;
   locationName: string;
   lessonCategoryName: string;
   name: string;
@@ -49,23 +44,18 @@ export interface LessonGroup {
 }
 
 export interface LessonProps {
-  lessonId: number;
+  lessonId?: number;
   lessonGroupId: number;
   lessonGroupName: string;
   sampleVoicePath: string;
+  sampleVoiceName: string;
+  sampleVoicePitchX: string | null;
+  sampleVoicePitchY: string;
   script: string;
-  lastUpdateDt: string;
+  lastUpdateDt: string
 }
 
 // game
-export interface QuizProps {
-  quizId: number
-  locationId: number
-  question: string
-  creationDt: string
-  isObjective: boolean
-}
-
 export interface TipsProps {
   tipId: number
   content: string
@@ -96,6 +86,7 @@ export interface GameQuizProps<T> {
 }
 
 export interface ParticipantsProps {
+  isExited: boolean;
   nickName: string
   birdId: number
   latestMessage?: string
@@ -111,6 +102,10 @@ export interface LeftPartProps {
 export interface MiddlePartProps {
   middlePosition: number;
   mainPageIndicator: string;
+  selectedRegion: string;
+}
+
+export interface RightPartProps {
   selectedRegion: string;
 }
 

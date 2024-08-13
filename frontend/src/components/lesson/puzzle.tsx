@@ -75,6 +75,7 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
           aria-label="progress bar"
           sx={{
             height: 8, // 원하는 높이로 설정
+            border: "5px solid litegray",
             borderRadius: 5, // 테두리를 둥글게 설정
             "& .MuiLinearProgress-bar": {
               borderRadius: 5, // 진행 바 자체도 둥글게 설정

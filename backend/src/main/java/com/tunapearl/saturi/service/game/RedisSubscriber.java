@@ -55,6 +55,8 @@ public class RedisSubscriber implements MessageListener {
                             dto.setQuestion(e.get("question").asText());
                             dto.setQuizId(e.get("quizId").asLong());
                             dto.setIsObjective(e.get("isObjective").asBoolean());
+                            dto.setSequence(e.get("sequence").asLong());
+
 
                             List<GameQuizChoiceDTO> choices = new ArrayList<>();
 
@@ -76,12 +78,19 @@ public class RedisSubscriber implements MessageListener {
                     }
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, quizList);
 
-                } else if ("START".equals(subType)) {
+                } else if ("START".equals(subType) || "ENTER".equals(subType) || "EXIT".equals(subType)) {
                     JsonNode data = jsonNode.get("data");
                     String roomId = jsonNode.get("roomId").asText();
 
+                    MessageType messageType1;
+                    switch (subType) {
+                        case "START"-> messageType1 = MessageType.START;
+                        case "EXIT"-> messageType1 = MessageType.EXIT;
+                        default-> messageType1 = MessageType.ENTER;
+                    }
+
                     GameParticipantResponseDTO gprDto = GameParticipantResponseDTO.builder()
-                            .chatType(MessageType.START)
+                            .chatType(messageType1)
                             .senderNickName(data.get("senderNickName").asText())
                             .message(data.get("message").asText())
                             .build();
@@ -92,21 +101,23 @@ public class RedisSubscriber implements MessageListener {
                             GameParticipantDTO gpDto = GameParticipantDTO.builder()
                                     .nickName(e.get("nickName").asText())
                                     .birdId(e.get("birdId").asLong())
+                                    .isExited(e.get("isExited").asBoolean())
                                     .build();
                             log.info("gprDto: {}", gpDto);
                             gprDto.addParticipant(gpDto);
                         }
                     }
 
-                    log.info("RedisSubscriber START:::::: Dto:{}", gprDto);
                     log.info("roomId: {}", roomId);
                     messagingTemplate.convertAndSend("/sub/room/" + roomId, gprDto);
-                } else if ("EXIT".equals(subType)) {
-
-                    ExitMessage exitMessage = objectMapper.readValue(publishMessage, ExitMessage.class);
-                    messagingTemplate.convertAndSend("/sub/room/" + exitMessage.getRoomId(), exitMessage);
-
-                } else {
+                }
+//                } else if ("EXIT".equals(subType)) {
+//
+//                    ExitMessage exitMessage = objectMapper.readValue(publishMessage, ExitMessage.class);
+//                    messagingTemplate.convertAndSend("/sub/room/" + exitMessage.getRoomId(), exitMessage);
+//
+//                }
+                else {
 
                     ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
                     messagingTemplate.convertAndSend("/sub/room/" + chatMessage.getRoomId(), chatMessage);

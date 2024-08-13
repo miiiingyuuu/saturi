@@ -1,12 +1,17 @@
 import "../../../styles/home/main/background.css";
 import { MiddlePartProps } from "@/utils/props";
-import { Box, Typography } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 
 export default function MiddlePart({ middlePosition, mainPageIndicator }: MiddlePartProps) {
   return (
     <Box 
       className="middlepart" 
-      style={{
+      style={{        
+        backgroundColor:"#f3f4f6",
+        backgroundImage: "url(/MainPage/mainBackground.png)",
+        backgroundSize: "auto 100%",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
         left: (() => {
           if (middlePosition === 0) {
             return "-110%";
@@ -19,7 +24,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
       }}>
       
       {/* 배경 엘리먼트 */}
-      <Box className="area">
+      {/* <Box className="area">
         <ul className="circles">
           <li/>
           <li/>
@@ -32,20 +37,28 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
           <li/>
           <li/>
         </ul>
-      </Box>
-      
-      <Typography 
-        variant = "h1"
+      </Box> */}
+      <Card 
         className="blink" 
         style={{
-          position: 'absolute',
+          position: 'absolute',          
+          transform: 'translate(-50%, -50%)',
           top: '10%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
-          textShadow: "1px 1px 0px whitesmoke",
-          fontSize: 25,
-          fontWeight: "bold",
+          padding:"10px",
+          border:"3px solid lightgray",
+          borderRadius:"15px",
+        }}
+      >
+        <Typography 
+          variant = "h1"          
+          style={{
+            // backgroundColor:"blue",            
+            textShadow: "2px 2px 0px white",
+            fontSize: 25,
+            fontWeight: "bold",
         }}> {mainPageIndicator} </Typography>
+      </Card>
     </Box>
   );
 }

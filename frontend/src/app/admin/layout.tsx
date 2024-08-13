@@ -10,21 +10,33 @@ import {
   IconButton,
   Backdrop,
   CircularProgress,
+  Menu,
+  MenuItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Avatar,
+  Collapse
 } from "@mui/material";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import MuiDrawer from "@mui/material/Drawer";
-import MenuIcon from "@mui/icons-material/Menu";
 import { usePathname, useRouter } from "next/navigation";
-import listItems from "@/components/admin-layout/listItems";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import HomeIcon from "@mui/icons-material/Home";
-import ListItemText from "@mui/material/ListItemText";
-
+import { 
+  AccountCircle, 
+  School as SchoolIcon, 
+  Dashboard as DashboardIcon, 
+  BarChart as BarChartIcon, 
+  ReportProblem,
+  ExpandLess,
+  ExpandMore
+} from "@mui/icons-material";
+import useLogout from "@/hooks/useLogout";
+import Image from 'next/image';
+import api from "@/lib/axios";
 
 const drawerWidth: number = 240;
 
@@ -32,78 +44,134 @@ interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
 
+// AppBar
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
+})<AppBarProps>(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
 }));
 
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  "& .MuiDrawer-paper": {
-    position: "relative",
-    whiteSpace: "nowrap",
+// Drawer
+const Drawer = styled(MuiDrawer)(({ theme }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  '& .MuiDrawer-paper': {
     width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    boxSizing: "border-box",
-    ...(!open && {
-      overflowX: "hidden",
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      width: theme.spacing(7),
-      [theme.breakpoints.up("sm")]: {
-        width: theme.spacing(9),
-      },
-    }),
   },
 }));
 
 const defaultTheme = createTheme();
 
+interface AccordionMenuItemProps {
+  icon: React.ReactElement;
+  text: string;
+  subItems: { text: string; path: string }[];
+  open: boolean;
+  onToggle: () => void;
+  onSubItemClick: (path: string) => void;
+}
+
+const AccordionMenuItem: React.FC<AccordionMenuItemProps> = ({ 
+  icon, text, subItems, open, onToggle, onSubItemClick 
+}) => {
+  return (
+    <>
+      <ListItemButton onClick={onToggle}>
+        <ListItemIcon>{icon}</ListItemIcon>
+        <ListItemText primary={text} />
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          {subItems.map((item, index) => (
+            <ListItemButton 
+              key={index} 
+              sx={{ pl: 4 }}
+              onClick={() => onSubItemClick(item.path)}
+            >
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          ))}
+        </List>
+      </Collapse>
+    </>
+  );
+};
+
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [profileImageUrl, setProfileImageUrl] = useState<string>('');
+  const [openMenus, setOpenMenus] = useState({
+    lesson: false,
+    quiz: false,
+    stats: false,
+    claim: false,
+  });
   const pathname = usePathname();
   const router = useRouter();
+  const logout = useLogout();
   const hideHeader = pathname === "/admin/auth";
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
-  // 시작시 실행
+  const birdId = getCookie('birdId');
+
   useEffect(() => {
-    setIsLoading(true)
-    switch (true) {
-      case getCookie("role") !== "ADMIN":
-        router.push("/");
-        break;
-      case sessionStorage?.getItem("adminToken") !== process.env.NEXT_PUBLIC_ADMIN_TOKEN:
-        router.push("/admin/auth");
-        break;
-      default:
-        setIsLoading(false);
+    const birdId = getCookie('birdId');
+    if (birdId) {
+      setProfileImageUrl(`/mini_profile/${birdId}.png`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    api.get("/user/auth/profile")
+      .then(response => {
+        if (response.data.role !== "ADMIN") {
+          router.push("/")
+        } else {
+          setIsLoading(false)
+        }
+      })
+
+    // switch (true) {
+    //   case getCookie("role") !== "ADMIN":
+    //     router.push("/");
+    //     break;
+    //   case sessionStorage?.getItem("adminToken") !== process.env.NEXT_PUBLIC_ADMIN_TOKEN:
+    //     router.push("/admin/auth");
+    //     break;
+    //   default:
+    //     setIsLoading(false);
+    // }
   }, [router]);
 
-  if (isLoading&&!hideHeader) {
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleClose();
+  };
+
+  const handleImageError = () => {
+    setProfileImageUrl('/path-to-default-avatar.png');
+  };
+
+  const toggleMenu = (menu: 'lesson' | 'quiz' | 'stats' | 'claim') => {
+    setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+  };
+
+  const handleSubItemClick = (path: string) => {
+    router.push(path);
+  };
+
+  if (isLoading && !hideHeader) {
     return (
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -120,74 +188,109 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
         <CssBaseline />
         {!hideHeader && (
           <>
-            <AppBar open={open}>
-              <Toolbar
-                sx={{
-                  pr: "24px", // keep right padding when drawer closed
-                }}
-              >
+            <AppBar position="fixed">
+              <Toolbar>
+                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="h6" component="div" sx={{ ml: 2 }}>
+                    관리자 페이지
+                  </Typography>
+                </Box>
                 <IconButton
-                  edge="start"
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
                   color="inherit"
-                  aria-label="open drawer"
-                  onClick={toggleDrawer}
-                  sx={{
-                    marginRight: "36px",
-                    ...(open && { display: "none" }),
-                  }}
                 >
-                  <MenuIcon />
+                  <Avatar 
+                    alt="User Avatar" 
+                    src={profileImageUrl} 
+                    onError={handleImageError}
+                  />
                 </IconButton>
-                <Typography
-                  component="h1"
-                  variant="h6"
-                  color="inherit"
-                  noWrap
-                  sx={{ flexGrow: 1 }}
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
                 >
-                  관리자 페이지
-                </Typography>
+                  <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
+                </Menu>
               </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open}>
-              <Toolbar
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                  px: [1],
-                }}
-              >
-                <IconButton onClick={toggleDrawer}>
-                  <ChevronLeftIcon />
-                </IconButton>
-              </Toolbar>
-              <Divider />
-              <List component="nav">
-                <ListItemButton onClick={() => router.push("/admin")}>
-                  <ListItemIcon>
-                    <HomeIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="메인"/>
-                </ListItemButton>
-              </List>
-              <List component="nav">{listItems}</List>
+            <Drawer variant="permanent">
+              <Toolbar />
+              <Box sx={{ overflow: 'auto' }}>
+                <List>
+                  <ListItemButton onClick={() => router.push("/admin")}>
+                    <ListItemIcon>
+                      <HomeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="메인" />
+                  </ListItemButton>
+                  <AccordionMenuItem
+                    icon={<SchoolIcon />}
+                    text="레슨"
+                    subItems={[
+                      { text: "조회 및 수정", path: "/admin/lesson/view" },
+                      { text: "생성", path: "/admin/lesson/create" }
+                    ]}
+                    open={openMenus.lesson}
+                    onToggle={() => toggleMenu('lesson')}
+                    onSubItemClick={handleSubItemClick}
+                  />
+                  <AccordionMenuItem
+                    icon={<DashboardIcon />}
+                    text="퀴즈"
+                    subItems={[
+                      { text: "조회 및 수정", path: "/admin/quiz/view" },
+                      { text: "생성", path: "/admin/quiz/create" }
+                    ]}
+                    open={openMenus.quiz}
+                    onToggle={() => toggleMenu('quiz')}
+                    onSubItemClick={handleSubItemClick}
+                  />
+                  <AccordionMenuItem
+                    icon={<ReportProblem />}
+                    text="신고"
+                    subItems={[
+                      { text: "레슨 신고 내용", path: "/admin/claim/lesson" },
+                      { text: "채팅 신고 내용", path: "/admin/claim/user" }
+                    ]}
+                    open={openMenus.claim}
+                    onToggle={() => toggleMenu('claim')}
+                    onSubItemClick={handleSubItemClick}
+                  />
+                  <AccordionMenuItem
+                    icon={<BarChartIcon />}
+                    text="통계"
+                    subItems={[
+                      { text: "사용자 지역별 현황", path: "/admin/statistics/userlocation" },
+                      { text: "사용자 컨텐츠 통계", path: "/admin/statistics/usercontents" },
+                      { text: "사용자 유사도/정확도 통계", path: "/admin/statistics/usersimilarity" },
+                      { text: "사용자 레슨 통계", path: "/admin/statistics/userlesson" }
+                    ]}
+                    open={openMenus.stats}
+                    onToggle={() => toggleMenu('stats')}
+                    onSubItemClick={handleSubItemClick}
+                  />
+                </List>
+              </Box>
             </Drawer>
           </>
         )}
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: "100vh",
-            overflow: "auto",
-          }}
-        >
-          {!hideHeader && <Toolbar />}
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Toolbar />
           {children}
         </Box>
       </Box>

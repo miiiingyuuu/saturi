@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { 
   Button, Divider, Menu, MenuItem, Box, Avatar, IconButton, 
@@ -14,7 +13,6 @@ import useLogout from "@/hooks/useLogout";
 import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import { styleText } from "util";
 
 
 export default function Header() {
@@ -39,9 +37,7 @@ export default function Header() {
   function handleLogoClick() {
     const accessToken = sessionStorage.getItem("accessToken");
     const targetPath = accessToken ? '/main' : '/start';
-    if (pathname !== targetPath) {
-      router.push(targetPath);
-    }
+    window.location.href = targetPath; // 또 오류 나면... 어쩔 수 없이 쳐내야지 다른 방법 찾기
   }
 
   const updateUserInfo = async () => {
@@ -52,35 +48,31 @@ export default function Header() {
         throw new Error('Access token not found');
       }
 
-      const response = await api.get('/user/auth/profile', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      const response = await api.get('/user/auth/profile')
       
       const userData = response.data;
       setProfileImage(userData.birdId);
       setNickName(userData.nickname);
     } catch (error) {
       console.error("Failed to fetch user info:", error);
-      setProfileImage("/default-profile.png");
+      // setProfileImage("/default-profile.png");
     } finally {
       setProfileLoading(false);
     }
   };
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const accessToken = sessionStorage.getItem("accessToken");
-      if (accessToken) {
-        setIsLoggedIn(true);
+    async function checkAuth() {
+      if (sessionStorage.getItem("accessToken")) {
         await updateUserInfo();
+        setIsLoggedIn(true);
+
         if (pathname !== '/start') {
-          authToken(router);
+          authToken();
         }
       } else {
         setIsLoggedIn(false);
-        if (pathname&&!['/start', '/login', '/register'].includes(pathname)) {
+        if (pathname&&!['/start', '/login', '/register', '/findpassword', '/findpassword/tmppassword'].includes(pathname)) {
           router.push('/start');
         }
       }
@@ -93,11 +85,11 @@ export default function Header() {
   return (
     <header className="w-full">
       <Box 
-        className="flex items-center justify-between px-8" 
+        className="flex items-center justify-between px-8 bg-gray-100" 
         sx={{
+          minHeight:"50px",
           height:"10vh",
-          borderBottom: "1px solid",
-      }}>
+        }}>
         <Box 
           component="img"   
           className="cursor-pointer"
@@ -132,7 +124,7 @@ export default function Header() {
                   ) : (
                     <Avatar
                       sizes="large" 
-                      src={profileImage ? `/mini_profile/${profileImage}.png` : "/default-profile.png"} 
+                      src={profileImage ? `/mini_profile/${profileImage}.png` : "이미지가 없습니다."} 
                     />
                   )}
                 </IconButton>
@@ -200,7 +192,6 @@ export default function Header() {
                   <MenuItem
                     onClick={() => {
                     logout()
-                      .then(() => router.push("/start"))
                     }}>
                     <ListItemIcon sx={{ mr: 1 }}>
                       <Logout fontSize="large" />

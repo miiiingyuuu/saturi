@@ -4,14 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter @Setter
 @Table(name = "lesson")
+@ToString
 public class LessonEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +32,12 @@ public class LessonEntity {
 
     private String script;
 
+    @Column(name = "graph_x")
+    private String graphX;
+
+    @Column(name = "graph_y")
+    private String graphY;
+
     private LocalDateTime lastUpdateDt;
 
     private Boolean isDeleted = false;
@@ -39,5 +48,16 @@ public class LessonEntity {
     public void setLessonGroup(LessonGroupEntity lessonGroup) {
         this.lessonGroup = lessonGroup;
         lessonGroup.getLessons().add(this);
+    }
+
+    public void deleteLessonGroup(Long lessonId) {
+        List<LessonEntity> lessons = lessonGroup.getLessons();
+        for (LessonEntity lesson : lessons) {
+            if(lesson.getLessonId().equals(lessonId)) {
+                lessons.remove(lesson);
+                break;
+            }
+        }
+        this.lessonGroup = null;
     }
 }

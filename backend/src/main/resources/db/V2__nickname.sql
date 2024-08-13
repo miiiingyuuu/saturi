@@ -1,0 +1,1 @@
+alter table user modify column nickname varchar(50) null;
