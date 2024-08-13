@@ -173,8 +173,8 @@ export default function App() {
           onChange={handleFilterChange}
         />
         <FormControl>
-          <FormLabel>타입</FormLabel>
           <RadioGroup
+            row
             name="isObjective"
             value={filters.isObjective}
             onChange={handleRadioChange}
@@ -200,7 +200,7 @@ export default function App() {
                 <TableCell className="w-1/12">{row.quizId}</TableCell>
                 <TableCell className="w-1/12">{row.locationId}</TableCell>
                 <TableCell className="w-1/12">{row.isObjective ? "객관식" : "주관식"}</TableCell>
-                <TableCell className="w-5/12">
+                <TableCell className="w-6/12">
                   <Accordion>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
@@ -240,7 +240,7 @@ export default function App() {
                     </AccordionDetails>
                   </Accordion>
                 </TableCell>
-                <TableCell className="w-2/12">{row.creationDt.slice(0, 10)}</TableCell>
+                <TableCell className="w-1/12">{row.creationDt.slice(0, 10)}</TableCell>
                 <TableCell className="w-2/12">
                   <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
                     수정
