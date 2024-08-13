@@ -26,7 +26,6 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
-  FormLabel
 } from "@mui/material";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
@@ -240,7 +239,7 @@ export default function App() {
                     </AccordionDetails>
                   </Accordion>
                 </TableCell>
-                <TableCell className="w-1/12">{row.creationDt.slice(0, 10)}</TableCell>
+                <TableCell className="w-1/12">{row.creationDt.slice(2, 10)}</TableCell>
                 <TableCell className="w-2/12">
                   <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
                     수정
