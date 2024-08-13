@@ -7,6 +7,7 @@ build/
 src/main/resources/application-dev.yml
 src/main/resources/aesthetic-frame-430503-d3-71542bed941d.json
 src/main/resources/import.sql
+src/main/resources/sample.sql
 ### STS ###
 .apt_generated
 .classpath
