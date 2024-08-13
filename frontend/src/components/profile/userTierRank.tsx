@@ -105,6 +105,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
   const imageSrc = tierImages[tierKey];
   const tierName = formatTierName(tierKey);
   const expToNextTier = getExpToNextTier(userExpInfo?.currentExp || 0);
+  const isMaxTier = (userExpInfo?.currentExp || 0) >= 5000;
 
   const isHorizontal = layout === 'horizontal';
 
@@ -174,9 +175,11 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
           </Typography>
         </Box>
         <Box>
-          {!isHorizontal && expToNextTier !== null && (
-              <Typography variant="body2" color="text.secondary">
-                {`다음 티어까지: ${expToNextTier} EXP`}
+          {!isHorizontal && (
+              <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+                {isMaxTier 
+                  ? "최고 티어입니다"
+                  : expToNextTier !== null ? `Next: ${expToNextTier} EXP` : ""}
               </Typography>
             )}
         </Box>
