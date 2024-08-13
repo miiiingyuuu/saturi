@@ -3,6 +3,7 @@
 import { pink } from '@mui/material/colors';
 import { IMessage } from "@stomp/stompjs";
 import useConnect from "@/hooks/useConnect";
+import LogoutIcon from "@mui/icons-material/Logout";
 import SendIcon from "@mui/icons-material/Send";
 import { handleValueChange } from "@/utils/utils";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -398,35 +399,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         }}
       >
         <Container maxWidth="lg" sx={{ height: '100%' }}>
-          {/* 게임 타이머 */}
-          {/* <Box */}
-          {/*   sx={{ */}
-          {/*     position: 'absolute', */}
-          {/*     top: 0, */}
-          {/*     left: 0, */}
-          {/*     right: 0, */}
-          {/*     height: '8vh', */}
-          {/*     display: 'flex', */}
-          {/*     justifyContent: 'center', */}
-          {/*     alignItems: 'center', */}
-          {/*     backgroundColor: 'rgba(255, 255, 255, 0.8)', */}
-          {/*     borderBottom: '1px solid #ddd', */}
-          {/*   }} */}
-          {/* > */}
-          {/*   {quizTimer} */}
-          {/* </Box> */}
-          <Button
-            sx={{
-              color: pink[500],
-            }}
-            onClick={() => {
-              if(confirm("반복적인 중도 퇴장 시 제재를 받으실 수 있습니다. \n나가시겠습니까?")) {
-                router.replace("/")
-              }
-            }}
-          >
-            나가기
-          </Button>
           {/* 문제와 관련된 부분 */}
           <Box
             sx={{
@@ -702,11 +674,23 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           />
           <Button
             variant="contained"
-            color="primary"
-            onClick={() => sendMessage(` ${chat}`, setChat)}
-            sx={{ ml: 1 }}
+            onClick={() => {
+              if(confirm("반복적인 중도 퇴장 시 제재를 받으실 수 있습니다. \n나가시겠습니까?")) {
+                router.replace("/")
+              }
+            }}
+            sx={{
+              ml: 1,
+              bgcolor: pink[500],
+              '&:hover' : {
+                bgcolor: pink[600],
+              },
+              '&:active' : {
+                bgcolor: pink[700],
+              }
+            }}
           >
-            <SendIcon />
+            <LogoutIcon />
           </Button>
         </Box>
       </Box>

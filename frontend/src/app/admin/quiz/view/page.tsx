@@ -1,5 +1,4 @@
-
-"use client"
+"use client";
 
 import {
   Table,
@@ -11,15 +10,25 @@ import {
   AccordionDetails,
   Typography,
   TableRow,
-  TableCell, Button, Checkbox, checkboxClasses, List, ListSubheader, ListItemText, ListItem, Box,
+  TableCell,
+  Button,
+  Checkbox,
+  checkboxClasses,
+  List,
+  ListSubheader,
+  ListItemText,
+  ListItem,
+  Box,
+  TablePagination,
 } from "@mui/material";
 import api from "@/lib/axios";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import useTableSort from "@/hooks/useTableSort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SortableTableHead from "@/components/SortableTableHead";
-import { styled } from "@mui/material/styles"
+import { styled } from "@mui/material/styles";
+
 interface QuizProps {
   quizId: number;
   locationId: number;
@@ -50,54 +59,65 @@ const headCells: HeadCell[] = [
 
 const CustomCheckbox = styled(Checkbox)(({ theme }) => ({
   [`&.${checkboxClasses.root}`]: {
-    color: theme.palette.primary.main, // 기본 색상
-    '&.Mui-checked': {
-      color: theme.palette.primary.dark, // 체크된 상태의 색상
+    color: theme.palette.primary.main,
+    "&.Mui-checked": {
+      color: theme.palette.primary.dark,
     },
-    '&.Mui-disabled': {
-      color: theme.palette.primary.light, // 비활성화된 상태의 색상
+    "&.Mui-disabled": {
+      color: theme.palette.primary.light,
     },
   },
   [`& .${checkboxClasses.disabled}`]: {
-    color: theme.palette.primary.light, // 비활성화된 체크박스의 색상
+    color: theme.palette.primary.light,
   },
 }));
 
-
-
-
 export default function App() {
-  const router = useRouter()
-  const [ items, setItems] = useState<QuizProps[]>([]);
+  const router = useRouter();
+  const [items, setItems] = useState<QuizProps[]>([]);
   const { rows, order, orderBy, onRequestSort } = useTableSort<QuizProps>(items, "quizId");
 
-  // 아코디언 클릭 시 추가 데이터를 가져오는 함수
+  // Pagination 관련 상태
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // 페이지 변경 핸들러
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  // 페이지 당 행 수 변경 핸들러
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   function fetchDetail(quizId: number) {
-    api.get<QuizProps>(`/admin/game/quiz/${quizId}`)
-      .then(response => {
-        const updatedItems = items.map((item) =>
-        item.quizId === quizId ? {...item, choiceList: response.data.choiceList} : item
-        )
-        setItems(updatedItems);
-      })
+    api.get<QuizProps>(`/admin/game/quiz/${quizId}`).then((response) => {
+      const updatedItems = items.map((item) =>
+        item.quizId === quizId ? { ...item, choiceList: response.data.choiceList } : item
+      );
+      setItems(updatedItems);
+    });
   }
 
   function handleEdit(quizId: number) {
-    router.push(`/admin/quiz/edit/${quizId}`)
+    router.push(`/admin/quiz/edit/${quizId}`);
   }
 
   function handleDelete(quizId: number) {
-    api.delete(`/admin/game/quiz/${quizId}`)
-      .then(() => {
-        alert("삭제되었습니다.")
-        setItems(items.filter(item => item.quizId !== quizId));
-      })
+    api.delete(`/admin/game/quiz/${quizId}`).then(() => {
+      alert("삭제되었습니다.");
+      setItems(items.filter((item) => item.quizId !== quizId));
+    });
   }
 
   useEffect(() => {
-    api.get("/admin/game/quiz")
-      .then((response) => setItems(response.data));
+    api.get("/admin/game/quiz").then((response) => setItems(response.data));
   }, []);
+
+  // 현재 페이지에 표시할 행 계산
+  const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <TableContainer component={Paper}>
@@ -109,7 +129,7 @@ export default function App() {
           headCells={headCells}
         />
         <TableBody>
-          {rows.map((row) => (
+          {displayedRows.map((row) => (
             <TableRow key={row.quizId}>
               <TableCell>{row.quizId}</TableCell>
               <TableCell>{row.locationId}</TableCell>
@@ -132,42 +152,31 @@ export default function App() {
                         </ListSubheader>
                       }
                     >
-                    {row.choiceList ? (
-                      row.choiceList.map((choice) => (
-                            <ListItem disablePadding key={choice.choiceId}>
-                              <CustomCheckbox
-                                disabled
-                                checked={choice.isAnswer}
-                              />
-                              <ListItemText primary={`${choice.choiceId}번 : ${choice.content}`} />
-                            </ListItem>
-                      ))
-                    ) : (
-                      <Typography>로딩 중...</Typography>
-                    )}
-
+                      {row.choiceList ? (
+                        row.choiceList.map((choice) => (
+                          <ListItem disablePadding key={choice.choiceId}>
+                            <CustomCheckbox disabled checked={choice.isAnswer} />
+                            <ListItemText primary={`${choice.choiceId}번 : ${choice.content}`} />
+                          </ListItem>
+                        ))
+                      ) : (
+                        <Typography>로딩 중...</Typography>
+                      )}
                     </List>
                     <Box
                       sx={{
                         display: "flex",
                         justifyContent: "center",
-                        gap :1,
-                        mt :2,
+                        gap: 1,
+                        mt: 2,
                       }}
                     >
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={() => handleEdit(row.quizId)}
-                    >
-                      수정
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() => handleDelete(row.quizId)}
-                    >
-                      삭제
-                    </Button>
+                      <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
+                        수정
+                      </Button>
+                      <Button variant="contained" onClick={() => handleDelete(row.quizId)}>
+                        삭제
+                      </Button>
                     </Box>
                   </AccordionDetails>
                 </Accordion>
@@ -176,6 +185,16 @@ export default function App() {
           ))}
         </TableBody>
       </Table>
+
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
     </TableContainer>
   );
 }
