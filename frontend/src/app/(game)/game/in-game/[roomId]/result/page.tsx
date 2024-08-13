@@ -20,6 +20,7 @@ interface RankProps {
 export default function Result({ params: { roomId } }: RoomIdProps) {
     const [currentStep, setCurrentStep] = useState(1);
     const [ ranks, setRanks ] = useState<RankProps[]>([])
+    const [ me, setMe ] = useState(0)
     const [ myRank, setMyRank ] = useState<RankProps>({
       rank: 0,
       birdId: 0,
@@ -43,21 +44,27 @@ export default function Result({ params: { roomId } }: RoomIdProps) {
           .then(response => {
               setRanks(response.data)
               setMyRank(response.data.filter((rank: RankProps) => rank.user)[0])
+              setMe(response.data.filter((rank: RankProps) => rank.user)[0].rank)
             })
     }, []);
 
     return(
         <Box
-        sx={{        
+        style={{
+            position:"relative",
+            overflow:"hidden",
             backgroundColor: "#f3f4f6",        
             height:"90vh",
+            width:"100%",
             minHeight:"700px",
         }}>
-            <Container maxWidth="lg" >
+            <Container 
+                maxWidth="lg">
                 <FirstResult
                     currentStep = {currentStep}
                     nextstep = {nextstep}
                     ranks = {ranks}
+                    me = {me}
                 />
                 <SecondResult
                     currentStep = {currentStep}

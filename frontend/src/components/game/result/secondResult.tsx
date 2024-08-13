@@ -1,4 +1,5 @@
 import { Box, Container, Card, LinearProgress, Button, Typography } from "@mui/material";
+import { useRouter } from 'next/navigation';
 import "@/styles/home/main/mainPage.css";
 
 
@@ -24,7 +25,45 @@ export default function SecondResult({
 
   // 마음대로 변경 가능
   const progress = 50
+  const router = useRouter();
   const { rank, birdId, nickName, ansCount, earnedExp, exp, user } = myRank
+
+
+
+  // 티어 이미지 파트
+  const tierImages = {
+    stone: "/tier/stone1.gif",
+    bronze: "/tier/bronze1.gif",
+    silver: "/tier/silver1.gif",
+    gold: "/tier/gold1.gif",
+    sapphire: "/tier/sapphire1.gif",
+    platinum: "/tier/platinum1.gif",
+    diamond: "/tier/diamond1.gif",
+  };
+  type TierKey = keyof typeof tierImages;
+  const getTierFromExp = (exp: number): TierKey => {
+    if (exp === 0) return "stone";
+    if (exp < 100) return "bronze";
+    if (exp < 500) return "silver";
+    if (exp < 1500) return "gold";
+    if (exp < 3000) return "platinum";
+    if (exp < 5000) return "sapphire";
+    return "diamond";
+  };
+  const tierKey = getTierFromExp( exp+earnedExp );
+  const imageSrc = tierImages[tierKey];
+
+
+  const handleAgain = () => {
+    //지역값을 받아와서 router.push를 해야 할 것 같은데 
+  }
+
+  const handleHome = () => {
+    router.push(
+      `/main`
+    );
+  }
+
 
   return(
     <Container
@@ -65,7 +104,7 @@ export default function SecondResult({
                 }}>
                 <Box
                     component="img"
-                    src = {myRank? `/mini_profile/${myRank.birdId}.png` : undefined }
+                    src = {myRank? imageSrc : undefined }
                     alt = "profile"
                     sx={{
                         width:"100px"
@@ -93,7 +132,7 @@ export default function SecondResult({
               sx={{
               textAlign:"center",
             }}>
-              +20
+              +{earnedExp} Exp
             </Typography>
 
         </Card>
@@ -114,6 +153,7 @@ export default function SecondResult({
                 <Button
                   className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
                   variant="contained"
+                  onClick={handleAgain}
                   sx={{
                     backgroundColor:"success.light",
                     '&:hover': { backgroundColor: 'green' },
@@ -125,6 +165,7 @@ export default function SecondResult({
                 <Button
                   className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
                   variant="contained"
+                  onClick={handleHome}
                   sx={{
                     backgroundColor:"success.light",
                     '&:hover': { backgroundColor: 'green' },

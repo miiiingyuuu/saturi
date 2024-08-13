@@ -54,8 +54,9 @@ public class AdminLessonRepository {
                 .where(
                         lessonGroupIdEq(qLesson, lessonGroupId),
                         locationIdEq(qLesson, locationId),
-                        lessonCategoryIdEq(qLesson, lessonCategoryId)
-                ).limit(1000)
+                        lessonCategoryIdEq(qLesson, lessonCategoryId),
+                        qLesson.isDeleted.eq(false)
+                )
                 .fetch()
         );
     }
