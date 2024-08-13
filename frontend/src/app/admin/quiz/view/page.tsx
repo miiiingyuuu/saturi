@@ -19,7 +19,7 @@ import {
   ListItemText,
   ListItem,
   Box,
-  TablePagination,
+  TablePagination, TextField, Container,
 } from "@mui/material";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
@@ -45,16 +45,17 @@ interface Choice {
 }
 
 type HeadCell = {
-  id: keyof QuizProps;
+  id: keyof QuizProps | "actions";
   label: string;
 };
 
 const headCells: HeadCell[] = [
   { id: "quizId", label: "Id" },
   { id: "locationId", label: "지역" },
-  { id: "creationDt", label: "생성일" },
   { id: "isObjective", label: "문제 타입" },
   { id: "question", label: "문제" },
+  { id: "creationDt", label: "생성일" },
+  { id: "actions", label: ""}
 ];
 
 const CustomCheckbox = styled(Checkbox)(({ theme }) => ({
@@ -76,7 +77,15 @@ export default function App() {
   const router = useRouter();
   const [items, setItems] = useState<QuizProps[]>([]);
   const { rows, order, orderBy, onRequestSort } = useTableSort<QuizProps>(items, "quizId");
-
+  const [filters, setFilters] = useState({
+    quizId: "",
+    locationId: "",
+    question: "",
+    isObjective: "",
+  });
+  function handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setFilters({ ...filters, [event.target.name]: event.target.value });
+  };
   // Pagination 관련 상태
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -87,7 +96,7 @@ export default function App() {
   };
 
   // 페이지 당 행 수 변경 핸들러
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement>) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -119,7 +128,50 @@ export default function App() {
   // 현재 페이지에 표시할 행 계산
   const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+  function fetchReports() {
+      const queryParams = new URLSearchParams(
+        Object.entries(filters).filter(([_, value]) => value !== '')
+      ).toString();
+
+      api.get(`/admin/claim/user?${queryParams}`)
+        .then((response) => {
+          setItems(response.data)
+        })
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
   return (
+    <Container>
+    <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <TextField
+        name="quizId"
+        label="퀴즈 Id"
+        value={filters.quizId}
+        onChange={handleFilterChange}
+      />
+      <TextField
+        name="locationId"
+        label="지역 Id"
+        value={filters.locationId}
+        onChange={handleFilterChange}
+      />
+      <TextField
+        name="question"
+        label="문제"
+        value={filters.question}
+        onChange={handleFilterChange}
+      />
+      <TextField
+        name="isObjective"
+        label="객관식"
+        value={filters.isObjective}
+        onChange={handleFilterChange}
+      />
+      <Button variant="contained" onClick={fetchReports}>검색</Button>
+    </Box>
     <TableContainer component={Paper}>
       <Table>
         <SortableTableHead
@@ -131,11 +183,10 @@ export default function App() {
         <TableBody>
           {displayedRows.map((row) => (
             <TableRow key={row.quizId}>
-              <TableCell>{row.quizId}</TableCell>
-              <TableCell>{row.locationId}</TableCell>
-              <TableCell>{row.creationDt}</TableCell>
-              <TableCell>{row.isObjective ? "객관식" : "주관식"}</TableCell>
-              <TableCell>
+              <TableCell className="w-1/12">{row.quizId}</TableCell>
+              <TableCell className="w-1/12">{row.locationId}</TableCell>
+              <TableCell className="w-1/12">{row.isObjective ? "객관식" : "주관식"}</TableCell>
+              <TableCell className="w-5/12">
                 <Accordion>
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -171,15 +222,18 @@ export default function App() {
                         mt: 2,
                       }}
                     >
-                      <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
-                        수정
-                      </Button>
-                      <Button variant="contained" onClick={() => handleDelete(row.quizId)}>
-                        삭제
-                      </Button>
                     </Box>
                   </AccordionDetails>
                 </Accordion>
+              </TableCell>
+              <TableCell className="w-2/12">{row.creationDt}.slice(0,10)</TableCell>
+              <TableCell className="w-2/12">
+                <Button variant="contained" color="success" onClick={() => handleEdit(row.quizId)}>
+                  수정
+                </Button>
+                <Button variant="contained" onClick={() => handleDelete(row.quizId)}>
+                  삭제
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -194,7 +248,9 @@ export default function App() {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage="페이지 당 항목 수: "
       />
     </TableContainer>
+    </Container>
   );
 }
