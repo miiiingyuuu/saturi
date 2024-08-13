@@ -36,6 +36,7 @@ import {
 } from "@mui/icons-material";
 import useLogout from "@/hooks/useLogout";
 import Image from 'next/image';
+import api from "@/lib/axios";
 
 const drawerWidth: number = 240;
 
@@ -124,18 +125,25 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
     if (birdId) {
       setProfileImageUrl(`/mini_profile/${birdId}.png`);
     }
-    
-    setIsLoading(true)
-    switch (true) {
-      case getCookie("role") !== "ADMIN":
-        router.push("/");
-        break;
-      case sessionStorage?.getItem("adminToken") !== process.env.NEXT_PUBLIC_ADMIN_TOKEN:
-        router.push("/admin/auth");
-        break;
-      default:
-        setIsLoading(false);
-    }
+    api.get("/user/auth/profile")
+      .then(response => {
+        if (response.data.role !== "ADMIN") {
+          router.push("/")
+        } else {
+          setIsLoading(false)
+        }
+      })
+
+    // switch (true) {
+    //   case getCookie("role") !== "ADMIN":
+    //     router.push("/");
+    //     break;
+    //   case sessionStorage?.getItem("adminToken") !== process.env.NEXT_PUBLIC_ADMIN_TOKEN:
+    //     router.push("/admin/auth");
+    //     break;
+    //   default:
+    //     setIsLoading(false);
+    // }
   }, [router]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
