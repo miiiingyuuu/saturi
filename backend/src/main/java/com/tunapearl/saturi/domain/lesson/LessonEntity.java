@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -47,5 +48,16 @@ public class LessonEntity {
     public void setLessonGroup(LessonGroupEntity lessonGroup) {
         this.lessonGroup = lessonGroup;
         lessonGroup.getLessons().add(this);
+    }
+
+    public void deleteLessonGroup(Long lessonId) {
+        List<LessonEntity> lessons = lessonGroup.getLessons();
+        for (LessonEntity lesson : lessons) {
+            if(lesson.getLessonId().equals(lessonId)) {
+                lessons.remove(lesson);
+                break;
+            }
+        }
+        this.lessonGroup = null;
     }
 }

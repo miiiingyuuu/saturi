@@ -11,8 +11,8 @@ import java.util.List;
 public class SaveLessonGraphResponseDTO {
     private int voiceSimilarity;
     private int scriptSimilarity;
-    private List<Double> answerVoicePitch;
-    private List<Double> userVoicePitch;
-    private List<Double> userVoiceTime;
+    private String answerVoicePitch;
+    private String userVoicePitch;
+    private String userVoiceTime;
     private String userScript;
 }

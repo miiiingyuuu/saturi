@@ -57,7 +57,7 @@ public class AdminLessonService {
         if(lessons != null && lessons.size() >= 5) {
             throw new AlreadyMaxSizeException();
         }
-        String fitch = getFileGraph(fileName);
+        String fitch = getFileGraph(fileName, script);
 
         LessonEntity lesson = new LessonEntity();
         lesson.setLessonGroup(lessonGroup);
@@ -69,14 +69,15 @@ public class AdminLessonService {
         return adminLessonRepository.saveLesson(lesson);
     }
 
-    private static String getFileGraph(String fileName) {
+    private static String getFileGraph(String fileName, String script) {
         // 정답 음성 파형 저장을 위한 http 통신(RestTemplate, WebClient 중 전자 선택 -> 간단한 요청이라서)
         RestTemplate restTemplate = new RestTemplate();
 
         // json data
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("answerVoiceFileName", fileName);
-        requestBody.put("UserVoiceFileName", fileName); // 장고의 api가 이렇게 두개의 파일이름을 보내는 것 뿐이라 똑같은 파일이름을 보냄
+        requestBody.put("userVoiceFileName", fileName); // 장고의 api가 이렇게 두개의 파일이름을 보내는 것 뿐이라 똑같은 파일이름을 보냄
+        requestBody.put("answerScript", script);
 
         // 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
@@ -91,14 +92,16 @@ public class AdminLessonService {
 
         // 응답 처리
         if(response.getStatusCode().is2xxSuccessful()) {
-            List<Double> voicePitch = response.getBody().getAnswerVoicePitch();
+            String voicePitch = response.getBody().getAnswerVoicePitch();
+
             if(voicePitch == null) throw new RuntimeException("파형 정보를 불러올 수 없습니다");
-            return voicePitch.toString();
+            return voicePitch;
         } else {
             throw new IllegalArgumentException("파일 저장에 문제가 발생하였습니다");
         }
     }
 
+    @Transactional
     public void updateLesson(Long lessonId, Long lessonGroupId, String script, String storeFileName) {
         List<LessonEntity> allByLessonGroupId = lessonService.findAllByLessonGroupId(lessonGroupId);
         LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
@@ -107,16 +110,17 @@ public class AdminLessonService {
         lesson.setScript(script);
 
         if(storeFileName != null) {
-            String voicePitch = getFileGraph(storeFileName);
+            String voicePitch = getFileGraph(storeFileName, script);
             lesson.setSampleVoicePath(storeFileName);
             lesson.setGraphY(voicePitch);
         }
         lesson.setLastUpdateDt(LocalDateTime.now());
     }
 
+    @Transactional
     public void deleteLesson(Long lessonId) {
         LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
-        findLesson.setLessonGroup(null);
+        findLesson.deleteLessonGroup(lessonId);
         findLesson.setIsDeleted(true);
         findLesson.setLastUpdateDt(LocalDateTime.now());
     }
