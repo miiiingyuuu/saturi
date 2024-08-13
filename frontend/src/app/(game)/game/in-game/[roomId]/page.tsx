@@ -380,18 +380,27 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             {/* 중요파트 */}
             {quizTimer}
             {!isStart ? (
-              <Typography
-                component="h1"
-                variant="h5"
-                sx={{
-                  display:"flex",
-                  justifyContent:"center",
-                  alignItems:"center",
-                  height:"100%",
-                }}
-              >
-                팁: {tips[currentTipIndex]?.content}
-              </Typography>
+                <Box 
+                  sx={{
+                    display:"flex",
+                    justifyContent:"center",
+                    alignItems:"center", 
+                    opacity:"0.5",
+                    height:"100%",
+                }}>
+                  <Typography
+                    component="h1"
+                    variant="h5"
+                    sx={{
+                      backgroundColor:"whitesmoke",                   
+                      padding:"30px",
+                      borderRadius:"15px",
+                      
+                    }}
+                  >
+                    팁: {tips[currentTipIndex]?.content}
+                  </Typography>
+                </Box>
             ) : (
               <>
                 {(isSubmitted || isAnswerTime) && (
