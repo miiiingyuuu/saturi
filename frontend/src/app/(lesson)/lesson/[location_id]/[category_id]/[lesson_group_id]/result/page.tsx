@@ -94,7 +94,7 @@ export default function LessonResultPage() {
 
     
     <Box 
-      className="flex flex-col items-center justify-center p-4 bg-gray-100" 
+      className="flex flex-col items-center justify-center p-4"
       sx={{
         position:"relative",
         overflow:"hidden",

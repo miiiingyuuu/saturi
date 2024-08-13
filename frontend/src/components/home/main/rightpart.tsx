@@ -49,7 +49,6 @@ export default function RightPart({selectedRegion} : RightPartProps) {
       className="rightpart" 
       sx={{ 
         position: "absolute",
-        backgroundColor: "#f3f4f6",
         width: "100%",
         minHeight: "700px",
         height: "90vh",
