@@ -47,15 +47,15 @@ export default function RightPart({selectedRegion} : RightPartProps) {
   return (
     <Box 
       className="rightpart" 
-      sx={{ 
+      style={{ 
         minHeight: "700px",
         height: "90vh",
         display:"flex",
         alignItems:"center",
         left: (() => {
           if (selectedRegion !== "_" && selectedRegion !== "준비중입니다") {
-            return "130%";
-          } return "95%";              
+            return "95%";
+          } return "130%";              
         })(),
     }}>
       <Card 

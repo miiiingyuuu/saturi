@@ -66,7 +66,11 @@ export default function FirstResult({
       })()
     }}>
     <Box
-      className="flex flex-col bg-white rounded-lg shadow-lg w-full max-w-4xl"
+      className="flex flex-col bg-white w-full max-w-4xl"
+      sx={{
+        border:"6px solid #4b2921",
+        borderRadius:"30px",
+      }}
 
     >
       {/* 라벨 부분 */}

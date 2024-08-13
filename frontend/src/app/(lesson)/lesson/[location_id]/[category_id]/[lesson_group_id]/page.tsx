@@ -392,8 +392,8 @@ export default function LessonPage() {
           minHeight: "560px",
           maxHeight: "700px",
           minWidth:"1100px",
-          border: "3px solid lightgray",
-          borderRadius: "15px",
+          border:"6px solid #4b2921",
+          borderRadius: "30px",
           padding: "15px",
           position: "relative", // Allow absolute positioning inside the card
         }}

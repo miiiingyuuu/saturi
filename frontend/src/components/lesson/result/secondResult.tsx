@@ -208,7 +208,12 @@ export default function SecondResult({
         })(),
       }}
     >
-      <Box className="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto p-6">
+      <Box 
+        className="bg-white w-full max-w-4xl mx-auto p-6" 
+        sx={{
+          border:"6px solid #4b2921",
+          borderRadius:"30px",
+      }}>
         <Box className="flex items-center m-5">
           <Image
             src={imageSrc}

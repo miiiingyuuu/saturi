@@ -54,11 +54,12 @@ export default function firstResult({
             aspectRatio: "1.1 / 1",
             height: "75vh",
             minHeight: "560px",
-            borderRadius: "15px",
+            border:"6px solid #4b2921",
+            borderRadius: "30px",
           }}>
           {/* 등수 표시 */}
           <Box sx={{
-            height:"10%",
+            height:"13%",            
             display:"flex",
             justifyContent:"center",
             alignItems:"center",
@@ -66,8 +67,9 @@ export default function firstResult({
             padding:"3px",
           }}>
             <Typography 
-              variant="h4"
               sx={{
+                fontSize:"32px",
+                fontWeight:"bold",
                 textAlign:"center",                
                 margin: "10px",      
             }}> 당신은 {me}등입니다! </Typography>
@@ -77,7 +79,7 @@ export default function firstResult({
           <Box 
             sx={{
               overflow:"hidden",
-              height:"90%",
+              height:"87%",
               display:"flex",
               flexDirection:"column",
               justifyContent:"space-around",
