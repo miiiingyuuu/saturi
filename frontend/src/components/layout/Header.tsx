@@ -97,7 +97,8 @@ export default function Header() {
           alt = "SSLogo"
           onClick={handleLogoClick}
           sx={{
-            width:"100px"
+            width:"100px",
+            mt: 3,
         }}/>          
         <div className="flex items-center">
           {isAuthChecked ? (

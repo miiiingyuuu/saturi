@@ -2,16 +2,13 @@
 
 import "@/styles/globals.css";
 import localFont from "next/font/local"
-import { ReactNode , useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { createTheme } from "@mui/material";
-import { ThemeProvider } from "@emotion/react";
+import { createTheme, ThemeProvider, Box } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation"
 import { authToken } from "@/utils/authutils";
-
-
 
 const mainFont = localFont({
   src: "./test.ttf"
@@ -29,22 +26,23 @@ const theme = createTheme({
 export default function RootLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
+  
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("accessToken")) {
       authToken()
     }
-  },[router])
+  }, [router])
 
-  
-  if (pathname && ( pathname.startsWith("/admin") || (pathname.startsWith("/game") && !(pathname.includes("/in-game/") && pathname.endsWith("/result"))))) {
+  const isSpecialPage = pathname && (
+    pathname.startsWith("/admin") || 
+    (pathname.startsWith("/game") && !(pathname.includes("/in-game/") && pathname.endsWith("/result")))
+  );
+
+  if (isSpecialPage) {
     return (
       <html lang="ko">
-        <body
-          className={mainFont.className}
-        >
-          <main>
-            {children}
-          </main>
+        <body className={mainFont.className}>
+          <main>{children}</main>
         </body>
       </html>
     )
@@ -52,17 +50,34 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="ko">
-      <body
-        className={`${mainFont.className} bg-gray-100`}
-      >
+      <body className={`${mainFont.className} bg-gray-100`}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <Header />
-            <main
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100vh',
+            }}
+          >
+            <Header />
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+                py: 4,
+                px: 2,
+              }}
               className={mainFont.className}
-            >{children}</main>
-          <Footer />
+            >
+              {children}
+            </Box>
+            <Box sx={{ mt: 'auto' }}>
+              <Footer />
+            </Box>
+          </Box>
         </ThemeProvider>
       </body>
     </html>
-  )}
+  )
+}

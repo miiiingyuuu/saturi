@@ -46,24 +46,24 @@ interface ProfileUpdateData {
 
 // 선택지들
 const profileImages = [
-  { id: 1, src: '/main_profile/1.png' },
-  { id: 2, src: '/main_profile/2.png' },
-  { id: 3, src: '/main_profile/3.png' },
-  { id: 4, src: '/main_profile/4.png' },
-  { id: 5, src: '/main_profile/5.png' },
-  { id: 6, src: '/main_profile/6.png' },
-  { id: 7, src: '/main_profile/7.png' },
-  { id: 8, src: '/main_profile/8.png' },
-  { id: 9, src: '/main_profile/9.png' },
-  { id: 10, src: '/main_profile/10.png' },
-  { id: 11, src: '/main_profile/11.png' },
-  { id: 12, src: '/main_profile/12.png' },
-  { id: 13, src: '/main_profile/13.png' },
-  { id: 14, src: '/main_profile/14.png' },
-  { id: 15, src: '/main_profile/15.png' },
-  { id: 16, src: '/main_profile/16.png' },
-  { id: 17, src: '/main_profile/17.png' },
-  { id: 18, src: '/main_profile/18.png' },
+  { id: 1, src: '/main_profile/1.png', name: '광부무새'},
+  { id: 2, src: '/main_profile/2.png', name: '은행원무새' },
+  { id: 3, src: '/main_profile/3.png', name: '어릿광대무새' },
+  { id: 4, src: '/main_profile/4.png', name: '선원무새' },
+  { id: 5, src: '/main_profile/5.png', name: '갑판원무새' },
+  { id: 6, src: '/main_profile/6.png', name: '악의수장무새' },
+  { id: 7, src: '/main_profile/7.png', name: '총기병무새' },
+  { id: 8, src: '/main_profile/8.png', name: '살인마무새' },
+  { id: 9, src: '/main_profile/9.png', name: '잡화상무새' },
+  { id: 10, src: '/main_profile/10.png', name: '요원무새' },
+  { id: 11, src: '/main_profile/11.png', name: '석유부자무새' },
+  { id: 12, src: '/main_profile/12.png', name: '빨간머리무새' },
+  { id: 13, src: '/main_profile/13.png', name: '정찰대무새' },
+  { id: 14, src: '/main_profile/14.png', name: '비밀결사무세' },
+  { id: 15, src: '/main_profile/15.png', name: '쇼호스트무새' },
+  { id: 16, src: '/main_profile/16.png', name: '용병무새' },
+  { id: 17, src: '/main_profile/17.png', name: '기관사무세' },
+  { id: 18, src: '/main_profile/18.png', name: '삼총사무새'},
 ];
 
 
@@ -97,7 +97,7 @@ const getFormattedLocationId = (locationId: number): string => {
   switch (locationId) {
     case 1: return '정보 입력 안함';
     case 2: return '경상도';
-    case 3: return '경기도';
+    case 3: return '서울/경기';
     case 4: return '강원도';
     case 5: return '충청도';
     case 6: return '전라도';
@@ -273,7 +273,15 @@ export default function EditProfilePage() {
             <Avatar
               alt="profile image"
               src={`/main_profile/${userProfile.birdId}.png`}
-              sx={{ width: 150, height: 150 }}
+              sx={{
+                width: 150,
+                height: 150,
+                cursor: 'pointer', // 마우스 커서를 포인터로 변경
+                '&:hover': {
+                  opacity: 0.8, // 호버 시 약간 투명해지는 효과 (선택사항)
+                  boxShadow: 3,
+                }
+              }}
               onClick={handleImageClick}
             />
           }
@@ -313,7 +321,7 @@ export default function EditProfilePage() {
                   </Grid>
                 </Grid>
               </Box>
-              <Typography sx= {{ fontSize: '11px', color: 'red', ml: 1 }}>닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
+              <Typography sx= {{ fontSize: '11px', color: 'blue', ml: 1 }}> * 닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
               <p className="text-default-500" style={{ fontSize: '20px' }}>{userProfile.email}</p>
@@ -355,15 +363,27 @@ export default function EditProfilePage() {
       <Dialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)}>
         <DialogTitle textAlign="center" fontWeight="bold">프로필 이미지를 선택하세요!</DialogTitle>
         <DialogContent sx={{ alignItems: 'center' }}>
-          <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Grid container spacing={3} justifyContent='center' alignItems="center">
             {profileImages.map((img) => (
-              <Grid item key={img.id} xs={4}>
+              <Grid item key={img.id} xs={4} 
+                sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Avatar
                   src={img.src}
                   alt={`Profile ${img.id}`}
-                  sx={{ width: 100, height: 100, cursor: 'pointer' }}
+                  sx={{ 
+                    width: 100, 
+                    height: 100, 
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      boxShadow: 3,
+                    }
+                  }}
                   onClick={() => handleImageSelect(img.id)}
                 />
+                <Typography variant="subtitle1" mt={1}>
+                  {img.name}
+                </Typography>
               </Grid>
             ))}
           </Grid>

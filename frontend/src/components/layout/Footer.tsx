@@ -1,25 +1,63 @@
+import React from 'react';
 import Image from "next/image";
-import {Box} from "@mui/material";
+import { Box, Typography, Button, Grid } from "@mui/material";
+import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer 
-      className="text-gray-400 text-center"
-    >
-      <Box className="flex flex-col items-center bg-gray-100">
-        <Image
-          src="/SSLogo.png" 
-          width={100} 
-          height={66.67} 
-          alt="SSLogo" 
-          className="mb-2.5 mt-10"
-        />
-        <Box className="flex gap-5 mt-2.5">
-          <a href="/" className="text-gray-400 hover:underline">Home</a>
-          <a href="/about" className="text-gray-400 hover:underline">About</a>
-          <a href="/contact" className="text-gray-400 hover:underline">Contact</a>
-        </Box>
-        <p className="mt-2.5">&copy; 2024 My Next.js App. All rights reserved.</p>
+    <footer className="bg-gray-100 py-4">
+      <Box className="container mx-auto px-4">
+        <Grid container alignItems="center" justifyContent="space-between">
+          {/* 왼쪽: 저작권 정보 */}
+          <Grid item xs={12} md={3}>
+            <Box className="flex flex-col justify-center h-full">
+              <Typography variant="body2" className="text-gray-600">
+                사투리가 서툴러유
+              </Typography>
+              <Typography variant="body2" className="text-gray-600">
+                © 2024 All rights reserved.
+              </Typography>
+            </Box>
+          </Grid>
+
+          {/* 중앙: 로고와 버튼들 */}
+          <Grid item xs={12} md={6}>
+            <Box className="flex flex-col items-center">
+              <Image
+                src="/SSLogo.png" 
+                width={100} 
+                height={66.67} 
+                alt="SSLogo" 
+              />
+              <Box className="flex gap-2">
+                <Link href="/" passHref>
+                  <Button variant="text" color="primary" size="small">Home</Button>
+                </Link>
+                <Link href="/register" passHref>
+                  <Button variant="text" color="primary" size="small">SignUP</Button>
+                </Link>
+                <Link href="/login" passHref>
+                  <Button variant="text" color="primary" size="small">LogIn</Button>
+                </Link>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* 오른쪽: 팀 정보 */}
+          <Grid item xs={12} md={3}>
+            <Box className="flex flex-col justify-center h-full items-end">
+              <Typography variant="body2" className="text-gray-600 text-right mb-1">
+                Team 사조참치에펄추가
+              </Typography>
+              <Typography variant="body2" className="text-gray-600 text-right">
+                BackEnd 이진주 하재훈 허동원
+              </Typography>
+              <Typography variant="body2" className="text-gray-600 text-right">
+                FrontEnd 박동현 박민규 허태훈
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
     </footer>
   );

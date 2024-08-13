@@ -10,16 +10,6 @@ import { useEffect, useState } from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { styled } from '@mui/system'
 
-const ContentContainer = styled(Box)({
-  position: 'relative',
-  zIndex: 1,
-  color: 'white',
-  padding: '2rem',
-  maxWidth: '1200px',
-  margin: '0 auto',
-});
-
-
 const AnimatedText: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
   const [ref, isVisible] = useIntersectionObserver({ threshold: 0.1 });
 
@@ -67,7 +57,17 @@ export default function Start() {
         margin: '0 auto',
         padding: '0 20px',
       }}>
-        <main className="flex flex-col items-center text-center my-[150px] text-black w-full">
+        <main
+          className="flex flex-col items-center text-center mb-[150px] text-black w-full"
+          style={{
+            background: `
+              linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgb(243, 244, 246) 100%),
+              url('/background1.webp') no-repeat center center / cover
+            `,
+            minHeight: '66vh',
+            paddingTop: '50px',
+          }}
+          >
           <Box className="content w-full">
             <AnimatedText delay={0}>
               <Typography variant="h1" className="text-5xl m-0">
@@ -97,7 +97,7 @@ export default function Start() {
                     padding: '5px 15px',
                   }}
                 >
-                  회원 가입
+                  시작하기
                 </Button>
               </Link>
             </AnimatedText>
@@ -213,7 +213,7 @@ export default function Start() {
               padding: '5px 15px',
             }}
           >
-            회원 가입
+            시작하기
           </Button>
         </Link>
       </Box>
@@ -232,7 +232,7 @@ export default function Start() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>
-              사투리가 서툴러유는 실시간 녹음을 통해 발음 정확도와 억양 유사도를 분석하여 사투리와 얼마나 유사한지 보여줍니다. 또한 실시간 채팅 게임을 통해 다른 사람들과 경쟁을 해보세요.
+              사투리가 서툴러유는 실시간 녹음을 통해 발음 정확도와 억양 유사도를 분석하여 사투리와 얼마나 유사한지 보여줍니다. 또한 실시간 스피드 퀴즈 게임을 통해 다른 사람들과 경쟁을 해보세요.
             </Typography>
           </AccordionDetails>
         </Accordion>
