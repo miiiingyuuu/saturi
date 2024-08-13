@@ -377,9 +377,7 @@ public class UserService {
             return new UserContinuousLearnDayDTO(0L, new ArrayList<Integer>(), weekAndMonth);
         }
 
-        List<LessonResultEntity> lessonResults = new ArrayList<>();
-
-        lessonResults.addAll(findLessonResult);
+        List<LessonResultEntity> lessonResults = new ArrayList<>(findLessonResult);
 
         // 레슨 학습 일시를 최근 순으로 정렬한 뒤, 오늘 학습 했으면 오늘 기준으로 계산하고, 어제 학습했으면 어제 기준으로 계산
         lessonResults.sort(Comparator.comparing(LessonResultEntity::getLessonDt).reversed());
@@ -437,7 +435,7 @@ public class UserService {
 
     public List<UserStreakInfoDaysDTO> getUserStreakInfoDays(Long userId, List<LessonGroupResultEntity> lessonGroupResults, List<LessonResultEntity> findLessonResult) {
         List<UserStreakInfoDaysDTO> result = new ArrayList<>();
-        if(lessonGroupResults == null) return null;
+        if(lessonGroupResults == null || findLessonResult == null) return null;
 
         List<LessonResultEntity> lessonResults = new ArrayList<>(findLessonResult);
 
@@ -491,7 +489,7 @@ public class UserService {
     }
 
     public UserTotalLessonInfoDTO getUserTotalLessonInfo(Long userId, List<LessonGroupResultEntity> lessonGroupResults, List<LessonResultEntity> findLessonResult) {
-        if(lessonGroupResults == null) return null;
+        if(lessonGroupResults == null || findLessonResult == null) return null;
         int totalLessonGroupResultCnt = lessonGroupResults.size();
         for (LessonGroupResultEntity lgr : lessonGroupResults) {
             if(!lgr.getIsCompleted()) totalLessonGroupResultCnt--;

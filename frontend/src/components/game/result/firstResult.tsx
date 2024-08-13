@@ -6,6 +6,7 @@ interface FirstResultProps<T> {
   currentStep : number;
   nextstep : any;
   ranks : T[]
+  me: number
 }
 
 interface RankProps {
@@ -22,7 +23,8 @@ interface RankProps {
 export default function firstResult({
   currentStep,
   nextstep,
-  ranks
+  ranks,
+  me
 } : FirstResultProps<RankProps>){
   
   return(
@@ -66,8 +68,9 @@ export default function firstResult({
             <Typography 
               variant="h4"
               sx={{
-                textAlign:"center",                   
-            }}> 당신은 1등입니다! </Typography>
+                textAlign:"center",                
+                margin: "10px",      
+            }}> 당신은 {me}등입니다! </Typography>
           </Box>
 
           {/* 결과 파트 */}
