@@ -183,11 +183,7 @@ export default function App() {
   return (
     <Box style={{ overflow: 'hidden' }}> {/* 부모 요소에 overflow: hidden 추가 */}
       <Box sx={{ position: 'relative', width: '100%', height: '90vh', minHeight: "700px" }}>
-        <LeftPart
-          middlePosition={middleToWhere}
-          moveDirection={moveDirection.current}
-          selectedRegion={selectedRegion}
-        />
+        
         <MiddlePart
           middlePosition={middleToWhere}
           mainPageIndicator={mainPageIndicator}
@@ -196,12 +192,17 @@ export default function App() {
         <RightPart 
           selectedRegion={selectedRegion}
         />
-        <ButtonPart
+        <LeftPart
+          middlePosition={middleToWhere}
+          moveDirection={moveDirection.current}
+          selectedRegion={selectedRegion}
+        />
+        {/* <ButtonPart
           onLeftClick={handleLeftClick}
           onRightClick={handleRightClick}
           middleToWhere={middleToWhere}
           selectedRegion={selectedRegion}
-        />
+        /> */}
         <MiddleMap
           left={mapLeft}
           onRegionClick={handleRegionClick}

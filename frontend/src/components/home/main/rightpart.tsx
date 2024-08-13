@@ -48,61 +48,51 @@ export default function RightPart({selectedRegion} : RightPartProps) {
     <Box 
       className="rightpart" 
       sx={{ 
-        position: "absolute",
-        width: "100%",
         minHeight: "700px",
         height: "90vh",
         display:"flex",
         alignItems:"center",
-      }}>  
-        <Container maxWidth="lg">
-          <Card
-            sx={{
-              width: "100%",
-              height: "560px",
-              border: '3px solid lightgray', 
-              borderRadius: 5,
-              display: "flex",
-              justifyContent:"flex-end",
-              alignItems:"center",
-            }}>  
-            <Grid container spacing={0}>
-              <Grid item xs={12} md={6}>
+        left: (() => {
+          if (selectedRegion !== "_" && selectedRegion !== "준비중입니다") {
+            return "130%";
+          } return "95%";              
+        })(),
+    }}>
+      <Card 
+        sx={{ 
+          display:"flex", 
+          flexDirection: "column", 
+          alignItems:"center", 
+          width:"300px", 
+          border:"6px solid #4b2921",
+          padding:"20px",
+          borderRadius:"30px",
+        }}>
+        {/* 게임 페이지 */}
+        {/* <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold", marginBottom:"10px" }}>게임 페이지</Typography> */}
 
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display:"flex", flexDirection: "column", alignItems:"center"}}>
+        {/* 게임 프로필 */}
+        <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
+          <UserTierRank/>                    
+        </Box>
 
-                {/* 게임 페이지 */}
-                <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold", marginBottom:"10px" }}>게임 페이지</Typography>
-
-                {/* 게임 프로필 */}
-                <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
-                  <UserTierRank/>                    
-                </Box>
-
-                {/* 게임 시작 버튼 */}
-                <Button 
-                  variant="contained"
-                  onClick={GameStartButton}
-                  sx={{
-                    backgroundColor:"success.light",
-                    '&:hover': { backgroundColor: 'green' },
-                    '&:active': { backgroundColor: 'green' },
-                    '&:focus': { backgroundColor: 'success' },
-                    marginTop: "25px", 
-                    width: "200px", 
-                    height: "50px", 
-                    fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
-                  }}> 게임 시작 </Button>
-                </Box>
-              </Grid>
-            </Grid>
+        {/* 게임 시작 버튼 */}
+        <Button 
+          variant="contained"
+          onClick={GameStartButton}
+          sx={{
+            backgroundColor:"success.light",
+            '&:hover': { backgroundColor: 'green' },
+            '&:active': { backgroundColor: 'green' },
+            '&:focus': { backgroundColor: 'success' },
+            marginTop: "50px", 
+            width: "200px", 
+            height: "50px", 
+            fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
+        }}> 게임 시작 </Button>
+      </Card>
 
 
-            
-          </Card>
-        </Container>
     </Box>        
   );
 }
