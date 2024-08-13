@@ -145,8 +145,7 @@ public class ChatController {
             dto.setParticipants(participantDTOList);
 
             if (remain_cnt == 0) {
-                GameRoomEntity gr = gameRoomRepository.findById(roomId).orElseThrow(NoSuchElementException::new);
-                gr.setStatus(Status.TERMINATED);
+                chatService.terminateGameRoom(message.getRoomId());
             }
 
             redisPublisher.gameStartPublish(chatService.getRoomTopic(message.getRoomId()), dto, message.getRoomId());

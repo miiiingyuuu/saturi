@@ -174,7 +174,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         // 방 정보 구독
         client.subscribe(`/sub/room/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body)
-          console.log(body)
           // 바디가 배열의 형태로 주어지는 경우 (퀴즈 전송 시에만 해당)
           if (Array.isArray(body)) {
             setQuizzes(body);
@@ -184,14 +183,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                setIsStart(true)
             }
             if (body.chatType === "ENTER" || body.chatType === "EXIT" || body.chatType === "START") {
-            const yourStatus = body.participants?.find((p: UserProps) => p.nickName === getCookie("nickname"))
-            if (yourStatus !== undefined && yourStatus.isExited) {
-              alert("이미 나가셨는데요")
-              router.replace("/")
+              const yourStatus = body.participants?.find((p: UserProps) => p.nickName === getCookie("nickname"))
+              if (yourStatus !== undefined && yourStatus.isExited) {
+                alert("퇴장한 방에 다시 입장하실 수 없습니다.")
+                router.replace("/")
+              }
             }
-            }
-
-          }});
+          }
+        });
 
         // 입장
         client.publish({
@@ -205,7 +204,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           },
         });
         // 퀴즈 정보 요청
-        console.log(quizzes)
         if (!quizzes.length) {
         client.publish({
           destination: "/pub/room",
@@ -221,7 +219,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         // 채팅 구독
         client.subscribe(`/sub/chat/${roomId}`, (message: IMessage) => {
           const body = JSON.parse(message.body);
-          console.log(body)
           // 방에서 정답이 나오면
           if (body.correct) {
             // 채팅 관련 정보를 초기화 하고
@@ -295,7 +292,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         window.removeEventListener("unload", onDisconnect);
       }
       return () => {
-        console.log("여기는 클린업 페이지")
         if (client) {
         onDisconnect()
         }
