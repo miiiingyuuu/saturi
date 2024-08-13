@@ -388,12 +388,12 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                     justifyContent:"center",
                     alignItems:"center", 
                     height:"100%",
-                }}>
-                  
+                }}>                  
                   <Typography
                     component="h1"
                     variant="h5"
                     sx={{
+                      fontWeight:"bold",
                       backgroundColor:"whitesmoke",                   
                       padding:"30px",
                       borderRadius:"15px",
@@ -405,28 +405,38 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             ) : (
               <>
                 {(isSubmitted || isAnswerTime) && (
-                  <Typography
+                  <Box 
                     sx={{
-                      fontSize:"20px",
-                      fontWeight:"bold",
-                      display:"flex",
-                      justifyContent:"center",
-                      alignItems:"center",
-                      height:"100%",
-                  }}>{result}</Typography>
+                    display:"flex",
+                    justifyContent:"center",
+                    alignItems:"center", 
+                    height:"100%",
+                  }}>    
+                    <Typography
+                      component="h1"
+                      variant="h5"
+                      sx={{
+                        fontWeight:"bold",
+                    }}>{result}</Typography>
+                  </Box>
                 )}
                 {time ? (
+                <Box 
+                  sx={{
+                  display:"flex",
+                  justifyContent:"center",
+                  alignItems:"center", 
+                  height:"100%",
+                }}>  
                   <Typography
                     component="h1"
                     variant="h5"
                     sx={{
-                      display:"flex",
-                      justifyContent:"center",
-                      alignItems:"center",
-                      height:"100%",
+                      fontWeight:"bold",
                   }}>
                     {time}초 뒤 게임이 시작됩니다
                   </Typography>
+                </Box>
                 ) : (
                   <Box
                     sx={{
@@ -441,7 +451,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                             pt:"20px",
                             fontSize: "39px",
                             fontWeight: "bold",
-                            pb:"35px",
+                            pb:"30px",
                           }}
                         >
                           {now+1}번 {nowQuiz.isObjective ? "객관식" : "주관식"}
