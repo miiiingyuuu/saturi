@@ -338,14 +338,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   // 빡종 방지
   useConfirmLeave();
 
-
-  // 채팅 창 팝오버 부분
-  const [opacity, setOpacity] = useState(0); // 초기 투명도 0으로 설정
-  const handleClick = () => {
-    // 클릭 시 opacity를 0에서 0.7로, 0.7에서 0으로 토글
-    setOpacity(prevOpacity => (prevOpacity === 0 ? 0.85 : 0));
-  };
-
+  
   useEffect(() => {
     api.get("/game/tip")
       .then(response => {
@@ -361,11 +354,17 @@ export default function App({ params: { roomId } }: RoomIdProps) {
 
   return (
     <Box>      
-      <Container maxWidth="lg">
+      <Box 
+        sx={{
+          display:"flex",
+          alignItems:"center",
+
+      }}>
         {/* 게임 파트 */}
         <Box
           sx={{
-          height: "90vh",
+          width:"65vw",
+          height: "95vh",
           minHeight: "600px",
           backgroundImage: "url(/MainPage/background.webp)",
           backgroundSize: "cover",
@@ -639,11 +638,9 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         {/* 채팅 파트 */}
         <Box
           sx={{
-          position:"fixed",
-          bottom: "0%",
-          width:"100%",
+          width:"35vw",
           maxWidth: "1155px",
-          height:"35vh",
+          height:"95vh",
           // backgroundColor:"blue",
         }}>
           {/* 채팅이 보이는 부분 */}
@@ -651,11 +648,10 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             sx={{
               display: "flex",
               flexDirection: "column",
-              height: "25vh",
+              height: "86vh",
               px: 2,
               pt: 2,
               backgroundColor: "#f5f5f5",              
-              opacity
           }}>
             <Paper
               sx={{                
@@ -716,14 +712,6 @@ export default function App({ params: { roomId } }: RoomIdProps) {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleClick}
-                sx={{ ml: 1 }}
-              >
-                <SendIcon />
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
                 onClick={() => sendMessage(` ${chat}`, setChat)}
                 sx={{ ml: 1 }}
               >
@@ -732,7 +720,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             </Box>
           </Box>
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 }
