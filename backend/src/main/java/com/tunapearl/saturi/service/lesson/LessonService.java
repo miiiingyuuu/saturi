@@ -93,6 +93,9 @@ public class LessonService {
         // in 절 조회를 위한 id list
         List<Long> lessonGroupResultIdList = new ArrayList<>();
 
+        // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용 set
+        Map<Long, Boolean> lessonGroupResultNoLearn = new HashMap<>();
+
         for (LessonGroupResultEntity lgr : lessonGroupResult) {
             // id list에 추가
             lessonGroupResultIdList.add(lgr.getLessonGroupResultId());
@@ -102,6 +105,9 @@ public class LessonService {
 
             // 각 레슨 그룹 결과를 돌면서 레슨 결과를 조회하기 위함
             lessonGroupResultMap.put(lgr.getLessonGroupResultId(), lgr);
+
+            // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용
+            lessonGroupResultNoLearn.put(lgr.getLessonGroup().getLessonGroupId(), false);
         }
 
         // 퍼즐 9개의 결과 id로 조회한 lessonResult list
@@ -121,6 +127,8 @@ public class LessonService {
         // Map에 넣기
         for (LessonResultEntity lr : lessonResults) {
             Long lessonGroupResultId = lr.getLessonGroupResult().getLessonGroupResultId();
+            // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용
+            lessonGroupResultNoLearn.replace(lr.getLesson().getLessonGroup().getLessonGroupId(), true);
             if(lessonResultMap.containsKey(lessonGroupResultId)) {
                 lessonResultMap.get(lessonGroupResultId).add(lr);
             } else {
@@ -150,13 +158,18 @@ public class LessonService {
 
             // DTO 변환
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lgr.getLessonGroup().getLessonGroupId(), lgr.getLessonGroup().getName(), groupProcess, avgAccuracy);
+            log.info("어디 출신 미시시피 {}", dto.toString());
             result.add(dto);
         }
 
         // 유저가 학습하지 않은 레슨 그룹은 progress, score를 0으로 한 후 result에 추가
         for (LessonGroupEntity lg : lessonGroups) {
-            if(lessonGroupIdSet.contains(lg.getLessonGroupId())) continue;
+            if(lessonGroupIdSet.contains(lg.getLessonGroupId())) {
+                // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용
+                if(lessonGroupResultNoLearn.get(lg.getLessonGroupId())) continue;
+            }
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
+            log.info("부모님은 완전 부자 {}", dto.toString());
             result.add(dto);
         }
         // 유저가 학습하지 않은 레슨 그룹은 마지막에 추가하기 때문에 퍼즐의 순서가 섞임
