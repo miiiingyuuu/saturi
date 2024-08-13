@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Typography, Box } from '@mui/material';
 import api from '@/lib/axios';
 import dynamic from 'next/dynamic';
@@ -40,6 +40,9 @@ const UserSimilarityChart: React.FC = () => {
     datasets: []
   });
 
+  const chartRef = useRef<ChartJS>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -69,6 +72,20 @@ const UserSimilarityChart: React.FC = () => {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (chartRef.current && boxRef.current) {
+        chartRef.current.resize();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const options = {
