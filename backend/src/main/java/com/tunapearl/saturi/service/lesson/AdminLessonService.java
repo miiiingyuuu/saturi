@@ -101,6 +101,7 @@ public class AdminLessonService {
         }
     }
 
+    @Transactional
     public void updateLesson(Long lessonId, Long lessonGroupId, String script, String storeFileName) {
         List<LessonEntity> allByLessonGroupId = lessonService.findAllByLessonGroupId(lessonGroupId);
         LessonEntity lesson = lessonRepository.findById(lessonId).orElse(null);
@@ -116,9 +117,10 @@ public class AdminLessonService {
         lesson.setLastUpdateDt(LocalDateTime.now());
     }
 
+    @Transactional
     public void deleteLesson(Long lessonId) {
         LessonEntity findLesson = lessonRepository.findById(lessonId).orElse(null);
-        findLesson.setLessonGroup(null);
+        findLesson.deleteLessonGroup(lessonId);
         findLesson.setIsDeleted(true);
         findLesson.setLastUpdateDt(LocalDateTime.now());
     }
