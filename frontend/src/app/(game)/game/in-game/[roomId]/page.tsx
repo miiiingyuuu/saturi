@@ -4,7 +4,7 @@ import { IMessage } from "@stomp/stompjs";
 import useConnect from "@/hooks/useConnect";
 import SendIcon from "@mui/icons-material/Send";
 import { handleValueChange } from "@/utils/utils";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { GameQuizChoiceProps, GameQuizProps, MessagesProps, RoomIdProps, ParticipantsProps } from "@/utils/props";
 import {
   Box,
@@ -76,6 +76,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
   const [currentTipIndex, setCurrentTipIndex] = useState(0)
   const [ isEnd, setIsEnd ] = useState(false)
   const [ chat, setChat ] = useState("")
+  const textFieldRef = useRef<HTMLInputElement>(null)
+
 
   function updateParticipantMessage(nickName: string, message: string) {
     setParticipants((prevParticipants) =>
@@ -359,8 +361,14 @@ export default function App({ params: { roomId } }: RoomIdProps) {
     }
   }, [isStart,currentTipIndex]);
 
+  useEffect(() => {
+    if (textFieldRef.current) {
+      (textFieldRef.current).focus()
+    }
+  }, [nowQuiz]);
+
   return (
-    <Box>      
+    <Box>
       <Container maxWidth="lg">
         {/* 게임 파트 */}
         <Box
@@ -373,7 +381,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           backgroundRepeat: "no-repeat",
           borderRadius: "15px",
           border:"3px groove black",
-        }}>          
+        }}>
           <Box
             sx={{
             minHeight: "390px",
@@ -524,6 +532,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                           // 주관식 파트
                           <Box sx={{ display: "flex", pt:"20px" }}>
                             <TextField
+                              inputRef={textFieldRef}
                               variant="outlined"
                               fullWidth
                               value={message}
