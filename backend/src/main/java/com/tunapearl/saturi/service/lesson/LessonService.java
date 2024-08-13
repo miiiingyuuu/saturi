@@ -106,6 +106,13 @@ public class LessonService {
 
         // 퍼즐 9개의 결과 id로 조회한 lessonResult list
         List<LessonResultEntity> lessonResults = lessonRepository.findLessonResultByLessonGroupResultId(lessonGroupResultIdList).orElse(null);
+        if(lessonResults == null) { // 레슨 그룹 결과 테이블 생성해놓고 레슨 학습 안하고 나갔을 때
+            for (LessonGroupEntity lg : lessonGroups) {
+                LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
+                result.add(dto);
+            }
+            return result;
+        }
 
         // key = lessonGroupResultId, value = LessonResults
         // 각 레슨 그룹 결과 아이디에 매핑된 레슨결과들 저장(복습이나 건너뛰기로 레슨 결과가 여러 개 일 수 있어서 리스트로)
