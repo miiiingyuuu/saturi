@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card, CardHeader, CardActions,
@@ -13,9 +13,9 @@ import {
   Dialog, DialogTitle, DialogContent,
   Grid,
   CircularProgress,
-  Typography
+  Typography, Box,
 } from "@mui/material";
-import { validateNickname } from "@/utils/utils";
+import { handleValueChange, validateNickname } from "@/utils/utils";
 import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useTheme } from "@mui/material/styles"
@@ -115,6 +115,8 @@ export default function EditProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const isNicknameValid = useMemo(() => validateNickname(userProfile?.nickname || ""), [userProfile?.nickname]);
 
   const [dialectModalOpen, setDialectModalOpen] = useState(false);
   const [genderModalOpen, setGenderModalOpen] = useState(false);
@@ -178,6 +180,27 @@ export default function EditProfilePage() {
     }
     handleModalClose(type);
   };
+
+  function handleAuthNickname() {
+    console.log(userProfile)
+    console.log(userProfile?.nickname)
+    if (userProfile && userProfile.nickname && isNicknameValid) {
+      api
+        .get("/user/auth/nickname-dupcheck", {
+          params: {nickname: userProfile.nickname },
+        })
+        .then((response) => {
+          if (response) {
+            if (window.confirm("이 닉네임을 사용하시겠습니까?")) {
+              setIsNicknameChecked(true);
+            }
+          }
+        })
+        .catch(err=>console.log(err))
+    } else {
+      alert("유효하지 않은 닉네임 입니다.");
+    }
+  }
 
   const handleImageClick = () => {
     setIsImageDialogOpen(true);
@@ -256,31 +279,40 @@ export default function EditProfilePage() {
           }
           title={
             <div className="flex flex-col">
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs>
-                  <TextField
-                    label="닉네임"
-                    name="nickname"
-                    value={userProfile.nickname}
-                    onChange={handleInputChange}
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                  />
+              <Box>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={10}>
+                    <TextField
+                      name="nickname"
+                      required
+                      fullWidth
+                      id="nickname"
+                      label="별명"
+                      value={userProfile.nickname}
+                      onChange={handleInputChange}
+                      autoFocus
+                      disabled={isNicknameChecked}
+                      error={!isNicknameValid}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button
+                      variant="contained"
+                      disabled={isNicknameChecked}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        handleAuthNickname();
+                      }}
+                      sx={{
+                        fontSize: "0.75rem",
+                        height: "56px",
+                      }}
+                    >
+                      중복 확인
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSave}
-                    sx={{
-                      height: "56px"
-                    }}
-                  >
-                    제출
-                  </Button>
-                </Grid>
-              </Grid>
+              </Box>
               <Typography sx= {{ fontSize: '11px', color: 'red', ml: 1 }}>닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
