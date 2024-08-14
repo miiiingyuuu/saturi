@@ -452,6 +452,7 @@ export default function LessonPage() {
         height: "90vh",
         display: "flex",
         alignItems: "center",
+        
       }}
     >
       <Card
@@ -462,10 +463,10 @@ export default function LessonPage() {
           // minHeight: "650px",
           maxHeight: "700px",
           minWidth: "1100px",
-          border: "3px solid lightgray",
-          borderRadius: "15px",
+          border:"6px solid #4b2921",
+          borderRadius: "30px",
           padding: "15px",
-          position: "relative",
+          position: "relative",          
         }}
       >
         {/* Top Box containing progress bar, typography, and report button */}
