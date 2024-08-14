@@ -172,8 +172,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         }
       })
       setIsAnswerTime(true);
-
       setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
+      sessionStorage.setItem("success", "true")
       setTimeout(() => {
         router.replace(`/game/in-game/${roomId}/result`)
       },3000)
