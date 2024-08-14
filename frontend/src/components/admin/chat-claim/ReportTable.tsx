@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip, TextField } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip, TextField, Typography } from '@mui/material';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
 import {parseDate} from "@/utils/utils";
@@ -33,8 +33,8 @@ const headCells: HeadCell[] = [
   { id: "chatClaimId", label: "Id" },
   { id: "gameLogId", label: "로그Id" },
   // { id: "userId", label: "유저 Id" },
-  {id: "nickname", label: "유저"},
   { id: "roomId", label: "채팅방 Id" },
+  {id: "nickname", label: "유저"},
   // { id: "quizId", label: "문제 Id" },
   { id: "chatting", label: "채팅" },
   { id: "chattingDt", label: "채팅 및 신고일시" },
