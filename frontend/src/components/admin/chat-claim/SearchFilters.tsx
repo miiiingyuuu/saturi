@@ -6,7 +6,6 @@ interface SearchFiltersProps {
     gameLogId: string;
     userId: string;
     roomId: string;
-    quizId: string;
   };
   onFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearch: () => void;
@@ -31,12 +30,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, onFilterChange, 
         name="roomId"
         label="Room ID"
         value={filters.roomId}
-        onChange={onFilterChange}
-      />
-      <TextField
-        name="quizId"
-        label="Quiz ID"
-        value={filters.quizId}
         onChange={onFilterChange}
       />
       <Button variant="contained" onClick={onSearch}>검색</Button>
