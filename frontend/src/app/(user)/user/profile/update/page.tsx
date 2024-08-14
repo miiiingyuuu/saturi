@@ -93,19 +93,6 @@ const getFormattedAgeRange = (ageRange: string): string => {
   }
 };
 
-const getFormattedLocationId = (locationId: number): string => {
-  switch (locationId) {
-    case 1: return '정보 입력 안함';
-    case 2: return '경상도';
-    case 3: return '서울/경기';
-    case 4: return '강원도';
-    case 5: return '충청도';
-    case 6: return '전라도';
-    case 7: return '제주도';
-    default: return '정보 입력 안함';
-  }
-};
-
 // 프로필 수정 로직
 export default function EditProfilePage() {
   const theme = useTheme()
