@@ -183,7 +183,7 @@ export default function EditProfilePage() {
   // 수정 요청
   function handleSave() {
     if (!validateNickname(userProfile?.nickname || "")) {
-      alert("별명은 한글, 영문, 숫자를 포함하여 10글자 미만으로 해주세요.")
+      alert("별명은 한글, 영문, 숫자를 포함하여 8자 미만으로 해주세요.")
       return
     } else if (isChanged && !isNicknameChecked) {
       alert("별명 중복 검사를 해주세요.")
@@ -292,7 +292,7 @@ export default function EditProfilePage() {
                   </Grid>
                 </Grid>
               </Box>
-              <Typography sx= {{ fontSize: '11px', color: 'blue', ml: 1 }}> * 닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
+              <Typography sx= {{ fontSize: '11px', color: `${ isNicknameValid ? 'blue': 'red'}`, ml: 1 }}> * 닉네임은 한글, 영문, 숫자를 포함하여 1~8자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
               <p className="text-default-500" style={{ fontSize: '20px' }}>{userProfile.email}</p>

@@ -28,6 +28,7 @@ const Chatbot: React.FC = () => {
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState<{sender: string, content: string}[]>([INITIAL_MESSAGE]);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
+  const [ isLoading, setIsLoading ] = useState(false)
   const chatbotRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -81,6 +82,7 @@ const Chatbot: React.FC = () => {
         presence_penalty: 0.5,
       }),
     };
+    setIsLoading(true)
     try {
       const response = await fetch(apiEndpoint, requestOptions);
       const data = await response.json();
@@ -97,6 +99,7 @@ const Chatbot: React.FC = () => {
     setUserMessage('');
     const aiResponse = await fetchAIResponse(userMessage);
     addMessage("사투리무새", aiResponse);
+    setIsLoading(false)
   };
 
   useEffect(() => {
@@ -243,6 +246,7 @@ const Chatbot: React.FC = () => {
             <TextField
               fullWidth
               variant="outlined"
+              disabled={isLoading}
               placeholder="메시지를 입력하세요..."
               value={userMessage}
               onChange={(e) => setUserMessage(e.target.value)}
