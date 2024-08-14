@@ -148,7 +148,7 @@ export default function LessonPage() {
 
   // 오디오 재생 함수
   const handlePlayAudio = (audioData: ArrayBuffer) => {
-    if (isPlaying) return;  // 이미 재생 중인 경우, 새로운 재생 요청 무시
+    if (isPlaying) return; // 이미 재생 중인 경우, 새로운 재생 요청 무시
 
     if (audioData) {
       const audioBlob = new Blob([audioData], { type: "audio/wav" });
@@ -158,7 +158,7 @@ export default function LessonPage() {
         audioRef.current.pause();
         audioRef.current.src = audioUrl;
 
-        audioRef.current.onplay = () => setIsPlaying(true);  // 오디오가 재생 중임을 나타내는 상태 설정
+        audioRef.current.onplay = () => setIsPlaying(true); // 오디오가 재생 중임을 나타내는 상태 설정
         audioRef.current.play();
 
         audioRef.current.onloadedmetadata = () => {
@@ -173,13 +173,13 @@ export default function LessonPage() {
 
         audioRef.current.onended = () => {
           setCurrentTime(audioRef.current!.currentTime);
-          setIsPlaying(false);  // 오디오가 끝났을 때 상태 업데이트
+          setIsPlaying(false); // 오디오가 끝났을 때 상태 업데이트
         };
       } else {
         const audio = new Audio(audioUrl);
         audioRef.current = audio;
 
-        audio.onplay = () => setIsPlaying(true);  // 오디오가 재생 중임을 나타내는 상태 설정
+        audio.onplay = () => setIsPlaying(true); // 오디오가 재생 중임을 나타내는 상태 설정
 
         audio.onloadedmetadata = () => {
           setDuration(audio.duration);
@@ -193,7 +193,7 @@ export default function LessonPage() {
 
         audio.onended = () => {
           setCurrentTime(audio.currentTime);
-          setIsPlaying(false);  // 오디오가 끝났을 때 상태 업데이트
+          setIsPlaying(false); // 오디오가 끝났을 때 상태 업데이트
         };
 
         audio.play();
@@ -227,7 +227,10 @@ export default function LessonPage() {
   };
 
   // 슬라이더 핸들러
-  const handleSliderChange = (event: Event | SyntheticEvent<Element, Event>, newValue: number | number[]) => {
+  const handleSliderChange = (
+    event: Event | SyntheticEvent<Element, Event>,
+    newValue: number | number[],
+  ) => {
     const audio = audioRef.current;
     if (audio) {
       audio.currentTime = newValue as number;
@@ -235,7 +238,10 @@ export default function LessonPage() {
     }
   };
 
-  const handleSliderChangeCommitted = (event: Event | SyntheticEvent<Element, Event>, newValue: number | number[]) => {
+  const handleSliderChangeCommitted = (
+    event: Event | SyntheticEvent<Element, Event>,
+    newValue: number | number[],
+  ) => {
     const audio = audioRef.current;
     if (audio) {
       audio.currentTime = newValue as number;
@@ -383,7 +389,11 @@ export default function LessonPage() {
 
   // 나가기 처리
   const handleExit = () => {
-    router.push(`/lesson/${locationId}/${categoryId}`);
+    const userConfirmed = window.confirm("퍼즐 선택으로 돌아가시겠습니까?");
+
+    if (userConfirmed) {
+      router.push(`/lesson/${locationId}/${categoryId}`);
+    }
   };
 
   // 건너뛰기 처리
@@ -437,6 +447,13 @@ export default function LessonPage() {
   const handleCloseModal = () => {
     setModalOpen(false);
     setReportContent("");
+  };
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length <= 150) {
+      setReportContent(value);
+    }
   };
 
   return (
@@ -650,7 +667,7 @@ export default function LessonPage() {
                 <div className="flex gap-2">
                   <Button
                     variant="contained"
-                    color="primary"
+                    color="warning"
                     className="text-nowrap"
                     onClick={handleExit}
                   >
@@ -685,24 +702,41 @@ export default function LessonPage() {
                     </Button>
                   )}
                 </div>
-
               </Box>
             </Box>
           </Grid>
         )}
 
-        <Dialog open={modalOpen} onClose={handleCloseModal}>
-          <DialogTitle>문제 신고</DialogTitle>
+        <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth>
+          <DialogTitle>신고 내용</DialogTitle>
           <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="신고 내용"
-              type="text"
-              fullWidth
-              value={reportContent}
-              onChange={e => setReportContent(e.target.value)}
-            />
+            <Box sx={{ position: "relative" }}>
+              <TextField
+                autoFocus
+                margin="dense"
+                // label="신고 내용"
+                type="text"
+                fullWidth
+                multiline // 입력창을 늘리기 위해 multiline 추가
+                minRows={5} // 최소 4줄 크기로 설정
+                value={reportContent}
+                onChange={handleContentChange}
+                inputProps={{
+                  maxLength: 150, // 입력 자체에 150자 제한 설정
+                }}
+              />
+              <Typography
+                variant="caption"
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  bottom: -20,
+                  color: "text.secondary",
+                }}
+              >
+                {reportContent.length}/150
+              </Typography>
+            </Box>
           </DialogContent>
           <DialogActions>
             <CustomButton onClick={handleCloseModal} color="primary">
