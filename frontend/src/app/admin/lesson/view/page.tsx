@@ -11,7 +11,7 @@ import {
   Typography,
   TableRow,
   TableCell,
-  Button, TablePagination,
+  Button, TablePagination, Container, TextField, FormControl, RadioGroup, FormControlLabel, Radio, Box,
 } from "@mui/material";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation"
@@ -39,6 +39,12 @@ export default function App() {
   const router = useRouter()
   const [ items, setItems] = useState<LessonProps[]>([]);
   const { rows, order, orderBy, onRequestSort } = useTableSort<LessonProps>(items, "lessonId");
+  const [filters, setFilters] = useState({
+    lessonGroupId: "",
+    locationId: "",
+    lessonCategoryId: "",
+    lessonName: ""
+  });
 
   // Pagination 관련 상태
   const [page, setPage] = useState(0);
@@ -70,6 +76,21 @@ export default function App() {
       })
   }
 
+  function fetchReports() {
+    const queryParams = new URLSearchParams(
+      Object.entries(filters).filter(([_, value]) => value !== '')
+    ).toString();
+    api.get(`/admin/lesson?${queryParams}`)
+      .then((response) => {
+        setItems(response.data);
+        setPage(0)
+      });
+  }
+
+  function handleFilterChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setFilters({ ...filters, [event.target.name]: event.target.value });
+  }
+
   useEffect(() => {
     api.get("/admin/lesson")
       .then((response) => {
@@ -77,7 +98,32 @@ export default function App() {
       });
   }, []);
 
+
   return (
+  <Container>
+    <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <TextField
+        name="lessonGroupId"
+        label="레슨 그룹 Id"
+        value={filters.lessonGroupId}
+        onChange={handleFilterChange}
+      />
+      <TextField
+        name="locationId"
+        label="지역 Id"
+        value={filters.locationId}
+        onChange={handleFilterChange}
+      />
+      <TextField
+        name="lessonCategoryId"
+        label="레슨 카테고리 Id"
+        value={filters.lessonCategoryId}
+        onChange={handleFilterChange}
+      />
+      <Button variant="contained" onClick={fetchReports}>검색</Button>
+    </Box>
+
+
     <TableContainer component={Paper}>
       <Table>
         <SortableTableHead
@@ -89,10 +135,24 @@ export default function App() {
         <TableBody>
           {displayedRows.map((row) => (
             <TableRow key={row.lessonId}>
-              <TableCell >{row.lessonId}</TableCell>
-              <TableCell >{row.lessonGroupId}</TableCell>
-              <TableCell >{row.lessonGroupName}</TableCell>
-              <TableCell >
+              <TableCell
+                sx={{ width: "10%" }}
+              >
+                {row.lessonId}
+              </TableCell>
+              <TableCell
+                sx={{ width: "15%" }}
+              >
+                {row.lessonGroupId}
+              </TableCell>
+              <TableCell
+                sx={{ width: "30%" }}
+              >
+                {row.lessonGroupName}
+              </TableCell>
+              <TableCell
+                sx={{ width: "15%" }}
+              >
                 <Accordion>
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -104,12 +164,19 @@ export default function App() {
                   </AccordionDetails>
                 </Accordion>
               </TableCell>
-              <TableCell >{row.lastUpdateDt}</TableCell>
-              <TableCell >
+              <TableCell
+                sx={{ width: "15%" }}
+              >{row.lastUpdateDt}</TableCell>
+              <TableCell
+                sx={{ width: "15%" }}
+              >
                 <Button
                   variant="contained"
                   color="success"
                   onClick={() => handleEdit(row.lessonId||0)}
+                  sx = {{
+                    mr:1
+                  }}
                 >
                   수정
                 </Button>
@@ -135,5 +202,6 @@ export default function App() {
         labelRowsPerPage="페이지 당 항목 수: "
       />
     </TableContainer>
+  </Container>
   );
 }

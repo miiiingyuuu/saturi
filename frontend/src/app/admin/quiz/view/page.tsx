@@ -136,6 +136,7 @@ export default function App() {
     api.get(`/admin/game/quiz?${queryParams}`)
       .then((response) => {
         setItems(response.data);
+        setPage(0)
       });
   }
 
