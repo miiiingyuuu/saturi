@@ -1,10 +1,10 @@
-/* styles/globals.css */
-/*@font-face {*/
-/*  font-family: 'Pretendard';*/
-/*  src: url('/fonts/pretendardVariable.woff2') format('woff2');*/
-/*  font-weight: 100 900; !* 가중치 범위를 정의할 수 있습니다 *!*/
-/*  font-display: swap;*/
-/*}*/
+/*styles/globals.css */
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+  font-weight: 100 900; /* 가중치 범위를 정의할 수 있습니다 */
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;

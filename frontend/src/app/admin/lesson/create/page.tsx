@@ -18,7 +18,7 @@ export default function App() {
           alignItems: "center",
         }}
       >
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h4">
           {isLessonForm ? "레슨 등록" : "레슨 그룹 등록"}
         </Typography>
         <Button

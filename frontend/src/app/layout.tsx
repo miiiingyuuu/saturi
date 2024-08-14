@@ -13,7 +13,7 @@ import { authToken } from "@/utils/authutils";
 import { teal } from "@mui/material/colors";
 
 const mainFont = localFont({
-  src: "./test.ttf"
+  src: "./PretendardVariable.woff2"
 })
 
 const theme = createTheme({
@@ -22,7 +22,7 @@ const theme = createTheme({
     primary: teal
   },
   typography: {
-    fontFamily: 'Pretendard, sans-serif'
+    fontFamily: 'Pretendard, mainFont, sans-serif',
   }
 });
 
@@ -42,9 +42,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <body
           className={mainFont.className}
         >
-          <main>
-            {children}
-          </main>
+          <ThemeProvider theme={theme}>
+            <main>
+              {children}
+            </main>
+          </ThemeProvider>
         </body>
       </html>
     )

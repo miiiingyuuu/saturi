@@ -101,7 +101,10 @@ export default function App() {
 
   return (
   <Container>
-    <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+    <Typography component="h1" variant="h4" sx={{display: 'flex', justifyContent: "center", mb:3,}}>
+      레슨 조회
+    </Typography>
+    <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: "center", justifyContent: "right" }}>
       <TextField
         name="lessonGroupId"
         label="레슨 그룹 Id"

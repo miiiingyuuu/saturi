@@ -119,7 +119,9 @@ const UserReportManagementPage: React.FC = () => {
 
   return (
     <Box sx={{ m: 2 }}>
-      <Typography variant="h4" gutterBottom>채팅 신고 관리</Typography>
+      <Typography component="h1" variant="h4" sx={{display: 'flex', justifyContent: "center", mb:3,}}>
+        채팅 신고 관리
+      </Typography>
       <SearchFilters 
         filters={filters}
         onFilterChange={handleFilterChange}
