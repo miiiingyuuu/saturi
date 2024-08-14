@@ -69,12 +69,12 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
                 </Tooltip>
               </TableCell>
               <TableCell>
-                <TextField>
+                <Typography>
                   {new Date(report.chattingDt).toLocaleString()}
-                </TextField>
-                <TextField>
+                </Typography>
+                <Typography>
                   {new Date(report.claimedDt).toLocaleString()}
-                </TextField>
+                </Typography>
               </TableCell>
               <TableCell>{report.checkedDt ? new Date(report.checkedDt).toLocaleString() : "-"}</TableCell>
               <TableCell>
