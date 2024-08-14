@@ -18,6 +18,7 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
+import Confetti from "react-confetti";
 
 interface Option {
   label: string;
@@ -61,11 +62,12 @@ const steps = [
 ];
 
 export default function App() {
-  const router = useRouter()
+  const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
   const [gender, setGender] = useState<Option | null>(null);
   const [location, setLocation] = useState<Option | null>(null);
   const [ageRange, setAgeRange] = useState<Option | null>(null);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -75,15 +77,11 @@ export default function App() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-
-
-  // 어케함 여기?? 물어보기
-  // handleNext 에 axios 걸어서 하나씩 보내기
   function handleUpdateUser() {
     const genderId = gender?.id ?? null;
     const locationId = location?.id ?? null;
     const ageRangeId = ageRange?.id ?? null;
-    const nickname = getCookie("nickname")
+    const nickname = getCookie("nickname");
     api.put("/user/auth", {
       gender: genderId,
       locationId,
@@ -91,18 +89,32 @@ export default function App() {
       nickname,
       isChanged: 0,
       birdId: 1,
-    })
+    });
   };
 
-
-  // 네비가드 형태로 사용 ( 여기서는 기본정보가 default인 사람들만 들어오게하기 )
   useEffect(() => {
-    if (typeof window !== "undefined" && !(getCookie("gender")==="DEFAULT" || getCookie("location")==="default" || getCookie("ageRange")==="DEFAULT")) {
-      router.push("/")
+    if (typeof window !== "undefined" && !(getCookie("gender") === "DEFAULT" || getCookie("location") === "default" || getCookie("ageRange") === "DEFAULT")) {
+      router.push("/");
     }
+
+    // Update window size for Confetti
+    const updateWindowSize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    updateWindowSize(); // Initialize with current window size
+    window.addEventListener("resize", updateWindowSize);
+
+    return () => {
+      window.removeEventListener("resize", updateWindowSize);
+    };
   }, []);
 
-  useConfirmLeave()
+  useConfirmLeave();
+
   return (
     <Container component="main" maxWidth="sm">
       <Box
@@ -174,20 +186,31 @@ export default function App() {
           ))}
         </Stepper>
         {activeStep === steps.length && (
-          <Paper square elevation={0} sx={{ p: 3, width: '100%', backgroundColor: 'transparent' }}>
-            <Typography>
-              모든 준비가 완료되었습니다!
-            </Typography>
-            <Button
-              onClick={() => {
-                handleUpdateUser()
-                router.push("/");
-              }}
-              sx={{ mt: 1, mr: 1 }}
-            >
-              메인으로
-            </Button>
-          </Paper>
+          <>
+            <Confetti
+              width={windowSize.width}
+              height={windowSize.height}
+              recycle={false}
+              numberOfPieces={300}
+            />
+            <Paper square elevation={0} sx={{ p: 3, width: '100%', backgroundColor: 'transparent' }}>
+              <Typography>
+                모든 준비가 완료되었습니다!
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    handleUpdateUser();
+                    router.push("/");
+                  }}
+                  sx={{ px: 6, py: 2, fontSize: '1.2rem' }} // Larger button size
+                >
+                  시작하기
+                </Button>
+              </Box>
+            </Paper>
+          </>
         )}
       </Box>
     </Container>

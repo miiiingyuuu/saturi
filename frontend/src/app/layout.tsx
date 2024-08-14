@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import { createTheme, ThemeProvider, Box } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation"
 import { authToken } from "@/utils/authutils";
+import { teal } from "@mui/material/colors";
 
 const mainFont = localFont({
   src: "./test.ttf"
@@ -17,10 +18,11 @@ const mainFont = localFont({
 const theme = createTheme({
   palette: {
     mode: 'light',
+    primary: teal
   },
-  // typography: {
-  //   fontFamily: 'Pretendard, sans-serif'
-  // }
+  typography: {
+    fontFamily: 'Pretendard, sans-serif'
+  }
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
