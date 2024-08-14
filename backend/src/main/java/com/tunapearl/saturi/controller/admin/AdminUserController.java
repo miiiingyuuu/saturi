@@ -32,6 +32,7 @@ public class AdminUserController {
         UserEntity findUser = adminService.findUserById(userId);
         UserInfoDTO result = new UserInfoDTO(findUser.getUserId(), findUser.getLocation().getLocationId(),
                 findUser.getEmail(), findUser.getNickname(), findUser.getRegDate(), findUser.getExp(),
-                findUser.getGender(), findUser.getRole(), findUser. getBird().getId(), findUser.getReturnDt());
+                findUser.getGender(), findUser.getRole(), findUser.getBird().getId(), findUser.getReturnDt());
         return ResponseEntity.ok(result);
+    }
 }
