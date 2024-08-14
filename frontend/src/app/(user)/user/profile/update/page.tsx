@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Typography, Box,
 } from "@mui/material";
-import { handleValueChange, validateNickname } from "@/utils/utils";
+import {getFormattedLocationId, handleValueChange, validateNickname} from "@/utils/utils";
 import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useTheme } from "@mui/material/styles"
@@ -122,32 +122,10 @@ export default function EditProfilePage() {
   const [genderModalOpen, setGenderModalOpen] = useState(false);
   const [ageRangeModalOpen, setAgeRangeModalOpen] = useState(false);
 
+  const isChanged = useMemo(() => userProfile?.nickname !== originalNickname, [userProfile])
+
   const router = useRouter();
 
-  useEffect(() => {
-    // 프로필 가져오기
-    const fetchUserProfile = async () => {
-      try {
-        setIsLoading(true);
-        const accessToken = sessionStorage.getItem('accessToken');
-        if (!accessToken) {
-          throw new Error('Access token not found');
-        }
-
-        const response = await api.get('/user/auth/profile');
-
-        setUserProfile(response.data);
-        setOriginalNickname(response.data.nickname);
-      } catch {
-        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
-        setError('프로필 정보를 불러오는데 실패했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
 
   // Menu 관련 함수 선언들
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,23 +160,25 @@ export default function EditProfilePage() {
   };
 
   function handleAuthNickname() {
-    console.log(userProfile)
-    console.log(userProfile?.nickname)
-    if (userProfile && userProfile.nickname && isNicknameValid) {
+    if (!isChanged) {
+     if (window.confirm("현재 사용 중인 별명과 동일합니다.\n변경하지 않고 그대로 사용하시겠습니까?")) {
+       setIsNicknameChecked(true)
+      }
+    } else if (userProfile && userProfile.nickname && isNicknameValid) {
       api
         .get("/user/auth/nickname-dupcheck", {
           params: {nickname: userProfile.nickname },
         })
         .then((response) => {
           if (response) {
-            if (window.confirm("이 닉네임을 사용하시겠습니까?")) {
+            if (window.confirm("이 별명을 사용하시겠습니까?")) {
               setIsNicknameChecked(true);
             }
           }
         })
-        .catch(()=> alert("이미 존재하는 닉네임 입니다."))
+        .catch(()=> alert("이미 존재하는 별명 입니다."))
     } else {
-      alert("유효하지 않은 닉네임 입니다.");
+      alert("유효하지 않은 별명 입니다.");
     }
   }
 
@@ -214,48 +194,52 @@ export default function EditProfilePage() {
   };
 
   // 수정 요청
-  const handleSave = async () => {
-    if (!userProfile) return;
+  function handleSave() {
+    if (!validateNickname(userProfile?.nickname || "")) {
+      alert("별명은 한글, 영문, 숫자를 포함하여 10글자 미만으로 해주세요.")
+      return
+    } else if (isChanged && !isNicknameChecked) {
+      alert("별명 중복 검사를 해주세요.")
+      return
 
-    try {
-      const accessToken = sessionStorage.getItem('accessToken');
-      if (!accessToken) {
-        throw new Error('Access token not found');
-      }
-
-      if (!validateNickname(userProfile.nickname)) {
-        alert('닉네임은 한글, 영문, 숫자를 포함하여 10글자 미만으로 해주세요.');
-        return;
-      }
-
-      const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
-
-      const updateData: ProfileUpdateData = {
-        nickname: userProfile.nickname,
-        locationId: userProfile.locationId,
-        gender: userProfile.gender,
-        ageRange: userProfile.ageRange,
-        birdId: userProfile.birdId,
-        isChanged
-      };
-      const response = await api.put('/user/auth', updateData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-
-      if (response.status === 200) {
-        // eslint-disable-next-line no-alert
-        alert('프로필이 성공적으로 수정되었습니다.');
-        setOriginalNickname(userProfile.nickname);
-        router.push('/user/profile');
-      }
-    } catch {
-      console.error('프로필 수정 중 오류가 발생했습니다:', error);
-      // eslint-disable-next-line no-alert
-      alert('이미 존재하는 닉네임입니다.');
     }
-  };
+    if (userProfile) {
+    api.put("/user/auth", {
+      nickname: userProfile.nickname,
+      locationId: userProfile.locationId,
+      gender: userProfile.gender,
+      ageRange: userProfile.ageRange,
+      birdId: userProfile.birdId,
+      isChanged: isChanged? 1 : 0
+    }).then((response) => {
+      alert('프로필이 성공적으로 수정되었습니다.');
+      router.push('/user/profile');
+    }).catch((err) => {
+        console.error("프로필 수정 중 오류가 발생했습니다:", error);
+        // eslint-disable-next-line no-alert
+        alert("이미 존재하는 별명입니다.");
+      }
+    )
+    }
+  }
+
+  useEffect(() => {
+    // 프로필 가져오기
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/user/auth/profile');
+        setUserProfile(response.data);
+        setOriginalNickname(response.data.nickname);
+      } catch {
+        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
+        setError('프로필 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUserProfile();
+  }, []);
 
   if (isLoading) {
     return <CircularProgress />;

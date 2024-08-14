@@ -18,9 +18,9 @@ const theme = createTheme({
   palette: {
     mode: 'light',
   },
-  typography: {
-    fontFamily: 'Pretendard, sans-serif'
-  }
+  // typography: {
+  //   fontFamily: 'Pretendard, sans-serif'
+  // }
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {

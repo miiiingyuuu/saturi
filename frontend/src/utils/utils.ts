@@ -32,3 +32,28 @@ export function formatTime(seconds: number) {
   const remainingSeconds = seconds % 60;
   return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
 }
+
+export function parseDate(dt: string) {
+  return dt.slice(2,10)
+}
+
+export function parseString(dt: string, num: number) {
+  if (dt.length > num) {
+    return dt.slice(0,num-1) + "..."
+  } else {
+    return dt
+  }
+}
+
+export function getFormattedLocationId(locationId: number) {
+  switch (locationId) {
+    case 1: return 'DEFAULT';
+    case 2: return '경상도';
+    case 3: return '경기도';
+    case 4: return '강원도';
+    case 5: return '충청도';
+    case 6: return '전라도';
+    case 7: return '제주도';
+    default: return 'NULL';
+  }
+}

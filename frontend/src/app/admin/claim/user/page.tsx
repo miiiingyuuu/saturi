@@ -12,8 +12,9 @@ interface UserReport {
   chatClaimId: number;
   gameLogId: number;
   userId: number;
+  nickname: string
   roomId: number;
-  quizId: number;
+  // quizId: number;
   chatting: string;
   chattingDt: string;
   claimedDt: string;
@@ -29,7 +30,6 @@ const UserReportManagementPage: React.FC = () => {
     gameLogId: '',
     userId: '',
     roomId: '',
-    quizId: ''
   });
   const [openBanDialog, setOpenBanDialog] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -119,7 +119,7 @@ const UserReportManagementPage: React.FC = () => {
 
   return (
     <Box sx={{ m: 2 }}>
-      <Typography variant="h4" gutterBottom>유저 신고 관리</Typography>
+      <Typography variant="h4" gutterBottom>채팅 신고 관리</Typography>
       <SearchFilters 
         filters={filters}
         onFilterChange={handleFilterChange}

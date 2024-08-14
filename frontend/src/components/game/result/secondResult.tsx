@@ -94,7 +94,8 @@ export default function SecondResult({
               padding:"15px",
               paddingX:"20px",
               margin:"5px",
-              borderRadius:"15px",
+              border:"6px solid #4b2921",
+              borderRadius:"30px",
             }}>
             {/* 1의 1 */}
             <Box
