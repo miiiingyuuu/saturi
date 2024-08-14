@@ -216,7 +216,7 @@ export default function CategorySelectPage() {
             />
           )}
         </Card>
-      </Box>
+      </Container>
       <Box>
         <Chatbot />
       </Box>
