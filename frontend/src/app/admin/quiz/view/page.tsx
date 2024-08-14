@@ -34,7 +34,7 @@ import useTableSort from "@/hooks/useTableSort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SortableTableHead from "@/components/SortableTableHead";
 import { styled } from "@mui/material/styles";
-import {parseDate} from "@/utils/utils";
+import {getFormattedLocationId, parseDate} from "@/utils/utils";
 
 interface QuizProps {
   quizId: number;
@@ -198,9 +198,9 @@ export default function App() {
             {displayedRows.map((row) => (
               <TableRow key={row.quizId}>
                 <TableCell className="w-1/12">{row.quizId}</TableCell>
-                <TableCell className="w-1/12">{row.locationId}</TableCell>
+                <TableCell className="w-1/12">{getFormattedLocationId(row.locationId)}</TableCell>
                 <TableCell className="w-1/12">{row.isObjective ? "객관식" : "주관식"}</TableCell>
-                <TableCell className="w-11/24">
+                <TableCell className="w-5/12">
                   <Accordion>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
@@ -240,14 +240,14 @@ export default function App() {
                     </AccordionDetails>
                   </Accordion>
                 </TableCell>
-                <TableCell className="w-3/24">{parseDate(row.creationDt)}</TableCell>
-                <TableCell className="w-4/24">
+                <TableCell className="w-2/12">{parseDate(row.creationDt)}</TableCell>
+                <TableCell className="w-2/12">
                   <Button
                     variant="contained"
                     color="success"
                     onClick={() => handleEdit(row.quizId)}
                     sx={{
-                      ml: 1
+                      mr: 1
                     }}
                   >
                     수정

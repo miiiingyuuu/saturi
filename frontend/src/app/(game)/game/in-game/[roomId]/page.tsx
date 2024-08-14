@@ -622,11 +622,16 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           >
             <List>
               {messages.map((msg) => (
-                <ListItem key={msg.chatLogId}>
+                <ListItem
+                  key={msg.chatLogId}
+                  sx={{
+                    p: 0.5
+                  }}
+                >
                   <Box className="w-2/12">
                     <ListItemText primary={msg.timestamp} />
                   </Box>
-                  <Box className="w-3/12">
+                  <Box className="w-4/12">
                     <ListItemText primary={msg.nickname} />
                   </Box>
                   <Box className="w-5/12">
@@ -634,7 +639,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                   </Box>
                   {!(msg.nickname === getCookie("nickname")) && !isClicked[msg.chatLogId] && (
                     <AnnouncementIcon
-                      className="w-2/12"
+                      className="w-1/12"
                       onClick={() => reportChat(msg.chatLogId)}
                     />
                   )}

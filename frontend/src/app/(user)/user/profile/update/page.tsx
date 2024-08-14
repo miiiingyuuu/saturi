@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Typography, Box,
 } from "@mui/material";
-import { handleValueChange, validateNickname } from "@/utils/utils";
+import {getFormattedLocationId, handleValueChange, validateNickname} from "@/utils/utils";
 import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useTheme } from "@mui/material/styles"
@@ -89,19 +89,6 @@ const getFormattedAgeRange = (ageRange: string): string => {
     case 'SEVENTEEN': return '70대';
     case 'EIGHTEEN': return '80대';
     case 'NINETEEN': return '90대';
-    default: return '정보 입력 안함';
-  }
-};
-
-const getFormattedLocationId = (locationId: number): string => {
-  switch (locationId) {
-    case 1: return '정보 입력 안함';
-    case 2: return '경상도';
-    case 3: return '경기도';
-    case 4: return '강원도';
-    case 5: return '충청도';
-    case 6: return '전라도';
-    case 7: return '제주도';
     default: return '정보 입력 안함';
   }
 };
