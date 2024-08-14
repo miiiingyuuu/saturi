@@ -159,6 +159,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       setNowQuiz(data);
     }
     if (now === 10) {
+      setIsEnd(true)
+
       clientRef.current?.publish({
         destination: "/pub/room",
         body: JSON.stringify({
@@ -170,7 +172,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         }
       })
       setIsAnswerTime(true);
-      setIsEnd(true)
+
       setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
       setTimeout(() => {
         router.replace(`/game/in-game/${roomId}/result`)

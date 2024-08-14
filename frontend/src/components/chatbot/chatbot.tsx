@@ -17,7 +17,8 @@ import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown, { Components } from 'react-markdown';
 import Image from 'next/image';
 import chatbotImage from '/public/chatbot.png';
-import axios from "axios"; // 이미지 경로를 적절히 수정해주세요
+import axios from "axios";
+import api from "@/lib/axios"; // 이미지 경로를 적절히 수정해주세요
 
 const INITIAL_MESSAGE = {
     sender: '사투리무새',
@@ -105,21 +106,18 @@ const Chatbot: React.FC = () => {
   function sendMessage() {
     if (userMessage.trim().length === 0) return;
 
+    setUserMessage("");
+    setIsLoading(true)
     addMessage("나", userMessage)
 
-    axios.post(
-      "https://clovastudio.stream.ntruss.com/testapp/v1/chat-completions/HCX-003",
+    api.post(
+      "/chatbot",
       {
-        messages: [
-          {
-            role: "user",
-            content: userMessage,
-          },
-        ],
+        content: userMessage
       },
       {
         headers: {
-          "X-NCP-CLOVASTUDIO-API-KEY": process.env.NEXT_PUBLIC_CLOVA_API_KEY,
+          'X-NCP-CLOVASTUDIO-API-KEY': process.env.NEXT_PUBLIC_CLOVA_API_KEY,
           "X-NCP-APIGW-API-KEY": process.env.NEXT_PUBLIC_CLOVA_GW_API_KEY,
           "X-NCP-CLOVASTUDIO-REQUEST-ID": process.env.NEXT_PUBLIC_REQUEST_ID,
           "Content-Type": "application/json"
@@ -127,19 +125,22 @@ const Chatbot: React.FC = () => {
       }
     )
       .then(response => {
-        console.log(response.data)
-          setAnswer(response.data.result.message.content)
-      })
+        return response.data
+      }).then((response) => {
+        setIsLoading(false)
+        addMessage("사투리무새", response+"...")
+    })
       .catch((err) => {
         console.log(err)
-        setAnswer("OpenAI API 호출 중 오류 발생");
+        setIsLoading(false)
+        addMessage("사투리무새", "API호출 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.")
       })
-      .finally(() => {
-          setIsLoading(false)
-          setUserMessage("");
-          addMessage("사투리무새", answer)
-        }
-      )
+      // .finally(() => {
+      //     setIsLoading(false)
+      //     setUserMessage("");
+      //     addMessage("사투리무새", answer)
+      //   }
+      // )
   }
 
 
