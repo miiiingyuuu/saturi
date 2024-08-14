@@ -138,7 +138,8 @@ export default function CategorySelectPage() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <Box       
+      <Container       
+        maxWidth="lg" 
         sx={{
           height: "90vh",    
           minHeight: "700px",
@@ -203,7 +204,7 @@ export default function CategorySelectPage() {
             />
           )}
         </Card>
-      </Box>
+      </Container>
       <Box>
         <Chatbot />
       </Box>

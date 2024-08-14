@@ -81,6 +81,7 @@ public class ChatClaimService {
                 .chattingDt(gameLogEntity.getChattingDt())
                 .claimedDt(chatClaimEntity.getClaimedDt())
                 .isChecked(chatClaimEntity.isChecked())
+                .checkedDt(chatClaimEntity.getCheckedDt())
                 .build();
     }
 }
