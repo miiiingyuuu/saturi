@@ -206,7 +206,7 @@ export default function FirstResult({
         onClick={nextstep}
       >
         다음
-      </CustomButton>
+      </Button>
     </Box>
     </Box>
   );

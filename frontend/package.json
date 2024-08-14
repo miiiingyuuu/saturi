@@ -37,6 +37,7 @@
     "react-router-dom": "^6.26.0",
     "react-slick": "^0.30.2",
     "react-tooltip": "^4.2.21",
+    "sharp": "^0.33.4",
     "slick-carousel": "^1.8.1",
     "socket.io": "^4.7.5",
     "socketjs-client": "^1.0.2",

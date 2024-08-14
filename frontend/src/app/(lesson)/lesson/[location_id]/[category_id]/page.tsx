@@ -190,10 +190,12 @@ export default function CategorySelectPage() {
             overflowY: "auto", // Allow scrolling if content overflows
             padding: "10px", // Ensure there is padding inside the card
             marginRight:"25px",
-          }}
-        >
+        }}>
           {selectedPuzzleId == null && (
-            <Typography> 퍼즐을 선택하세요. </Typography>
+            <Typography sx={{
+              display:"flex",
+              alignSelf:"center",
+            }}> 퍼즐을 선택하세요. </Typography>
           )}
 
           {selectedLessonGroup && (
