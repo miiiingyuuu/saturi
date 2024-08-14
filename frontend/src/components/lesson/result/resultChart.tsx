@@ -57,7 +57,7 @@ const LessonChart: React.FC<LessonChartProps> = ({
     labels: Array.from({ length: maxLength }, (_, index) => index + 1), // X축 라벨을 시간 인덱스로 설정합니다.
     datasets: [
       {
-        label: `User`, // 사용자 데이터셋에 대한 레이블 설정
+        label: `유저`, // 사용자 데이터셋에 대한 레이블 설정
         data: userDataPoints,
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -66,7 +66,7 @@ const LessonChart: React.FC<LessonChartProps> = ({
         pointRadius: 0, // 라인의 점을 숨깁니다.
       },
       {
-        label: `Answer`, // 샘플 데이터셋에 대한 레이블 설정
+        label: `정답`, // 샘플 데이터셋에 대한 레이블 설정
         data: sampleDataPoints,
         borderColor: 'rgba(255, 99, 132, 1)',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',

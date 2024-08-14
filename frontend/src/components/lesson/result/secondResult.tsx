@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import "../../../styles/home/main/mainPage.css";
+import CountUp from "react-countup";
 
 interface LessonGroupResultProps {
   lessonGroupId: number;
@@ -15,7 +16,8 @@ interface LessonGroupResultProps {
   startDt: string;
   endDt: string | null;
   isCompleted: boolean;
-  lessons?: { // Assuming this is the shape of lessons
+  lessons?: {
+    // Assuming this is the shape of lessons
     lessonId: number;
     lessonName: string;
   }[];
@@ -45,7 +47,7 @@ export default function SecondResult({
   const [locationId, setLocationId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [currentLessonGroupId, setCurrentLessonGroupId] = useState<number>(
-    lessonGroupResult.lessonGroupId
+    lessonGroupResult.lessonGroupId,
   );
   const [currentCategory, setCurrentCategory] = useState<
     LessonGroupResultProps[]
@@ -85,11 +87,11 @@ export default function SecondResult({
       const pathSegments = pathname.split("/");
       const selectedLocation = parseInt(
         pathSegments[pathSegments.length - 4],
-        10
+        10,
       );
       const selectedCategory = parseInt(
         pathSegments[pathSegments.length - 3],
-        10
+        10,
       );
       if (
         ![1, 2, 3].includes(selectedLocation) ||
@@ -111,15 +113,15 @@ export default function SecondResult({
     ) {
       api
         .get(
-          `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`
+          `learn/lesson-group?locationId=${locationId}&categoryId=${categoryId}`,
         )
-        .then((response) => {
+        .then(response => {
           if (response.status === 200) {
             setCurrentCategory(response.data);
             console.log(locationId, categoryId, currentLessonGroupId);
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     }
@@ -129,11 +131,11 @@ export default function SecondResult({
     if (currentLessonGroupId !== null) {
       // Check if there is a previous lesson group
       const hasPrev = currentCategory.some(
-        (group) => group.lessonGroupId === currentLessonGroupId - 1
+        group => group.lessonGroupId === currentLessonGroupId - 1,
       );
 
       // Check if there is a next lesson group with lessons
-      const hasNext = currentCategory.some((group) => {
+      const hasNext = currentCategory.some(group => {
         return (
           group.lessonGroupId === currentLessonGroupId + 1 &&
           group.lessons &&
@@ -151,7 +153,7 @@ export default function SecondResult({
     setProgress(0); // Reset progress on remount
 
     const timer = setInterval(() => {
-      setProgress((oldProgress) => {
+      setProgress(oldProgress => {
         if (oldProgress >= userInfo.earnExp) {
           clearInterval(timer);
           return userInfo.earnExp;
@@ -168,7 +170,7 @@ export default function SecondResult({
   const handlePrevClick = () => {
     if (!isPrevDisabled && locationId !== null && categoryId !== null) {
       router.push(
-        `/lesson/${locationId}/${categoryId}/${currentLessonGroupId - 1}`
+        `/lesson/${locationId}/${categoryId}/${currentLessonGroupId - 1}`,
       );
     }
   };
@@ -176,19 +178,21 @@ export default function SecondResult({
   const handleNextClick = () => {
     if (!isNextDisabled && locationId !== null && categoryId !== null) {
       router.push(
-        `/lesson/${locationId}/${categoryId}/${currentLessonGroupId + 1}`
+        `/lesson/${locationId}/${categoryId}/${currentLessonGroupId + 1}`,
       );
     }
   };
 
   const handleHome = () => {
-    router.push("/main");
+    router.push(`/lesson/${locationId}/${categoryId}`);
   };
 
   const handleAgain = () => {
     if (locationId !== null && categoryId !== null) {
       console.log();
-      router.push(`/lesson/${locationId}/${categoryId}/${currentLessonGroupId}`);
+      router.push(
+        `/lesson/${locationId}/${categoryId}/${currentLessonGroupId}`,
+      );
     }
   };
 
@@ -208,12 +212,13 @@ export default function SecondResult({
         })(),
       }}
     >
-      <Box 
-        className="bg-white w-full max-w-4xl mx-auto p-6" 
+      <Box
+        className="bg-white w-full max-w-4xl mx-auto p-6"
         sx={{
-          border:"6px solid #4b2921",
-          borderRadius:"30px",
-      }}>
+          border: "6px solid #4b2921",
+          borderRadius: "30px",
+        }}
+      >
         <Box className="flex items-center m-5">
           <Image
             src={imageSrc}
@@ -230,9 +235,14 @@ export default function SecondResult({
               className="w-full"
             />
           </Box>
-          <Typography variant="h6" className="ml-4">
-            {`+${userInfo.earnExp} XP`}
-          </Typography>
+          <Box className="flex flex-col items-center justify-center text-center">
+            <Typography variant="h6" className="text-center">
+              + {userInfo.earnExp} exp
+            </Typography>
+            <Typography variant="subtitle2" className="text-center">
+              <CountUp start={userInfo.currentExp} end={userInfo.resultExp} duration={6} />
+            </Typography>
+          </Box>
         </Box>
         <Box className="flex justify-center mx-24 py-4">
           <Button
@@ -291,4 +301,3 @@ export default function SecondResult({
     </Box>
   );
 }
-
