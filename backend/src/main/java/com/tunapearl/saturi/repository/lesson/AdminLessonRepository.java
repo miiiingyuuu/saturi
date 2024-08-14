@@ -46,7 +46,7 @@ public class AdminLessonRepository {
         return lessonEntity == null ? Optional.empty() : Optional.of(lessonEntity);
     }
 
-    public Optional<List<LessonEntity>> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId) {
+    public Optional<List<LessonEntity>> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId, String lessonName) {
         QLessonEntity qLesson = new QLessonEntity("l");
 
         return Optional.ofNullable(queryFactory
@@ -55,6 +55,7 @@ public class AdminLessonRepository {
                         lessonGroupIdEq(qLesson, lessonGroupId),
                         locationIdEq(qLesson, locationId),
                         lessonCategoryIdEq(qLesson, lessonCategoryId),
+                        lessonNameLike(qLesson, lessonName),
                         qLesson.isDeleted.eq(false)
                 )
                 .fetch()
@@ -74,5 +75,10 @@ public class AdminLessonRepository {
     private BooleanExpression lessonCategoryIdEq(QLessonEntity lesson, Long lessonCategoryId) {
         if(lessonCategoryId == null) return null;
         return lesson.lessonGroup.lessonCategory.lessonCategoryId.eq(lessonCategoryId);
+    }
+
+    private BooleanExpression lessonNameLike(QLessonEntity lesson, String lessonNameCond){
+        if(lessonNameCond == null) return null;
+        return lesson.sampleVoiceName.contains(lessonNameCond);
     }
 }

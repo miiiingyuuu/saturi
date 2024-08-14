@@ -56,7 +56,9 @@ export default function App() {
 
   useEffect(() => {
     api.get("/admin/lesson")
-      .then((response) => setItems(response.data));
+      .then((response) => {
+        setItems(response.data)
+      });
   }, []);
 
   return (

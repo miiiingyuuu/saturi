@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Typography, Box,
 } from "@mui/material";
-import { handleValueChange, validateNickname } from "@/utils/utils";
+import {getFormattedLocationId, handleValueChange, validateNickname} from "@/utils/utils";
 import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useTheme } from "@mui/material/styles"

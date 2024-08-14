@@ -4,6 +4,7 @@ import com.tunapearl.saturi.domain.LocationEntity;
 import com.tunapearl.saturi.domain.lesson.LessonCategoryEntity;
 import com.tunapearl.saturi.domain.lesson.LessonEntity;
 import com.tunapearl.saturi.domain.lesson.LessonGroupEntity;
+import com.tunapearl.saturi.dto.admin.lesson.LessonSearch;
 import com.tunapearl.saturi.dto.lesson.SaveLessonGraphResponseDTO;
 import com.tunapearl.saturi.exception.AlreadyMaxSizeException;
 import com.tunapearl.saturi.repository.lesson.AdminLessonRepository;
@@ -129,8 +130,8 @@ public class AdminLessonService {
         return adminLessonRepository.findAll().orElse(null);
     }
 
-    public List<LessonEntity> findByLocationAndLessonCategory(Long lessonGroupId, Long locationId, Long lessonCategoryId) {
-        return adminLessonRepository.findByLocationAndLessonCategory(lessonGroupId, locationId, lessonCategoryId).orElse(null);
+    public List<LessonEntity> findByLocationAndLessonCategory(LessonSearch request) {
+        return adminLessonRepository.findByLocationAndLessonCategory(request.getLessonGroupId(), request.getLocationId(), request.getLessonCategoryId(), request.getLessonName()).orElse(null);
     }
 
     public LessonEntity findById(Long lessonId) {
