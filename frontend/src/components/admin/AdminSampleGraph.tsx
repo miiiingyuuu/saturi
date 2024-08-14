@@ -25,7 +25,13 @@ ChartJS.register(
 export default function adminSampleGraph(
   { sampleVoicePitchY }: { sampleVoicePitchY: string }
 ) {
-  const pitchData = JSON.parse(sampleVoicePitchY)
+  let pitchData;
+
+  try {
+    pitchData = JSON.parse(sampleVoicePitchY);
+  } catch (error) {
+    pitchData = []; // 파싱이 실패하면 빈 배열을 반환
+  }
 
 
   const data = {

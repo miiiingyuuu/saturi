@@ -37,6 +37,14 @@ export function parseDate(dt: string) {
   return dt.slice(2,10)
 }
 
+export function parseString(dt: string, num: number) {
+  if (dt.length > num) {
+    return dt.slice(0,num-1) + "..."
+  } else {
+    return dt
+  }
+}
+
 export function getFormattedLocationId(locationId: number) {
   switch (locationId) {
     case 1: return 'DEFAULT';
