@@ -8,7 +8,7 @@ export function validateEmail(value: string): boolean {
 
 export function validateNickname(value: string | null): boolean {
   if (!value) return true;
-  return /^(?!.*[ㄱ-ㅎㅏ-ㅣ])[A-Za-z0-9가-힣]{1,10}$/.test(value);
+  return /^(?!.*[ㄱ-ㅎㅏ-ㅣ])[A-Za-z0-9가-힣]{1,8}$/.test(value);
 }
 
 export function validatePassword(value: string): boolean {
@@ -40,9 +40,8 @@ export function parseDate(dt: string) {
 export function parseString(dt: string, num: number) {
   if (dt.length > num) {
     return dt.slice(0,num-1) + "..."
-  } else {
-    return dt
   }
+  return dt
 }
 
 export function getFormattedLocationId(locationId: number) {
