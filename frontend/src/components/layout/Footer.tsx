@@ -2,10 +2,13 @@ import React from 'react';
 import Image from "next/image";
 import { Box, Typography, Button, Grid } from "@mui/material";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 
 export default function Footer() {
+  const router = useRouter();
+
   return (
-    <footer className="bg-gray-100 py-4">
+    <footer className="bg-gray-100 py-6">
       <Box className="container mx-auto px-4">
         <Grid container alignItems="center" justifyContent="space-between">
           {/* 왼쪽: 저작권 정보 */}

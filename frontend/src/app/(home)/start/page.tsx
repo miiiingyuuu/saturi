@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { styled } from '@mui/system'
+import { spacing } from '@mui/system';
 
 const AnimatedText: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
   const [ref, isVisible] = useIntersectionObserver({ threshold: 0.1 });
@@ -48,34 +49,32 @@ export default function Start() {
   };
 
   return (
-    <Box className="bg-gray-100">
-      <Box sx={{
+    <Box className="bg-gray-100" sx={{ p: '0 !important', m: '0 !important' }}>
+      <Box 
+        sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 20px',
       }}>
         <main
           className="flex flex-col items-center text-center mb-[150px] text-black w-full"
           style={{
             background: `
-              linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgb(243, 244, 246) 100%),
-              url('/background1.webp') no-repeat center center / cover
+              linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgb(243, 244, 246) 100%),
+              url('/background2.webp') no-repeat center center / cover
             `,
             minHeight: '66vh',
             paddingTop: '50px',
           }}
           >
-          <Box className="content w-full">
+          <Box className="content w-full" sx={{ mt: '10%' }}>
             <AnimatedText delay={0}>
-              <Typography variant="h1" className="text-5xl m-0">
+              <Typography variant="h1" className="text-5xl m-0" sx={{ fontWeight: 'bold' }}>
                 실시간 음성 분석, 게임으로
               </Typography>
             </AnimatedText>
             <AnimatedText delay={0.3}>
-              <Typography variant="h1" className="text-5xl m-0">
+              <Typography variant="h1" className="text-5xl m-0 mb-10">
                 사투리를 재미있게 배워보세요.
               </Typography>
             </AnimatedText>
@@ -95,6 +94,7 @@ export default function Start() {
                     height: '60px',
                     margin: '30px 0',
                     padding: '5px 15px',
+                    backgroundColor: '#d2e1ff',
                   }}
                 >
                   시작하기

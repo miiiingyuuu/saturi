@@ -267,7 +267,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="flex justify-center items-center bg-gray-100 h-screen">
-      <Card sx={{ width: '900px', mt: 6 }}>
+      <Card sx={{ width: '900px' }}>
         <CardHeader
           avatar={
             <Avatar

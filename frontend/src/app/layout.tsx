@@ -64,9 +64,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Box
               component="main"
               sx={{
-                flexGrow: 1,
-                py: 4,
-                px: 2,
+                mt: 1
               }}
               className={mainFont.className}
             >
