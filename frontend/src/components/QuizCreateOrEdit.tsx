@@ -128,7 +128,7 @@ export default function QuizForm({quizId} : {quizId? : number}) {
           alignItems: "center",
         }}
       >
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h4">
           {quizId ? "퀴즈 수정" : "퀴즈 등록"}
         </Typography>
         <Box
