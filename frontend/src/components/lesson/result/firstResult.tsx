@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import LessonChart from './resultChart'; // Ensure correct import of the chart component
 import { WidthFull } from '@mui/icons-material';
+import CustomButton from '@/components/ButtonColor';
 
 // Props interfaces
 interface LessonResultProps {
@@ -205,7 +206,7 @@ export default function FirstResult({
         onClick={nextstep}
       >
         다음
-      </Button>
+      </CustomButton>
     </Box>
     </Box>
   );

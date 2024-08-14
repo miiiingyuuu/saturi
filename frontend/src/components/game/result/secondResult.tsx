@@ -1,7 +1,7 @@
 import { Box, Container, Card, LinearProgress, Button, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
 import "@/styles/home/main/mainPage.css";
-
+import CustomButton from "@/components/ButtonColor";
 
 interface SecondResultProps<T> {
   currentStep : number;
@@ -165,7 +165,7 @@ export default function SecondResult({
                 }}>
                   다시하기
                 </Button> */}
-                <Button
+                <CustomButton
                   className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
                   variant="contained"
                   onClick={handleHome}
@@ -176,7 +176,7 @@ export default function SecondResult({
                     '&:focus': { backgroundColor: 'success' },
                 }}>
                   처음으로
-                </Button>
+                </CustomButton>
             </Box>
 
 

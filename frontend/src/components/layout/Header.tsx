@@ -13,6 +13,12 @@ import useLogout from "@/hooks/useLogout";
 import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { teal } from "@mui/material/colors";
+import CustomButton from "../ButtonColor";
+
+interface HeaderProps {
+  isTransparent?: boolean;
+}
 
 
 export default function Header() {
@@ -57,7 +63,6 @@ export default function Header() {
       setNickName(userData.nickname);
     } catch (error) {
       console.error("Failed to fetch user info:", error);
-      // setProfileImage("/default-profile.png");
     } finally {
       setProfileLoading(false);
     }
@@ -91,7 +96,6 @@ export default function Header() {
         sx={{
           minHeight:"50px",
           height:"10vh",
-          backgroundColor: isStartPage ? 'transparent' : 'rgb(243, 244, 246)', //Start 페이지일 때 투명 배경
         }}>
         <Box 
           component="img"   
@@ -101,23 +105,23 @@ export default function Header() {
           onClick={handleLogoClick}
           sx={{
             width:"100px",
-            mt: 3,
+            mt: 1,
         }}/>          
         <div className="flex items-center">
           {isAuthChecked ? (
             <CircularProgress size={24} />
           ) : !isLoggedIn ? (
             <Link href="/login">
-              <Button 
+              <CustomButton 
                 variant="contained"
                 className="font-bold h-10"
                 sx={{
                   color: 'white',
-                  borderColor: 'white' 
+                  borderColor: 'white',
                 }}
                 >
                 로그인
-              </Button>
+              </CustomButton>
             </Link>
           ) : (
             <Box>

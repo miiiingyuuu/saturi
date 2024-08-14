@@ -29,6 +29,7 @@ import { styled } from "@mui/material/styles"
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
 import api from "@/lib/axios";
+import CustomButton from '@/components/ButtonColor';
 
 type IsClickedState = {
   [key: number]: boolean;
@@ -540,7 +541,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       }}
                       sx={{ backgroundColor: "whitesmoke", borderRadius: "5px" }}
                     />
-                    <Button
+                    <CustomButton
                       variant="contained"
                       color="primary"
                       sx={{ ml: 1 }}
@@ -550,7 +551,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       }}
                     >
                       <SendIcon />
-                    </Button>
+                    </CustomButton>
                   </Box>
                 )}
             </>
@@ -714,7 +715,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         if (e.key === "Enter") sendMessage(`${chat}  `, setChat);
         }}
       />
-        <Button
+        <CustomButton
           variant="contained"
           onClick={() => {
           if (confirm("반복적인 중도 퇴장 시 제재를 받으실 수 있습니다. \n나가시겠습니까?")) {
@@ -733,7 +734,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           }}
         >
           <LogoutIcon />
-        </Button>
+        </CustomButton>
       </Box>
     </Box>
   </Box>

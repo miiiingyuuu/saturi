@@ -3,12 +3,13 @@ import Image from "next/image";
 import { Box, Typography, Button, Grid } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import CustomButton from '../ButtonColor';
 
 export default function Footer() {
   const router = useRouter();
 
   return (
-    <footer className="bg-gray-100 py-6">
+    <footer className="bg-gray-100 mt-20">
       <Box className="container mx-auto px-4">
         <Grid container alignItems="center" justifyContent="space-between">
           {/* 왼쪽: 저작권 정보 */}
@@ -34,13 +35,13 @@ export default function Footer() {
               />
               <Box className="flex gap-2">
                 <Link href="/" passHref>
-                  <Button variant="text" color="primary" size="small">Home</Button>
+                  <CustomButton variant="text" size="small">Home</CustomButton>
                 </Link>
                 <Link href="/register" passHref>
-                  <Button variant="text" color="primary" size="small">SignUP</Button>
+                  <CustomButton variant="text" size="small">SignUp</CustomButton>
                 </Link>
                 <Link href="/login" passHref>
-                  <Button variant="text" color="primary" size="small">LogIn</Button>
+                  <CustomButton variant="text" size="small">LogIn</CustomButton>
                 </Link>
               </Box>
             </Box>
@@ -56,7 +57,7 @@ export default function Footer() {
                 BackEnd 이진주 하재훈 허동원
               </Typography>
               <Typography variant="body2" className="text-gray-600 text-right">
-                FrontEnd 박동현 박민규 허태훈
+                FrontEnd 김도환 박동현 박민규 허태훈
               </Typography>
             </Box>
           </Grid>
