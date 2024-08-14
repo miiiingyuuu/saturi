@@ -32,3 +32,7 @@ export function formatTime(seconds: number) {
   const remainingSeconds = seconds % 60;
   return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
 }
+
+export function parseDate(dt: string) {
+  return dt.slice(2,10)
+}

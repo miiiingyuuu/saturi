@@ -193,7 +193,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
             }
             if (body.chatType === "ENTER" || body.chatType === "EXIT" || body.chatType === "START") {
               const yourStatus = body.participants?.find((p: UserProps) => p.nickName === getCookie("nickname"))
-              if (yourStatus !== undefined && yourStatus.isExited) {
+              if (!isEnd && yourStatus !== undefined && yourStatus.isExited) {
                 alert("퇴장한 방에 다시 입장하실 수 없습니다.")
                 router.replace("/")
               }

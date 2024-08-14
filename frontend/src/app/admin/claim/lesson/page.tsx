@@ -5,12 +5,14 @@ import { Typography, Box, CircularProgress, Alert, Table, TableBody, TableCell, 
 import api from '@/lib/axios';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
+import {parseDate} from "@/utils/utils";
 
 
 interface LessonClaim {
   lessonClaimId: number;
   lessonId: number;
-  userId: number;
+  userName: string;
+  // userId: number;
   content: string;
   claimDt: string;
 }
@@ -23,7 +25,8 @@ type HeadCell = {
 const headCells: HeadCell[] = [
   { id: "lessonClaimId", label: "신고 Id" },
   { id: "lessonId", label: "레슨 Id" },
-  { id: "userId", label: "유저 Id" },
+  { id: "userName", label: "유저"},
+  // { id: "userId", label: "유저 Id" },
   { id: "content", label: "신고 내용" },
   { id: "claimDt", label: "신고 일자" },
 ];
@@ -63,15 +66,6 @@ const LessonClaimsTable: React.FC<{ claims: LessonClaim[] }> = ({ claims }) => {
           onRequestSort={onRequestSort}
           headCells={headCells}
         />
-        {/* <TableHead> */}
-        {/*   <TableRow> */}
-        {/*     <TableCell>Claim ID</TableCell> */}
-        {/*     <TableCell>Lesson ID</TableCell> */}
-        {/*     <TableCell>User ID</TableCell> */}
-        {/*     <TableCell>Content</TableCell> */}
-        {/*     <TableCell>Claim Date</TableCell> */}
-        {/*   </TableRow> */}
-        {/* </TableHead> */}
         <TableBody>
           {rows.map((claim) => (
             <TableRow
@@ -82,9 +76,10 @@ const LessonClaimsTable: React.FC<{ claims: LessonClaim[] }> = ({ claims }) => {
                 {claim.lessonClaimId}
               </TableCell>
               <TableCell>{claim.lessonId}</TableCell>
-              <TableCell>{claim.userId}</TableCell>
+              <TableCell>{claim.userName}</TableCell>
+              {/*<TableCell>{claim.userId}</TableCell>*/}
               <TableCell>{claim.content}</TableCell>
-              <TableCell>{new Date(claim.claimDt).toLocaleString()}</TableCell>
+              <TableCell>{parseDate(claim.claimDt)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

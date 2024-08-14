@@ -2,13 +2,15 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip } from '@mui/material';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
+import {parseDate} from "@/utils/utils";
 
 interface UserReport {
   chatClaimId: number;
   gameLogId: number;
   userId: number;
+  nickname: string;
   roomId: number;
-  quizId: number;
+  // quizId: number;
   chatting: string;
   chattingDt: string;
   claimedDt: string;
@@ -29,14 +31,15 @@ type HeadCell = {
 
 const headCells: HeadCell[] = [
   { id: "chatClaimId", label: "Id" },
-  { id: "gameLogId", label: "게임 로그 Id" },
-  { id: "userId", label: "유저 Id" },
+  { id: "gameLogId", label: "로그Id" },
+  // { id: "userId", label: "유저 Id" },
+  {id: "nickname", label: "유저"},
   { id: "roomId", label: "채팅방 Id" },
-  { id: "quizId", label: "문제 Id" },
-  { id: "chatting", label: "신고 내용" },
+  // { id: "quizId", label: "문제 Id" },
+  { id: "chatting", label: "채팅" },
   { id: "chattingDt", label: "채팅 일시" },
   { id: "claimedDt", label: "신고 일시" },
-  { id: "isChecked", label: "확인 상태" },
+  // { id: "isChecked", label: "확인 상태" },
   { id: "checkedDt", label: "확인 일시" },
   { id: "actions", label: "작업" }
 ];
@@ -58,17 +61,18 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
             <TableRow key={report.chatClaimId}>
               <TableCell>{report.chatClaimId}</TableCell>
               <TableCell>{report.gameLogId}</TableCell>
-              <TableCell>{report.userId}</TableCell>
+              <TableCell>{report.nickname}</TableCell>
+              {/*<TableCell>{report.userId}</TableCell>*/}
               <TableCell>{report.roomId}</TableCell>
-              <TableCell>{report.quizId}</TableCell>
+              {/*<TableCell>{report.quizId}</TableCell>*/}
               <TableCell>
                 <Tooltip title={report.chatting} arrow>
                   <span>{report.chatting.length > 20 ? `${report.chatting.substring(0, 20)}...` : report.chatting}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell>{new Date(report.chattingDt).toLocaleString()}</TableCell>
-              <TableCell>{new Date(report.claimedDt).toLocaleString()}</TableCell>
-              <TableCell>{report.isChecked ? "확인됨" : "미확인"}</TableCell>
+              <TableCell>{parseDate(report.chattingDt)}</TableCell>
+              <TableCell>{parseDate(report.claimedDt)}</TableCell>
+              {/*<TableCell>{report.isChecked ? "확인됨" : "미확인"}</TableCell>*/}
               <TableCell>{report.checkedDt ? new Date(report.checkedDt).toLocaleString() : "-"}</TableCell>
               <TableCell>
                 <Button onClick={() => onDelete(report.chatClaimId)} disabled={report.isChecked}>Delete</Button>
