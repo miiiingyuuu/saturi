@@ -245,7 +245,7 @@ export default function SecondResult({
           </Box>
         </Box>
         <Box className="flex justify-center mx-24 py-4">
-          <CustomButton
+          <Button
             variant="contained"
             color="success"
             className="mx-2"
@@ -253,16 +253,16 @@ export default function SecondResult({
             disabled={isPrevDisabled}
           >
             이전 조각
-          </CustomButton>
-          <CustomButton
+          </Button>
+          <Button
             variant="contained"
             color="success"
             className="mx-2"
             onClick={handleAgain}
           >
             다시하기
-          </CustomButton>
-          <CustomButton
+          </Button>
+          <Button
             variant="contained"
             color="success"
             className="mx-2"
@@ -270,21 +270,21 @@ export default function SecondResult({
             disabled={isNextDisabled}
           >
             다음 조각
-          </CustomButton>
+          </Button>
         </Box>
         <Box className="flex justify-center mx-24 py-4">
-          <CustomButton
+          <Button
             variant="contained"
             color="success"
             className="w-full"
             onClick={handleHome}
           >
             Home
-          </CustomButton>
+          </Button>
         </Box>
       </Box>
       <Box className="flex justify-center mx-24 py-2">
-        <CustomButton
+        <Button
           className="mt-4 text-white px-8 py-4 rounded"
           variant="contained"
           sx={{
@@ -296,7 +296,7 @@ export default function SecondResult({
           onClick={beforestep}
         >
           이전
-        </CustomButton>
+        </Button>
       </Box>
     </Box>
   );

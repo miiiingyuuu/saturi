@@ -188,20 +188,20 @@ export default function App() {
                   />
                 )}
                 <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                  <CustomButton
+                  <Button
                     variant="contained"
                     onClick={handleNext}
                     sx={{ mt: 1, mr: 1 }}
                   >
                     {index === steps.length - 1 ? 'Finish' : 'Next'}
-                  </CustomButton>
-                  <CustomButton
+                  </Button>
+                  <Button
                     disabled={index === 0}
                     onClick={handleBack}
                     sx={{ mt: 1, ml: 1 }}
                   >
                     Back
-                  </CustomButton>
+                  </Button>
                 </Box>
               </StepContent>
             </Step>
