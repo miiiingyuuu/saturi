@@ -125,10 +125,17 @@ const Chatbot: React.FC = () => {
       }
     )
       .then(response => {
+        console.log(response.data)
         return response.data
-      }).then((response) => {
+      }).then((ans) => {
         setIsLoading(false)
-        addMessage("사투리무새", response+"...")
+      let answer
+      if (ans[ans.length - 1] === ".") {
+        answer = ans
+      } else {
+        answer = ans+"..."
+      }
+        addMessage("사투리무새", answer)
     })
       .catch((err) => {
         console.log(err)
