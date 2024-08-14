@@ -133,6 +133,8 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
           setIsLoading(false)
         }
       })
+      .catch(() => router.push("/"))
+
 
     // switch (true) {
     //   case getCookie("role") !== "ADMIN":

@@ -11,4 +11,5 @@ public class LessonSearch {
     private Long lessonGroupId;
     private Long locationId;
     private Long lessonCategoryId;
+    private String lessonName;
 }
