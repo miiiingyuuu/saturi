@@ -129,9 +129,13 @@ export default function CategorySelectPage() {
 
   return (
     <Box 
-      className="bg-gray-100"
+      className="bg-gray-100"      
       sx={{
-        width:"100%"
+        width:"100%",
+        backgroundImage: "url(/MainPage/mainBackground3.png)",
+        backgroundSize: "auto 100%",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <Box       
@@ -143,25 +147,11 @@ export default function CategorySelectPage() {
       }}>
 
         {/* 맨 왼쪽 */}
-        <Card
-          className="leftpartofjigsaw"
-          sx={{
-            display:"flex", 
-            flexDirection: "column", 
-            alignItems:"center", 
-            width:"10vw",
-            height:"50vh",
-            minWidth:"300px",           
-            minHeight:"500px",
-            border:"6px solid #4b2921",
-            borderRadius: "30px",
-          }}
-        >
-          <SideNavbar location={locationId} categoryId={categoryId} />
-        </Card>
+        <SideNavbar location={locationId} categoryId={categoryId} />
+        
 
         {/* 중간 */}
-        <Card
+        <Box
           className="middlepartofjigsaw"
           sx={{
             width: "30%",
@@ -169,8 +159,6 @@ export default function CategorySelectPage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            border:"6px solid #4b2921",
-            borderRadius: "30px",
           }}
         >
           {locationId && (
@@ -182,7 +170,7 @@ export default function CategorySelectPage() {
               progressData={progressData}
             />
           )}
-        </Card>
+        </Box>
 
         {/* 맨 오른쪽 */}
         <Card

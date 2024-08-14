@@ -84,15 +84,15 @@ export default function Icon({
   ];
 
   const colors = [
-    "#84b2ff",
-    "#fe4a49",
-    "#4b45fd",
-    "#43c942",
-    "#fea022",
-    "#52514f",
-    "#a48a4d",
-    "#3daacb",
-    "#823a86",
+    "#fe7e10",
+    "#fc2c45",
+    "#ffd301",
+    "#ffd301",
+    "#8e3bcb",
+    "#2e7d32",
+    "#f95aa2",
+    "#fc2c45",
+    "#fe7e10",
   ];
 
   const pathData = [
@@ -121,6 +121,7 @@ export default function Icon({
           vertical: "top",
           horizontal: "center",
         }}
+        disableScrollLock={true}
         sx={{
           mt: 2, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
       }}>
@@ -152,8 +153,8 @@ export default function Icon({
 
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="350"
-        height="350"
+        width="300"
+        height="300"
         x="0"
         y="0"
         viewBox="-379.86 -250.305 1356 1342"
@@ -174,8 +175,8 @@ export default function Icon({
             onMouseDown={() => setClickedIndex(index)}
             onMouseUp={() => setClickedIndex(null)}
             onMouseLeave={() => setClickedIndex(null)}
-            fill={colors[index]}
-            stroke="#7d7d7d"
+            fill= {colors[index]}
+            stroke="#414141"
             strokeMiterlimit="10"
             strokeWidth="10"
             d={d}

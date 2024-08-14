@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Box, ToggleButton, Typography } from "@mui/material";
+import { Box, Card, ToggleButton, Typography } from "@mui/material";
 import { useEffect } from "react";
 
 interface SideNavbarProps {
@@ -39,38 +39,60 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
     }, [categoryId])
 
   return (
-    <Box className="flex flex-col items-center" 
+
+
+
+
+
+    <Card
+      className="leftpartofjigsaw"
       sx={{
+        display:"flex", 
+        flexDirection: "column", 
+        alignItems:"center", 
+        width:"10vw",
+        height:"50vh",
+        minWidth:"300px",           
+        minHeight:"500px",
         padding:"20px",
+        border:"6px solid #4b2921",
+        borderRadius: "30px",
     }}>
       <Typography 
         sx={{ 
           fontSize: { xs:25, sm:28, md:32}, 
           fontWeight: "bold",
-          height:"15%",
+          height:"20%",
         }}>학습 
       </Typography>
-      <ol className="grid grid-cols-1 gap-4 m-0 p-0">
+      
+      <ol
+        style={{
+          height:"80%",
+          display:"flex",
+          flexDirection:"column",
+          justifyContent:"space-between",
+          paddingBottom:"30px",
+          paddingTop:"30px",
+      }}>
         {selectedCategories.map((category) => (
-          <ul key={category.id} className="p-0">
+          <ul key={category.id}>
             <Link href={`/lesson/${location}/${category.id}`}>
               <li className="flex justify-center">                
                 <ToggleButton
                   value={category.id}
                   sx={{
-                    width: "85%",
-                    height: "85%",
-                    borderRadius:"9px",
+                    height: "65px",
+                    borderRadius:"35px",
                     padding: 0,
-                    border: category.id === categoryId ? '3px solid #84d8ff' : 'none', // 테두리 색상 조건부 적용
+                    border: category.id === categoryId ? '5px solid #84d8ff' : '5px solid transparent', // 테두리 색상 조건부 적용
                   }}
                 >
                   <img
                     src={`/MainPage/learnButtonLong${category.id}.png`}
                     alt="Learn Button"
                     style={{
-                      width: "100%",
-                      height: "100%",
+                      height: "65px",
                     }}
                   />
                 </ToggleButton>
@@ -78,7 +100,7 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
             </Link>
           </ul>
         ))}
-      </ol>
-    </Box>
+      </ol>      
+    </Card>
   );
 }
