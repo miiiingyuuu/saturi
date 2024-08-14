@@ -130,7 +130,8 @@ export default function CategorySelectPage() {
     <Box 
       className="bg-gray-100"
     >
-      <Box       
+      <Container       
+        maxWidth="lg" 
         sx={{
           height: "90vh",    
           minHeight: "700px",
@@ -141,7 +142,6 @@ export default function CategorySelectPage() {
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
             width: "100%",
             height: "560px",
           }}
@@ -149,14 +149,13 @@ export default function CategorySelectPage() {
           {/* 맨 왼쪽 */}
           <Card
             sx={{
-              width: "20%",
-              height: "80%",
+              width: "25%",
+              height: "100%",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              border:"6px solid #4b2921",
-              borderRadius: "30px",
-              marginLeft:"25px",
+              border: "3px solid lightgray",
+              borderRadius: "8px",
             }}
           >
             <SideNavbar location={locationId} categoryId={categoryId} />
@@ -165,13 +164,13 @@ export default function CategorySelectPage() {
           {/* 중간 */}
           <Card
             sx={{
-              width: "40%",
+              width: "45%",
               height: "100%",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              border:"6px solid #4b2921",
-              borderRadius: "30px",
+              border: "3px solid lightgray",
+              borderRadius: "8px",
             }}
           >
             {locationId && (
@@ -188,17 +187,16 @@ export default function CategorySelectPage() {
           {/* 맨 오른쪽 */}
           <Card
             sx={{
-              width: "20%",
-              height: "80%",
+              width: "25%",
+              height: "100%",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center", // Center content vertically
               alignItems: "center", // Center content horizontally
               overflowY: "auto", // Allow scrolling if content overflows
-              border:"6px solid #4b2921",
-              borderRadius: "30px",
+              border: "3px solid lightgray",
+              borderRadius: "8px",
               padding: "10px", // Ensure there is padding inside the card
-              marginRight:"25px",
             }}
           >
             {selectedPuzzleId == null && (
@@ -214,7 +212,7 @@ export default function CategorySelectPage() {
             )}
           </Card>
         </Box>
-      </Box>
+      </Container>
       <Box>
         <Chatbot />
       </Box>
