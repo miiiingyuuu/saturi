@@ -46,6 +46,33 @@
 }
 
 
+.leftpartofjigsaw{
+  position: absolute;
+  transform: translateX(100%);
+  right: 95%;
+  transition:
+  left 1s ease,
+  right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+}
+
+.middlepartofjigsaw{
+  position: absolute;
+  right:50%;
+  transform: translateX(50%);
+  transition:
+  left 1s ease,
+  right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+
+}
+
+.rightpartofjigsaw{
+  position: absolute;  
+  right: 5%;
+  transition:
+  left 1s ease,
+  right 1s ease; /* left 속성이 1초 동안 서서히 변하도록 설정 */
+}
+
 
 
 .buttonLeft {

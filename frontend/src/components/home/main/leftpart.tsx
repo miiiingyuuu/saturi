@@ -79,30 +79,43 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
           } return "-30%";              
         })(),
     }}>   
-      
-     
       <Card 
         sx={{
           width: "300px",
+          height: "500px",
+          minWidth: "300px",
           minHeight: "500px",
           display:"flex",
           flexDirection:"column",
-          justifyContent:"center",
+          alignItems:"center",          
           border:"6px solid #4b2921",
           padding:"20px",
           borderRadius:"30px",
       }}>
-        <Box>
-          <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: "100%", borderRadius: "15px", marginTop:"5%"}}>
+        <Typography 
+          sx={{ 
+            fontSize: { xs:25, sm:28, md:32}, 
+            fontWeight: "bold",
+            height:"15%",
+          }}>학습 
+        </Typography>
+        <Box 
+          sx={{
+            height:"85%",
+            display:"flex",
+            flexDirection:"column",
+            justifyContent:"space-between",
+        }}>
+          <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: "75px", borderRadius: "15px"}}>
             <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{width: "250px", height: "75px", objectFit: 'cover' }} />
           </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: "100%", borderRadius: "15px", marginTop:"5%"}}>
+          <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: "75px", borderRadius: "15px"}}>
             <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{width: "250px", height: "75px", objectFit: 'cover' }} />
           </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: "100%", borderRadius: "15px", marginTop:"5%"}}>
+          <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: "75px", borderRadius: "15px"}}>
             <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{width: "250px", height: "75px", objectFit: 'cover' }} />
           </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: "100%", borderRadius: "15px", marginTop:"5%"}}>
+          <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: "75px", borderRadius: "15px"}}>
             <Box component="img" src="/MainPage/learnButton1.png" alt="" sx={{width: "250px", height: "75px", objectFit: 'cover' }} />
           </ButtonBase>
         </Box>
@@ -174,3 +187,4 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
 
   );
 }
+
