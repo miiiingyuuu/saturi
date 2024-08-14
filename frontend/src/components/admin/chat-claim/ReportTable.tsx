@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip, TextField } from '@mui/material';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
 import {parseDate} from "@/utils/utils";
@@ -37,8 +37,8 @@ const headCells: HeadCell[] = [
   { id: "roomId", label: "채팅방 Id" },
   // { id: "quizId", label: "문제 Id" },
   { id: "chatting", label: "채팅" },
-  { id: "chattingDt", label: "채팅 일시" },
-  { id: "claimedDt", label: "신고 일시" },
+  { id: "chattingDt", label: "채팅 및 신고일시" },
+  // { id: "claimedDt", label: "신고 일시" },
   // { id: "isChecked", label: "확인 상태" },
   { id: "checkedDt", label: "확인 일시" },
   { id: "actions", label: "작업" }
@@ -61,18 +61,21 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
             <TableRow key={report.chatClaimId}>
               <TableCell>{report.chatClaimId}</TableCell>
               <TableCell>{report.gameLogId}</TableCell>
-              <TableCell>{report.nickname}</TableCell>
-              {/*<TableCell>{report.userId}</TableCell>*/}
               <TableCell>{report.roomId}</TableCell>
-              {/*<TableCell>{report.quizId}</TableCell>*/}
+              <TableCell>{report.nickname}</TableCell>
               <TableCell>
                 <Tooltip title={report.chatting} arrow>
                   <span>{report.chatting.length > 20 ? `${report.chatting.substring(0, 20)}...` : report.chatting}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell>{parseDate(report.chattingDt)}</TableCell>
-              <TableCell>{parseDate(report.claimedDt)}</TableCell>
-              {/*<TableCell>{report.isChecked ? "확인됨" : "미확인"}</TableCell>*/}
+              <TableCell>
+                <TextField>
+                  {new Date(report.chattingDt).toLocaleString()}
+                </TextField>
+                <TextField>
+                  {new Date(report.claimedDt).toLocaleString()}
+                </TextField>
+              </TableCell>
               <TableCell>{report.checkedDt ? new Date(report.checkedDt).toLocaleString() : "-"}</TableCell>
               <TableCell>
                 <Button onClick={() => onDelete(report.chatClaimId)} disabled={report.isChecked}>Delete</Button>
