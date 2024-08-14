@@ -154,11 +154,15 @@ public class LessonService {
 
             // lessonGroup score
             LessonGroupResultEntity lgr = lessonGroupResultMap.get(lessonGroupResultId);
-            Long avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+            Long avgAccuracy = 0L;
+            if(lgr.getAvgAccuracy() == null || lgr.getAvgSimilarity() == null) {
+                avgAccuracy = 0L;
+            } else{
+                avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+            }
 
             // DTO 변환
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lgr.getLessonGroup().getLessonGroupId(), lgr.getLessonGroup().getName(), groupProcess, avgAccuracy);
-            log.info("어디 출신 미시시피 {}", dto.toString());
             result.add(dto);
         }
 
@@ -169,7 +173,6 @@ public class LessonService {
                 if(lessonGroupResultNoLearn.get(lg.getLessonGroupId())) continue;
             }
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
-            log.info("부모님은 완전 부자 {}", dto.toString());
             result.add(dto);
         }
         // 유저가 학습하지 않은 레슨 그룹은 마지막에 추가하기 때문에 퍼즐의 순서가 섞임
