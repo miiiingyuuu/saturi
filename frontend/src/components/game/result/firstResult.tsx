@@ -59,7 +59,7 @@ export default function firstResult({
           }}>
           {/* 등수 표시 */}
           <Box sx={{
-            height:"13%",            
+            height:"12%",            
             display:"flex",
             justifyContent:"center",
             alignItems:"center",
@@ -79,7 +79,7 @@ export default function firstResult({
           <Box 
             sx={{
               overflow:"hidden",
-              height:"87%",
+              height:"88%",
               display:"flex",
               flexDirection:"column",
               justifyContent:"space-around",

@@ -115,7 +115,7 @@ export default function FirstResult({
           key={index}
           className="flex flex-row items-center justify-between p-2"
           sx={{ 
-            height: '14vh', 
+            height: '13vh', 
             borderTop: "2px solid lightgray"
           }}>
           {/* Chart Box */}
@@ -192,7 +192,7 @@ export default function FirstResult({
 
      
     </Box>
-    <Box className="flex justify-center mx-24 py-1">
+    <Box className="flex justify-center mx-24">
       <Button
         className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
         variant="contained"

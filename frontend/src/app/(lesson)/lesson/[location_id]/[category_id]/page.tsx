@@ -132,7 +132,7 @@ export default function CategorySelectPage() {
       className="bg-gray-100"      
       sx={{
         width:"100%",
-        backgroundImage: "url(/MainPage/mainBackground3.png)",
+        backgroundImage: "url(/MainPage/mainBackground.png)",
         backgroundSize: "auto 100%",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",

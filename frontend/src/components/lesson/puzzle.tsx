@@ -85,7 +85,7 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
       </Box>
 
       {/* 두 번째: 직소 */}
-      <Box sx={{display:"flex", justifyContent:"center"}}>
+      <Box sx={{display:"flex", justifyContent:"center", marginBottom:"30px"}}>
         {/* 
           <<변동사항 설명>>
           puzzlePiece 부분을 아예 사용하지 않고 jigsaw로 대체함. 
