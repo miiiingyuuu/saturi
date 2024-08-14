@@ -55,7 +55,7 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
   return (
     <Box sx={{ borderRadius: '16px' }}>
       <Typography variant='h6' gutterBottom>최근 푼 문제</Typography>
-      {data ? (
+      {data?.lessonGroupId ? (
         <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
           <Avatar 
             sx={{ 

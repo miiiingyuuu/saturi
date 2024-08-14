@@ -23,6 +23,7 @@ import api from "@/lib/axios";
 import apiAi from "@/lib/axiosAI";
 import toWav from "audiobuffer-to-wav";
 import Chatbot from "@/components/chatbot/chatbot";
+import CustomButton from "@/components/ButtonColor";
 
 export default function LessonPage() {
   interface Lesson {
@@ -704,12 +705,12 @@ export default function LessonPage() {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseModal} color="primary">
+            <CustomButton onClick={handleCloseModal} color="primary">
               취소
-            </Button>
-            <Button onClick={handleClaim} color="primary">
+            </CustomButton>
+            <CustomButton onClick={handleClaim} color="primary">
               제출
-            </Button>
+            </CustomButton>
           </DialogActions>
         </Dialog>
       </Card>

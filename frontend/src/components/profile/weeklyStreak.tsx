@@ -47,7 +47,7 @@ const WeeklyStreak: React.FC<WeeklyStreakProps> = ({ data, isLoading }) => {
           <Typography variant="body1" sx={{ mt: 2 }}>24년 {formattedDate}</Typography>
         </Grid>
         <Grid item xs={12} md={7}>
-          <Box display="flex" gap={5} sx={{ overflowX: 'auto' }}>
+          <Box display="flex" gap={3} sx={{ overflowX: 'auto' }}>
             {daysOfWeek.map((day, index) => (
               <Box key={day} textAlign="center" sx={{ minWidth: '50px' }}>
                 <Typography variant="body2">{day}</Typography>
