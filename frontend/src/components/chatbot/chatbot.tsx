@@ -16,7 +16,8 @@ import FlutterDashIcon from '@mui/icons-material/FlutterDash';
 import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown, { Components } from 'react-markdown';
 import Image from 'next/image';
-import chatbotImage from '/public/chatbot.png'; // 이미지 경로를 적절히 수정해주세요
+import chatbotImage from '/public/chatbot.png';
+import axios from "axios"; // 이미지 경로를 적절히 수정해주세요
 
 const INITIAL_MESSAGE = {
     sender: '사투리무새',
@@ -28,10 +29,11 @@ const Chatbot: React.FC = () => {
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState<{sender: string, content: string}[]>([INITIAL_MESSAGE]);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
+  const [ answer, setAnswer ] = useState("")
+  const [ isLoading, setIsLoading ] = useState(false)
   const chatbotRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const toggleChatbot = () => {
     setChatbotVisible(!chatbotVisible);
     if (!chatbotVisible) {
@@ -47,57 +49,101 @@ const Chatbot: React.FC = () => {
     setMessages(prevMessages => [...prevMessages, newMessage]);
   };
 
-  const fetchAIResponse = async (prompt: string) => {
-    const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-    const apiEndpoint = "https://api.openai.com/v1/chat/completions";
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "ft:gpt-4o-mini-2024-07-18:personal::9vENm4j6",
+  // const fetchAIResponse = async (prompt: string) => {
+  //   const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  //   const apiEndpoint = "https://api.openai.com/v1/chat/completions";
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${apiKey}`,
+  //     },
+  //     body: JSON.stringify({
+  //       model: "ft:gpt-4o-mini-2024-07-18:personal::9vENm4j6",
+  //       messages: [
+  //         {
+  //           role: "system",
+  //           content: `
+  //            GPT는 경상도 사투리를 표준어로 번역하는 역할을 합니다. 다음 사항을 유념해 주세요:
+  //       1. 사용자가 경상도 사투리를 입력하면 표준어로 번역된 의미를 제공합니다.
+  //       2. 번역이 정확하고 자연스러워야 합니다.
+  //       3. 가능한 한 정확한 정보를 제공하기 위해 국립국어원의 방언 찾기 시스템을 참고합니다.
+  //       4. 번역된 문장은 이해하기 쉬워야 하고, 가능한 한 표준어로 자연스럽게 표현되어야 합니다.
+  //       5. 모호한 경우에는 명확한 해설을 추가합니다.
+  //       6. 모호한 사투리나 다의어의 경우, 추가적인 설명을 요청할 수 있습니다.
+  //       7. 친근하고 도움이 되는 어조로 대화합니다.
+  //     `,
+  //         },
+  //         { role: "user", content: prompt },
+  //       ],
+  //       temperature: 0.8,
+  //       max_tokens: 1024,
+  //       top_p: 1,
+  //       frequency_penalty: 0.5,
+  //       presence_penalty: 0.5,
+  //     }),
+  //   };
+  //   setIsLoading(true)
+  //   try {
+  //     const response = await fetch(apiEndpoint, requestOptions);
+  //     const data = await response.json();
+  //     return data.choices[0].message.content;
+  //   } catch (error) {
+  //     console.error("OpenAI API 호출 중 오류 발생:", error);
+  //     return "OpenAI API 호출 중 오류 발생";
+  //   }
+  // };
+  // const sendMessage = async () => {
+  //   if (userMessage.trim().length === 0) return;
+  //   addMessage("나", userMessage);
+  //   setUserMessage('');
+  //   const aiResponse = await fetchAIResponse(userMessage);
+  //   addMessage("사투리무새", aiResponse);
+  //   setIsLoading(false)
+  // };
+
+  function sendMessage() {
+    if (userMessage.trim().length === 0) return;
+
+    addMessage("나", userMessage)
+
+    axios.post(
+      "https://clovastudio.stream.ntruss.com/testapp/v1/chat-completions/HCX-003",
+      {
         messages: [
           {
-            role: "system",
-            content: `
-             GPT는 경상도 사투리를 표준어로 번역하는 역할을 합니다. 다음 사항을 유념해 주세요:
-        1. 사용자가 경상도 사투리를 입력하면 표준어로 번역된 의미를 제공합니다. 
-        2. 번역이 정확하고 자연스러워야 합니다.
-        3. 가능한 한 정확한 정보를 제공하기 위해 국립국어원의 방언 찾기 시스템을 참고합니다.
-        4. 번역된 문장은 이해하기 쉬워야 하고, 가능한 한 표준어로 자연스럽게 표현되어야 합니다.
-        5. 모호한 경우에는 명확한 해설을 추가합니다.
-        6. 모호한 사투리나 다의어의 경우, 추가적인 설명을 요청할 수 있습니다.
-        7. 친근하고 도움이 되는 어조로 대화합니다.
-      `,
+            role: "user",
+            content: userMessage,
           },
-          { role: "user", content: prompt },
         ],
-        temperature: 0.8,
-        max_tokens: 1024,
-        top_p: 1,
-        frequency_penalty: 0.5,
-        presence_penalty: 0.5,
-      }),
-    };
-    try {
-      const response = await fetch(apiEndpoint, requestOptions);
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (error) {
-      console.error("OpenAI API 호출 중 오류 발생:", error);
-      return "OpenAI API 호출 중 오류 발생";
-    }
-  };
+      },
+      {
+        headers: {
+          "X-NCP-CLOVASTUDIO-API-KEY": process.env.NEXT_PUBLIC_CLOVA_API_KEY,
+          "X-NCP-APIGW-API-KEY": process.env.NEXT_PUBLIC_CLOVA_GW_API_KEY,
+          "X-NCP-CLOVASTUDIO-REQUEST-ID": process.env.NEXT_PUBLIC_REQUEST_ID,
+          "Content-Type": "application/json"
+        },
+      }
+    )
+      .then(response => {
+        console.log(response.data)
+          setAnswer(response.data.result.message.content)
+      })
+      .catch((err) => {
+        console.log(err)
+        setAnswer("OpenAI API 호출 중 오류 발생");
+      })
+      .finally(() => {
+          setIsLoading(false)
+          setUserMessage("");
+          addMessage("사투리무새", answer)
+        }
+      )
+  }
 
-  const sendMessage = async () => {
-    if (userMessage.trim().length === 0) return;
-    addMessage("나", userMessage);
-    setUserMessage('');
-    const aiResponse = await fetchAIResponse(userMessage);
-    addMessage("사투리무새", aiResponse);
-  };
+
+
 
   useEffect(() => {
     if (chatMessagesRef.current) {
@@ -243,6 +289,7 @@ const Chatbot: React.FC = () => {
             <TextField
               fullWidth
               variant="outlined"
+              disabled={isLoading}
               placeholder="메시지를 입력하세요..."
               value={userMessage}
               onChange={(e) => setUserMessage(e.target.value)}

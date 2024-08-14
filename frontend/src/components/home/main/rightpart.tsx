@@ -65,29 +65,53 @@ export default function RightPart({selectedRegion} : RightPartProps) {
           display:"flex", 
           flexDirection: "column", 
           alignItems:"center", 
-          width:"300px", 
+          width:"10vw",
+          height:"50vh",
+          minWidth:"300px",           
+          minHeight:"500px",
           border:"6px solid #4b2921",
           padding:"20px",
           borderRadius:"30px",
         }}>
         {/* 게임 페이지 */}
-        {/* <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold", marginBottom:"10px" }}>게임 페이지</Typography> */}
+        <Typography 
+          sx={{ 
+            fontSize: { xs:25, sm:28, md:32}, 
+            fontWeight: "bold",
+            height:"15%",
+          }}>게임 
+        </Typography>
 
-        {/* 게임 프로필 */}
-        <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
-          <UserTierRank/>                    
-        </Box>
-
-        {/* 게임 시작 버튼 */}
-        <CustomButton 
-          variant="contained"
-          onClick={GameStartButton}
+        <Box 
           sx={{
-            marginTop: "50px", 
-            width: "200px", 
-            height: "50px", 
-            fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
-        }}> 게임 시작 </CustomButton>
+            height:"85%",
+            display:"flex",
+            flexDirection:"column",
+            justifyContent: "space-between",
+            alignItems:"center",
+            
+        }}>
+          {/* 게임 프로필 */}
+          <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
+            <UserTierRank/>                    
+          </Box>
+
+          {/* 게임 시작 버튼 */}
+          <Button 
+            variant="contained"
+            onClick={GameStartButton}
+            sx={{
+              backgroundColor:"success.light",
+              '&:hover': { backgroundColor: 'green' },
+              '&:active': { backgroundColor: 'green' },
+              '&:focus': { backgroundColor: 'success' },
+              width: "200px", 
+              height: "50px", 
+              fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
+          }}> 게임 시작 
+          </Button>
+        </Box>
+        
       </Card>
 
 

@@ -47,6 +47,7 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    setProgress(totalProgress)
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
         if (oldProgress >= totalProgress) {
@@ -65,7 +66,6 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
 
   return (
     <Box>
-
       {/* 첫 번째: 프로그레스 바 */}
       <Box className="grid">
         <LinearProgress
@@ -75,7 +75,7 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
           aria-label="progress bar"
           sx={{
             height: 8, // 원하는 높이로 설정
-            border: "5px solid litegray",
+            border: "3px solid #414141",
             borderRadius: 5, // 테두리를 둥글게 설정
             "& .MuiLinearProgress-bar": {
               borderRadius: 5, // 진행 바 자체도 둥글게 설정
@@ -85,7 +85,7 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
       </Box>
 
       {/* 두 번째: 직소 */}
-      <Box sx={{display:"flex", justifyContent:"center"}}>
+      <Box sx={{display:"flex", justifyContent:"center", marginBottom:"30px"}}>
         {/* 
           <<변동사항 설명>>
           puzzlePiece 부분을 아예 사용하지 않고 jigsaw로 대체함. 

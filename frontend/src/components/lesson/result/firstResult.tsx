@@ -80,7 +80,7 @@ export default function FirstResult({
       >
         <Box className="flex w-2/5 ml-2 justify-center">
           <Typography variant="caption" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
-            그래프
+            억양 분석
           </Typography>
         </Box>
 
@@ -104,7 +104,7 @@ export default function FirstResult({
             className="flex flex-col items-center"
           >          
             <Typography variant="caption" className="text-center" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
-              대사
+              억양
             </Typography>
           </Box>
         </Box>
@@ -116,7 +116,7 @@ export default function FirstResult({
           key={index}
           className="flex flex-row items-center justify-between p-2"
           sx={{ 
-            height: '14vh', 
+            height: '13vh', 
             borderTop: "2px solid lightgray"
           }}>
           {/* Chart Box */}
@@ -193,8 +193,8 @@ export default function FirstResult({
 
      
     </Box>
-    <Box className="flex justify-center mx-24 py-1">
-      <CustomButton
+    <Box className="flex justify-center mx-24">
+      <Button
         className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
         variant="contained"
         sx={{
