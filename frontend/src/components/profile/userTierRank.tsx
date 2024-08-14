@@ -115,7 +115,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
       p: 2.5, 
       borderRadius: '16px',
       position: 'relative',
-      height: isHorizontal ? 'auto' : '300px',
+      height: isHorizontal ? 'auto' : '280px',
       display: 'flex',
       flexDirection: isHorizontal ? 'row' : 'column',
       alignItems: 'center',
@@ -125,7 +125,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
       {!isHorizontal && (
         <Box sx={{ top: 16, left: 16, display: 'flex', alignItems: 'center', marginTop: 2 }}>
           <FaCrown style={{ color: 'gold', marginRight: 8, fontWeight: 'bold' }} />
-          <Typography variant="h6" fontWeight="bold" >
+          <Typography variant='body1' fontWeight="bold" >
             {userExpInfo?.userRank ? `전체 ${userExpInfo.userRank}위` : 'UnRanked'}
           </Typography>
         </Box>
@@ -161,8 +161,8 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
         {isHorizontal && (
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <FaCrown style={{ color: 'gold', marginRight: 8, fontWeight: 'bold' }} />
-            <Typography variant="body2" fontWeight="bold" >
-              {userExpInfo?.userRank ? `전체 ${userExpInfo.userRank}위` : 'Out of Rank'}
+            <Typography variant="body1" fontWeight="bold" >
+              {userExpInfo?.userRank ? `전체 ${userExpInfo.userRank}위` : 'UnRanked'}
             </Typography>
           </Box>
         )}
@@ -170,7 +170,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
           {tierName}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-          <Typography variant={isHorizontal ? "body2" : "h6"} color="text.secondary" sx={{ mb: isHorizontal ? 0 : 1 }}>
+          <Typography variant={isHorizontal ? "body1" : "h6"} color="text.secondary" sx={{ mb: isHorizontal ? 0 : 1 }}>
             {`${userExpInfo?.currentExp || 0} EXP`}
           </Typography>
         </Box>
@@ -179,9 +179,9 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
             marginBottom:"15px",
           }}>
           {!isHorizontal && (
-              <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+              <Typography variant="body1" color="text.secondary" sx={{ mr: 1 }}>
                 {isMaxTier 
-                  ? "최고 티어입니다"
+                  ? "최고 티어입니다!"
                   : expToNextTier !== null ? `Next: ${expToNextTier} EXP` : ""}
               </Typography>
             )}
