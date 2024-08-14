@@ -87,7 +87,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
           headCells={headCells}
         />
         <TableBody>
-          {rows.map((report) => (
+          {displayedRows.map((report) => (
             <TableRow key={report.chatClaimId}>
               <TableCell>{report.chatClaimId}</TableCell>
               <TableCell>{report.gameLogId}</TableCell>

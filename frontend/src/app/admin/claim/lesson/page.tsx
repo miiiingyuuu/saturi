@@ -98,7 +98,7 @@ const LessonClaimsTable: React.FC<{ claims: LessonClaim[] }> = ({ claims }) => {
           headCells={headCells}
         />
         <TableBody>
-          {rows.map((claim) => (
+          {displayedRows.map((claim) => (
             <TableRow
               key={claim.lessonClaimId}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

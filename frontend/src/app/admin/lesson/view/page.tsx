@@ -87,7 +87,7 @@ export default function App() {
           headCells={headCells}
         />
         <TableBody>
-          {rows.map((row) => (
+          {displayedRows.map((row) => (
             <TableRow key={row.lessonId}>
               <TableCell >{row.lessonId}</TableCell>
               <TableCell >{row.lessonGroupId}</TableCell>
