@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Box, ToggleButton } from "@mui/material";
+import { Box, ToggleButton, Typography } from "@mui/material";
 import { useEffect } from "react";
 
 interface SideNavbarProps {
@@ -39,12 +39,22 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
     }, [categoryId])
 
   return (
-    <Box className="flex flex-col items-center">
+    <Box className="flex flex-col items-center" 
+      sx={{
+        padding:"20px",
+    }}>
+      <Typography 
+        sx={{ 
+          fontSize: { xs:25, sm:28, md:32}, 
+          fontWeight: "bold",
+          height:"15%",
+        }}>학습 
+      </Typography>
       <ol className="grid grid-cols-1 gap-4 m-0 p-0">
         {selectedCategories.map((category) => (
           <ul key={category.id} className="p-0">
             <Link href={`/lesson/${location}/${category.id}`}>
-              <li className="flex justify-center">
+              <li className="flex justify-center">                
                 <ToggleButton
                   value={category.id}
                   sx={{

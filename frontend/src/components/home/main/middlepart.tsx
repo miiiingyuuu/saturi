@@ -7,7 +7,7 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
     <Box 
       className="middlepart" 
       style={{        
-        backgroundImage: "url(/MainPage/mainBackground.png)",
+        backgroundImage: "url(/MainPage/mainBackground2.png)",
         backgroundSize: "auto 100%",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",

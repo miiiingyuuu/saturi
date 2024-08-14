@@ -110,45 +110,44 @@ export default function Icon({
   return (
     <Box>
       <Popover
-  open={open}
-  onClose={jigsawClose}
-  anchorEl={anchorEl}
-  anchorOrigin={{
-    vertical: "center",
-    horizontal: "center",
-  }}
-  transformOrigin={{
-    vertical: "top",
-    horizontal: "center",
-  }}
-  sx={{
-    mt: 2, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
-  }}
->
-  <Box className="p-1 rounded-full" sx={{ margin: "15px" }}>
-    {dataGroup[selectedIndex.current]?.lessons.length > 0 ? (
-      <>
-        <Typography variant="h6" className="font-bold text-center">
-          {progressData[selectedIndex.current].lessonGroupName}
-        </Typography>
-        <Typography variant="subtitle1">
-          달성율 : {progressData[selectedIndex.current].groupProgress}%
-        </Typography>
-        <Box className="flex justify-center pt-3">
-          <Button variant="contained" color="primary" onClick={startLesson}>
-            Start
-          </Button>
+        open={open}
+        onClose={jigsawClose}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        sx={{
+          mt: 2, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
+      }}>
+        <Box className="p-1 rounded-full" sx={{ margin: "15px" }}>
+          {dataGroup[selectedIndex.current]?.lessons.length > 0 ? (
+            <>
+              <Typography variant="h6" className="font-bold text-center">
+                {progressData[selectedIndex.current].lessonGroupName}
+              </Typography>
+              <Typography variant="subtitle1">
+                달성율 : {progressData[selectedIndex.current].groupProgress}%
+              </Typography>
+              <Box className="flex justify-center pt-3">
+                <Button variant="contained" color="primary" onClick={startLesson}>
+                  Start
+                </Button>
+              </Box>
+            </>
+          ) : (
+            <Box className="flex justify-center">
+              <Typography variant="body2" color="textSecondary">
+                준비중입니다
+              </Typography>
+            </Box>
+          )}
         </Box>
-      </>
-    ) : (
-      <Box className="flex justify-center">
-        <Typography variant="body2" color="textSecondary">
-          준비중입니다
-        </Typography>
-      </Box>
-    )}
-  </Box>
-</Popover>
+      </Popover>
 
 
       <svg
@@ -178,7 +177,7 @@ export default function Icon({
             fill={colors[index]}
             stroke="#7d7d7d"
             strokeMiterlimit="10"
-            strokeWidth="2"
+            strokeWidth="10"
             d={d}
           />
         ))}
