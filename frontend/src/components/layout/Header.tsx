@@ -26,6 +26,8 @@ export default function Header() {
   const [nickname, setNickName] = useState<string | null>(null);
   const logout = useLogout();
 
+  const isStartPage = pathname === '/start' || pathname === '/';
+
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -85,10 +87,11 @@ export default function Header() {
   return (
     <header className="w-full">
       <Box 
-        className="flex items-center justify-between px-8 bg-gray-100" 
+        className="flex items-center justify-between px-8" 
         sx={{
           minHeight:"50px",
           height:"10vh",
+          backgroundColor: isStartPage ? 'transparent' : 'rgb(243, 244, 246)', //Start 페이지일 때 투명 배경
         }}>
         <Box 
           component="img"   
@@ -97,14 +100,22 @@ export default function Header() {
           alt = "SSLogo"
           onClick={handleLogoClick}
           sx={{
-            width:"100px"
+            width:"100px",
+            mt: 3,
         }}/>          
         <div className="flex items-center">
           {isAuthChecked ? (
             <CircularProgress size={24} />
           ) : !isLoggedIn ? (
             <Link href="/login">
-              <Button variant="contained" className="font-bold h-10">
+              <Button 
+                variant="contained"
+                className="font-bold h-10"
+                sx={{
+                  color: 'white',
+                  borderColor: 'white' 
+                }}
+                >
                 로그인
               </Button>
             </Link>

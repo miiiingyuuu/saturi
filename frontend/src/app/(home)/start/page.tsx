@@ -9,16 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { styled } from '@mui/system'
-
-const ContentContainer = styled(Box)({
-  position: 'relative',
-  zIndex: 1,
-  color: 'white',
-  padding: '2rem',
-  maxWidth: '1200px',
-  margin: '0 auto',
-});
-
+import { spacing } from '@mui/system';
 
 const AnimatedText: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
   const [ref, isVisible] = useIntersectionObserver({ threshold: 0.1 });
@@ -58,24 +49,32 @@ export default function Start() {
   };
 
   return (
-    <Box className="bg-gray-100">
-      <Box sx={{
+    <Box className="bg-gray-100" sx={{ p: '0 !important', m: '0 !important' }}>
+      <Box 
+        sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 20px',
       }}>
-        <main className="flex flex-col items-center text-center my-[150px] text-black w-full">
-          <Box className="content w-full">
+        <main
+          className="flex flex-col items-center text-center mb-[150px] text-black w-full"
+          style={{
+            background: `
+              linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgb(243, 244, 246) 100%),
+              url('/background2.webp') no-repeat center center / cover
+            `,
+            minHeight: '66vh',
+            paddingTop: '50px',
+          }}
+          >
+          <Box className="content w-full" sx={{ mt: '10%' }}>
             <AnimatedText delay={0}>
-              <Typography variant="h1" className="text-5xl m-0">
+              <Typography variant="h1" className="text-5xl m-0" sx={{ fontWeight: 'bold' }}>
                 실시간 음성 분석, 게임으로
               </Typography>
             </AnimatedText>
             <AnimatedText delay={0.3}>
-              <Typography variant="h1" className="text-5xl m-0">
+              <Typography variant="h1" className="text-5xl m-0 mb-10">
                 사투리를 재미있게 배워보세요.
               </Typography>
             </AnimatedText>
@@ -95,9 +94,10 @@ export default function Start() {
                     height: '60px',
                     margin: '30px 0',
                     padding: '5px 15px',
+                    backgroundColor: '#d2e1ff',
                   }}
                 >
-                  회원 가입
+                  시작하기
                 </Button>
               </Link>
             </AnimatedText>
@@ -123,12 +123,13 @@ export default function Start() {
         </main>
       <Box
         component="img"
-        src="/app/(home)/start/startPageExample.png"
+        src="/content1.png"
         alt="Start Page Example"
         sx={{
-          width: '80%',  
+          width: '70%',  
           marginBottom: "15%",
           maxWidth: '100%',
+          borderRadius: '15px'
         }}
       />          
 
@@ -213,7 +214,7 @@ export default function Start() {
               padding: '5px 15px',
             }}
           >
-            회원 가입
+            시작하기
           </Button>
         </Link>
       </Box>
@@ -232,7 +233,7 @@ export default function Start() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography sx={{ width: '100%', flexShrink: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>
-              사투리가 서툴러유는 실시간 녹음을 통해 발음 정확도와 억양 유사도를 분석하여 사투리와 얼마나 유사한지 보여줍니다. 또한 실시간 채팅 게임을 통해 다른 사람들과 경쟁을 해보세요.
+              사투리가 서툴러유는 실시간 녹음을 통해 발음 정확도와 억양 유사도를 분석하여 사투리와 얼마나 유사한지 보여줍니다. 또한 실시간 스피드 퀴즈 게임을 통해 다른 사람들과 경쟁을 해보세요.
             </Typography>
           </AccordionDetails>
         </Accordion>

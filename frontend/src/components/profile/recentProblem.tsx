@@ -54,7 +54,7 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
 
   return (
     <Box sx={{ borderRadius: '16px' }}>
-      <Typography variant="h6" gutterBottom>최근 푼 문제</Typography>
+      <Typography variant='h6' gutterBottom>최근 푼 문제</Typography>
       {data ? (
         <Box display="flex" alignItems="center" sx={{ mt: 3 }}>
           <Avatar 
@@ -72,8 +72,8 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
           </Avatar>
           <Box flexGrow={1}>
             <Typography variant="body1">{getDisplayName(data.lessonGroupName)}</Typography>
-            <LinearProgress variant="determinate" value={data.avgAccuracy || 0} />
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <LinearProgress sx={{ mt: 0.5 }} variant="determinate" value={data.avgAccuracy || 0} />
+            <Typography variant="body1" sx={{ mt: 1 }}>
               평균 정확도: {data.avgAccuracy ? `${data.avgAccuracy.toFixed(2)}%` : '데이터가 아직 없어요...'}
             </Typography>
           </Box>
@@ -83,7 +83,7 @@ const RecentProblem: React.FC<RecentProblemProps> = ({ data, isLoading }) => {
           <Avatar sx={{ bgcolor: 'grey', mr: 2 }}>-</Avatar>
           <Box flexGrow={1}>
             <Typography variant="body1">최근에 학습한 문제가 없어요...</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <Typography variant="body1" sx={{ mt: 1 }}>
               새로운 문제를 풀어보세요!
             </Typography>
           </Box>
