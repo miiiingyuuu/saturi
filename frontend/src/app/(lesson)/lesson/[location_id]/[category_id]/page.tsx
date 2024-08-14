@@ -134,7 +134,8 @@ export default function CategorySelectPage() {
         width:"100%"
       }}
     >
-      <Box       
+      <Container       
+        maxWidth="lg" 
         sx={{
           height: "90vh",    
           minHeight: "700px",

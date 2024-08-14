@@ -47,6 +47,7 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    setProgress(totalProgress)
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
         if (oldProgress >= totalProgress) {
@@ -65,7 +66,6 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
 
   return (
     <Box>
-
       {/* 첫 번째: 프로그레스 바 */}
       <Box className="grid">
         <LinearProgress
