@@ -6,7 +6,41 @@ import Image from "next/image";
 import { Button, Accordion, AccordionDetails, AccordionSummary, Typography, Box  } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { styled } from '@mui/system'
+
+const ContentContainer = styled(Box)({
+  position: 'relative',
+  zIndex: 1,
+  color: 'white',
+  padding: '2rem',
+  maxWidth: '1200px',
+  margin: '0 auto',
+});
+
+
+const AnimatedText: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
+  const [ref, isVisible] = useIntersectionObserver({ threshold: 0.1 });
+
+  return (
+    <Box 
+      ref={ref as React.RefObject<HTMLDivElement>}
+      sx={{
+        opacity: 0,
+        transform: 'translateY(20px)',
+        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        transitionDelay: `${delay}s`,
+        ...(isVisible && {
+          opacity: 1,
+          transform: 'translateY(0)',
+        }),
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
 
 export default function Start() {
   const [expanded, setExpanded] = React.useState<string | false>(false);
@@ -24,108 +58,168 @@ export default function Start() {
   };
 
   return (
-    <Box className="flex flex-col justify-center items-center bg-cover bg-center text-white max-w-[1200px] w-full px-5 box-border mx-auto">
-      <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
-        <Box className="content">
-          <Typography variant="h1" sx = {{ fontWeight:"bold" }} className="text-5xl m-0">실시간 음성 분석, 채팅으로</Typography>
-          <Typography variant="h3" className="text-5xl m-0">사투리를 재미있게 배워보세요.</Typography>
-          <Typography variant="body1" className="text-2xl my-5 mb-[70px] font-bold">
-            사투리를 배워볼 준비가 되셨나요? 서비스를 이용하기 위해 회원가입 하세요.
-          </Typography>
-          <Link href="/login">
-            <Button 
-              variant="contained"
-              className="text-2xl font-bold w-[450px] h-[70px] m-[10px_20px] p-[5px_15px]"
-            >
-              회원 가입
-            </Button>
-          </Link>
-        </Box>
-      </main>
+    <Box className="bg-gray-100">
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 20px',
+      }}>
+        <main className="flex flex-col items-center text-center my-[150px] text-black w-full">
+          <Box className="content w-full">
+            <AnimatedText delay={0}>
+              <Typography variant="h1" className="text-5xl m-0">
+                실시간 음성 분석, 게임으로
+              </Typography>
+            </AnimatedText>
+            <AnimatedText delay={0.3}>
+              <Typography variant="h1" className="text-5xl m-0">
+                사투리를 재미있게 배워보세요.
+              </Typography>
+            </AnimatedText>
+            <AnimatedText delay={0.6}>
+              <Typography variant="body1" className="text-2xl my-5 mb-[70px] font-bold">
+                사투리를 배워볼 준비가 되셨나요? 서비스를 이용하기 위해 회원가입 하세요.
+              </Typography>
+            </AnimatedText>
+            <AnimatedText delay={0.9}>
+              <Link href="/login" style={{ textDecoration: 'none' }}>
+                <Button 
+                  variant="contained"
+                  sx={{
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    width: '350px',
+                    height: '60px',
+                    margin: '30px 0',
+                    padding: '5px 15px',
+                  }}
+                >
+                  회원 가입
+                </Button>
+              </Link>
+            </AnimatedText>
+          </Box>
+        </main>
 
-      <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
-        <Box className="content">
-          <Box
-            component="img"
-            src="/app/(home)/start/startPageExample.png"
-            alt="Start Page Example"
-            sx={{
-              width: '100%',  
-              marginBottom: "3%",            
-            }}
-          />
-          <Typography variant="h2" className="text-5xl mb-5">대한민국 전국 사투리를 한 곳에</Typography>
-          <Typography variant="body1" className="text-xl font-bold">
-            경상도, 전라도, 강원도 등 각 지역별로 존재하는 다양한 사투리를 경험해 보세요.
-          </Typography>          
-          <Typography variant="body1" className="text-xl font-bold">
-          사투리 학습과 채팅을 이용한 게임이 준비되어 있습니다.
-          </Typography>          
-        </Box>
-      </main>
+        <main className="flex flex-col items-center text-center my-[50px] text-black w-full">
+          <Box className="content w-full">
+            <AnimatedText delay={0}>
+              <Typography variant="h2" className="text-5xl mb-5">대한민국 전국 사투리를 한 곳에서</Typography>
+            </AnimatedText>
+            <AnimatedText delay={0.3}>
+              <Typography variant="body1" className="text-xl font-bold">
+                경상도, 전라도, 강원도 등 각 지역별로 존재하는 다양한 사투리를 경험해 보세요.
+              </Typography>
+            </AnimatedText>
+            <AnimatedText delay={0.6}>
+              <Typography variant="body1" className="text-xl font-bold">
+                지역어 학습과 스피드 퀴즈 게임이 준비되어 있습니다.
+              </Typography>
+            </AnimatedText>
+          </Box>
+        </main>
+      <Box
+        component="img"
+        src="/app/(home)/start/startPageExample.png"
+        alt="Start Page Example"
+        sx={{
+          width: '80%',  
+          marginBottom: "15%",
+          maxWidth: '100%',
+        }}
+      />          
 
-      <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
-        <Box className="content">
-          <Box
-            component="img"
-            src="/app/(home)/start/startPageExample.png"
-            alt="Start Page Example"
-            sx={{
-              width: '100%',  
-              marginBottom: "3%",            
-            }}
-          />
-          <Typography variant="h2" className="text-5xl mb-5">발음 정확도, 억양 유사도를 통한 사투리 학습</Typography>
-          <Typography variant="body1" className="text-xl font-bold">
-            원하는 지역의 학습을 고른 뒤, 해당 음성을 듣고 따라하여 유사도를 얻을 수 있습니다.
-          </Typography>
-          <Typography variant="body1" className="text-xl font-bold">
-            각 지역별로 준비된 음성파일로 쉽게 따라할 수 있습니다.
-          </Typography>
-          <Typography variant="body1" className="text-xl font-bold">
-            실시간 채팅으로 여러 플레이어들과 사투리 맞추기를 겨뤄보세요.
-          </Typography>
-        </Box>
-      </main>
+        <main className="flex flex-col items-center text-center my-[60px] text-black w-full">
+          <Box className="content w-full">
+          <AnimatedText delay={0}>
+            <Typography variant="h2" className="text-5xl mb-5">발음 정확도, 억양 유사도를 통한 사투리 학습</Typography>
+          </AnimatedText>
+          <AnimatedText delay={0.3}>
+            <Typography variant="body1" className="text-xl font-bold">
+              원하는 지역과 유형을 선택한 뒤, 준비된 음성을 듣고 따라해 보세요.
+            </Typography>
+          </AnimatedText>
+          <AnimatedText delay={0.6}>
+            <Typography variant="body1" className="text-xl font-bold">
+              전국의 사투리 뿐만 아니라, 표준어도 학습할 수 있습니다.
+            </Typography>
+          </AnimatedText>
+          </Box>
+        </main>
+      <Box
+        component="img"
+        src="/app/(home)/start/startPageExample.png"
+        alt="Start Page Example"
+        sx={{
+          width: '80%',  
+          maxWidth: '100%',
+          marginBottom: "15%",
+        }}
+      />
 
+        <main className="flex flex-col items-center text-center my-[60px] text-black w-full">
+          <Box className="content w-full">
+          <AnimatedText delay={0}>
+            <Typography variant="h2" className="text-5xl mb-5">실시간 채팅을 통한 스피드 퀴즈 게임</Typography>
+          </AnimatedText>
+          <AnimatedText delay={0.3}>
+            <Typography variant="body1" className="text-xl font-bold">
+              원하는 지역을 선택하여 게임에 입장해 보세요.
+            </Typography>
+          </AnimatedText>
+          <AnimatedText delay={0.6}>
+            <Typography variant="body1" className="text-xl font-bold">
+              사투리 단어와 관련된 스피드 퀴즈를 즐겨보세요.
+            </Typography>
+          </AnimatedText>
+          </Box>
+        </main>
+      <Box
+        component="img"
+        src="/app/(home)/start/startPageExample.png"
+        alt="Start Page Example"
+        sx={{
+          width: '80%',  
+          marginBottom: "15%",
+          maxWidth: '100%',
+        }}
+      />
 
-
-      <main className="flex flex-col justify-center items-center text-center mt-[150px] mb-[210px] text-black">
-        <Box className="content">
-          <Box
-            component="img"
-            src="/app/(home)/start/startPageExample.png"
-            alt="Start Page Example"
-            sx={{
-              width: '100%',  
-              marginBottom: "3%",            
-            }}
-          />
-          <Typography variant="h2" className="text-5xl mb-5">다양한 컨텐츠를 통해 키우는 나만의 쿼카</Typography>
-          <Typography variant="body1" className="text-xl font-bold">
-            사투리 학습, 실시간 채팅을 통한 경험치로 쿼카를 키워보세요.
-          </Typography>
-          <Typography variant="body1" className="text-xl font-bold">
-            데일리 스트릭, 학습, 게임을 통해 귀여운 쿼카를 키울 수 있습니다.
-          </Typography>
-        </Box>
-      </main>
-
-      <Box className="contents text-black justify-center font-bold text-3xl">
+      <Box 
+        className="contents text-black font-bold text-3xl text-center"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          marginBottom: '150px',
+        }}
+      >
         <Image src="/SSLogo.png" width={255} height={170} alt="SSLogo" />
-        <Box>바로 시작 해보세요</Box>
-        <Link href="/login">
+        <Box sx={{ mt: 2, mb: 2 }}>바로 시작 해보세요</Box>
+        <Link href="/login" style={{ textDecoration: 'none' }}>
           <Button 
             variant="contained"
-            className="text-2xl font-bold w-[350px] h-[60px] m-[30px_20px] p-[5px_15px]"
+            sx={{
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              width: '350px',
+              height: '60px',
+              margin: '30px 0',
+              padding: '5px 15px',
+            }}
           >
             회원 가입
           </Button>
         </Link>
       </Box>
-
+  
       {/* FAQ */}
-      <Box className="w-full max-w-4xl mx-auto">
+      <Box className="w-full max-w-4xl mx-auto mt-10">
       <h2 className="text-4xl mb-5 text-center text-black">자주 묻는 질문</h2>
         {/* 아코디언 1 */}
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
@@ -205,5 +299,12 @@ export default function Start() {
         </Accordion>
       </Box>
     </Box>
-  );
-}
+
+    <style jsx global>{`
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `}</style>
+  </Box>
+)};

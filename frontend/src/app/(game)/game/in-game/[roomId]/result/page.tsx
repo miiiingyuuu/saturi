@@ -53,7 +53,6 @@ export default function Result({ params: { roomId } }: RoomIdProps) {
         style={{
             position:"relative",
             overflow:"hidden",
-            backgroundColor: "#f3f4f6",        
             height:"90vh",
             width:"100%",
             minHeight:"700px",

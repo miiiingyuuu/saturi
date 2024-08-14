@@ -37,10 +37,10 @@ export default function App() {
   const [isEmailSend, setIsEmailSend] = useState(false);
   const [validationTime, setValidationTime] = useState(300);
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const isNicknameValid = useMemo(() => validateNickname(nickname), [nickname]);
 
   const isEmailValid = useMemo(() => validateEmail(email), [email]);
   const isPasswordValid = useMemo(() => validatePassword(password), [password]);
-  const isNicknameValid = useMemo(() => validateNickname(nickname), [nickname]);
   const isPasswordConfirmed = useMemo(
     () => passwordConfirm({ password, passwordConf }),
     [password, passwordConf]
@@ -166,6 +166,7 @@ export default function App() {
             }
           }
         })
+        .catch(()=> alert("이미 존재하는 닉네임 입니다."))
     } else {
       alert("유효하지 않은 닉네임 입니다.");
     }

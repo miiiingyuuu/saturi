@@ -1,7 +1,19 @@
+/* styles/globals.css */
+/*@font-face {*/
+/*  font-family: 'Pretendard';*/
+/*  src: url('/fonts/pretendardVariable.woff2') format('woff2');*/
+/*  font-weight: 100 900; !* 가중치 범위를 정의할 수 있습니다 *!*/
+/*  font-display: swap;*/
+/*}*/
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply font-sans; /* Tailwind CSS의 기본 sans-serif 폰트 설정을 사용합니다 */
+  font-family: 'Pretendard', sans-serif; /* Pretendard를 기본 폰트로 설정 */
+}
 .glowing-border {
     animation: subtle-glow 1.5s infinite alternate;
   }

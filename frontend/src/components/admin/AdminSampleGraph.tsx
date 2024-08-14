@@ -49,7 +49,7 @@ export default function adminSampleGraph(
     aspectRatio: 4, // 너비 대 높이 비율을 설정합니다.
     plugins: {
       legend: {
-        display: true, // 범례를 표시합니다.
+        display: false, // 범례를 표시합니다.
         position: 'left' as const, // 올바른 값으로 설정
         align: 'center' as const, // 범례를 시작 위치(좌측 상단)에 정렬합니다.
         labels: {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card, CardHeader, CardActions,
@@ -13,9 +13,9 @@ import {
   Dialog, DialogTitle, DialogContent,
   Grid,
   CircularProgress,
-  Typography
+  Typography, Box,
 } from "@mui/material";
-import { validateNickname } from "@/utils/utils";
+import { handleValueChange, validateNickname } from "@/utils/utils";
 import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useTheme } from "@mui/material/styles"
@@ -115,37 +115,17 @@ export default function EditProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const isNicknameValid = useMemo(() => validateNickname(userProfile?.nickname || ""), [userProfile?.nickname]);
 
   const [dialectModalOpen, setDialectModalOpen] = useState(false);
   const [genderModalOpen, setGenderModalOpen] = useState(false);
   const [ageRangeModalOpen, setAgeRangeModalOpen] = useState(false);
 
+  const isChanged = useMemo(() => userProfile?.nickname !== originalNickname, [userProfile])
+
   const router = useRouter();
 
-  useEffect(() => {
-    // 프로필 가져오기
-    const fetchUserProfile = async () => {
-      try {
-        setIsLoading(true);
-        const accessToken = sessionStorage.getItem('accessToken');
-        if (!accessToken) {
-          throw new Error('Access token not found');
-        }
-
-        const response = await api.get('/user/auth/profile');
-
-        setUserProfile(response.data);
-        setOriginalNickname(response.data.nickname);
-      } catch {
-        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
-        setError('프로필 정보를 불러오는데 실패했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
 
   // Menu 관련 함수 선언들
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +159,29 @@ export default function EditProfilePage() {
     handleModalClose(type);
   };
 
+  function handleAuthNickname() {
+    if (!isChanged) {
+     if (window.confirm("현재 사용 중인 별명과 동일합니다.\n변경하지 않고 그대로 사용하시겠습니까?")) {
+       setIsNicknameChecked(true)
+      }
+    } else if (userProfile && userProfile.nickname && isNicknameValid) {
+      api
+        .get("/user/auth/nickname-dupcheck", {
+          params: {nickname: userProfile.nickname },
+        })
+        .then((response) => {
+          if (response) {
+            if (window.confirm("이 별명을 사용하시겠습니까?")) {
+              setIsNicknameChecked(true);
+            }
+          }
+        })
+        .catch(()=> alert("이미 존재하는 별명 입니다."))
+    } else {
+      alert("유효하지 않은 별명 입니다.");
+    }
+  }
+
   const handleImageClick = () => {
     setIsImageDialogOpen(true);
   };
@@ -191,48 +194,52 @@ export default function EditProfilePage() {
   };
 
   // 수정 요청
-  const handleSave = async () => {
-    if (!userProfile) return;
+  function handleSave() {
+    if (!validateNickname(userProfile?.nickname || "")) {
+      alert("별명은 한글, 영문, 숫자를 포함하여 10글자 미만으로 해주세요.")
+      return
+    } else if (isChanged && !isNicknameChecked) {
+      alert("별명 중복 검사를 해주세요.")
+      return
 
-    try {
-      const accessToken = sessionStorage.getItem('accessToken');
-      if (!accessToken) {
-        throw new Error('Access token not found');
-      }
-
-      if (!validateNickname(userProfile.nickname)) {
-        alert('닉네임은 한글, 영문, 숫자를 포함하여 10글자 미만으로 해주세요.');
-        return;
-      }
-
-      const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
-
-      const updateData: ProfileUpdateData = {
-        nickname: userProfile.nickname,
-        locationId: userProfile.locationId,
-        gender: userProfile.gender,
-        ageRange: userProfile.ageRange,
-        birdId: userProfile.birdId,
-        isChanged
-      };
-      const response = await api.put('/user/auth', updateData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-
-      if (response.status === 200) {
-        // eslint-disable-next-line no-alert
-        alert('프로필이 성공적으로 수정되었습니다.');
-        setOriginalNickname(userProfile.nickname);
-        router.push('/user/profile');
-      }
-    } catch {
-      console.error('프로필 수정 중 오류가 발생했습니다:', error);
-      // eslint-disable-next-line no-alert
-      alert('이미 존재하는 닉네임입니다.');
     }
-  };
+    if (userProfile) {
+    api.put("/user/auth", {
+      nickname: userProfile.nickname,
+      locationId: userProfile.locationId,
+      gender: userProfile.gender,
+      ageRange: userProfile.ageRange,
+      birdId: userProfile.birdId,
+      isChanged: isChanged? 1 : 0
+    }).then((response) => {
+      alert('프로필이 성공적으로 수정되었습니다.');
+      router.push('/user/profile');
+    }).catch((err) => {
+        console.error("프로필 수정 중 오류가 발생했습니다:", error);
+        // eslint-disable-next-line no-alert
+        alert("이미 존재하는 별명입니다.");
+      }
+    )
+    }
+  }
+
+  useEffect(() => {
+    // 프로필 가져오기
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/user/auth/profile');
+        setUserProfile(response.data);
+        setOriginalNickname(response.data.nickname);
+      } catch {
+        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
+        setError('프로필 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUserProfile();
+  }, []);
 
   if (isLoading) {
     return <CircularProgress />;
@@ -256,32 +263,41 @@ export default function EditProfilePage() {
           }
           title={
             <div className="flex flex-col">
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs>
-                  <TextField
-                    label="닉네임"
-                    name="nickname"
-                    value={userProfile.nickname}
-                    onChange={handleInputChange}
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                  />
+              <Box>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={10}>
+                    <TextField
+                      name="nickname"
+                      required
+                      fullWidth
+                      id="nickname"
+                      label="별명"
+                      value={userProfile.nickname}
+                      onChange={handleInputChange}
+                      autoFocus
+                      disabled={isNicknameChecked}
+                      error={!isNicknameValid}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button
+                      variant="contained"
+                      disabled={isNicknameChecked}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        handleAuthNickname();
+                      }}
+                      sx={{
+                        fontSize: "0.75rem",
+                        height: "56px",
+                      }}
+                    >
+                      중복 확인
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSave}
-                    sx={{
-                      height: "56px"
-                    }}
-                  >
-                    제출
-                  </Button>
-                </Grid>
-              </Grid>
-              <Typography sx= {{ fontSize: '11px', color: 'red', ml: 1 }}>닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
+              </Box>
+              <Typography sx= {{ fontSize: '11px', color: 'red', ml: 1 }}>별명은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
               <p className="text-default-500" style={{ fontSize: '20px' }}>{userProfile.email}</p>
