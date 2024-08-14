@@ -15,10 +15,11 @@ import {
   CircularProgress,
   Typography, Box,
 } from "@mui/material";
-import { handleValueChange, validateNickname } from "@/utils/utils";
+import {getFormattedLocationId, handleValueChange, validateNickname} from "@/utils/utils";
 import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useTheme } from "@mui/material/styles"
+import CustomButton from "@/components/ButtonColor";
 
 // type 선언
 type Gender = 'DEFAULT' | 'MALE' | 'FEMALE';
@@ -46,24 +47,24 @@ interface ProfileUpdateData {
 
 // 선택지들
 const profileImages = [
-  { id: 1, src: '/main_profile/1.png' },
-  { id: 2, src: '/main_profile/2.png' },
-  { id: 3, src: '/main_profile/3.png' },
-  { id: 4, src: '/main_profile/4.png' },
-  { id: 5, src: '/main_profile/5.png' },
-  { id: 6, src: '/main_profile/6.png' },
-  { id: 7, src: '/main_profile/7.png' },
-  { id: 8, src: '/main_profile/8.png' },
-  { id: 9, src: '/main_profile/9.png' },
-  { id: 10, src: '/main_profile/10.png' },
-  { id: 11, src: '/main_profile/11.png' },
-  { id: 12, src: '/main_profile/12.png' },
-  { id: 13, src: '/main_profile/13.png' },
-  { id: 14, src: '/main_profile/14.png' },
-  { id: 15, src: '/main_profile/15.png' },
-  { id: 16, src: '/main_profile/16.png' },
-  { id: 17, src: '/main_profile/17.png' },
-  { id: 18, src: '/main_profile/18.png' },
+  { id: 1, src: '/main_profile/1.png', name: '광부무새'},
+  { id: 2, src: '/main_profile/2.png', name: '은행원무새' },
+  { id: 3, src: '/main_profile/3.png', name: '어릿광대무새' },
+  { id: 4, src: '/main_profile/4.png', name: '선원무새' },
+  { id: 5, src: '/main_profile/5.png', name: '갑판원무새' },
+  { id: 6, src: '/main_profile/6.png', name: '악의수장무새' },
+  { id: 7, src: '/main_profile/7.png', name: '총기병무새' },
+  { id: 8, src: '/main_profile/8.png', name: '살인마무새' },
+  { id: 9, src: '/main_profile/9.png', name: '잡화상무새' },
+  { id: 10, src: '/main_profile/10.png', name: '요원무새' },
+  { id: 11, src: '/main_profile/11.png', name: '석유부자무새' },
+  { id: 12, src: '/main_profile/12.png', name: '빨간머리무새' },
+  { id: 13, src: '/main_profile/13.png', name: '정찰대무새' },
+  { id: 14, src: '/main_profile/14.png', name: '비밀결사무세' },
+  { id: 15, src: '/main_profile/15.png', name: '쇼호스트무새' },
+  { id: 16, src: '/main_profile/16.png', name: '용병무새' },
+  { id: 17, src: '/main_profile/17.png', name: '기관사무세' },
+  { id: 18, src: '/main_profile/18.png', name: '삼총사무새'},
 ];
 
 
@@ -93,19 +94,6 @@ const getFormattedAgeRange = (ageRange: string): string => {
   }
 };
 
-const getFormattedLocationId = (locationId: number): string => {
-  switch (locationId) {
-    case 1: return '정보 입력 안함';
-    case 2: return '경상도';
-    case 3: return '경기도';
-    case 4: return '강원도';
-    case 5: return '충청도';
-    case 6: return '전라도';
-    case 7: return '제주도';
-    default: return '정보 입력 안함';
-  }
-};
-
 // 프로필 수정 로직
 export default function EditProfilePage() {
   const theme = useTheme()
@@ -122,32 +110,10 @@ export default function EditProfilePage() {
   const [genderModalOpen, setGenderModalOpen] = useState(false);
   const [ageRangeModalOpen, setAgeRangeModalOpen] = useState(false);
 
+  const isChanged = useMemo(() => userProfile?.nickname !== originalNickname, [userProfile])
+
   const router = useRouter();
 
-  useEffect(() => {
-    // 프로필 가져오기
-    const fetchUserProfile = async () => {
-      try {
-        setIsLoading(true);
-        const accessToken = sessionStorage.getItem('accessToken');
-        if (!accessToken) {
-          throw new Error('Access token not found');
-        }
-
-        const response = await api.get('/user/auth/profile');
-
-        setUserProfile(response.data);
-        setOriginalNickname(response.data.nickname);
-      } catch {
-        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
-        setError('프로필 정보를 불러오는데 실패했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
 
   // Menu 관련 함수 선언들
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,23 +148,25 @@ export default function EditProfilePage() {
   };
 
   function handleAuthNickname() {
-    console.log(userProfile)
-    console.log(userProfile?.nickname)
-    if (userProfile && userProfile.nickname && isNicknameValid) {
+    if (!isChanged) {
+     if (window.confirm("현재 사용 중인 별명과 동일합니다.\n변경하지 않고 그대로 사용하시겠습니까?")) {
+       setIsNicknameChecked(true)
+      }
+    } else if (userProfile && userProfile.nickname && isNicknameValid) {
       api
         .get("/user/auth/nickname-dupcheck", {
           params: {nickname: userProfile.nickname },
         })
         .then((response) => {
           if (response) {
-            if (window.confirm("이 닉네임을 사용하시겠습니까?")) {
+            if (window.confirm("이 별명을 사용하시겠습니까?")) {
               setIsNicknameChecked(true);
             }
           }
         })
-        .catch(err=>console.log(err))
+        .catch(()=> alert("이미 존재하는 별명 입니다."))
     } else {
-      alert("유효하지 않은 닉네임 입니다.");
+      alert("유효하지 않은 별명 입니다.");
     }
   }
 
@@ -214,48 +182,52 @@ export default function EditProfilePage() {
   };
 
   // 수정 요청
-  const handleSave = async () => {
-    if (!userProfile) return;
+  function handleSave() {
+    if (!validateNickname(userProfile?.nickname || "")) {
+      alert("별명은 한글, 영문, 숫자를 포함하여 8자 미만으로 해주세요.")
+      return
+    } else if (isChanged && !isNicknameChecked) {
+      alert("별명 중복 검사를 해주세요.")
+      return
 
-    try {
-      const accessToken = sessionStorage.getItem('accessToken');
-      if (!accessToken) {
-        throw new Error('Access token not found');
-      }
-
-      if (!validateNickname(userProfile.nickname)) {
-        alert('닉네임은 한글, 영문, 숫자를 포함하여 10글자 미만으로 해주세요.');
-        return;
-      }
-
-      const isChanged = userProfile.nickname !== originalNickname ? 1 : 0;
-
-      const updateData: ProfileUpdateData = {
-        nickname: userProfile.nickname,
-        locationId: userProfile.locationId,
-        gender: userProfile.gender,
-        ageRange: userProfile.ageRange,
-        birdId: userProfile.birdId,
-        isChanged
-      };
-      const response = await api.put('/user/auth', updateData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-
-      if (response.status === 200) {
-        // eslint-disable-next-line no-alert
-        alert('프로필이 성공적으로 수정되었습니다.');
-        setOriginalNickname(userProfile.nickname);
-        router.push('/user/profile');
-      }
-    } catch {
-      console.error('프로필 수정 중 오류가 발생했습니다:', error);
-      // eslint-disable-next-line no-alert
-      alert('이미 존재하는 닉네임입니다.');
     }
-  };
+    if (userProfile) {
+    api.put("/user/auth", {
+      nickname: userProfile.nickname,
+      locationId: userProfile.locationId,
+      gender: userProfile.gender,
+      ageRange: userProfile.ageRange,
+      birdId: userProfile.birdId,
+      isChanged: isChanged? 1 : 0
+    }).then((response) => {
+      alert('프로필이 성공적으로 수정되었습니다.');
+      router.push('/user/profile');
+    }).catch((err) => {
+        console.error("프로필 수정 중 오류가 발생했습니다:", error);
+        // eslint-disable-next-line no-alert
+        alert("이미 존재하는 별명입니다.");
+      }
+    )
+    }
+  }
+
+  useEffect(() => {
+    // 프로필 가져오기
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get('/user/auth/profile');
+        setUserProfile(response.data);
+        setOriginalNickname(response.data.nickname);
+      } catch {
+        console.error('프로필 정보를 가져오는데 실패했습니다:', error);
+        setError('프로필 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUserProfile();
+  }, []);
 
   if (isLoading) {
     return <CircularProgress />;
@@ -267,13 +239,21 @@ export default function EditProfilePage() {
 
   return (
     <div className="flex justify-center items-center bg-gray-100 h-screen">
-      <Card sx={{ width: '900px', mt: 6 }}>
+      <Card sx={{ width: '900px' }}>
         <CardHeader
           avatar={
             <Avatar
               alt="profile image"
               src={`/main_profile/${userProfile.birdId}.png`}
-              sx={{ width: 150, height: 150 }}
+              sx={{
+                width: 150,
+                height: 150,
+                cursor: 'pointer', // 마우스 커서를 포인터로 변경
+                '&:hover': {
+                  opacity: 0.8, // 호버 시 약간 투명해지는 효과 (선택사항)
+                  boxShadow: 3,
+                }
+              }}
               onClick={handleImageClick}
             />
           }
@@ -296,7 +276,7 @@ export default function EditProfilePage() {
                     />
                   </Grid>
                   <Grid item xs={2}>
-                    <Button
+                    <CustomButton
                       variant="contained"
                       disabled={isNicknameChecked}
                       onClick={(event) => {
@@ -309,44 +289,44 @@ export default function EditProfilePage() {
                       }}
                     >
                       중복 확인
-                    </Button>
+                    </CustomButton>
                   </Grid>
                 </Grid>
               </Box>
-              <Typography sx= {{ fontSize: '11px', color: 'red', ml: 1 }}>닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
+              <Typography sx= {{ fontSize: '11px', color: `${ isNicknameValid ? 'blue': 'red'}`, ml: 1 }}> * 닉네임은 한글, 영문, 숫자를 포함하여 1~8자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
               <p className="text-default-500" style={{ fontSize: '20px' }}>{userProfile.email}</p>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={() => handleModalOpen('dialect')}>
+              <CustomButton variant="outlined" onClick={() => handleModalOpen('dialect')}>
                 사용하는 사투리: {getFormattedLocationId(userProfile.locationId)}
-              </Button>
+              </CustomButton>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={() => handleModalOpen('gender')}>
+              <CustomButton variant="outlined" onClick={() => handleModalOpen('gender')}>
                 성별: {getFormattedGender(userProfile.gender)}
-              </Button>
+              </CustomButton>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={() => handleModalOpen('ageRange')}>
+              <CustomButton variant="outlined" onClick={() => handleModalOpen('ageRange')}>
                 연령대: {getFormattedAgeRange(userProfile.ageRange)}
-              </Button>
+              </CustomButton>
             </div>
           }
         />
         <CardActions sx={{ justifyContent: 'space-between' }}>
           <Link href="/user/profile" underline="none">
-            <Button variant="contained">뒤로가기</Button>
+            <CustomButton variant="contained">뒤로가기</CustomButton>
           </Link>
           <div className="flex space-x-4">
             {(isSocial==="false") && (
               <Link href="/user/auth/changepassword" underline="none">
-              <Button variant="contained" sx={{ backgroundColor: theme.palette.primary.light }}>
+              <CustomButton variant="contained" sx={{ backgroundColor: '#4db6ac !important' }}>
                 비밀번호 변경
-              </Button>
+              </CustomButton>
             </Link>
             )}
-            <Button variant="contained" color="primary" onClick={handleSave}>
+            <CustomButton variant="contained" color="primary" onClick={handleSave}>
               수정 완료
-            </Button>
+            </CustomButton>
           </div>
         </CardActions>
       </Card>
@@ -355,15 +335,27 @@ export default function EditProfilePage() {
       <Dialog open={isImageDialogOpen} onClose={() => setIsImageDialogOpen(false)}>
         <DialogTitle textAlign="center" fontWeight="bold">프로필 이미지를 선택하세요!</DialogTitle>
         <DialogContent sx={{ alignItems: 'center' }}>
-          <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Grid container spacing={3} justifyContent='center' alignItems="center">
             {profileImages.map((img) => (
-              <Grid item key={img.id} xs={4}>
+              <Grid item key={img.id} xs={4} 
+                sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Avatar
                   src={img.src}
                   alt={`Profile ${img.id}`}
-                  sx={{ width: 100, height: 100, cursor: 'pointer' }}
+                  sx={{ 
+                    width: 100, 
+                    height: 100, 
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      boxShadow: 3,
+                    }
+                  }}
                   onClick={() => handleImageSelect(img.id)}
                 />
+                <Typography variant="subtitle1" mt={1}>
+                  {img.name}
+                </Typography>
               </Grid>
             ))}
           </Grid>

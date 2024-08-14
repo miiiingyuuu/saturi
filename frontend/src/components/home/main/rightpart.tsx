@@ -6,6 +6,8 @@ import api from '@/lib/axios';
 import UserTierRank from '@/components/profile/userTierRank';
 import { getCookie } from 'cookies-next';
 import useConnect from "@/hooks/useConnect";
+import { deepOrange } from '@mui/material/colors';
+import CustomButton from '@/components/ButtonColor';
 
 export default function RightPart({selectedRegion} : RightPartProps) {
   const router = useRouter();
@@ -47,62 +49,72 @@ export default function RightPart({selectedRegion} : RightPartProps) {
   return (
     <Box 
       className="rightpart" 
-      sx={{ 
-        position: "absolute",
-        width: "100%",
+      style={{ 
         minHeight: "700px",
         height: "90vh",
         display:"flex",
         alignItems:"center",
-      }}>  
-        <Container maxWidth="lg">
-          <Card
-            sx={{
-              width: "100%",
-              height: "560px",
-              border: '3px solid lightgray', 
-              borderRadius: 5,
-              display: "flex",
-              justifyContent:"flex-end",
-              alignItems:"center",
-            }}>  
-            <Grid container spacing={0}>
-              <Grid item xs={12} md={6}>
+        left: (() => {
+          if (selectedRegion !== "_" && selectedRegion !== "준비중입니다") {
+            return "95%";
+          } return "130%";              
+        })(),
+    }}>
+      <Card 
+        sx={{ 
+          display:"flex", 
+          flexDirection: "column", 
+          alignItems:"center", 
+          width:"10vw",
+          height:"50vh",
+          minWidth:"300px",           
+          minHeight:"500px",
+          border:"6px solid #4b2921",
+          padding:"20px",
+          borderRadius:"30px",
+        }}>
+        {/* 게임 페이지 */}
+        <Typography 
+          sx={{ 
+            fontSize: { xs:25, sm:28, md:32}, 
+            fontWeight: "bold",
+            height:"15%",
+          }}>게임 
+        </Typography>
 
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display:"flex", flexDirection: "column", alignItems:"center"}}>
-
-                {/* 게임 페이지 */}
-                <Typography variant="h1" sx={{ fontSize: { xs:25, sm:28, md:32, lg:39, xl:39 }, fontWeight: "bold", marginBottom:"10px" }}>게임 페이지</Typography>
-
-                {/* 게임 프로필 */}
-                <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
-                  <UserTierRank/>                    
-                </Box>
-
-                {/* 게임 시작 버튼 */}
-                <Button 
-                  variant="contained"
-                  onClick={GameStartButton}
-                  sx={{
-                    backgroundColor:"success.light",
-                    '&:hover': { backgroundColor: 'green' },
-                    '&:active': { backgroundColor: 'green' },
-                    '&:focus': { backgroundColor: 'success' },
-                    marginTop: "20px", 
-                    width: "200px", 
-                    height: "50px", 
-                    fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
-                  }}> 게임 시작 </Button>
-                </Box>
-              </Grid>
-            </Grid>
-
-
+        <Box 
+          sx={{
+            height:"85%",
+            display:"flex",
+            flexDirection:"column",
+            justifyContent: "space-between",
+            alignItems:"center",
             
-          </Card>
-        </Container>
+        }}>
+          {/* 게임 프로필 */}
+          <Box sx={{ width:"250px", height: "300px", display: 'grid', placeItems: 'center' }}>
+            <UserTierRank/>                    
+          </Box>
+
+          {/* 게임 시작 버튼 */}
+          <Button 
+            variant="contained"
+            onClick={GameStartButton}
+            sx={{
+              backgroundColor:"success.light",
+              '&:hover': { backgroundColor: 'green' },
+              '&:active': { backgroundColor: 'green' },
+              '&:focus': { backgroundColor: 'success' },
+              width: "200px", 
+              height: "50px", 
+              fontSize: { xs:17, sm:19, md:21, lg:23, xl:25 }
+          }}> 게임 시작 
+          </Button>
+        </Box>
+        
+      </Card>
+
+
     </Box>        
   );
 }

@@ -7,20 +7,10 @@ export default function MiddlePart({ middlePosition, mainPageIndicator }: Middle
     <Box 
       className="middlepart" 
       style={{        
-        backgroundColor:"#f3f4f6",
-        backgroundImage: "url(/MainPage/mainBackground.png)",
+        backgroundImage: "url(/MainPage/mainBackground2.png)",
         backgroundSize: "auto 100%",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",
-        left: (() => {
-          if (middlePosition === 0) {
-            return "-110%";
-          } if (middlePosition === 1) {
-            return "0%";
-          } if (middlePosition === 2) {
-            return "110%";
-          } return "0%";              
-        })()
       }}>
       
       {/* 배경 엘리먼트 */}

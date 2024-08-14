@@ -61,11 +61,12 @@ const steps = [
 ];
 
 export default function App() {
-  const router = useRouter()
+  const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
   const [gender, setGender] = useState<Option | null>(null);
   const [location, setLocation] = useState<Option | null>(null);
   const [ageRange, setAgeRange] = useState<Option | null>(null);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -83,7 +84,7 @@ export default function App() {
     const genderId = gender?.id ?? null;
     const locationId = location?.id ?? null;
     const ageRangeId = ageRange?.id ?? null;
-    const nickname = getCookie("nickname")
+    const nickname = getCookie("nickname");
     api.put("/user/auth", {
       gender: genderId,
       locationId,
@@ -91,18 +92,32 @@ export default function App() {
       nickname,
       isChanged: 0,
       birdId: 1,
-    })
+    });
   };
 
-
-  // 네비가드 형태로 사용 ( 여기서는 기본정보가 default인 사람들만 들어오게하기 )
   useEffect(() => {
-    if (typeof window !== "undefined" && !(getCookie("gender")==="DEFAULT" || getCookie("location")==="default" || getCookie("ageRange")==="DEFAULT")) {
-      router.push("/")
+    if (typeof window !== "undefined" && !(getCookie("gender") === "DEFAULT" || getCookie("location") === "default" || getCookie("ageRange") === "DEFAULT")) {
+      router.push("/");
     }
+
+    // Update window size for Confetti
+    const updateWindowSize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    updateWindowSize(); // Initialize with current window size
+    window.addEventListener("resize", updateWindowSize);
+
+    return () => {
+      window.removeEventListener("resize", updateWindowSize);
+    };
   }, []);
 
-  useConfirmLeave()
+  useConfirmLeave();
+
   return (
     <Container component="main" maxWidth="sm">
       <Box
@@ -115,7 +130,26 @@ export default function App() {
           maxWidth: 'md',
         }}
       >
-        <Stepper activeStep={activeStep} orientation="vertical" sx={{ width: '100%' }}>
+        <Stepper
+          activeStep={activeStep}
+          orientation="vertical"
+          sx={{
+            width: '100%',
+            mb: 4,
+          '& .MuiStepIcon-root': {
+            color: '#e0e0e0', // 비활성 아이콘 색상
+            '&.Mui-active': {
+              color: '#0097a7', // 활성 아이콘 색상
+            },
+            '&.Mui-completed': {
+              color: '#00838f', // 완료된 아이콘 색상
+            },
+          },
+          '& .MuiStepConnector-line': {
+            borderColor: '#bdbdbd', // 연결선 색상
+          },
+            }}
+          >
           {steps.map((step, index) => (
             <Step key={step.label}>
               <StepLabel>{step.label}</StepLabel>

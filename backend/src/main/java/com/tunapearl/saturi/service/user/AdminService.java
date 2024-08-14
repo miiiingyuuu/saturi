@@ -228,4 +228,8 @@ public class AdminService {
 
         return new LessonStatisticsResponseDTO(sortedByCompletedNum, sortedByAvgSimilarity, sortedByAvgAccuracy, sortedByClaimNum);
     }
+
+    public UserEntity findUserById(Long userId) {
+        return userRepository.findByUserId(userId).orElse(null);
+    }
 }

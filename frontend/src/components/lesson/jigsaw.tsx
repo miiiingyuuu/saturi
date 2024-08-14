@@ -1,6 +1,7 @@
 import { Box, Popover, Typography, Button } from "@mui/material";
 import React, { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import CustomButton from "../ButtonColor";
 
 interface Lesson {
   lessonId: number;
@@ -84,15 +85,15 @@ export default function Icon({
   ];
 
   const colors = [
-    "#84b2ff",
-    "#fe4a49",
-    "#4b45fd",
-    "#43c942",
-    "#fea022",
-    "#52514f",
-    "#a48a4d",
-    "#3daacb",
-    "#823a86",
+    "#fe7e10",
+    "#fc2c45",
+    "#ffd301",
+    "#ffd301",
+    "#8e3bcb",
+    "#2e7d32",
+    "#f95aa2",
+    "#fc2c45",
+    "#fe7e10",
   ];
 
   const pathData = [
@@ -110,51 +111,51 @@ export default function Icon({
   return (
     <Box>
       <Popover
-  open={open}
-  onClose={jigsawClose}
-  anchorEl={anchorEl}
-  anchorOrigin={{
-    vertical: "center",
-    horizontal: "center",
-  }}
-  transformOrigin={{
-    vertical: "top",
-    horizontal: "center",
-  }}
-  sx={{
-    mt: 2, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
-  }}
->
-  <Box className="p-1 rounded-full" sx={{ margin: "15px" }}>
-    {dataGroup[selectedIndex.current]?.lessons.length > 0 ? (
-      <>
-        <Typography variant="h6" className="font-bold text-center">
-          {progressData[selectedIndex.current].lessonGroupName}
-        </Typography>
-        <Typography variant="subtitle1">
-          달성율 : {progressData[selectedIndex.current].groupProgress}%
-        </Typography>
-        <Box className="flex justify-center pt-3">
-          <Button variant="contained" color="primary" onClick={startLesson}>
-            Start
-          </Button>
+        open={open}
+        onClose={jigsawClose}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        disableScrollLock={true}
+        sx={{
+          mt: 2, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
+      }}>
+        <Box className="p-1 rounded-full" sx={{ margin: "15px" }}>
+          {dataGroup[selectedIndex.current]?.lessons.length > 0 ? (
+            <>
+              <Typography variant="h6" className="font-bold text-center">
+                {progressData[selectedIndex.current].lessonGroupName}
+              </Typography>
+              <Typography variant="subtitle1">
+                달성율 : {progressData[selectedIndex.current].groupProgress}%
+              </Typography>
+              <Box className="flex justify-center pt-3">
+                <Button variant="contained" color="primary" onClick={startLesson}>
+                  Start
+                </Button>
+              </Box>
+            </>
+          ) : (
+            <Box className="flex justify-center">
+              <Typography variant="body2" color="textSecondary">
+                준비중입니다
+              </Typography>
+            </Box>
+          )}
         </Box>
-      </>
-    ) : (
-      <Box className="flex justify-center">
-        <Typography variant="body2" color="textSecondary">
-          준비중입니다
-        </Typography>
-      </Box>
-    )}
-  </Box>
-</Popover>
+      </Popover>
 
 
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="350"
-        height="350"
+        width="270"
+        height="270"
         x="0"
         y="0"
         viewBox="-379.86 -250.305 1356 1342"
@@ -175,10 +176,10 @@ export default function Icon({
             onMouseDown={() => setClickedIndex(index)}
             onMouseUp={() => setClickedIndex(null)}
             onMouseLeave={() => setClickedIndex(null)}
-            fill={colors[index]}
-            stroke="#7d7d7d"
+            fill= {colors[index]}
+            stroke="#414141"
             strokeMiterlimit="10"
-            strokeWidth="2"
+            strokeWidth="10"
             d={d}
           />
         ))}

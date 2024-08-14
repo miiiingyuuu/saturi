@@ -77,7 +77,7 @@ export default function PuzzleInfo({
   />
 </Box>
 
-        <Typography variant="body1">{avgAccuracy ? `${avgAccuracy}%`  : ""}</Typography> {/* 정확도 표시 */}
+        <Typography variant="body1">{`${avgAccuracy}%`}</Typography> {/* 정확도 표시 */}
       </Box>
       <Box
         sx={{

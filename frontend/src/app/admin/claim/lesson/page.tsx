@@ -1,16 +1,31 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Typography, Box, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import {
+  Typography,
+  Box,
+  CircularProgress,
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
+} from "@mui/material";
 import api from '@/lib/axios';
 import SortableTableHead from "@/components/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
+import {parseDate} from "@/utils/utils";
 
 
 interface LessonClaim {
   lessonClaimId: number;
   lessonId: number;
-  userId: number;
+  userName: string;
+  // userId: number;
   content: string;
   claimDt: string;
 }
@@ -23,7 +38,8 @@ type HeadCell = {
 const headCells: HeadCell[] = [
   { id: "lessonClaimId", label: "신고 Id" },
   { id: "lessonId", label: "레슨 Id" },
-  { id: "userId", label: "유저 Id" },
+  { id: "userName", label: "유저"},
+  // { id: "userId", label: "유저 Id" },
   { id: "content", label: "신고 내용" },
   { id: "claimDt", label: "신고 일자" },
 ];
@@ -54,6 +70,24 @@ const useLessonClaims = () => {
 const LessonClaimsTable: React.FC<{ claims: LessonClaim[] }> = ({ claims }) => {
   const { rows, order, orderBy, onRequestSort } = useTableSort<LessonClaim>(claims, "lessonClaimId");
 
+  // Pagination 관련 상태
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // 현재 페이지에 표시할 행 계산
+  const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  // 페이지 변경 핸들러
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  // 페이지 당 행 수 변경 핸들러
+  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement>) {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="lesson claims table">
@@ -63,17 +97,8 @@ const LessonClaimsTable: React.FC<{ claims: LessonClaim[] }> = ({ claims }) => {
           onRequestSort={onRequestSort}
           headCells={headCells}
         />
-        {/* <TableHead> */}
-        {/*   <TableRow> */}
-        {/*     <TableCell>Claim ID</TableCell> */}
-        {/*     <TableCell>Lesson ID</TableCell> */}
-        {/*     <TableCell>User ID</TableCell> */}
-        {/*     <TableCell>Content</TableCell> */}
-        {/*     <TableCell>Claim Date</TableCell> */}
-        {/*   </TableRow> */}
-        {/* </TableHead> */}
         <TableBody>
-          {rows.map((claim) => (
+          {displayedRows.map((claim) => (
             <TableRow
               key={claim.lessonClaimId}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -82,13 +107,24 @@ const LessonClaimsTable: React.FC<{ claims: LessonClaim[] }> = ({ claims }) => {
                 {claim.lessonClaimId}
               </TableCell>
               <TableCell>{claim.lessonId}</TableCell>
-              <TableCell>{claim.userId}</TableCell>
+              <TableCell>{claim.userName}</TableCell>
+              {/*<TableCell>{claim.userId}</TableCell>*/}
               <TableCell>{claim.content}</TableCell>
-              <TableCell>{new Date(claim.claimDt).toLocaleString()}</TableCell>
+              <TableCell>{parseDate(claim.claimDt)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage="페이지 당 항목 수: "
+      />
     </TableContainer>
   );
 };

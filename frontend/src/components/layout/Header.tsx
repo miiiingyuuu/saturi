@@ -13,6 +13,12 @@ import useLogout from "@/hooks/useLogout";
 import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { teal } from "@mui/material/colors";
+import CustomButton from "../ButtonColor";
+
+interface HeaderProps {
+  isTransparent?: boolean;
+}
 
 
 export default function Header() {
@@ -25,6 +31,8 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickName] = useState<string | null>(null);
   const logout = useLogout();
+
+  const isStartPage = pathname === '/start' || pathname === '/';
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -55,7 +63,6 @@ export default function Header() {
       setNickName(userData.nickname);
     } catch (error) {
       console.error("Failed to fetch user info:", error);
-      // setProfileImage("/default-profile.png");
     } finally {
       setProfileLoading(false);
     }
@@ -85,7 +92,7 @@ export default function Header() {
   return (
     <header className="w-full">
       <Box 
-        className="flex items-center justify-between px-8 bg-gray-100" 
+        className="flex items-center justify-between px-8" 
         sx={{
           minHeight:"50px",
           height:"10vh",
@@ -97,16 +104,24 @@ export default function Header() {
           alt = "SSLogo"
           onClick={handleLogoClick}
           sx={{
-            width:"100px"
+            width:"100px",
+            mt: 1,
         }}/>          
         <div className="flex items-center">
           {isAuthChecked ? (
             <CircularProgress size={24} />
           ) : !isLoggedIn ? (
             <Link href="/login">
-              <Button variant="contained" className="font-bold h-10">
+              <CustomButton 
+                variant="contained"
+                className="font-bold h-10"
+                sx={{
+                  color: 'white',
+                  borderColor: 'white',
+                }}
+                >
                 로그인
-              </Button>
+              </CustomButton>
             </Link>
           ) : (
             <Box>

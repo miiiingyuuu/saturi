@@ -21,6 +21,7 @@ public class UserInfoDTO {
     private Gender gender;
     private Role role;
     private Long birdId;
+    private LocalDateTime returnDt;
 
     public UserInfoDTO(UserEntity u) {
         userId = u.getUserId();
@@ -32,5 +33,6 @@ public class UserInfoDTO {
         gender = u.getGender();
         role = u.getRole();
         birdId = u.getBird().getId();
+        returnDt = u.getReturnDt();
     }
 }

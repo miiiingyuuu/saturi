@@ -1,6 +1,6 @@
 import { Box, Container, Card, Typography, LinearProgress, Button, Avatar } from "@mui/material";
 import "@/styles/home/main/mainPage.css";
-
+import CustomButton from "@/components/ButtonColor";
 
 interface FirstResultProps<T> {
   currentStep : number;
@@ -54,11 +54,12 @@ export default function firstResult({
             aspectRatio: "1.1 / 1",
             height: "75vh",
             minHeight: "560px",
-            borderRadius: "15px",
+            border:"6px solid #4b2921",
+            borderRadius: "30px",
           }}>
           {/* 등수 표시 */}
           <Box sx={{
-            height:"10%",
+            height:"12%",            
             display:"flex",
             justifyContent:"center",
             alignItems:"center",
@@ -66,8 +67,9 @@ export default function firstResult({
             padding:"3px",
           }}>
             <Typography 
-              variant="h4"
               sx={{
+                fontSize:"32px",
+                fontWeight:"bold",
                 textAlign:"center",                
                 margin: "10px",      
             }}> 당신은 {me}등입니다! </Typography>
@@ -77,7 +79,7 @@ export default function firstResult({
           <Box 
             sx={{
               overflow:"hidden",
-              height:"90%",
+              height:"88%",
               display:"flex",
               flexDirection:"column",
               justifyContent:"space-around",
@@ -86,6 +88,7 @@ export default function firstResult({
               <Card
                 className="px-3 py-2 mx-3"
                 sx={{
+                  height:"16%",
                   minHeight:"80px",
                   display:"flex",
                   justifyContent:"space-around",
@@ -101,6 +104,7 @@ export default function firstResult({
                     height:"100%",
                     display:"flex",
                     flexDirection:"column",
+                    justifyContent:"space-around",
                     alignItems:"center",
                   }}
                 >
@@ -115,7 +119,8 @@ export default function firstResult({
                   <Box 
                     sx={{
                       paddingTop:"1px",
-                      height:"20%",                      
+                      height:"20%",
+
                       // border:"1px solid black"
                     }}> {rank.nickName} 
                   </Box>
@@ -148,7 +153,7 @@ export default function firstResult({
           </Box>
         </Card>
 
-        <Button
+        <CustomButton
           className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
           variant="contained"
           onClick={nextstep}
@@ -160,7 +165,7 @@ export default function firstResult({
             '&:focus': { backgroundColor: 'success' },
           }}>
           다음
-        </Button>
+        </CustomButton>
 
       </Box>
 

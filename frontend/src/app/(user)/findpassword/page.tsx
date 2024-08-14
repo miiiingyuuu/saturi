@@ -16,6 +16,7 @@ import {
   Snackbar
 } from '@mui/material';
 import api from '@/lib/axios';
+import CustomButton from '@/components/ButtonColor';
 
 const FindPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -106,7 +107,25 @@ const FindPasswordPage: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom textAlign="center" sx={{ mb: 3 }}>
         비밀번호 찾기
       </Typography>
-      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+      <Stepper 
+        activeStep={activeStep} 
+        alternativeLabel 
+        sx={{
+          mb: 4,
+          '& .MuiStepIcon-root': {
+            color: '#e0e0e0', // 비활성 아이콘 색상
+            '&.Mui-active': {
+              color: '#0097a7', // 활성 아이콘 색상
+            },
+            '&.Mui-completed': {
+              color: '#00838f', // 완료된 아이콘 색상
+            },
+          },
+          '& .MuiStepConnector-line': {
+            borderColor: '#bdbdbd', // 연결선 색상
+          },
+        }}
+        >
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
@@ -125,7 +144,7 @@ const FindPasswordPage: React.FC = () => {
             required
             type="email"
           />
-          <Button 
+          <CustomButton 
             type="submit" 
             fullWidth 
             variant="contained" 
@@ -133,7 +152,7 @@ const FindPasswordPage: React.FC = () => {
             disabled={isLoading}
           >
             {isLoading ? <CircularProgress size={24} /> : '인증 코드 전송'}
-          </Button>
+          </CustomButton>
         </form>
       )}
       {activeStep === 1 && (
@@ -147,7 +166,7 @@ const FindPasswordPage: React.FC = () => {
             margin="normal"
             required
           />
-          <Button 
+          <CustomButton 
             type="submit" 
             fullWidth 
             variant="contained" 
@@ -155,7 +174,7 @@ const FindPasswordPage: React.FC = () => {
             disabled={isLoading}
           >
             {isLoading ? <CircularProgress size={24} /> : '확인'}
-          </Button>
+          </CustomButton>
         </form>
       )}
       {activeStep === 2 && (
@@ -176,12 +195,12 @@ const FindPasswordPage: React.FC = () => {
             sx={{ mb: 2 }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-            <Button variant="outlined" onClick={handleCopyPassword}>
+            <CustomButton variant="outlined" onClick={handleCopyPassword}>
               비밀번호 복사
-            </Button>
-            <Button variant="contained" onClick={handleGoToLogin}>
+            </CustomButton>
+            <CustomButton variant="contained" onClick={handleGoToLogin}>
               로그인 화면으로 이동
-            </Button>
+            </CustomButton>
           </Box>
         </Paper>
       )}

@@ -3,6 +3,8 @@ package com.tunapearl.saturi.service;
 
 import com.tunapearl.saturi.domain.game.ChatClaimEntity;
 import com.tunapearl.saturi.domain.game.GameLogEntity;
+import com.tunapearl.saturi.domain.quiz.QuizEntity;
+import com.tunapearl.saturi.domain.user.UserEntity;
 import com.tunapearl.saturi.dto.admin.claim.ClaimDeleteRequestDto;
 import com.tunapearl.saturi.dto.admin.claim.ClaimReadRequestDto;
 import com.tunapearl.saturi.dto.admin.claim.ClaimReadResponseDto;
@@ -65,16 +67,21 @@ public class ChatClaimService {
 
     private ClaimReadResponseDto convertReadDtoToEntity(ChatClaimEntity chatClaimEntity) {
         GameLogEntity gameLogEntity = chatClaimEntity.getGameLog();
+        UserEntity user = gameLogEntity.getUser();
+        QuizEntity quiz = gameLogEntity.getQuiz();
         return ClaimReadResponseDto.builder()
                 .chatClaimId(chatClaimEntity.getChatClaimId())
                 .gameLogId(gameLogEntity.getGameLogId())
-                .userId(gameLogEntity.getUser().getUserId())
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
                 .roomId(gameLogEntity.getRoom().getRoomId())
-                .quizId(gameLogEntity.getQuiz().getQuizId())
+                .quizId(quiz.getQuizId())
+                .question(quiz.getQuestion())
                 .chatting(gameLogEntity.getChatting())
                 .chattingDt(gameLogEntity.getChattingDt())
                 .claimedDt(chatClaimEntity.getClaimedDt())
                 .isChecked(chatClaimEntity.isChecked())
+                .checkedDt(chatClaimEntity.getCheckedDt())
                 .build();
     }
 }

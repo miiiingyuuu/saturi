@@ -93,6 +93,9 @@ public class LessonService {
         // in 절 조회를 위한 id list
         List<Long> lessonGroupResultIdList = new ArrayList<>();
 
+        // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용 set
+        Map<Long, Boolean> lessonGroupResultNoLearn = new HashMap<>();
+
         for (LessonGroupResultEntity lgr : lessonGroupResult) {
             // id list에 추가
             lessonGroupResultIdList.add(lgr.getLessonGroupResultId());
@@ -102,6 +105,9 @@ public class LessonService {
 
             // 각 레슨 그룹 결과를 돌면서 레슨 결과를 조회하기 위함
             lessonGroupResultMap.put(lgr.getLessonGroupResultId(), lgr);
+
+            // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용
+            lessonGroupResultNoLearn.put(lgr.getLessonGroup().getLessonGroupId(), false);
         }
 
         // 퍼즐 9개의 결과 id로 조회한 lessonResult list
@@ -121,6 +127,8 @@ public class LessonService {
         // Map에 넣기
         for (LessonResultEntity lr : lessonResults) {
             Long lessonGroupResultId = lr.getLessonGroupResult().getLessonGroupResultId();
+            // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용
+            lessonGroupResultNoLearn.replace(lr.getLesson().getLessonGroup().getLessonGroupId(), true);
             if(lessonResultMap.containsKey(lessonGroupResultId)) {
                 lessonResultMap.get(lessonGroupResultId).add(lr);
             } else {
@@ -146,7 +154,12 @@ public class LessonService {
 
             // lessonGroup score
             LessonGroupResultEntity lgr = lessonGroupResultMap.get(lessonGroupResultId);
-            Long avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+            Long avgAccuracy = 0L;
+            if(lgr.getAvgAccuracy() == null || lgr.getAvgSimilarity() == null) {
+                avgAccuracy = 0L;
+            } else{
+                avgAccuracy = (lgr.getAvgAccuracy() + lgr.getAvgSimilarity()) / 2L;
+            }
 
             // DTO 변환
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lgr.getLessonGroup().getLessonGroupId(), lgr.getLessonGroup().getName(), groupProcess, avgAccuracy);
@@ -155,7 +168,10 @@ public class LessonService {
 
         // 유저가 학습하지 않은 레슨 그룹은 progress, score를 0으로 한 후 result에 추가
         for (LessonGroupEntity lg : lessonGroups) {
-            if(lessonGroupIdSet.contains(lg.getLessonGroupId())) continue;
+            if(lessonGroupIdSet.contains(lg.getLessonGroupId())) {
+                // 빈 껍데기만 있는 레슨그룹결과(학습을 하지않거나 다 건너뛰었거나) 찾기용
+                if(lessonGroupResultNoLearn.get(lg.getLessonGroupId())) continue;
+            }
             LessonGroupProgressByUserDTO dto = new LessonGroupProgressByUserDTO(lg.getLessonGroupId(), lg.getName(), 0L, 0L);
             result.add(dto);
         }
@@ -325,7 +341,6 @@ public class LessonService {
 
     public List<LessonClaimEntity> findAllLessonClaim() {
         List<LessonClaimEntity> lessonClaims = lessonRepository.findAllLessonClaim().orElse(null);
-        log.info("lesson Claims {}", lessonClaims);
         return lessonClaims;
     }
 

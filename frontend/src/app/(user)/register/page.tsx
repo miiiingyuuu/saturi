@@ -24,6 +24,7 @@ import {
   InputAdornment,
   CircularProgress,
 } from "@mui/material";
+import CustomButton from "@/components/ButtonColor";
 
 export default function App() {
   const router = useRouter();
@@ -166,8 +167,9 @@ export default function App() {
             }
           }
         })
+        .catch(()=> alert("이미 존재하는 닉네임 입니다."))
     } else {
-      alert("유효하지 않은 닉네임 입니다.");
+      alert("유효하지 않은 닉네임 입니다. \n공백없이 1-8자의 한글,영어,숫자를 사용해주세요.");
     }
   }
 
@@ -240,7 +242,7 @@ export default function App() {
             </Grid>
             <Grid item xs={4}>
               {!isEmailSend ? (
-                <Button
+                <CustomButton
                   onClick={handleAuthEmail}
                   fullWidth
                   variant="contained"
@@ -251,9 +253,9 @@ export default function App() {
                   }}
                 >
                   {validationTime === 0 ? "재전송" : "인증번호 받기"}
-                </Button>
+                </CustomButton>
               ) : (
-                <Button
+                <CustomButton
                   onClick={
                     validationTime > 0 ? handleAuthEmailNumber : handleAuthEmail
                   }
@@ -266,7 +268,7 @@ export default function App() {
                   }}
                 >
                   인증번호 확인
-                </Button>
+                </CustomButton>
               )}
             </Grid>
             <Grid item xs={12}>
@@ -318,7 +320,7 @@ export default function App() {
               />
             </Grid>
             <Grid item xs={4}>
-              <Button
+              <CustomButton
                 fullWidth
                 variant="contained"
                 disabled={isNicknameChecked}
@@ -332,10 +334,10 @@ export default function App() {
                 }}
               >
                 중복 확인
-              </Button>
+              </CustomButton>
             </Grid>
           </Grid>
-          <Button
+          <CustomButton
             type="submit"
             fullWidth
             variant="contained"
@@ -347,7 +349,7 @@ export default function App() {
             }}
           >
             회원가입
-          </Button>
+          </CustomButton>
         </Box>
       </Box>
     </Container>
