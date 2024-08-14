@@ -168,7 +168,7 @@ export default function App() {
         })
         .catch(()=> alert("이미 존재하는 닉네임 입니다."))
     } else {
-      alert("유효하지 않은 닉네임 입니다.");
+      alert("유효하지 않은 닉네임 입니다. \n공백없이 1-8자의 한글,영어,숫자를 사용해주세요.");
     }
   }
 

@@ -76,7 +76,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onDelete, onBan }) =
                   {new Date(report.claimedDt).toLocaleString()}
                 </Typography>
               </TableCell>
-              <TableCell>{report.checkedDt ? new Date(report.checkedDt).toLocaleString() : "-"}</TableCell>
+              <TableCell>{report.checkedDt ? new Date(report.checkedDt).toLocaleString() : ""}</TableCell>
               <TableCell>
                 <Button onClick={() => onDelete(report.chatClaimId)} disabled={report.isChecked}>Delete</Button>
                 <Button 
