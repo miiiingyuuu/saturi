@@ -123,12 +123,13 @@ export default function Start() {
         </main>
       <Box
         component="img"
-        src="/app/(home)/start/startPageExample.png"
+        src="/content1.png"
         alt="Start Page Example"
         sx={{
-          width: '80%',  
+          width: '70%',  
           marginBottom: "15%",
           maxWidth: '100%',
+          borderRadius: '15px'
         }}
       />          
 
