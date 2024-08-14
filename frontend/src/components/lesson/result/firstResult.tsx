@@ -66,7 +66,11 @@ export default function FirstResult({
       })()
     }}>
     <Box
-      className="flex flex-col bg-white rounded-lg shadow-lg w-full max-w-4xl"
+      className="flex flex-col bg-white w-full max-w-4xl"
+      sx={{
+        border:"6px solid #4b2921",
+        borderRadius:"30px",
+      }}
 
     >
       {/* 라벨 부분 */}
@@ -75,7 +79,7 @@ export default function FirstResult({
       >
         <Box className="flex w-2/5 ml-2 justify-center">
           <Typography variant="caption" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
-            그래프
+            억양 분석
           </Typography>
         </Box>
 
@@ -99,7 +103,7 @@ export default function FirstResult({
             className="flex flex-col items-center"
           >          
             <Typography variant="caption" className="text-center" sx={{ fontWeight:"bold", fontSize: '1rem', whiteSpace: 'nowrap' }}>
-              대사
+              억양
             </Typography>
           </Box>
         </Box>
