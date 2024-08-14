@@ -1,6 +1,7 @@
 import { Box, Popover, Typography, Button } from "@mui/material";
 import React, { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import CustomButton from "../ButtonColor";
 
 interface Lesson {
   lessonId: number;
@@ -135,9 +136,9 @@ export default function Icon({
           달성율 : {progressData[selectedIndex.current].groupProgress}%
         </Typography>
         <Box className="flex justify-center pt-3">
-          <Button variant="contained" color="primary" onClick={startLesson}>
+          <CustomButton variant="contained" color="primary" onClick={startLesson}>
             Start
-          </Button>
+          </CustomButton>
         </Box>
       </>
     ) : (

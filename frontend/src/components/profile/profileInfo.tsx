@@ -5,6 +5,7 @@ import Link from "next/link";
 import api from "@/lib/axios";
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import WcIcon from '@mui/icons-material/Wc';
+import CustomButton from '../ButtonColor';
 
 interface ProfileData {
   nickname: string;
@@ -90,61 +91,59 @@ const ProfileInfo: React.FC = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 4, height: '280px', borderRadius: '16px' }}>
-      <Grid container spacing={2} alignItems="center">
+    <Paper elevation={3} sx={{ p: 3, borderRadius: '16px', height: '80%' }}>
+      <Grid container spacing={2} direction="column">
         <Grid item>
-          <Avatar
-            alt="profile image"
-            src={`/main_profile/${profile.birdId}.png`}
-            sx={{ width: 100, height: 100 }}
-          />
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              <Avatar
+                alt="profile image"
+                src={`/main_profile/${profile.birdId}.png`}
+                sx={{ width: 100, height: 100 }}
+              />
+            </Grid>
+            <Grid item xs>
+              <Box display='flex' alignItems='center'>
+                <ContactMailIcon sx={{ color:'grey' }}/>
+                <Typography variant="body1" color="textSecondary" sx={{ ml: 1 }}>{profile.email}</Typography>
+              </Box>
+              <Box display='flex' alignItems='center'>
+                <FaUserAlt />
+                <Typography variant="h6" sx={{ ml: 2 }}>{profile.nickname}</Typography>
+              </Box>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item xs>
-          <Box display='flex' alignItems='center'>
-            <ContactMailIcon sx={{ color:'grey' }}/>
-            <Typography variant="h6" color="textSecondary" sx={{ ml: 1 }}>{profile.email}</Typography>
-          </Box>
-          <Box display='flex' alignItems='center'>
-            <FaUserAlt />
-            <Typography variant="h6" sx={{ ml: 2 }}>{profile.nickname}</Typography>
-          </Box>
+        
+        <Grid item>
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <FaMapMarkerAlt />
+                <Typography variant="body2" sx={{ ml: 1 }}>{getFormattedLocationId(profile.locationId)}</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <WcIcon />
+                <Typography variant="body2" sx={{ ml: 1 }}>{getFormattedGender(profile.gender)}</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <FaUsers />
+                <Typography variant="body2" sx={{ ml: 1 }}>{getFormattedAgeRange(profile.ageRange)}</Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item>
+          <Link href="/user/profile/update" passHref style={{ textDecoration: 'none' }}>
+            <CustomButton variant="contained" fullWidth>프로필 수정</CustomButton>
+          </Link>
         </Grid>
       </Grid>
-      <Grid 
-        container 
-        spacing={2} 
-        sx={{ 
-          mt: 2,
-          display: 'flex',
-          justifyContent: 'center',
-          width: '100%',
-          margin: '0 auto'
-        }}
-      >
-        <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box display="flex" alignItems="center">
-            <FaMapMarkerAlt />
-            <Typography variant="body1" sx={{ ml: 1 }}>{getFormattedLocationId(profile.locationId)}</Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box display="flex" alignItems="center">
-            <WcIcon />
-            <Typography variant="body1" sx={{ ml: 1 }}>{getFormattedGender(profile.gender)}</Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={4} sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box display="flex" alignItems="center">
-            <FaUsers />
-            <Typography variant="body1" sx={{ ml: 1 }}>{getFormattedAgeRange(profile.ageRange)}</Typography>
-          </Box>
-        </Grid>
-      </Grid>
-      <Box sx={{ mt: 3.5 }}>
-        <Link href="/user/profile/update" passHref>
-          <Button variant="contained" fullWidth>프로필 수정</Button>
-        </Link>
-      </Box>
     </Paper>
   );
 };

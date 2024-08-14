@@ -112,10 +112,10 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
   return (
     <Paper elevation={3}
     sx={{ 
-      p: 2.5, 
+      p: 2, 
       borderRadius: '16px',
       position: 'relative',
-      height: isHorizontal ? 'auto' : '280px',
+      height: isHorizontal ? 'auto' : '80%',
       display: 'flex',
       flexDirection: isHorizontal ? 'row' : 'column',
       alignItems: 'center',
@@ -166,7 +166,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
             </Typography>
           </Box>
         )}
-        <Typography variant={isHorizontal ? "body1" : "h5"} color="text.primary" sx={{ mt: isHorizontal ? 0 : 1 }}>
+        <Typography variant={isHorizontal ? "body1" : "h6"} color="text.primary" sx={{ mt: isHorizontal ? 0 : 1 }}>
           {tierName}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
@@ -182,7 +182,7 @@ const UserTierRank: React.FC<UserTierRankProps> = ({ layout = 'vertical' }) => {
               <Typography variant="body1" color="text.secondary" sx={{ mr: 1 }}>
                 {isMaxTier 
                   ? "최고 티어입니다!"
-                  : expToNextTier !== null ? `Next: ${expToNextTier} EXP` : ""}
+                  : expToNextTier !== null ? `다음 티어까지: ${expToNextTier} EXP` : ""}
               </Typography>
             )}
         </Box>

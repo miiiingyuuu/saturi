@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import LessonChart from './resultChart'; // Ensure correct import of the chart component
 import { WidthFull } from '@mui/icons-material';
+import CustomButton from '@/components/ButtonColor';
 
 // Props interfaces
 interface LessonResultProps {
@@ -193,7 +194,7 @@ export default function FirstResult({
      
     </Box>
     <Box className="flex justify-center mx-24 py-1">
-      <Button
+      <CustomButton
         className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
         variant="contained"
         sx={{
@@ -205,7 +206,7 @@ export default function FirstResult({
         onClick={nextstep}
       >
         다음
-      </Button>
+      </CustomButton>
     </Box>
     </Box>
   );

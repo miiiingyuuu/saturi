@@ -22,6 +22,7 @@ import api from "@/lib/axios";
 import apiAi from "@/lib/axiosAI";
 import toWav from "audiobuffer-to-wav"; // AudioBuffer를 WAV로 변환하는 라이브러리 import
 import Chatbot from "@/components/chatbot/chatbot";
+import CustomButton from "@/components/ButtonColor";
 
 // 컴포넌트: LessonPage
 export default function LessonPage() {
@@ -540,31 +541,31 @@ export default function LessonPage() {
                   gap: "10px",
                 }}
               >
-                <Button
+                <CustomButton
                   variant="contained"
                   color="primary"
                   className="text-nowrap"
                   onClick={handleSkip}
                 >
                   건너뛰기
-                </Button>
+                </CustomButton>
                 {currentIndex < lessons.length - 1 ? (
-                  <Button
+                  <CustomButton
                     variant="contained"
                     color="primary"
                     className="text-nowrap"
                     onClick={handleNext}
                   >
                     다음 문장
-                  </Button>
+                  </CustomButton>
                 ) : (
-                  <Button
+                  <CustomButton
                     variant="contained"
                     color="primary"
                     onClick={handleNext}
                   >
                     결과 보기
-                  </Button>
+                  </CustomButton>
                 )}
               </Box>
             </Box>
@@ -574,7 +575,7 @@ export default function LessonPage() {
   
         {/* 문제 신고 버튼 - Positioning at the bottom right of the card */}
         {!isFinalLesson?(        
-        <Button
+        <CustomButton
         variant="contained"
         color="error"
         sx={{
@@ -591,7 +592,7 @@ export default function LessonPage() {
         onClick={handleOpenModal}
         >
           !
-        </Button>)
+        </CustomButton>)
         :"" }
   
         {/* 문제 신고 모달 */}
@@ -609,12 +610,12 @@ export default function LessonPage() {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseModal} color="primary">
+            <CustomButton onClick={handleCloseModal} color="primary">
               취소
-            </Button>
-            <Button onClick={handleClaim} color="primary">
+            </CustomButton>
+            <CustomButton onClick={handleClaim} color="primary">
               제출
-            </Button>
+            </CustomButton>
           </DialogActions>
         </Dialog>
 

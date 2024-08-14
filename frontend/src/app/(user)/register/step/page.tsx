@@ -18,6 +18,7 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useConfirmLeave from "@/hooks/useConfirmLeave";
+import CustomButton from "@/components/ButtonColor";
 
 interface Option {
   label: string;
@@ -75,8 +76,6 @@ export default function App() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-
-
   // 어케함 여기?? 물어보기
   // handleNext 에 axios 걸어서 하나씩 보내기
   function handleUpdateUser() {
@@ -115,7 +114,26 @@ export default function App() {
           maxWidth: 'md',
         }}
       >
-        <Stepper activeStep={activeStep} orientation="vertical" sx={{ width: '100%' }}>
+        <Stepper
+          activeStep={activeStep}
+          orientation="vertical"
+          sx={{
+            width: '100%',
+            mb: 4,
+          '& .MuiStepIcon-root': {
+            color: '#e0e0e0', // 비활성 아이콘 색상
+            '&.Mui-active': {
+              color: '#0097a7', // 활성 아이콘 색상
+            },
+            '&.Mui-completed': {
+              color: '#00838f', // 완료된 아이콘 색상
+            },
+          },
+          '& .MuiStepConnector-line': {
+            borderColor: '#bdbdbd', // 연결선 색상
+          },
+            }}
+          >
           {steps.map((step, index) => (
             <Step key={step.label}>
               <StepLabel>{step.label}</StepLabel>
@@ -154,20 +172,20 @@ export default function App() {
                   />
                 )}
                 <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                  <Button
+                  <CustomButton
                     variant="contained"
                     onClick={handleNext}
                     sx={{ mt: 1, mr: 1 }}
                   >
                     {index === steps.length - 1 ? 'Finish' : 'Next'}
-                  </Button>
-                  <Button
+                  </CustomButton>
+                  <CustomButton
                     disabled={index === 0}
                     onClick={handleBack}
                     sx={{ mt: 1, ml: 1 }}
                   >
                     Back
-                  </Button>
+                  </CustomButton>
                 </Box>
               </StepContent>
             </Step>
@@ -178,7 +196,7 @@ export default function App() {
             <Typography>
               모든 준비가 완료되었습니다!
             </Typography>
-            <Button
+            <CustomButton
               onClick={() => {
                 handleUpdateUser()
                 router.push("/");
@@ -186,7 +204,7 @@ export default function App() {
               sx={{ mt: 1, mr: 1 }}
             >
               메인으로
-            </Button>
+            </CustomButton>
           </Paper>
         )}
       </Box>

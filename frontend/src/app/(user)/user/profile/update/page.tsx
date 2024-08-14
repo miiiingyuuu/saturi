@@ -19,6 +19,7 @@ import {getFormattedLocationId, handleValueChange, validateNickname} from "@/uti
 import api from "@/lib/axios";
 import { getCookie } from "cookies-next";
 import { useTheme } from "@mui/material/styles"
+import CustomButton from "@/components/ButtonColor";
 
 // type 선언
 type Gender = 'DEFAULT' | 'MALE' | 'FEMALE';
@@ -275,7 +276,7 @@ export default function EditProfilePage() {
                     />
                   </Grid>
                   <Grid item xs={2}>
-                    <Button
+                    <CustomButton
                       variant="contained"
                       disabled={isNicknameChecked}
                       onClick={(event) => {
@@ -288,44 +289,44 @@ export default function EditProfilePage() {
                       }}
                     >
                       중복 확인
-                    </Button>
+                    </CustomButton>
                   </Grid>
                 </Grid>
               </Box>
-              <Typography sx= {{ fontSize: '11px', color: 'blue', ml: 1 }}> * 닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
+              <Typography sx= {{ fontSize: '11px', ml: 1, mt: 1 }}> * 닉네임은 한글, 영문, 숫자를 포함하여 1~10자리여야 합니다. (자음/모음만 사용 불가)</Typography>
               <Divider sx={{ my: 2 }} />
               <p className="text-md font-semibold">이메일</p>
               <p className="text-default-500" style={{ fontSize: '20px' }}>{userProfile.email}</p>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={() => handleModalOpen('dialect')}>
+              <CustomButton variant="outlined" onClick={() => handleModalOpen('dialect')}>
                 사용하는 사투리: {getFormattedLocationId(userProfile.locationId)}
-              </Button>
+              </CustomButton>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={() => handleModalOpen('gender')}>
+              <CustomButton variant="outlined" onClick={() => handleModalOpen('gender')}>
                 성별: {getFormattedGender(userProfile.gender)}
-              </Button>
+              </CustomButton>
               <Divider sx={{ my: 2 }} />
-              <Button variant="outlined" onClick={() => handleModalOpen('ageRange')}>
+              <CustomButton variant="outlined" onClick={() => handleModalOpen('ageRange')}>
                 연령대: {getFormattedAgeRange(userProfile.ageRange)}
-              </Button>
+              </CustomButton>
             </div>
           }
         />
         <CardActions sx={{ justifyContent: 'space-between' }}>
           <Link href="/user/profile" underline="none">
-            <Button variant="contained">뒤로가기</Button>
+            <CustomButton variant="contained">뒤로가기</CustomButton>
           </Link>
           <div className="flex space-x-4">
             {(isSocial==="false") && (
               <Link href="/user/auth/changepassword" underline="none">
-              <Button variant="contained" sx={{ backgroundColor: theme.palette.primary.light }}>
+              <CustomButton variant="contained" sx={{ backgroundColor: '#4db6ac !important' }}>
                 비밀번호 변경
-              </Button>
+              </CustomButton>
             </Link>
             )}
-            <Button variant="contained" color="primary" onClick={handleSave}>
+            <CustomButton variant="contained" color="primary" onClick={handleSave}>
               수정 완료
-            </Button>
+            </CustomButton>
           </div>
         </CardActions>
       </Card>

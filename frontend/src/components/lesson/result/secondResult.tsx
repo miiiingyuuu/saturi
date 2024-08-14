@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import "../../../styles/home/main/mainPage.css";
+import CustomButton from "@/components/ButtonColor";
 
 interface LessonGroupResultProps {
   lessonGroupId: number;
@@ -235,7 +236,7 @@ export default function SecondResult({
           </Typography>
         </Box>
         <Box className="flex justify-center mx-24 py-4">
-          <Button
+          <CustomButton
             variant="contained"
             color="success"
             className="mx-2"
@@ -243,16 +244,16 @@ export default function SecondResult({
             disabled={isPrevDisabled}
           >
             이전 조각
-          </Button>
-          <Button
+          </CustomButton>
+          <CustomButton
             variant="contained"
             color="success"
             className="mx-2"
             onClick={handleAgain}
           >
             다시하기
-          </Button>
-          <Button
+          </CustomButton>
+          <CustomButton
             variant="contained"
             color="success"
             className="mx-2"
@@ -260,21 +261,21 @@ export default function SecondResult({
             disabled={isNextDisabled}
           >
             다음 조각
-          </Button>
+          </CustomButton>
         </Box>
         <Box className="flex justify-center mx-24 py-4">
-          <Button
+          <CustomButton
             variant="contained"
             color="success"
             className="w-full"
             onClick={handleHome}
           >
             Home
-          </Button>
+          </CustomButton>
         </Box>
       </Box>
       <Box className="flex justify-center mx-24 py-2">
-        <Button
+        <CustomButton
           className="mt-4 text-white px-8 py-4 rounded"
           variant="contained"
           sx={{
@@ -286,7 +287,7 @@ export default function SecondResult({
           onClick={beforestep}
         >
           이전
-        </Button>
+        </CustomButton>
       </Box>
     </Box>
   );
