@@ -16,7 +16,6 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import CustomButton from "@/components/ButtonColor";
 
 export default function App() {
   const router = useRouter();
@@ -77,7 +76,7 @@ export default function App() {
             onChange={event => handleValueChange(event, setPassword)}
             autoComplete="current-password"
           />
-          <CustomButton
+          <Button
             type="submit"
             fullWidth
             variant="contained"
@@ -88,7 +87,7 @@ export default function App() {
             }}
           >
             로그인
-          </CustomButton>
+          </Button>
           <Grid
               container
               sx={{

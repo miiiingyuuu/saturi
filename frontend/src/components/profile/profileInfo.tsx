@@ -5,7 +5,6 @@ import Link from "next/link";
 import api from "@/lib/axios";
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import WcIcon from '@mui/icons-material/Wc';
-import CustomButton from '../ButtonColor';
 
 interface ProfileData {
   nickname: string;
@@ -140,7 +139,7 @@ const ProfileInfo: React.FC = () => {
 
         <Grid item>
           <Link href="/user/profile/update" passHref style={{ textDecoration: 'none' }}>
-            <CustomButton variant="contained" fullWidth>프로필 수정</CustomButton>
+            <Button variant="contained" fullWidth>프로필 수정</Button>
           </Link>
         </Grid>
       </Grid>

@@ -7,7 +7,6 @@ import UserTierRank from '@/components/profile/userTierRank';
 import { getCookie } from 'cookies-next';
 import useConnect from "@/hooks/useConnect";
 import { deepOrange } from '@mui/material/colors';
-import CustomButton from '@/components/ButtonColor';
 
 export default function RightPart({selectedRegion} : RightPartProps) {
   const router = useRouter();
