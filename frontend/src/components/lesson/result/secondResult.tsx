@@ -247,7 +247,7 @@ export default function SecondResult({
         <Box className="flex justify-center mx-24 py-4">
           <Button
             variant="contained"
-            color="success"
+            color="primary"
             className="mx-2"
             onClick={handlePrevClick}
             disabled={isPrevDisabled}
@@ -256,7 +256,7 @@ export default function SecondResult({
           </Button>
           <Button
             variant="contained"
-            color="success"
+            color="primary"
             className="mx-2"
             onClick={handleAgain}
           >
@@ -264,7 +264,7 @@ export default function SecondResult({
           </Button>
           <Button
             variant="contained"
-            color="success"
+            color="primary"
             className="mx-2"
             onClick={handleNextClick}
             disabled={isNextDisabled}
@@ -275,7 +275,7 @@ export default function SecondResult({
         <Box className="flex justify-center mx-24 py-4">
           <Button
             variant="contained"
-            color="success"
+            color="primary"
             className="w-full"
             onClick={handleHome}
           >
@@ -287,12 +287,7 @@ export default function SecondResult({
         <Button
           className="mt-4 text-white px-8 py-4 rounded"
           variant="contained"
-          sx={{
-            backgroundColor: "success.light",
-            "&:hover": { backgroundColor: "green" },
-            "&:active": { backgroundColor: "green" },
-            "&:focus": { backgroundColor: "success" },
-          }}
+          color="primary"
           onClick={beforestep}
         >
           이전

@@ -4,7 +4,7 @@ import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/utils/authutils";
 import { useMemo, useState, useEffect } from "react";
-import PasswordValidation from "@/components/PasswordValidation";
+import PasswordValidation from "@/components/profile/PasswordValidation";
 import {
   validateEmail,
   passwordConfirm,
@@ -24,7 +24,6 @@ import {
   InputAdornment,
   CircularProgress,
 } from "@mui/material";
-import CustomButton from "@/components/ButtonColor";
 
 export default function App() {
   const router = useRouter();
@@ -242,7 +241,7 @@ export default function App() {
             </Grid>
             <Grid item xs={4}>
               {!isEmailSend ? (
-                <CustomButton
+                <Button
                   onClick={handleAuthEmail}
                   fullWidth
                   variant="contained"
@@ -253,9 +252,9 @@ export default function App() {
                   }}
                 >
                   {validationTime === 0 ? "재전송" : "인증번호 받기"}
-                </CustomButton>
+                </Button>
               ) : (
-                <CustomButton
+                <Button
                   onClick={
                     validationTime > 0 ? handleAuthEmailNumber : handleAuthEmail
                   }
@@ -268,7 +267,7 @@ export default function App() {
                   }}
                 >
                   인증번호 확인
-                </CustomButton>
+                </Button>
               )}
             </Grid>
             <Grid item xs={12}>
@@ -320,7 +319,7 @@ export default function App() {
               />
             </Grid>
             <Grid item xs={4}>
-              <CustomButton
+              <Button
                 fullWidth
                 variant="contained"
                 disabled={isNicknameChecked}
@@ -334,10 +333,10 @@ export default function App() {
                 }}
               >
                 중복 확인
-              </CustomButton>
+              </Button>
             </Grid>
           </Grid>
-          <CustomButton
+          <Button
             type="submit"
             fullWidth
             variant="contained"
@@ -349,7 +348,7 @@ export default function App() {
             }}
           >
             회원가입
-          </CustomButton>
+          </Button>
         </Box>
       </Box>
     </Container>

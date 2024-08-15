@@ -13,7 +13,7 @@ import { authToken } from "@/utils/authutils";
 import { teal } from "@mui/material/colors";
 
 const mainFont = localFont({
-  src: "./test.ttf"
+  src: "./PretendardVariable.woff2"
 })
 
 const theme = createTheme({
@@ -22,7 +22,7 @@ const theme = createTheme({
     primary: teal
   },
   typography: {
-    fontFamily: 'Pretendard, sans-serif'
+    fontFamily: 'Pretendard, mainFont, sans-serif',
   }
 });
 
@@ -35,16 +35,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     }
   },[router])
 
+  const isStartPage = pathname === '/' || pathname === '/start';
   
   if (pathname && ( pathname.startsWith("/admin") || (pathname.startsWith("/game") && !(pathname.includes("/in-game/") && pathname.endsWith("/result"))))) {
     return (
       <html lang="ko">
-        <body
-          className={mainFont.className}
-        >
-          <main>
-            {children}
-          </main>
+        <body className={mainFont.className}>
+          <ThemeProvider theme={theme}>
+            <main>
+              {children}
+            </main>
+          </ThemeProvider>
         </body>
       </html>
     )
@@ -52,15 +53,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="ko">
-      <body
-        className={`${mainFont.className} bg-gray-100`}
-      >
+      <body className={`${mainFont.className} bg-gray-100 min-h-svh`}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <Header />
-            <main
-              className={mainFont.className}
-            >{children}</main>
+          <Header isTransparent={isStartPage} />
+          <main
+            className={mainFont.className}
+            style={{ minHeight: 'calc(100vh - 350px)' }}
+          >
+            {children}
+          </main>
           <Footer />
         </ThemeProvider>
       </body>

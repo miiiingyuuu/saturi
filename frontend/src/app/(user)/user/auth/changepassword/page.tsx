@@ -4,7 +4,7 @@ import api from "@/lib/axios";
 import { useState, useMemo } from "react";
 import { useRouter } from 'next/navigation';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PasswordValidation from "@/components/PasswordValidation";
+import PasswordValidation from "@/components/profile/PasswordValidation";
 import { handleValueChange, validatePassword } from "@/utils/utils";
 import {
   Box,
@@ -15,7 +15,6 @@ import {
   Paper,
   Grid
 } from '@mui/material';
-import CustomButton from "@/components/ButtonColor";
 
 export default function App() {
   const router = useRouter();
@@ -77,7 +76,7 @@ export default function App() {
           <PasswordValidation password={newPassword} />
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={6}>
-              <CustomButton
+              <Button
                 startIcon={<ArrowBackIcon />}
                 onClick={() => {
                   router.push('/user/profile/update');
@@ -86,17 +85,17 @@ export default function App() {
                 fullWidth
               >
                 뒤로 가기
-              </CustomButton>
+              </Button>
             </Grid>
             <Grid item xs={6}>
-              <CustomButton
+              <Button
                 type="submit"
                 variant="contained"
                 fullWidth
                 disabled={!isNewPasswordValid || newPassword === ''}
               >
                 비밀번호 변경
-              </CustomButton>
+              </Button>
             </Grid>
           </Grid>
         </Box>

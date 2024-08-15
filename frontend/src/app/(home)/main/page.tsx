@@ -17,8 +17,6 @@ import KoreaMap from '../../../components/home/main/koreaMap';
 
 import Chatbot from "@/components/chatbot/chatbot";
 
-import CustomButton from "@/components/ButtonColor";
-
 
 
 // /////////////////////////////////////////////////////////////
@@ -48,9 +46,9 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
       {/* 왼쪽 버튼은 공간은 차지하게 함 (클릭이나 보이지는 않게만) */}
       {selectedRegion !== "_" && selectedRegion !== "준비중입니다" && (        
         <Box className={`buttonLeft ${middleToWhere == 2 ? 'invisible pointer-events-none' : ''}`}>
-          <CustomButton type="button"  onClick={onLeftClick}>
+          <Button type="button"  onClick={onLeftClick}>
             <Image src="/MainPage/buttonLeft.png" alt="button" width={60} height={60} />
-          </CustomButton>
+          </Button>
           <Typography 
             variant="h5"
             sx={{
@@ -64,9 +62,9 @@ function ButtonPart({ onLeftClick, onRightClick, middleToWhere, selectedRegion }
 
       {selectedRegion !== "_" && selectedRegion !== "준비중입니다" && (
         <Box className={`buttonRight ${middleToWhere == 0 ? 'invisible pointer-events-none' : ''}`}>
-          <CustomButton type="button" onClick={onRightClick}>
+          <Button type="button" onClick={onRightClick}>
             <Image src="/MainPage/buttonRight.png" alt="button" width={60} height={60} />
-          </CustomButton>
+          </Button>
           <Typography 
             variant="h5"
             sx={{

@@ -13,7 +13,7 @@ interface SearchFiltersProps {
 
 const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, onFilterChange, onSearch }) => {
   return (
-    <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+    <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems:"center", justifyContent:"right"}}>
       <TextField
         name="gameLogId"
         label="Game Log ID"

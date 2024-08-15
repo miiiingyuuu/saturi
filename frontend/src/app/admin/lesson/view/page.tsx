@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react";
 import useTableSort from "@/hooks/useTableSort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SortableTableHead from "@/components/SortableTableHead";
-import AdminSampleGraph from "@/components/admin/AdminSampleGraph"
+import SortableTableHead from "@/components/admin/admin-form/SortableTableHead";
+import AdminSampleGraph from "@/components/admin/admin-chart/AdminSampleGraph"
 import {LessonProps} from "@/utils/props"
 
 type HeadCell = {
@@ -101,7 +101,10 @@ export default function App() {
 
   return (
   <Container>
-    <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+    <Typography component="h1" variant="h4" sx={{display: 'flex', justifyContent: "center", mb:3,}}>
+      레슨 조회
+    </Typography>
+    <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: "center", justifyContent: "right" }}>
       <TextField
         name="lessonGroupId"
         label="레슨 그룹 Id"

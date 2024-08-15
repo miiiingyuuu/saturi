@@ -13,15 +13,12 @@ import useLogout from "@/hooks/useLogout";
 import UserTierRank from "@/components/profile/userTierRank";
 import api from "@/lib/axios";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import { teal } from "@mui/material/colors";
-import CustomButton from "../ButtonColor";
 
 interface HeaderProps {
   isTransparent?: boolean;
 }
 
-
-export default function Header() {
+export default function Header({ isTransparent = false }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isAuthChecked, setIsAuthChecked] = useState(true);
@@ -96,6 +93,11 @@ export default function Header() {
         sx={{
           minHeight:"50px",
           height:"10vh",
+          backgroundColor: isTransparent ? 'transparent' : 'rgb(243, 244, 246)',
+          position: isTransparent ? 'absolute' : 'relative',
+          width: '100%',
+          zIndex: 1000,
+          transition: 'background-color 0.3s',
         }}>
         <Box 
           component="img"   
@@ -112,7 +114,7 @@ export default function Header() {
             <CircularProgress size={24} />
           ) : !isLoggedIn ? (
             <Link href="/login">
-              <CustomButton 
+              <Button 
                 variant="contained"
                 className="font-bold h-10"
                 sx={{
@@ -121,7 +123,7 @@ export default function Header() {
                 }}
                 >
                 로그인
-              </CustomButton>
+              </Button>
             </Link>
           ) : (
             <Box>
@@ -172,6 +174,7 @@ export default function Header() {
                       bgcolor: 'background.paper',
                       transform: 'translateY(-50%) rotate(45deg)',
                       zIndex: 0,
+
                     },
                   },
                 }}

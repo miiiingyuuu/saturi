@@ -1,15 +1,13 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, Box } from '@mui/material';
 import api from '@/lib/axios';
 import dynamic from 'next/dynamic';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartData, ChartOptions } from 'chart.js';
 
-// Chart.js 컴포넌트 등록
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Bar 컴포넌트 동적으로 임포트
 const Bar = dynamic(() => import('react-chartjs-2').then(mod => mod.Bar), { ssr: false });
 
 interface SimilarityData {
@@ -27,21 +25,13 @@ const locationNames: { [key: number]: string } = {
   7: '제주도'
 };
 
+type ChartDataType = ChartData<'bar', number[], string>;
+
 const UserSimilarityChart: React.FC = () => {
-  const [chartData, setChartData] = useState<{
-    labels: string[];
-    datasets: {
-      label: string;
-      data: number[];
-      backgroundColor: string;
-    }[];
-  }>({
+  const [chartData, setChartData] = useState<ChartDataType>({
     labels: [],
     datasets: []
   });
-
-  const chartRef = useRef<ChartJS>(null);
-  const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,35 +64,37 @@ const UserSimilarityChart: React.FC = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (chartRef.current && boxRef.current) {
-        chartRef.current.resize();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  const options = {
+  const options: ChartOptions<'bar'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
       },
       title: {
         display: true,
-        text: '지역별 평균 유사도 및 정확도',
-      },
+        text: '지역별 평균 유사도 및 정확도'
+      }
     },
+    scales: {
+      x: {
+        ticks: {
+          autoSkip: false,
+          maxRotation: 0,
+          minRotation: 0
+        }
+      },
+      y: {
+        beginAtZero: true,
+        max: 100 // 유사도와 정확도가 백분율로 표시된다고 가정
+      }
+    }
   };
 
   return (
-   <Bar options={options} data={chartData} />
+    <Box sx={{ height: '315px', width: '100%' }}>
+      <Bar options={options} data={chartData} />
+    </Box>
   );
 };
 

@@ -23,7 +23,6 @@ import api from "@/lib/axios";
 import apiAi from "@/lib/axiosAI";
 import toWav from "audiobuffer-to-wav";
 import Chatbot from "@/components/chatbot/chatbot";
-import CustomButton from "@/components/ButtonColor";
 
 export default function LessonPage() {
   interface Lesson {
@@ -539,7 +538,7 @@ export default function LessonPage() {
           >
             <Image
               src="/images/loadingBird.gif"
-              alt="귀여운 쿼카"
+              alt="로딩새"
               width={320}
               height={338}
               style={{
@@ -556,7 +555,7 @@ export default function LessonPage() {
                 margin: 4,
               }}
             >
-              Now Loading...
+              결과를 저장중입니다...
             </Typography>
           </Box>
         ) : (
@@ -739,12 +738,12 @@ export default function LessonPage() {
             </Box>
           </DialogContent>
           <DialogActions>
-            <CustomButton onClick={handleCloseModal} color="primary">
+            <Button onClick={handleCloseModal} color="primary">
               취소
-            </CustomButton>
-            <CustomButton onClick={handleClaim} color="primary">
+            </Button>
+            <Button onClick={handleClaim} color="primary">
               제출
-            </CustomButton>
+            </Button>
           </DialogActions>
         </Dialog>
       </Card>

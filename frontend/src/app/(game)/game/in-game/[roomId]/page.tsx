@@ -29,19 +29,25 @@ import { styled } from "@mui/material/styles"
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
 import api from "@/lib/axios";
-import CustomButton from '@/components/ButtonColor';
 
 type IsClickedState = {
   [key: number]: boolean;
 };
 
+
 const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
-))({
+))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    fontSize: '20px', // 원하는 폰트 사이즈로 변경
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 20,
   },
-});
+  [`& .MuiTooltip-arrow`]: {
+    color: theme.palette.common.white,
+  },
+}));
 
 interface TipsProps {
  tipId: number
@@ -159,6 +165,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
       setNowQuiz(data);
     }
     if (now === 10) {
+      setIsEnd(true)
+
       clientRef.current?.publish({
         destination: "/pub/room",
         body: JSON.stringify({
@@ -170,8 +178,8 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         }
       })
       setIsAnswerTime(true);
-      setIsEnd(true)
       setResult("문제를 모두 풀었습니다. \n 잠시 후 결과페이지로 이동합니다.")
+      sessionStorage.setItem("success", "true")
       setTimeout(() => {
         router.replace(`/game/in-game/${roomId}/result`)
       },3000)
@@ -541,7 +549,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       }}
                       sx={{ backgroundColor: "whitesmoke", borderRadius: "5px" }}
                     />
-                    <CustomButton
+                    <Button
                       variant="contained"
                       color="primary"
                       sx={{ ml: 1 }}
@@ -551,7 +559,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
                       }}
                     >
                       <SendIcon />
-                    </CustomButton>
+                    </Button>
                   </Box>
                 )}
             </>
@@ -715,7 +723,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
         if (e.key === "Enter") sendMessage(`${chat}  `, setChat);
         }}
       />
-        <CustomButton
+        <Button
           variant="contained"
           onClick={() => {
           if (confirm("반복적인 중도 퇴장 시 제재를 받으실 수 있습니다. \n나가시겠습니까?")) {
@@ -734,7 +742,7 @@ export default function App({ params: { roomId } }: RoomIdProps) {
           }}
         >
           <LogoutIcon />
-        </CustomButton>
+        </Button>
       </Box>
     </Box>
   </Box>

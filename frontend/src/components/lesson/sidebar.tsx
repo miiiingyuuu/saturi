@@ -74,15 +74,16 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
           justifyContent:"space-between",
           paddingBottom:"30px",
           paddingTop:"30px",
+          paddingLeft:"0px",
       }}>
         {selectedCategories.map((category) => (
-          <ul key={category.id}>
+          <ul key={category.id} style={{padding:"0px"}}>
             <Link href={`/lesson/${location}/${category.id}`}>
               <li className="flex justify-center">                
                 <ToggleButton
                   value={category.id}
                   sx={{
-                    height: "65px",
+                    height: "70px",
                     borderRadius:"35px",
                     padding: 0,
                     border: category.id === categoryId ? '5px solid #84d8ff' : '5px solid transparent', // 테두리 색상 조건부 적용
