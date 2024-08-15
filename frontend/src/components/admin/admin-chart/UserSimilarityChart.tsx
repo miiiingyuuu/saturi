@@ -92,7 +92,7 @@ const UserSimilarityChart: React.FC = () => {
   };
 
   return (
-    <Box sx={{ height: '400px', width: '100%' }}>
+    <Box sx={{ height: '315px', width: '100%' }}>
       <Bar options={options} data={chartData} />
     </Box>
   );
