@@ -42,7 +42,6 @@ export default function Icon({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const selectedIndex = useRef(0);
-  console.log(progressData)
 
   const router = useRouter();
   const currentPath = usePathname();

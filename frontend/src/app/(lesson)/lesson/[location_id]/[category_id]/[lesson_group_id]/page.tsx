@@ -404,11 +404,8 @@ export default function LessonPage() {
     api
       .put(`learn/lesson/${currentLessonId}`)
       .then(response => {
-        console.log(response);
       })
       .catch(err => {
-        console.log(err);
-        console.log(currentLessonId);
       });
 
     if (currentIndex < lessons.length - 1) {
@@ -430,7 +427,6 @@ export default function LessonPage() {
     api
       .post(`learn/lesson/claim`, requestBody)
       .then(response => {
-        console.log(response);
         setModalOpen(false);
         setReportContent("");
       })

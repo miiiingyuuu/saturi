@@ -245,7 +245,7 @@ export default function App() {
                     </AccordionDetails>
                   </Accordion>
                 </TableCell>
-                <TableCell className="w-2/12">{parseDate(row.creationDt)}</TableCell>
+                <TableCell className="w-2/12">{new Date(row.creationDt).toLocaleString()}</TableCell>
                 <TableCell className="w-2/12">
                   <Button
                     variant="contained"

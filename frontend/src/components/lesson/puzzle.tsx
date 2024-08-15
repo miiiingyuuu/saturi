@@ -34,10 +34,6 @@ interface PuzzleProps {
 
 export default function Puzzle({ id, totalProgress, lessonGroup, progressData, onSelect }: PuzzleProps) {
   // 퍼즐 조각 데이터 (실제 데이터 가져오는 로직으로 대체 가능)
-
-  useEffect(() => {
-    console.log("lessonGroup data:", lessonGroup);
-  }, [lessonGroup]);
   
   const onJigsawClick = (piece: { lessonGroupId: number; avgAccuracy: number }) => {
     // lessonGroupId와 avgAccuracy를 전달

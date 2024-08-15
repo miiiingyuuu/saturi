@@ -70,7 +70,6 @@ export default function LessonResultPage() {
         .put(`learn/lesson-group-result/${lessonGroupResultId}`)
         .then((res) => {
           if (res.status === 200) {
-            console.log("lessonGroupResult", res.data);
             setUserInfo(res.data.userInfo);
             setLessonResult(res.data.lessonResult);
             setLessonGroupResult(res.data.lessonGroupResult); // lessonGroupResult 설정

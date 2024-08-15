@@ -23,8 +23,8 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
     ],
     [
       { id: 1, name: "뉴스", tag: "News" },
-      { id: 2, name: "일상", tag: "Daily" },
-      { id: 3, name: "드라마", tag: "Drama" },
+      { id: 2, name: "드라마", tag: "Drama" },
+      { id: 3, name: "영화", tag: "Movie" },
       { id: 4, name: "밈", tag: "Meme" },
     ],
   ];

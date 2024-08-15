@@ -10,7 +10,6 @@ export function createInfo(event: FormEvent) {
       headers: { "Content-Type": "multipart/form-data" },
     })
     .then(response => {
-      console.log(response);
     });
 }
 

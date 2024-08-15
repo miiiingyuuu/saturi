@@ -118,7 +118,6 @@ export default function SecondResult({
         .then(response => {
           if (response.status === 200) {
             setCurrentCategory(response.data);
-            console.log(locationId, categoryId, currentLessonGroupId);
           }
         })
         .catch(err => {
@@ -189,7 +188,6 @@ export default function SecondResult({
 
   const handleAgain = () => {
     if (locationId !== null && categoryId !== null) {
-      console.log();
       router.push(
         `/lesson/${locationId}/${categoryId}/${currentLessonGroupId}`,
       );
