@@ -107,6 +107,9 @@ export default function App() {
         />
         <Button variant="contained" onClick={findUser}>검색</Button>
       </Box>
+      <Typography sx={{display: 'flex', justifyContent: "right", color: "gray"}}>
+        BANNED에 마우스를 올리면 정지 기간을 확인하실 수 있습니다.
+      </Typography>
       <TableContainer component={Paper}>
         <Table>
           <SortableTableHead
@@ -135,7 +138,7 @@ export default function App() {
                 </TableCell>
                 <TableCell
                   sx={{ width: "20%" }}
-                >{row.regDate}
+                >{new Date(row.regDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell
                   sx={{ width: "15%" }}
@@ -147,8 +150,21 @@ export default function App() {
                   sx={{ width: "15%" }}
                 >
                   <Tooltip
-                    title={`${new Date(row.returnDt || "").toLocaleString()} 까지`}
-                    open={row.role === "BANNED"}
+                    title={row.role === "BANNED" && `${new Date(row.returnDt || "").toLocaleString()} 까지`}
+                    disableFocusListener
+                    disableTouchListener
+                    slotProps={{
+                      popper: {
+                        modifiers: [
+                          {
+                            name: 'offset',
+                            options: {
+                              offset: [0, -20],
+                            },
+                          },
+                        ],
+                      },
+                    }}
                   >
                     <Typography>
                       {row.role}
