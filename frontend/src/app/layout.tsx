@@ -11,7 +11,6 @@ import { ThemeProvider } from "@emotion/react";
 import { useRouter, usePathname } from "next/navigation"
 import { authToken } from "@/utils/authutils";
 import { teal } from "@mui/material/colors";
-import { generateMetadata } from "@/components/DynamicTitles";
 
 const mainFont = localFont({
   src: "./PretendardVariable.woff2"
@@ -26,8 +25,6 @@ const theme = createTheme({
     fontFamily: 'Pretendard, mainFont, sans-serif',
   }
 });
-
-export { generateMetadata };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
