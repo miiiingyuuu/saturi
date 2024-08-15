@@ -525,7 +525,7 @@ export default function LessonPage() {
           )}
         </Box>
 
-        {true ? (
+        {isLoading ? (
           <Box
             className="w-full h-full"
             sx={{
