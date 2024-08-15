@@ -1,7 +1,6 @@
 import { Box, Popover, Typography, Button } from "@mui/material";
 import React, { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import CustomButton from "../ButtonColor";
 
 interface Lesson {
   lessonId: number;
