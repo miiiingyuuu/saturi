@@ -35,37 +35,7 @@
 
 ## 5. URL 경로 구조
 
-start
-  ├── login
-      └── findpassword
-      └── register
-            └── step
-  ├── main
-      └── game
-            └── in-queue
-                  └── in-game[room_Id]
-                       └── result
-      └── lesson
-            └── [location_Id]
-                  └── [category_Id]
-                        └── [lesson_group_Id]
-                             └── result
-  ├── admin
-      └── claim
-            ├── lesson
-            └── user
-      └── lesson
-            ├── view
-            └── create
-      └── quiz
-            ├── view
-            └── create
-      └── statistics
-            ├── user_location
-            ├── user_contents
-            ├── user_similarity
-            └── user_lesson
-      └── user
+  <img src="./img/URL.png>
 
 ## 6. 서비스 페이지
 
