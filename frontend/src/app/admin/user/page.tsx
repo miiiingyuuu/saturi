@@ -15,10 +15,7 @@ import api from "@/lib/axios";
 import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react";
 import useTableSort from "@/hooks/useTableSort";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SortableTableHead from "@/components/admin/admin-form/SortableTableHead";
-import AdminSampleGraph from "@/components/admin/admin-chart/AdminSampleGraph"
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts"
 import { handleValueChange } from "@/utils/utils";
 
 interface UserProps {
@@ -56,10 +53,6 @@ export default function App() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchNickname, setSearchNickname] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
-  const [open, setOpen] = useState<boolean>(false);
-  function handleTooltip() {
-    setOpen(prev => !prev);
-  }
   // 현재 페이지에 표시할 행 계산
   const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -85,16 +78,12 @@ export default function App() {
     api.get("/admin/user")
       .then((response) => {
         setItems(response.data)
-
         if (searchNickname) {
-          setItems(prev => prev.filter((user: UserProps) => user.nickname === searchNickname))
+          setItems(prev => prev.filter((user: UserProps) => user.nickname.includes(searchNickname)))
         }
         if (searchEmail) {
-          setItems(prev => prev.filter((user: UserProps) => user.email === searchEmail))
+          setItems(prev => prev.filter((user: UserProps) => user.email.includes(searchEmail)))
         }
-
-        setSearchNickname("")
-        setSearchEmail("")
       })
   }
 
@@ -158,10 +147,8 @@ export default function App() {
                   sx={{ width: "15%" }}
                 >
                   <Tooltip
-                    title={row.returnDt}
-                    open={row.role === "BANNED" && open}
-                    onOpen={handleTooltip}
-                    onClose={handleTooltip}
+                    title={`${new Date(row.returnDt || "").toLocaleString()} 까지`}
+                    open={row.role === "BANNED"}
                   >
                     <Typography>
                       {row.role}
