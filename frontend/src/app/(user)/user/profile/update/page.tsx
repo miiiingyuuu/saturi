@@ -59,10 +59,10 @@ const profileImages = [
   { id: 11, src: '/main_profile/11.png', name: '석유부자무새' },
   { id: 12, src: '/main_profile/12.png', name: '빨간머리무새' },
   { id: 13, src: '/main_profile/13.png', name: '정찰대무새' },
-  { id: 14, src: '/main_profile/14.png', name: '비밀결사무세' },
+  { id: 14, src: '/main_profile/14.png', name: '비밀결사무새' },
   { id: 15, src: '/main_profile/15.png', name: '쇼호스트무새' },
   { id: 16, src: '/main_profile/16.png', name: '용병무새' },
-  { id: 17, src: '/main_profile/17.png', name: '기관사무세' },
+  { id: 17, src: '/main_profile/17.png', name: '기관사무새' },
   { id: 18, src: '/main_profile/18.png', name: '삼총사무새'},
 ];
 
