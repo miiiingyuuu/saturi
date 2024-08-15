@@ -1,7 +1,6 @@
 import { Button, Popover, Typography, Box } from "@mui/material";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import CustomButton from "../ButtonColor";
 
 interface IPuzzlePiece {
   locationId: number | null;
@@ -69,9 +68,9 @@ export default function PuzzlePiece({ locationId, lessonGroupId, groupProgress, 
             달성율 : {groupProgress}%
           </Typography>
           <div className="flex justify-center pt-2">
-            <CustomButton variant="contained" color="primary" onClick={startLesson}>
+            <Button variant="contained" color="primary" onClick={startLesson}>
               Start
-            </CustomButton>
+            </Button>
           </div>
         </div>
       </Popover>

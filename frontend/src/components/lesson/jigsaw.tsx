@@ -1,7 +1,6 @@
 import { Box, Popover, Typography, Button } from "@mui/material";
 import React, { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import CustomButton from "../ButtonColor";
 
 interface Lesson {
   lessonId: number;
@@ -43,6 +42,7 @@ export default function Icon({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const selectedIndex = useRef(0);
+  console.log(progressData)
 
   const router = useRouter();
   const currentPath = usePathname();
@@ -108,6 +108,13 @@ export default function Icon({
     "M829.57 1090.386h37.902c43.252 0 47.67-.465 62.086-7.672 12.324-6.047 23.486-17.209 29.764-29.766 6.977-14.416 7.674-18.834 7.674-61.854v-247.18c0-43.252-.465-47.67-7.674-62.086-6.277-12.557-17.439-23.719-29.996-29.996-14.416-6.977-18.834-7.674-61.854-7.674h-37.67l-.465 15.813c-.697 21.393-4.186 33.484-13.719 47.9-12.092 18.604-29.066 30.695-52.088 36.973-4.418 1.162-10.695 1.859-19.766 1.859-9.068 0-15.346-.697-19.764-1.859-23.021-6.277-39.996-18.369-52.088-36.973-9.533-14.416-12.789-26.508-13.719-47.668l-.465-15.813h-37.67c-43.02 0-47.438.465-61.854 7.674-12.557 6.277-23.719 17.439-29.996 29.996-6.977 14.416-7.674 18.834-7.674 61.854v37.67l-15.813.465c-18.137.697-25.578 2.326-38.367 8.371-17.207 8.139-31.857 22.789-39.996 39.996-6.51 13.486-8.139 21.393-8.139 38.135 0 12.789.465 15.58 3.023 23.719 10.463 32.088 35.576 54.18 68.596 59.992 3.488.697 11.859 1.162 18.604 1.162h12.092v37.438c0 43.252.465 47.438 7.674 61.854 6.277 12.557 17.439 23.719 29.996 29.998 14.416 6.975 18.602 7.672 61.854 7.672H829.57z",
   ];
 
+  const getColor = (progress: number, index: number) => {
+    if (progress === 0) {
+      return "#D3D3D3"; // Progress가 0이면 회색으로 설정
+    }
+    return colors[index]; // Progress가 100이 아니면 원래 색을 사용
+  }
+
   return (
     <Box>
       <Popover
@@ -124,7 +131,7 @@ export default function Icon({
         }}
         disableScrollLock={true}
         sx={{
-          mt: 2, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
+          mt: 5, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
       }}>
         <Box className="p-1 rounded-full" sx={{ margin: "15px" }}>
           {dataGroup[selectedIndex.current]?.lessons.length > 0 ? (
@@ -176,7 +183,7 @@ export default function Icon({
             onMouseDown={() => setClickedIndex(index)}
             onMouseUp={() => setClickedIndex(null)}
             onMouseLeave={() => setClickedIndex(null)}
-            fill= {colors[index]}
+            fill= {getColor(progressData[index].groupProgress, index)}
             stroke="#414141"
             strokeMiterlimit="10"
             strokeWidth="10"

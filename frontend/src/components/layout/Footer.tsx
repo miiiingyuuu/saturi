@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Box, Typography, Button, Grid } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import CustomButton from '../ButtonColor';
 
 export default function Footer() {
   const router = useRouter();
@@ -35,13 +34,13 @@ export default function Footer() {
               />
               <Box className="flex gap-2">
                 <Link href="/" passHref>
-                  <CustomButton variant="text" size="small">Home</CustomButton>
+                  <Button variant="text" size="small">Home</Button>
                 </Link>
                 <Link href="/register" passHref>
-                  <CustomButton variant="text" size="small">SignUp</CustomButton>
+                  <Button variant="text" size="small">SignUp</Button>
                 </Link>
                 <Link href="/login" passHref>
-                  <CustomButton variant="text" size="small">LogIn</CustomButton>
+                  <Button variant="text" size="small">LogIn</Button>
                 </Link>
               </Box>
             </Box>

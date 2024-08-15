@@ -16,7 +16,6 @@ import {
   Snackbar
 } from '@mui/material';
 import api from '@/lib/axios';
-import CustomButton from '@/components/ButtonColor';
 
 const FindPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -144,7 +143,7 @@ const FindPasswordPage: React.FC = () => {
             required
             type="email"
           />
-          <CustomButton 
+          <Button 
             type="submit" 
             fullWidth 
             variant="contained" 
@@ -152,7 +151,7 @@ const FindPasswordPage: React.FC = () => {
             disabled={isLoading}
           >
             {isLoading ? <CircularProgress size={24} /> : '인증 코드 전송'}
-          </CustomButton>
+          </Button>
         </form>
       )}
       {activeStep === 1 && (
@@ -166,7 +165,7 @@ const FindPasswordPage: React.FC = () => {
             margin="normal"
             required
           />
-          <CustomButton 
+          <Button 
             type="submit" 
             fullWidth 
             variant="contained" 
@@ -174,7 +173,7 @@ const FindPasswordPage: React.FC = () => {
             disabled={isLoading}
           >
             {isLoading ? <CircularProgress size={24} /> : '확인'}
-          </CustomButton>
+          </Button>
         </form>
       )}
       {activeStep === 2 && (
@@ -195,12 +194,12 @@ const FindPasswordPage: React.FC = () => {
             sx={{ mb: 2 }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-            <CustomButton variant="outlined" onClick={handleCopyPassword}>
+            <Button variant="outlined" onClick={handleCopyPassword}>
               비밀번호 복사
-            </CustomButton>
-            <CustomButton variant="contained" onClick={handleGoToLogin}>
+            </Button>
+            <Button variant="contained" onClick={handleGoToLogin}>
               로그인 화면으로 이동
-            </CustomButton>
+            </Button>
           </Box>
         </Paper>
       )}
