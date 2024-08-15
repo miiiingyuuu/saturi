@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, Box } from '@mui/material';
 import api from '@/lib/axios';
 import dynamic from 'next/dynamic';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartData, ChartOptions } from 'chart.js';
@@ -72,6 +72,7 @@ const UserSimilarityChart: React.FC = () => {
 
   const options: ChartOptions<'bar'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
@@ -80,14 +81,22 @@ const UserSimilarityChart: React.FC = () => {
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
-        <Typography variant="h6" align="center">지역별 평균 유사도</Typography>
-        <Bar options={options} data={similarityChartData} />
+    <Grid container spacing={2} sx={{ height: '100%' }}>
+      <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="h6" align="center">지역별 평균 유사도</Typography>
+          <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+            <Bar options={options} data={similarityChartData} />
+          </Box>
+        </Box>
       </Grid>
-      <Grid item xs={12} md={6}>
-        <Typography variant="h6" align="center">지역별 평균 정확도</Typography>
-        <Bar options={options} data={accuracyChartData} />
+      <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="h6" align="center">지역별 평균 정확도</Typography>
+          <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+            <Bar options={options} data={accuracyChartData} />
+          </Box>
+        </Box>
       </Grid>
     </Grid>
   );
