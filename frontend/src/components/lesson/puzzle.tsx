@@ -62,7 +62,7 @@ export default function Puzzle({ id, totalProgress, lessonGroup, progressData, o
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [progressData]);
 
   return (
     <Box>
