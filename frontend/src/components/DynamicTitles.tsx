@@ -1,4 +1,5 @@
 // app/components/DynamicTitle.tsx
+"use client"
 
 import { usePathname } from 'next/navigation';
 import { Metadata } from 'next';
