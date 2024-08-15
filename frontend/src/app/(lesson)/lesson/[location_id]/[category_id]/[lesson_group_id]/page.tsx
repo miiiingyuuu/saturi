@@ -526,7 +526,7 @@ export default function LessonPage() {
           )}
         </Box>
 
-        {isLoading ? (
+        {true ? (
           <Box
             className="w-full h-full"
             sx={{
@@ -539,7 +539,7 @@ export default function LessonPage() {
           >
             <Image
               src="/images/loadingBird.gif"
-              alt="귀여운 쿼카"
+              alt="로딩새"
               width={320}
               height={338}
               style={{
@@ -556,7 +556,7 @@ export default function LessonPage() {
                 margin: 4,
               }}
             >
-              Now Loading...
+              결과를 저장중입니다...
             </Typography>
           </Box>
         ) : (
