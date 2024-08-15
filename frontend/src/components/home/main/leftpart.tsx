@@ -82,7 +82,7 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
       <Card 
         sx={{
           width: "300px",
-          height: "500px",
+          height: "50vh",
           minWidth: "300px",
           minHeight: "500px",
           display:"flex",
