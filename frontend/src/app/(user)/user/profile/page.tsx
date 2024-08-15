@@ -5,8 +5,12 @@ import {
   Box,
   Grid,
   Paper,
-  Typography
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
+import Image from "next/image";
 import RecentProblem from "@/components/profile/recentProblem";
 import WeeklyStreak from "@/components/profile/weeklyStreak";
 import YearlyStreak from "@/components/profile/yearlyStreak";
@@ -14,8 +18,9 @@ import ProfileInfo from "@/components/profile/profileInfo";
 import UserTierRank from "@/components/profile/userTierRank";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
-import api from "@/lib/axios";
+import { FaTrophy } from "react-icons/fa";
 import Chatbot from "@/components/chatbot/chatbot";
+import api from "@/lib/axios";
 
 
 // Dashboard type 선언
@@ -54,9 +59,29 @@ interface DashboardData {
   };
 }
 
+// 티어 정보
+const tierRanges = [
+  { tier: 'Stone', min: 0, max: 0, image: '/tier/stone.png' },
+  { tier: 'Bronze', min: 1, max: 99, image: '/tier/bronze.png' },
+  { tier: 'Silver', min: 100, max: 499, image: '/tier/silver.png' },
+  { tier: 'Gold', min: 500, max: 1499, image: '/tier/gold.png' },
+  { tier: 'Platinum', min: 1500, max: 2999, image: '/tier/platinum.png' },
+  { tier: 'Sapphire', min: 3000, max: 4999, image: '/tier/sapphire.png' },
+  { tier: 'Diamond', min: 5000, max: Infinity, image: '/tier/diamond.png' },
+];
+
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -87,16 +112,46 @@ export default function ProfilePage() {
       <Grid container spacing={3} sx={{ maxWidth: '75%', mx: 'auto' }}>
         {/* My Profile 섹션 */}
         <Grid item xs={12}>
-          <Typography variant="h4" sx={{ mb: 2 }}>
-            <AccountBoxIcon fontSize="medium" /> My Profile
-          </Typography>
-          <Grid container spacing={3} sx={{ height: '100%' }}>
-            {/* 프로필 정보 */}
-            <Grid item xs={12} md={6} sx={{ display: 'flex' }}>
-              <Box sx={{ width: '100%', height: '100%' }}>
-                <ProfileInfo />
-              </Box>
-            </Grid>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" sx={{ display: 'flex', alignItems: 'center' }}>
+          <AccountBoxIcon style={{ marginRight: '8px' }} /> My Profile
+        </Typography>
+        <IconButton onClick={handleClick} color="primary">
+          <FaTrophy style={{ marginRight: '8px' }} /> Tier ?
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          PaperProps={{
+            style: {
+              maxHeight: 300,
+              width: '300px',
+            },
+          }}
+        >
+          {tierRanges.map((tier, index) => (
+            <MenuItem key={index} onClick={handleClose} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+             <Image src={tier.image} alt={tier.tier} width={40} height={40} />
+             <Box>
+               <Typography variant="subtitle1">{tier.tier}</Typography>
+               <Typography variant="body2">
+                 {tier.max === Infinity 
+                   ? `${tier.min} EXP 이상` 
+                   : `${tier.min} ~ ${tier.max} EXP`}
+               </Typography>
+             </Box>
+            </MenuItem>
+          ))}
+        </Menu>
+      </Box>
+      <Grid container spacing={3} sx={{ height: '100%' }}>
+        {/* 프로필 정보 */}
+        <Grid item xs={12} md={6} sx={{ display: 'flex' }}>
+          <Box sx={{ width: '100%', height: '100%' }}>
+            <ProfileInfo />
+          </Box>
+        </Grid>
             
             {/* 티어, 경험치, 순위 */}
             <Grid item xs={12} md={6} sx={{ display: 'flex' }}>
