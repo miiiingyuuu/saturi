@@ -165,15 +165,11 @@ export default function SecondResult({
                   다시하기
                 </Button> */}
                 <Button
-                  className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+                  className="mt-4 bg text-white px-8 py-4 rounded"
                   variant="contained"
                   onClick={handleHome}
-                  sx={{
-                    backgroundColor:"success.light",
-                    '&:hover': { backgroundColor: 'green' },
-                    '&:active': { backgroundColor: 'green' },
-                    '&:focus': { backgroundColor: 'success' },
-                }}>
+                  color = "primary"
+                >
                   처음으로
                 </Button>
             </Box>

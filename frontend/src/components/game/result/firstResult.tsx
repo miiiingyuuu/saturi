@@ -152,17 +152,11 @@ export default function firstResult({
           </Box>
         </Card>
 
-        <Button
-          className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+        <Button>
+          className="mt-4 text-white px-8 py-4 rounded"
           variant="contained"
           onClick={nextstep}
-          sx={{
-            marginTop: "10px",
-            backgroundColor:"success.light",
-            '&:hover': { backgroundColor: 'green' },
-            '&:active': { backgroundColor: 'green' },
-            '&:focus': { backgroundColor: 'success' },
-          }}>
+          color="primary"
           다음
         </Button>
 

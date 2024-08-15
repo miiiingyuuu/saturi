@@ -194,14 +194,9 @@ export default function FirstResult({
     </Box>
     <Box className="flex justify-center mx-24">
       <Button
-        className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+        className="mt-4 text-white px-8 py-4 rounded"
         variant="contained"
-        sx={{
-          backgroundColor:"success.light",
-          '&:hover': { backgroundColor: 'green' },
-          '&:active': { backgroundColor: 'green' },
-          '&:focus': { backgroundColor: 'success' },
-        }}
+        color="primary"        
         onClick={nextstep}
       >
         다음
