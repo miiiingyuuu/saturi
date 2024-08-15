@@ -140,7 +140,7 @@ export default function Icon({
                 {progressData[selectedIndex.current].lessonGroupName}
               </Typography>
               <Typography variant="subtitle1">
-                달성율 : {progressData[selectedIndex.current].groupProgress}%
+                달성율 : {progressData[selectedIndex.current]?.groupProgress}%
               </Typography>
               <Box className="flex justify-center pt-3">
                 <Button variant="contained" color="primary" onClick={startLesson}>
@@ -183,7 +183,7 @@ export default function Icon({
             onMouseDown={() => setClickedIndex(index)}
             onMouseUp={() => setClickedIndex(null)}
             onMouseLeave={() => setClickedIndex(null)}
-            fill= {getColor(progressData[index].groupProgress, index)}
+            fill= {getColor(progressData[index]?.groupProgress, index)}
             stroke="#414141"
             strokeMiterlimit="10"
             strokeWidth="10"

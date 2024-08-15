@@ -81,7 +81,6 @@ export default function CategorySelectPage() {
           );
           if (lessonGroupResponse.status === 200) {
             setLessonGroup(lessonGroupResponse.data);
-            console.log("Lesson Group Data:", lessonGroupResponse.data);
           }
 
           // Progress API 요청
@@ -89,7 +88,6 @@ export default function CategorySelectPage() {
             `learn/lesson-group/progress?locationId=${locationId}&categoryId=${categoryId}`
           );
           if (progressResponse.status === 200) {
-            console.log("Progress API Response:", progressResponse.data);
 
             if (Array.isArray(progressResponse.data) && progressResponse.data.length > 0) {
               setCategoryProgress(progressResponse.data[0].progress);

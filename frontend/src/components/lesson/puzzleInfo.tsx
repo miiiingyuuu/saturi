@@ -89,7 +89,7 @@ export default function PuzzleInfo({
             textAlign: 'left'
           }}>
           
-            <ul className="list-disc pl-5">
+            <ul className="list-disc pl-3 pr-3">
               {lessonGroup.lessons.map(lesson => (
                 <p key={lesson.lessonId} className="mb-2">
                   <strong>{lesson.script}</strong>
