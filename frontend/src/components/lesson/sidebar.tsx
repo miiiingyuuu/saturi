@@ -82,7 +82,7 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
                 <ToggleButton
                   value={category.id}
                   sx={{
-                    height: "65px",
+                    height: "70px",
                     borderRadius:"35px",
                     padding: 0,
                     border: category.id === categoryId ? '5px solid #84d8ff' : '5px solid transparent', // 테두리 색상 조건부 적용

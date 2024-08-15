@@ -107,16 +107,16 @@ export default function LeftPart({ middlePosition, moveDirection, selectedRegion
             justifyContent:"space-between",
             paddingY:"30px",
         }}>
-          <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: "65px", borderRadius: "35px"}}>
+          <ButtonBase onClick={() => { buttonLearn(1) }} sx={{ width: '100%', height: "70px", borderRadius: "35px"}}>
             <Box component="img" src="/MainPage/learnButtonLong1.png" alt="" sx={{height: "65px", objectFit: 'cover' }} />
           </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: "65px", borderRadius: "35px"}}>
+          <ButtonBase onClick={() => { buttonLearn(2) }} sx={{ width: '100%', height: "70px", borderRadius: "35px"}}>
             <Box component="img" src="/MainPage/learnButtonLong2.png" alt="" sx={{height: "65px", objectFit: 'cover' }} />
           </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: "65px", borderRadius: "35px"}}>
+          <ButtonBase onClick={() => { buttonLearn(3) }} sx={{ width: '100%', height: "70px", borderRadius: "35px"}}>
             <Box component="img" src="/MainPage/learnButtonLong3.png" alt="" sx={{height: "65px", objectFit: 'cover' }} />
           </ButtonBase>
-          <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: "65px", borderRadius: "35px"}}>
+          <ButtonBase onClick={() => { buttonLearn(4) }} sx={{ width: '100%', height: "70px", borderRadius: "35px"}}>
             <Box 
               component="img"
               src={selectedRegion !== "경기도" ? "/MainPage/learnButtonLong4.png" : "/MainPage/learnButtonLong5.png"}
