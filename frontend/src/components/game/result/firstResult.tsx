@@ -1,6 +1,5 @@
 import { Box, Container, Card, Typography, LinearProgress, Button, Avatar } from "@mui/material";
 import "@/styles/home/main/mainPage.css";
-import CustomButton from "@/components/ButtonColor";
 
 interface FirstResultProps<T> {
   currentStep : number;
@@ -153,7 +152,7 @@ export default function firstResult({
           </Box>
         </Card>
 
-        <CustomButton
+        <Button
           className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
           variant="contained"
           onClick={nextstep}
@@ -165,7 +164,7 @@ export default function firstResult({
             '&:focus': { backgroundColor: 'success' },
           }}>
           다음
-        </CustomButton>
+        </Button>
 
       </Box>
 
