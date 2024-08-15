@@ -38,30 +38,30 @@
 ### 1) 메인
 
 - 로그인 이전
-  <img src="./img/start.gif">
+  <div><img src="./img/start.gif"></div>
 - 로그인 이후
-  <img src="./img/main.gif">
+  <div><img src="./img/main.gif"></div>
 
 ### 2) 학습
 - 레슨 그룹 선택
-  <img src="./img/learn1.gif">
+  <div><img src="./img/learn1.gif"></div>
 - 레슨
-  <img src="./img/learn2.gif">
+  <div><img src="./img/learn2.gif"></div>
 
 ### 3) 게임
 - 게임 매칭
-  <img src="">
+  <div><img src=""></div>
 - 게임 진행
-  <img src="">
+  <div><img src=""></div>
 
 ### 4) 회원 페이지
 - 프로필
-  <img src="./img/profile.gif">
+  <div><img src="./img/profile.gif"></div>
 
 ### 5) 관리자 페이지
 - 통계
-  <img src="./img/statistics.gif">
+  <div><img src="./img/statistics.gif"></div>
 - 관리
-  <img src="./img/admin.gif">
+  <div><img src="./img/admin.gif"></div>
 
 
