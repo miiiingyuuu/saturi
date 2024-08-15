@@ -49,10 +49,10 @@
   <div><img src="./img/learn2.gif"></div>
 
 ### 3) 게임
-- 게임 매칭
-  <div><img src=""></div>
 - 게임 진행
-  <div><img src=""></div>
+  <div><img src="./img/game.gif"></div>
+- 게임 결과
+  <div><img src="./img/game_result.gif"></div>
 
 ### 4) 회원 페이지
 - 프로필
