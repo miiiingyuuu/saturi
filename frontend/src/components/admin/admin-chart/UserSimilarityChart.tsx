@@ -71,6 +71,7 @@ const UserSimilarityChart: React.FC = () => {
   }, []);
 
   const options: ChartOptions<'bar'> = {
+    indexAxis: 'y' as const,
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -81,18 +82,18 @@ const UserSimilarityChart: React.FC = () => {
   };
 
   return (
-    <Grid container spacing={2} sx={{ height: '100%' }}>
-      <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+    <Grid container direction="column" spacing={2} sx={{ height: '100%' }}>
+      <Grid item xs={6} sx={{ height: '50%' }}>
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="h6" align="center">지역별 평균 유사도</Typography>
+          {/* <Typography variant="h6" align="center">지역별 평균 유사도</Typography> */}
           <Box sx={{ flexGrow: 1, minHeight: 0 }}>
             <Bar options={options} data={similarityChartData} />
           </Box>
         </Box>
       </Grid>
-      <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+      <Grid item xs={6} sx={{ height: '50%' }}>
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="h6" align="center">지역별 평균 정확도</Typography>
+          {/* <Typography variant="h6" align="center">지역별 평균 정확도</Typography> */}
           <Box sx={{ flexGrow: 1, minHeight: 0 }}>
             <Bar options={options} data={accuracyChartData} />
           </Box>

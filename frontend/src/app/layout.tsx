@@ -11,6 +11,7 @@ import { ThemeProvider } from "@emotion/react";
 import { useRouter, usePathname } from "next/navigation"
 import { authToken } from "@/utils/authutils";
 import { teal } from "@mui/material/colors";
+import { generateMetadata } from "@/components/DynamicTitles";
 
 const mainFont = localFont({
   src: "./PretendardVariable.woff2"
@@ -26,6 +27,8 @@ const theme = createTheme({
   }
 });
 
+export { generateMetadata };
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -40,9 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   if (pathname && ( pathname.startsWith("/admin") || (pathname.startsWith("/game") && !(pathname.includes("/in-game/") && pathname.endsWith("/result"))))) {
     return (
       <html lang="ko">
-        <body
-          className={mainFont.className}
-        >
+        <body className={mainFont.className}>
           <ThemeProvider theme={theme}>
             <main>
               {children}
@@ -55,16 +56,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="ko">
-      <body
-        className={`${mainFont.className} bg-gray-100 min-h-svh`}
-      >
+      <body className={`${mainFont.className} bg-gray-100 min-h-svh`}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Header isTransparent={isStartPage} />
-            <main
-              className={mainFont.className}
-              style={{ minHeight: 'calc(100vh - 350px)' }} // Header/Footer 제외한 영역의 minHeight 조절
-            >{children}</main>
+          <main
+            className={mainFont.className}
+            style={{ minHeight: 'calc(100vh - 350px)' }}
+          >
+            {children}
+          </main>
           <Footer />
         </ThemeProvider>
       </body>
