@@ -4,7 +4,7 @@ import api from "@/lib/axios";
 import { useState, useMemo } from "react";
 import { useRouter } from 'next/navigation';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PasswordValidation from "@/components/PasswordValidation";
+import PasswordValidation from "@/components/profile/PasswordValidation";
 import { handleValueChange, validatePassword } from "@/utils/utils";
 import {
   Box,

@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react";
 import useTableSort from "@/hooks/useTableSort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SortableTableHead from "@/components/SortableTableHead";
-import AdminSampleGraph from "@/components/admin/AdminSampleGraph"
+import SortableTableHead from "@/components/admin/admin-form/SortableTableHead";
+import AdminSampleGraph from "@/components/admin/admin-chart/AdminSampleGraph"
 import {LessonProps} from "@/utils/props"
 
 type HeadCell = {

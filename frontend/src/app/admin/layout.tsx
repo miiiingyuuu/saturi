@@ -37,6 +37,7 @@ import {
 import useLogout from "@/hooks/useLogout";
 import Image from 'next/image';
 import api from "@/lib/axios";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts"
 
 const drawerWidth: number = 240;
 
@@ -239,6 +240,12 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
                       <HomeIcon />
                     </ListItemIcon>
                     <ListItemText primary="메인" />
+                  </ListItemButton>
+                  <ListItemButton onClick={() => router.push("/admin/user")}>
+                    <ListItemIcon>
+                      <ManageAccountsIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="회원" />
                   </ListItemButton>
                   <AccordionMenuItem
                     icon={<SchoolIcon />}

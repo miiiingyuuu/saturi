@@ -174,6 +174,7 @@ export default function Header({ isTransparent = false }: HeaderProps) {
                       bgcolor: 'background.paper',
                       transform: 'translateY(-50%) rotate(45deg)',
                       zIndex: 0,
+
                     },
                   },
                 }}

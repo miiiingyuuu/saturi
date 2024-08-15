@@ -34,13 +34,20 @@ type IsClickedState = {
   [key: number]: boolean;
 };
 
+
 const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
-))({
+))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    fontSize: '20px', // 원하는 폰트 사이즈로 변경
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 20,
   },
-});
+  [`& .MuiTooltip-arrow`]: {
+    color: theme.palette.common.white,
+  },
+}));
 
 interface TipsProps {
  tipId: number

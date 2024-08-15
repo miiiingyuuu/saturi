@@ -4,7 +4,7 @@ import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/utils/authutils";
 import { useMemo, useState, useEffect } from "react";
-import PasswordValidation from "@/components/PasswordValidation";
+import PasswordValidation from "@/components/profile/PasswordValidation";
 import {
   validateEmail,
   passwordConfirm,
