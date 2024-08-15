@@ -169,7 +169,9 @@ export default function App() {
               </TableCell>
               <TableCell
                 sx={{ width: "15%" }}
-              >{row.lastUpdateDt}</TableCell>
+              >
+                {new Date(row.lastUpdateDt).toLocaleString()}
+              </TableCell>
               <TableCell
                 sx={{ width: "15%" }}
               >

@@ -22,10 +22,10 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
       { id: 4, name: "밈", tag: "Meme" },
     ],
     [
-      { id: 1, name: "일상", tag: "Daily" },
-      { id: 2, name: "드라마", tag: "Drama" },
-      { id: 3, name: "영화", tag: "Movie" },
-      { id: 5, name: "뉴스", tag: "News" },
+      { id: 1, name: "뉴스", tag: "News" },
+      { id: 2, name: "일상", tag: "Daily" },
+      { id: 3, name: "드라마", tag: "Drama" },
+      { id: 4, name: "밈", tag: "Meme" },
     ],
   ];
 
@@ -39,11 +39,6 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
     }, [categoryId])
 
   return (
-
-
-
-
-
     <Card
       className="leftpartofjigsaw"
       sx={{
@@ -90,7 +85,7 @@ export default function SideNavbar({ location, categoryId }: SideNavbarProps) {
                   }}
                 >
                   <img
-                    src={`/MainPage/learnButtonLong${category.id}.png`}
+                    src={`/MainPage/learnButtonLong${category.tag}.png`}
                     alt="Learn Button"
                     style={{
                       height: "65px",

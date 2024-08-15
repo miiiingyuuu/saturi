@@ -43,7 +43,6 @@ export function handleLogin({
       sessionStorage.setItem("accessToken", response.data.accessToken);
       sessionStorage.setItem("refreshToken", response.data.refreshToken);
 
-      console.log(response.data)
       let destination = goTo
       if (response.data.role === "ADMIN") {
         destination = "/admin"
@@ -132,10 +131,4 @@ export function authToken() {
           });
       }
     });
-}
-
-// 회원 정보 수정
-export function updateUser(data: object) {
-  api.post("/user/auth", data)
-    .then(response => console.log(response))
 }
