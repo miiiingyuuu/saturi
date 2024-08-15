@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: '사투리가 서툴러유',
   description: '사투리 학습 플랫폼',
   icons: {
-    icon: '/favicon.ico'
+    icon: '/favicon.png'
   }
 }
 
