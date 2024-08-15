@@ -55,13 +55,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
       <body
-        className={`${mainFont.className} bg-gray-100`}
+        className={`${mainFont.className} bg-gray-100 min-h-svh`}
       >
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Header />
             <main
               className={mainFont.className}
+              style={{ minHeight: 'calc(100vh - 350px)' }} // Header/Footer 제외한 영역의 minHeight 조절
             >{children}</main>
           <Footer />
         </ThemeProvider>

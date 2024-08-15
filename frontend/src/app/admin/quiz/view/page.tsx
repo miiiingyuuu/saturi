@@ -32,7 +32,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import useTableSort from "@/hooks/useTableSort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SortableTableHead from "@/components/SortableTableHead";
+import SortableTableHead from "@/components/admin/admin-form/SortableTableHead";
 import { styled } from "@mui/material/styles";
 import {getFormattedLocationId, parseDate} from "@/utils/utils";
 

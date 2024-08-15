@@ -13,7 +13,7 @@ import {
   Typography,
   TablePagination,
 } from "@mui/material";
-import SortableTableHead from "@/components/SortableTableHead";
+import SortableTableHead from "@/components/admin/admin-form/SortableTableHead";
 import useTableSort from "@/hooks/useTableSort";
 import {parseDate} from "@/utils/utils";
 
