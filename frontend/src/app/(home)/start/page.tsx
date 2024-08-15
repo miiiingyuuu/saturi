@@ -8,7 +8,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import CustomButton from '@/components/ButtonColor';
 
 const AnimatedText: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
   const [ref, isVisible] = useIntersectionObserver({ threshold: 0.1 });
@@ -84,7 +83,7 @@ export default function Start() {
             </AnimatedText>
             <AnimatedText delay={0.9}>
               <Link href="/login" style={{ textDecoration: 'none' }}>
-                <CustomButton 
+                <Button 
                   variant="contained"
                   sx={{
                     fontSize: '1.5rem',
@@ -96,7 +95,7 @@ export default function Start() {
                   }}
                 >
                   시작하기
-                </CustomButton>
+                </Button>
               </Link>
             </AnimatedText>
           </Box>
@@ -203,7 +202,7 @@ export default function Start() {
         <Image src="/SSLogo.png" width={255} height={170} alt="SSLogo" />
         <Box sx={{ mt: 2, mb: 2 }}>바로 시작 해보세요</Box>
         <Link href="/login" style={{ textDecoration: 'none' }}>
-          <CustomButton 
+          <Button 
             variant="contained"
             sx={{
               fontSize: '1.5rem',
@@ -215,7 +214,7 @@ export default function Start() {
             }}
           >
             시작하기
-          </CustomButton>
+          </Button>
         </Link>
       </Box>
   

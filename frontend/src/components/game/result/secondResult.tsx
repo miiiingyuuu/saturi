@@ -1,7 +1,6 @@
 import { Box, Container, Card, LinearProgress, Button, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
 import "@/styles/home/main/mainPage.css";
-import CustomButton from "@/components/ButtonColor";
 
 interface SecondResultProps<T> {
   currentStep : number;
@@ -165,18 +164,14 @@ export default function SecondResult({
                 }}>
                   다시하기
                 </Button> */}
-                <CustomButton
-                  className="mt-4 bg-green-500 text-white px-8 py-4 rounded"
+                <Button
+                  className="mt-4 bg text-white px-8 py-4 rounded"
                   variant="contained"
                   onClick={handleHome}
-                  sx={{
-                    backgroundColor:"success.light",
-                    '&:hover': { backgroundColor: 'green' },
-                    '&:active': { backgroundColor: 'green' },
-                    '&:focus': { backgroundColor: 'success' },
-                }}>
+                  color = "primary"
+                >
                   처음으로
-                </CustomButton>
+                </Button>
             </Box>
 
 

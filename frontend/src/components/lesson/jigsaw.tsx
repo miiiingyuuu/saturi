@@ -1,7 +1,6 @@
 import { Box, Popover, Typography, Button } from "@mui/material";
 import React, { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import CustomButton from "../ButtonColor";
 
 interface Lesson {
   lessonId: number;
@@ -132,7 +131,7 @@ export default function Icon({
         }}
         disableScrollLock={true}
         sx={{
-          mt: 2, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
+          mt: 5, // Popover를 아래로 2 단위 (보통 16px)만큼 이동
       }}>
         <Box className="p-1 rounded-full" sx={{ margin: "15px" }}>
           {dataGroup[selectedIndex.current]?.lessons.length > 0 ? (

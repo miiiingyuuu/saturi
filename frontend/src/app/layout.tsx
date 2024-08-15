@@ -35,6 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     }
   },[router])
 
+  const isStartPage = pathname === '/' || pathname === '/start';
   
   if (pathname && ( pathname.startsWith("/admin") || (pathname.startsWith("/game") && !(pathname.includes("/in-game/") && pathname.endsWith("/result"))))) {
     return (
@@ -59,7 +60,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       >
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <Header />
+          <Header isTransparent={isStartPage} />
             <main
               className={mainFont.className}
             >{children}</main>

@@ -177,9 +177,9 @@ export default function CategorySelectPage() {
         <Card
           className="rightpartofjigsaw"
           sx={{
-
             display:"flex", 
             flexDirection: "column", 
+            justifyContent:"center",
             alignItems:"center", 
             width:"10vw",
             height:"50vh",
@@ -191,10 +191,11 @@ export default function CategorySelectPage() {
             padding: "10px", // Ensure there is padding inside the card
             marginRight:"25px",
         }}>
+          
           {selectedPuzzleId == null && (
             <Typography sx={{
-              display:"flex",
-              alignSelf:"center",
+              height:"10%",
+              fontSize:"20px",
             }}> 퍼즐을 선택하세요. </Typography>
           )}
 
