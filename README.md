@@ -33,7 +33,11 @@
 
   <img src="./img/ERD.png">
 
-## 5. 서비스 페이지
+## 5. URL 경로 구조
+
+  <img src="./img/URL.png">
+
+## 6. 서비스 페이지
 
 ### 1) 메인
 

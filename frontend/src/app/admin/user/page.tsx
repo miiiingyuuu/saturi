@@ -119,7 +119,7 @@ export default function App() {
             headCells={headCells}
           />
           <TableBody>
-            {rows.map((row) => (
+            {displayedRows.map((row) => (
               <TableRow key={row.userId}>
                 <TableCell
                   sx={{ width: "20%" }}
