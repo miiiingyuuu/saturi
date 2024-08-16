@@ -31,7 +31,7 @@
 
 ## 4. ERD
 
-  <img src="./img/ERD.png">
+  <img src="./img/URL.png">
 
 ## 5. URL 경로 구조
 
